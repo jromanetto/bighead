@@ -5,6 +5,12 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../src/contexts/AuthContext";
 import { getSettings, saveSettings, type UserSettings } from "../src/services/settings";
 import { playHaptic } from "../src/utils/feedback";
+import {
+  registerForPushNotifications,
+  savePushToken,
+  scheduleDailyReminder,
+  cancelAllNotifications,
+} from "../src/services/notifications";
 
 export default function SettingsScreen() {
   const { user, isAnonymous, signOut } = useAuth();
@@ -39,6 +45,21 @@ export default function SettingsScreen() {
     setSaving(true);
     try {
       await saveSettings({ [key]: value }, user?.id);
+
+      // Handle notifications toggle
+      if (key === "notifications_enabled") {
+        if (value) {
+          // Enable notifications
+          const token = await registerForPushNotifications();
+          if (token && user) {
+            await savePushToken(user.id, token);
+            await scheduleDailyReminder();
+          }
+        } else {
+          // Disable notifications
+          await cancelAllNotifications();
+        }
+      }
     } catch (error) {
       console.error("Error saving setting:", error);
     }

@@ -213,38 +213,50 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Coming Soon */}
-        <Text className="text-white text-lg font-bold mb-3">Bientôt</Text>
+        {/* Multiplayer */}
+        <Text className="text-white text-lg font-bold mb-3">Multijoueur</Text>
         <View className="gap-3">
-          <View className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700 border-dashed">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/duel");
+            }}
+            className="bg-red-500/20 rounded-2xl p-4 border border-red-500/30"
+          >
             <View className="flex-row items-center">
-              <Text className="text-2xl mr-3 opacity-50">⚔️</Text>
+              <Text className="text-2xl mr-3">⚔️</Text>
               <View className="flex-1">
-                <Text className="text-gray-400 font-medium">Duel 1v1</Text>
-                <Text className="text-gray-500 text-sm">
+                <Text className="text-white font-medium">Duel 1v1</Text>
+                <Text className="text-gray-400 text-sm">
                   Affronte tes amis en temps réel
                 </Text>
               </View>
-              <View className="bg-gray-700 rounded-full px-2 py-1">
-                <Text className="text-gray-400 text-xs">Soon</Text>
+              <View className="bg-red-500/30 rounded-full px-2 py-1">
+                <Text className="text-red-400 text-xs font-bold">NEW</Text>
               </View>
             </View>
-          </View>
+          </Pressable>
 
-          <View className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700 border-dashed">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/tournament");
+            }}
+            className="bg-yellow-500/20 rounded-2xl p-4 border border-yellow-500/30"
+          >
             <View className="flex-row items-center">
-              <Text className="text-2xl mr-3 opacity-50">🏆</Text>
+              <Text className="text-2xl mr-3">🏆</Text>
               <View className="flex-1">
-                <Text className="text-gray-400 font-medium">Tournois</Text>
-                <Text className="text-gray-500 text-sm">
+                <Text className="text-white font-medium">Tournois</Text>
+                <Text className="text-gray-400 text-sm">
                   Compétitions hebdomadaires
                 </Text>
               </View>
-              <View className="bg-gray-700 rounded-full px-2 py-1">
-                <Text className="text-gray-400 text-xs">Soon</Text>
+              <View className="bg-yellow-500/30 rounded-full px-2 py-1">
+                <Text className="text-yellow-400 text-xs font-bold">NEW</Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         </View>
       </ScrollView>
 
