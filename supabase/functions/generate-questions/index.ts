@@ -53,6 +53,30 @@ const CATEGORIES = {
     name: "Food & Drink",
     themes: ["Cuisines", "Ingredients", "Cooking", "Beverages", "Restaurants"],
   },
+  art: {
+    name: "Art",
+    themes: ["Famous painters", "Art movements", "Sculptures", "Museums", "Art history"],
+  },
+  music: {
+    name: "Music",
+    themes: ["Classical composers", "Rock bands", "Pop artists", "Musical instruments", "Music history"],
+  },
+  animals: {
+    name: "Animals",
+    themes: ["Mammals", "Birds", "Marine life", "Endangered species", "Animal behavior"],
+  },
+  nature: {
+    name: "Nature",
+    themes: ["Plants", "Ecosystems", "Weather", "Natural wonders", "Environment"],
+  },
+  literature: {
+    name: "Literature",
+    themes: ["Classic novels", "Famous authors", "Poetry", "Plays", "Literary awards"],
+  },
+  movies: {
+    name: "Movies",
+    themes: ["Oscar winners", "Directors", "Classic films", "Actors", "Film genres"],
+  },
 };
 
 // Fetch image from Unsplash
