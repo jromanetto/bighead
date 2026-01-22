@@ -11,9 +11,8 @@ import Purchases, {
 } from "react-native-purchases";
 import { Platform } from "react-native";
 
-// RevenueCat API keys (set these in your .env or RevenueCat dashboard)
-const REVENUECAT_API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || "";
-const REVENUECAT_API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || "";
+// RevenueCat API key (same key works for iOS and Android)
+const REVENUECAT_API_KEY = process.env.EXPO_PUBLIC_REVENUE_CAT_API_KEY || "";
 
 // Entitlement identifiers
 export const ENTITLEMENTS = {
@@ -49,9 +48,7 @@ class MonetizationService {
   async initialize(userId?: string): Promise<void> {
     if (this.isInitialized) return;
 
-    const apiKey = Platform.OS === "ios" ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
-
-    if (!apiKey) {
+    if (!REVENUECAT_API_KEY) {
       console.warn("RevenueCat API key not configured");
       return;
     }
@@ -60,7 +57,7 @@ class MonetizationService {
       Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
       await Purchases.configure({
-        apiKey,
+        apiKey: REVENUECAT_API_KEY,
         appUserID: userId,
       });
 
