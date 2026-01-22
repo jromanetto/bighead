@@ -60,11 +60,25 @@ export interface LeaderboardEntry {
   total_xp: number;
   level: number;
   games_played: number;
+  best_chain: number;
   rank: number;
 }
 
+export interface WeeklyLeaderboardEntry {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  weekly_xp: number;
+  weekly_games: number;
+  best_chain: number;
+  rank: number;
+}
+
+/**
+ * Get all-time leaderboard from the view
+ */
 export const getLeaderboard = async (
-  limit: number = 100
+  limit: number = 50
 ): Promise<LeaderboardEntry[]> => {
   const { data, error } = await supabase
     .from("leaderboard")
@@ -73,6 +87,52 @@ export const getLeaderboard = async (
 
   if (error) throw error;
   return (data as LeaderboardEntry[]) || [];
+};
+
+/**
+ * Get weekly leaderboard using the RPC function
+ */
+export const getWeeklyLeaderboard = async (
+  limit: number = 50
+): Promise<LeaderboardEntry[]> => {
+  const { data, error } = await supabase
+    .rpc("get_weekly_leaderboard", { limit_count: limit });
+
+  if (error) throw error;
+
+  // Map weekly data to LeaderboardEntry format
+  return ((data as WeeklyLeaderboardEntry[]) || []).map((entry) => ({
+    id: entry.id,
+    username: entry.username,
+    avatar_url: entry.avatar_url,
+    total_xp: entry.weekly_xp,
+    level: 1, // Not relevant for weekly
+    games_played: entry.weekly_games,
+    best_chain: entry.best_chain,
+    rank: entry.rank,
+  }));
+};
+
+/**
+ * Get current user's rank
+ */
+export const getUserRank = async (userId: string): Promise<{
+  rank: number;
+  total_xp: number;
+} | null> => {
+  const { data, error } = await supabase
+    .from("leaderboard")
+    .select("rank, total_xp")
+    .eq("id", userId)
+    .single();
+
+  if (error) {
+    // User might not be in leaderboard yet
+    if (error.code === "PGRST116") return null;
+    throw error;
+  }
+
+  return data;
 };
 
 /**
