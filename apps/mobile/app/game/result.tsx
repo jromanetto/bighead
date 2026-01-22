@@ -6,6 +6,7 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { UpgradePrompt } from "../../src/components/UpgradePrompt";
 import { AuthModal, AuthModalRef } from "../../src/components/AuthModal";
 import { saveGameResult } from "../../src/services/gameResults";
+import { ConfettiEffect } from "../../src/components/effects";
 
 export default function ResultScreen() {
   const { score, correct, total, maxChain } = useLocalSearchParams<{
@@ -18,6 +19,7 @@ export default function ResultScreen() {
   const { isAnonymous, user, refreshProfile } = useAuth();
   const authModalRef = useRef<AuthModalRef>(null);
   const [saved, setSaved] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const scoreNum = Number(score || 0);
   const correctNum = Number(correct || 0);
@@ -27,6 +29,13 @@ export default function ResultScreen() {
 
   // XP earned (simplified calculation)
   const xpEarned = Math.round(scoreNum * 0.1) + correctNum * 5;
+
+  // Trigger confetti for good performance
+  useEffect(() => {
+    if (accuracy >= 70) {
+      setShowConfetti(true);
+    }
+  }, [accuracy]);
 
   // Save game result when component mounts
   useEffect(() => {
@@ -88,6 +97,13 @@ export default function ResultScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
+      {/* Confetti Effect for good performance */}
+      <ConfettiEffect
+        trigger={showConfetti}
+        onComplete={() => setShowConfetti(false)}
+        duration={2500}
+      />
+
       <View className="flex-1 items-center justify-center px-6">
         {/* Trophy/Result */}
         <Text className="text-7xl mb-4">{getPerformanceEmoji()}</Text>
@@ -172,6 +188,18 @@ export default function ResultScreen() {
               Retour au menu
             </Text>
           </Pressable>
+
+          {/* Test button for confetti */}
+          {accuracy >= 70 && (
+            <Pressable
+              onPress={() => setShowConfetti(true)}
+              className="bg-yellow-500/20 border border-yellow-500/50 rounded-xl py-3 active:opacity-80"
+            >
+              <Text className="text-yellow-400 text-center">
+                🎉 Revoir le confetti
+              </Text>
+            </Pressable>
+          )}
         </View>
       </View>
 

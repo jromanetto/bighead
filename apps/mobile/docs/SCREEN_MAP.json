@@ -1,0 +1,326 @@
+{
+  "app": {
+    "name": "BIGHEAD",
+    "platform": ["iOS", "Android"],
+    "framework": "Expo + React Native",
+    "styling": "NativeWind (Tailwind CSS)",
+    "navigation": "expo-router"
+  },
+  "screens": {
+    "/": {
+      "name": "HomeScreen",
+      "file": "app/index.tsx",
+      "description": "Main hub with all game modes and navigation",
+      "components": [
+        "Header (BIGHEAD logo + tagline)",
+        "DailyChallengeCard",
+        "QuickPlayButton",
+        "GameModeCard (Chain Reaction)",
+        "GameModeCard (Party Mode)",
+        "StatsPreview (3 stats)",
+        "QuickLinkCard (Achievements)",
+        "QuickLinkCard (Leaderboard)",
+        "MultiplayerCard (Duel)",
+        "MultiplayerCard (Tournament)",
+        "BottomTabBar"
+      ],
+      "states": ["default", "daily_completed", "with_streak"],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/onboarding": {
+      "name": "OnboardingScreen",
+      "file": "app/onboarding.tsx",
+      "description": "First-time user tutorial with 4 slides",
+      "components": [
+        "SkipButton",
+        "OnboardingSlide (4 slides)",
+        "PaginationDots",
+        "NextButton"
+      ],
+      "states": ["slide_1", "slide_2", "slide_3", "slide_4"],
+      "animations": ["horizontal_slide", "spring_transition"]
+    },
+    "/game/chain": {
+      "name": "ChainGameScreen",
+      "file": "app/game/chain.tsx",
+      "description": "Main quiz gameplay with chain multiplier",
+      "components": [
+        "GameHeader (close, progress, multiplier)",
+        "ScoreDisplay",
+        "TimerCircle",
+        "ProgressBar",
+        "QuestionCard",
+        "AnswerButton (x4)",
+        "ResultFeedback",
+        "NextQuestionButton"
+      ],
+      "states": ["loading", "playing", "answered_correct", "answered_wrong", "finished"],
+      "animations": ["timer_countdown", "multiplier_pulse"]
+    },
+    "/game/result": {
+      "name": "ResultScreen",
+      "file": "app/game/result.tsx",
+      "description": "Post-game summary with score and stats",
+      "components": [
+        "PerformanceEmoji",
+        "PerformanceText",
+        "ScoreCard (big number + XP earned)",
+        "StatsRow (correct, incorrect, accuracy, max_chain)",
+        "UpgradePrompt (anonymous only)",
+        "ReplayButton",
+        "ShareButton",
+        "HomeButton",
+        "AuthModal"
+      ],
+      "states": ["default", "high_score", "perfect_game"],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/game/mode-select": {
+      "name": "ModeSelectScreen",
+      "file": "app/game/mode-select.tsx",
+      "description": "Category selection before game",
+      "components": ["CategoryCard", "BackButton"]
+    },
+    "/party/setup": {
+      "name": "PartySetupScreen",
+      "file": "app/party/setup.tsx",
+      "description": "Configure local multiplayer game",
+      "components": [
+        "PlayerCountSelector",
+        "RoundSelector",
+        "CategorySelector",
+        "StartGameButton"
+      ]
+    },
+    "/party/game": {
+      "name": "PartyGameScreen",
+      "file": "app/party/game.tsx",
+      "description": "Local multiplayer gameplay",
+      "components": [
+        "CurrentPlayerIndicator",
+        "QuestionCard",
+        "AnswerButton (x4)",
+        "ScoreBoard"
+      ]
+    },
+    "/party/result": {
+      "name": "PartyResultScreen",
+      "file": "app/party/result.tsx",
+      "description": "Local multiplayer final standings",
+      "components": ["WinnerDisplay", "PlayerRankingList", "PlayAgainButton"]
+    },
+    "/daily": {
+      "name": "DailyScreen",
+      "file": "app/daily.tsx",
+      "description": "Daily challenge with streak tracking",
+      "components": [
+        "StreakDisplay",
+        "QuestionCard",
+        "AnswerButton (x4)",
+        "BonusXPIndicator"
+      ],
+      "states": ["not_completed", "completed_today"]
+    },
+    "/duel": {
+      "name": "DuelLobbyScreen",
+      "file": "app/duel/index.tsx",
+      "description": "Create or join a 1v1 duel",
+      "components": [
+        "Header",
+        "CreateDuelCard",
+        "JoinDuelCard",
+        "CodeInput (6 chars)",
+        "CategorySelector"
+      ],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/duel/waiting": {
+      "name": "DuelWaitingScreen",
+      "file": "app/duel/waiting.tsx",
+      "description": "Waiting room for duel opponent",
+      "components": [
+        "Header",
+        "PulsingEmoji",
+        "WaitingText",
+        "CodeDisplay",
+        "ShareButton",
+        "WaitingIndicator",
+        "CancelButton"
+      ],
+      "states": ["waiting", "opponent_joined"],
+      "animations": ["pulse_emoji", "loading_indicator"]
+    },
+    "/duel/play": {
+      "name": "DuelPlayScreen",
+      "file": "app/duel/play.tsx",
+      "description": "Real-time 1v1 duel gameplay",
+      "components": [
+        "OpponentBar",
+        "QuestionCard",
+        "AnswerButton (x4)",
+        "RoundProgress",
+        "ScoreComparison"
+      ],
+      "realtime": true
+    },
+    "/duel/result": {
+      "name": "DuelResultScreen",
+      "file": "app/duel/result.tsx",
+      "description": "Duel winner announcement",
+      "components": [
+        "WinnerDisplay",
+        "ScoreComparison",
+        "RematchButton",
+        "HomeButton"
+      ]
+    },
+    "/tournament": {
+      "name": "TournamentScreen",
+      "file": "app/tournament/index.tsx",
+      "description": "Weekly tournament overview",
+      "components": [
+        "Header",
+        "TournamentCard (info, status, stats)",
+        "TimeRemainingBadge",
+        "ParticipateButton",
+        "LeaderboardPreview (top 10)",
+        "AnonymousPrompt"
+      ],
+      "states": ["loading", "no_tournament", "upcoming", "active", "participated"],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/tournament/play": {
+      "name": "TournamentPlayScreen",
+      "file": "app/tournament/play.tsx",
+      "description": "Tournament gameplay",
+      "components": [
+        "QuestionCard",
+        "AnswerButton (x4)",
+        "Timer",
+        "ScoreDisplay"
+      ]
+    },
+    "/tournament/result": {
+      "name": "TournamentResultScreen",
+      "file": "app/tournament/result.tsx",
+      "description": "Tournament performance and ranking",
+      "components": ["RankDisplay", "ScoreCard", "LeaderboardPosition", "HomeButton"]
+    },
+    "/achievements": {
+      "name": "AchievementsScreen",
+      "file": "app/achievements.tsx",
+      "description": "Badge collection with progress tracking",
+      "components": [
+        "Header",
+        "ProgressCard (X/Y unlocked)",
+        "CategoryTabs (horizontal scroll)",
+        "AchievementRow (icon, name, description, status)",
+        "AnonymousPrompt"
+      ],
+      "states": ["loading", "default"],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/leaderboard": {
+      "name": "LeaderboardScreen",
+      "file": "app/leaderboard.tsx",
+      "description": "Global ranking with weekly/all-time tabs",
+      "components": [
+        "Header",
+        "TabSwitcher (weekly/alltime)",
+        "PodiumDisplay (top 3)",
+        "LeaderboardRow (rank, avatar, name, XP)",
+        "UserRankCard (fixed bottom)",
+        "AnonymousPrompt"
+      ],
+      "states": ["loading", "empty", "default"],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/profile": {
+      "name": "ProfileScreen",
+      "file": "app/profile.tsx",
+      "description": "User profile with stats",
+      "components": [
+        "Header",
+        "ProfileCard (avatar, name, level, email)",
+        "StatsRow (games, accuracy, XP)",
+        "BestChainCard",
+        "UpgradePrompt (anonymous)",
+        "LogoutButton (authenticated)",
+        "AuthModal"
+      ],
+      "states": ["loading", "default"],
+      "user_variants": ["anonymous", "authenticated"]
+    },
+    "/settings": {
+      "name": "SettingsScreen",
+      "file": "app/settings.tsx",
+      "description": "App preferences and account management",
+      "components": [
+        "Header",
+        "SettingSection (Sound & Vibrations)",
+        "SettingRow (toggle: sounds)",
+        "SettingRow (toggle: haptics)",
+        "SettingSection (Notifications)",
+        "SettingRow (toggle: notifications)",
+        "SettingSection (Account)",
+        "MenuRow (profile/create account)",
+        "MenuRow (logout)",
+        "SettingSection (About)",
+        "MenuRow (tutorial)",
+        "MenuRow (rate app)",
+        "MenuRow (contact)",
+        "VersionFooter"
+      ],
+      "user_variants": ["anonymous", "authenticated"]
+    }
+  },
+  "components": {
+    "reusable": {
+      "AuthModal": {
+        "file": "src/components/AuthModal.tsx",
+        "type": "BottomSheet",
+        "variants": ["login", "signup"],
+        "states": ["default", "error", "submitting"]
+      },
+      "UpgradePrompt": {
+        "file": "src/components/UpgradePrompt.tsx",
+        "type": "CTA",
+        "variants": ["banner", "card"]
+      }
+    },
+    "patterns": {
+      "GameModeCard": {
+        "props": ["icon", "title", "description", "color"],
+        "example_colors": ["bg-blue-600", "bg-accent-600", "bg-red-500/20", "bg-yellow-500/20"]
+      },
+      "StatCard": {
+        "props": ["value", "label", "color"],
+        "example_colors": ["text-primary-400", "text-green-400", "text-yellow-400", "text-purple-400"]
+      },
+      "AchievementRow": {
+        "props": ["icon", "name", "description", "unlocked", "xp_reward"],
+        "states": ["locked", "unlocked"]
+      },
+      "AnswerButton": {
+        "props": ["text", "index"],
+        "states": ["default", "selected", "correct", "wrong", "disabled"]
+      }
+    }
+  },
+  "navigation_flow": {
+    "main_tabs": [
+      { "route": "/", "label": "Accueil", "icon": "🏠" },
+      { "route": "/achievements", "label": "Succès", "icon": "🏅" },
+      { "route": "/leaderboard", "label": "Classement", "icon": "📊" },
+      { "route": "/profile", "label": "Profil", "icon": "👤" },
+      { "route": "/settings", "label": "Options", "icon": "⚙️" }
+    ],
+    "game_flows": {
+      "solo": ["/ → /game/chain → /game/result → /"],
+      "daily": ["/ → /daily → /game/result → /"],
+      "party": ["/ → /party/setup → /party/game → /party/result → /"],
+      "duel": ["/ → /duel → /duel/waiting → /duel/play → /duel/result → /"],
+      "tournament": ["/ → /tournament → /tournament/play → /tournament/result → /"]
+    }
+  }
+}

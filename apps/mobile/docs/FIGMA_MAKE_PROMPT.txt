@@ -1,0 +1,734 @@
+================================================================================
+FIGMA MAKE PROMPT - BIGHEAD QUIZ APP
+================================================================================
+
+Create a complete mobile app design system and all screens for "BIGHEAD", a French football quiz trivia game. The app is dark-themed, playful, and modern with a focus on gamification.
+
+================================================================================
+0. REFERENCE SCREENSHOTS (ATTACHED)
+================================================================================
+
+The following screenshots from the current React Native implementation are
+attached as visual references. Use these to match the exact layout, spacing,
+and visual style:
+
+  01-home.png         → Home screen with all sections
+  02-game-loading.png → Game loading state
+  03-daily.png        → Daily challenge screen
+  04-game-result.png  → Game result with stats and XP
+  05-achievements.png → Achievements list with categories
+  06-leaderboard.png  → Leaderboard with tabs
+  07-profile.png      → User profile (loading state)
+  08-settings.png     → Settings with toggles
+  09-duel.png         → Duel lobby (create/join)
+  10-tournament.png   → Tournament (loading state)
+  11-onboarding.png   → Onboarding slide 1
+
+IMPORTANT: These screenshots show the EXACT current implementation.
+- Match the spacing, colors, and component styles precisely
+- Use the same emoji icons shown
+- Replicate the card layouts and button styles
+- Keep the dark theme (#111827 background)
+
+================================================================================
+1. APP IDENTITY
+================================================================================
+
+Name: BIGHEAD - Quiz Football
+Tagline: "Le quiz qui te rend plus intelligent"
+Platform: iOS & Android (mobile only)
+Theme: Dark mode exclusively
+Language: French (all UI text)
+Target: Casual gamers, football fans, ages 13-35
+
+Brand Personality:
+- Playful and fun (heavy use of emojis)
+- Competitive (scores, rankings, achievements)
+- Modern and sleek (dark UI with vibrant accents)
+- Social (multiplayer modes, sharing)
+
+================================================================================
+2. DESIGN TOKENS
+================================================================================
+
+COLOR PALETTE:
+
+Primary (Sky Blue):
+- primary-500: #0ea5e9 (main brand color, CTAs, highlights)
+- primary-400: #38bdf8 (text highlights, active states)
+- primary-600: #0284c7 (hover/pressed states)
+
+Accent (Fuchsia):
+- accent-500: #d946ef (secondary accent, Party mode)
+- accent-600: #c026d3 (hover states)
+
+Backgrounds:
+- bg-main: #111827 (gray-900, screen background)
+- bg-card: #1f2937 (gray-800, cards and containers)
+- bg-input: #374151 (gray-700, inputs and secondary buttons)
+- bg-divider: #4b5563 (gray-600, borders)
+
+Text:
+- text-primary: #ffffff (main text)
+- text-secondary: #9ca3af (gray-400, labels)
+- text-tertiary: #6b7280 (gray-500, hints)
+- text-disabled: #4b5563 (gray-600)
+
+Semantic Colors:
+- success: #22c55e (correct answers, completed)
+- error: #ef4444 (wrong answers, errors)
+- warning: #f59e0b (streak, XP, caution)
+
+Chain Multiplier Gradient:
+- 1x: #6b7280 (gray)
+- 2x: #22c55e (green)
+- 3x: #3b82f6 (blue)
+- 5x: #8b5cf6 (purple)
+- 8x: #f97316 (orange)
+- 10x: #ef4444 (red - maximum)
+
+TYPOGRAPHY:
+
+Font: SF Pro (iOS) / Roboto (Android) - use system fonts
+Scale:
+- xs: 12px (labels, badges)
+- sm: 14px (secondary text)
+- base: 16px (body)
+- lg: 18px (section headers)
+- xl: 20px (card titles)
+- 2xl: 24px (screen titles)
+- 3xl: 30px (numbers)
+- 4xl: 36px (hero scores)
+- 5xl: 48px (app title)
+
+Weights: Regular, Medium, Semibold, Bold
+
+SPACING:
+
+Base unit: 4px
+- p-2: 8px, p-3: 12px, p-4: 16px, p-5: 20px, p-6: 24px
+- Screen padding: 24px horizontal (px-6)
+- Card padding: 16-24px
+- List gap: 12px
+- Section gap: 24px
+
+BORDER RADIUS:
+
+- rounded-lg: 8px (buttons, inputs)
+- rounded-xl: 12px (small cards)
+- rounded-2xl: 16px (large cards)
+- rounded-full: 9999px (avatars, badges)
+
+================================================================================
+3. COMPONENT LIBRARY
+================================================================================
+
+Create these components as Figma components with variants:
+
+BUTTONS:
+
+Primary Button:
+- Background: primary-500
+- Text: white, bold, 18px
+- Padding: 16px vertical, 24px horizontal
+- Radius: 12px
+- States: default, pressed (opacity 80%), disabled (50% opacity)
+
+Secondary Button:
+- Background: gray-700
+- Text: white, medium
+- Same sizing as primary
+
+Ghost Button:
+- Background: color-500 at 20% opacity
+- Border: color-500 at 30% opacity, 1px
+- Text: color-400
+
+Danger Button:
+- Background: red-500 at 20% opacity
+- Text: red-400
+
+Icon Button:
+- Size: 44x44 minimum touch target
+- Icon size: 24px
+
+CARDS:
+
+Standard Card:
+- Background: gray-800
+- Padding: 24px
+- Radius: 16px
+
+Highlighted Card:
+- Background: gradient from color-500/20 to color-500/20
+- Border: color-500/30, 1px
+- Radius: 16px
+
+Game Mode Card:
+- Full-width, colored background (blue-600, accent-600, etc.)
+- Icon: 30px emoji
+- Title: white, bold, 20px
+- Description: white at 80%, 14px
+- Padding: 20px
+- Radius: 16px
+
+Stat Card:
+- Background: gray-800
+- Centered content
+- Value: colored, bold, 24px
+- Label: gray-400, 12px
+- Padding: 16px
+- Radius: 12px
+
+NAVIGATION:
+
+Header:
+- Height: 56px
+- Back button: "←" 24px
+- Title: white, bold, 24px
+- Align: left with 24px padding
+
+Bottom Tab Bar:
+- Height: 64px
+- Background: gray-900
+- Top border: gray-800, 1px
+- 5 tabs evenly spaced
+- Icon: 24px emoji
+- Label: 12px
+- Active: primary-400, Inactive: gray-400
+
+Tab Switcher:
+- 2 segments, full width
+- Active: primary-500 background, white text
+- Inactive: gray-700 background, gray-400 text
+- Height: 48px
+- Radius: 12px (ends only)
+
+FORM ELEMENTS:
+
+Text Input:
+- Background: gray-700
+- Text: white, 16px
+- Placeholder: gray-500
+- Padding: 16px
+- Radius: 12px
+- Label above: gray-400, 14px
+
+Toggle Switch:
+- Track off: gray-700
+- Track on: primary-500
+- Thumb: white
+
+LIST ITEMS:
+
+Achievement Row:
+- Horizontal layout
+- Icon container: 56x56, gray-700 (locked) or primary-500/30 (unlocked)
+- Title: white or gray-400, bold
+- Description: gray-300 or gray-500, 14px
+- Right: checkmark badge or XP reward
+- Radius: 12px
+- Locked state: grayed out
+
+Leaderboard Row:
+- Horizontal layout
+- Rank: 40px width, gray-500 or primary-400
+- Avatar: 40x40 circle
+- Name & stats: flex
+- XP: primary-400, bold
+- Current user highlight: primary-500/20 background
+
+Setting Row:
+- Icon: 24px emoji
+- Title: white
+- Subtitle: gray-500, 14px
+- Toggle or chevron right
+- Border bottom: gray-700
+
+GAME ELEMENTS:
+
+Question Card:
+- Background: gray-800
+- Text: white, 20px, centered
+- Padding: 24px
+- Radius: 16px
+
+Answer Button:
+- Default: gray-700 background, white text
+- Correct: green-600 background, green-400 border
+- Wrong: red-600 background, red-400 border
+- Radius: 12px
+- Padding: 16px vertical
+
+Timer Circle:
+- Size: 64x64
+- Normal: gray-700 background
+- Danger (<5s): red-500 background
+- Text: white, bold, 24px
+
+Chain Multiplier Badge:
+- Pill shape (rounded-full)
+- Min width: 60px
+- Background: based on value (see colors)
+- Text: white, bold, "Xx"
+
+Progress Bar:
+- Height: 8px
+- Background: gray-700
+- Fill: primary-500
+- Radius: full
+
+OVERLAYS:
+
+Bottom Sheet:
+- Background: gray-800
+- Handle: gray-600, 40x4px, centered
+- Padding: 24px
+- Radius top: 24px
+
+Error Banner:
+- Background: red-500/20
+- Border: red-500
+- Text: red-400, centered
+- Padding: 12px
+- Radius: 12px
+
+BADGES:
+
+NEW Badge:
+- Background: color-500/30
+- Text: color-400, bold, 12px, "NEW"
+- Padding: 4px 8px
+- Radius: full
+
+XP Badge:
+- Background: yellow-500/20
+- Text: yellow-400, bold, "+X XP"
+- Padding: 8px 16px
+- Radius: full
+
+Streak Badge:
+- Background: orange-500/20
+- Icon: 🔥
+- Text: orange-400, bold
+- Radius: full
+
+================================================================================
+4. SCREENS TO DESIGN
+================================================================================
+
+Create all screens at 390x844px (iPhone 14 Pro).
+Include safe areas (47px top, 34px bottom).
+
+SCREEN 1: HOME (/)
+Layout:
+- Header: "BIGHEAD" title (48px bold) + tagline
+- Daily Challenge Card: highlighted with 🎯, streak badge if active
+- Quick Play Button: large primary button with ⚡
+- Section: "Modes de jeu"
+  - Chain Reaction card (blue): 🔗
+  - Party Mode card (fuchsia): 🎉
+- Section: "Mes stats"
+  - 3 stat cards in row (Parties, Max Chain, XP Total)
+  - "Voir mon profil" button
+- Section: "Explorer"
+  - 2 cards in row (Succès 🏅, Classement 📊)
+- Section: "Multijoueur"
+  - Duel card with ⚔️ and NEW badge
+  - Tournament card with 🏆 and NEW badge
+- Bottom Tab Bar
+
+Create 2 variants:
+1. Default state
+2. Daily completed state (green checkmark)
+
+SCREEN 2: GAME - CHAIN REACTION (/game/chain)
+Layout:
+- Header: × close, "Question 1/10", multiplier badge
+- Score display: "Score" label + big number
+- Timer: circle with countdown (show 13, show red 3)
+- Progress bar
+- Question card
+- 4 answer buttons vertically stacked
+- (Answered state): feedback banner + "Question suivante" button
+
+Create 4 variants:
+1. Playing state (unanswered)
+2. Correct answer (green highlight + "+X points!")
+3. Wrong answer (red highlight + "Chain reset")
+4. Timer danger state (red timer, <5s)
+
+SCREEN 3: GAME RESULT (/game/result)
+Layout:
+- Centered content
+- Big emoji (🏆 for 90%+, ⭐ for 70%+, 👍 for 50%+, 💪 otherwise)
+- Performance text
+- Score card: big number + "+X XP" badge
+- 4 stat cards row (Correct, Incorrect, Accuracy%, Max Chain)
+- Anonymous prompt (if applicable)
+- 3 buttons: Rejouer (primary), Partager (accent), Retour (secondary)
+
+Create 2 variants:
+1. Authenticated user
+2. Anonymous user (with upgrade prompt)
+
+SCREEN 4: ONBOARDING (/onboarding)
+Layout:
+- Skip button top right
+- Centered content:
+  - Big emoji in colored circle (128px)
+  - Title (24px bold)
+  - Description (18px, gray-400)
+- Pagination dots
+- "Suivant" button (changes to "C'est parti !" on last slide)
+
+Create 4 slide variants:
+1. 🧠 "Bienvenue sur BIGHEAD" (indigo)
+2. 🔥 "Mode Chaîne" (amber)
+3. 🎉 "Mode Party" (pink)
+4. 🏆 "Grimpe le classement" (green)
+
+SCREEN 5: ACHIEVEMENTS (/achievements)
+Layout:
+- Header with back + "Succès"
+- Progress card: "X/Y" with progress bar
+- Category tabs (horizontal scroll): Tous, Parties, Score, Chaînes, Spécial
+- Achievement list (scrollable)
+
+Create variants:
+1. Unlocked achievement row
+2. Locked achievement row
+3. Loading state
+4. Anonymous prompt at bottom
+
+SCREEN 6: LEADERBOARD (/leaderboard)
+Layout:
+- Header with back + "Classement"
+- Tab switcher: "Cette semaine" / "Tout temps"
+- Podium display: 🥈 (2nd) - 🥇 (1st, elevated) - 🥉 (3rd)
+- Leaderboard list (from 4th position)
+- Fixed bottom: User rank card
+
+Create variants:
+1. Default with data
+2. Empty state ("Pas encore de classement")
+3. Current user highlighted in list
+4. Anonymous user (upgrade prompt instead of rank)
+
+SCREEN 7: PROFILE (/profile)
+Layout:
+- Header with back + "Profil"
+- Profile card: avatar circle (96px), name, level, email
+- 3 stat cards row
+- Best Chain card (if >1)
+- Anonymous: UpgradePrompt card variant
+- Authenticated: Logout button at bottom
+
+Create 2 variants:
+1. Anonymous user
+2. Authenticated user with stats
+
+SCREEN 8: SETTINGS (/settings)
+Layout:
+- Header with back + "Paramètres"
+- Section: "SON & VIBRATIONS"
+  - Sons row with toggle
+  - Vibrations row with toggle
+- Section: "NOTIFICATIONS"
+  - Notifications row with toggle
+- Section: "COMPTE"
+  - Mon profil / Créer un compte row
+  - Déconnexion row (authenticated only)
+- Section: "À PROPOS"
+  - Tutoriel, Noter l'app, Contact rows
+- Version footer centered
+
+Create 2 variants:
+1. Anonymous user
+2. Authenticated user
+
+SCREEN 9: DUEL LOBBY (/duel)
+Layout:
+- Header with back + "Duel 1v1"
+- Hero section with ⚔️ emoji
+- Create Duel card:
+  - Category selector
+  - "Créer un duel" primary button
+- Or divider
+- Join Duel card:
+  - 6-character code input
+  - "Rejoindre" button
+- Anonymous prompt if applicable
+
+SCREEN 10: DUEL WAITING (/duel/waiting)
+Layout:
+- Header with back + "En attente..."
+- Centered content:
+  - Big pulsing ⏳ emoji
+  - "En attente d'un adversaire"
+  - Code display (large, tracking-wide)
+  - "Partager le code" button
+  - Loading indicator
+- "Annuler le duel" danger button at bottom
+
+SCREEN 11: TOURNAMENT (/tournament)
+Layout:
+- Header with back + "Tournoi"
+- Tournament card:
+  - 🏆 emoji
+  - "Tournoi de la Semaine"
+  - Description
+  - Status badge (EN COURS / À VENIR / TERMINÉ)
+  - Stats row: Questions, Participants, Prix XP
+  - Time remaining
+  - "Participer maintenant !" button or status message
+- Leaderboard preview (top 10)
+- Anonymous prompt
+
+Create variants:
+1. Active tournament (can participate)
+2. Already participated (shows rank)
+3. No tournament (empty state)
+
+SCREEN 12: AUTH MODAL
+Bottom sheet layout:
+- Tab switcher: Connexion / Inscription
+- Error banner (if error)
+- Form fields:
+  - Pseudo (signup only)
+  - Email
+  - Mot de passe
+- Submit button
+- "Mot de passe oublié ?" link (login only)
+
+Create variants:
+1. Login mode
+2. Signup mode
+3. Error state
+4. Loading state
+
+================================================================================
+5. STATES TO INCLUDE
+================================================================================
+
+For each screen, include these states where applicable:
+
+LOADING:
+- Centered ActivityIndicator (primary-500)
+- "Chargement..." text below
+
+EMPTY:
+- Centered layout
+- Big emoji
+- Title (white, bold)
+- Description (gray-400)
+- Action button
+
+ERROR:
+- Red banner at top of form/content
+- Icon + message
+
+DISABLED:
+- Buttons: 50% opacity
+- Inputs: gray-600 text
+
+================================================================================
+6. ADVANCED ANIMATIONS & EFFECTS
+================================================================================
+
+The app uses React Native Skia for GPU-accelerated graphics and
+React Native Gesture Handler for touch interactions.
+
+PARTICLE EFFECTS (Skia):
+
+1. CONFETTI (Correct Answer)
+   - Trigger: When user answers correctly
+   - 30-50 colored particles (primary, success, warning colors)
+   - Start: Random positions above screen
+   - Animation: Fall with gravity + horizontal wobble (sine wave)
+   - Duration: 2 seconds
+   - Colors: #0ea5e9, #22c55e, #f59e0b, #d946ef
+   - Design note: Show confetti burst frame with particles mid-fall
+
+2. SCORE PARTICLES (+XP)
+   - Trigger: Points earned
+   - Text "+{points}" floats upward from answer button
+   - Animation: translateY -100px, scale 1→1.5, opacity 1→0
+   - Duration: 1 second
+   - Color: success-400 (#4ade80)
+   - Design note: Show "+172" text floating above button
+
+3. STREAK FIRE
+   - Trigger: Chain multiplier > 3
+   - Animated flame shapes beside streak badge
+   - Animation: Flickering paths, height varies with multiplier
+   - Colors: warning-500 (#f59e0b), warning-400 (#fbbf24)
+   - Design note: Show 🔥 with stylized flame graphics
+
+GLOW EFFECTS (Skia):
+
+4. MULTIPLIER GLOW
+   - Component: Chain multiplier badge
+   - Animation: Continuous pulse (scale 1→1.2→1, 1s loop)
+   - Effect: Blur/shadow around badge matching chain color
+   - Intensity: Increases with chain value
+   - Design note: Add outer glow layer with 15px blur
+
+5. TIMER DANGER GLOW
+   - Trigger: Timer ≤ 5 seconds
+   - Effect: Red pulsing glow around timer circle
+   - Animation: opacity 0.5→1→0.5, 0.5s loop
+   - Design note: Show red halo around timer
+
+GRADIENT ANIMATIONS (Skia):
+
+6. TIMER ARC
+   - Component: Timer circle (64x64)
+   - Type: Sweep gradient stroke (4px)
+   - Normal: primary-500 → success-500
+   - Danger: error-500 → warning-500
+   - Animation: Arc shrinks as time decreases (360° → 0°)
+   - Design note: Show timer with gradient arc at 75% and 25%
+
+GESTURE INTERACTIONS:
+
+7. SWIPE CARDS (Alternative Answer Mode)
+   - Gesture: Pan in 4 directions
+   - Swipe RIGHT → Answer A
+   - Swipe LEFT → Answer B
+   - Swipe UP → Answer C
+   - Swipe DOWN → Answer D
+   - Animation: Card follows finger, rotation based on X translation
+   - Threshold: 150px to confirm answer
+   - Snap back: Spring animation if threshold not reached
+   - Design note: Show card tilted with direction indicators
+
+8. PULL-TO-REFRESH
+   - Screens: Leaderboard, Achievements
+   - Gesture: Pull down > 60px
+   - Animation: Elastic resistance (sqrt curve)
+   - Indicator: Spinner appears at top
+   - Design note: Show pulled state with spinner
+
+9. LONG PRESS POWER-UP
+   - Components: Power-up buttons (50/50, Skip, Hint)
+   - Duration: 500ms hold to activate
+   - Animation: Button fills with color during hold
+   - Feedback: Haptic success + glow burst
+   - Design note: Show button with progress fill at 50%
+
+SCREEN-SPECIFIC ANIMATIONS:
+
+GAME CHAIN SCREEN:
+- Question appear: Fade in + scale 0.95→1 (300ms)
+- Answer tap: Scale 0.95 (100ms) + haptic
+- Correct: Green flash + confetti + score particle
+- Wrong: Red flash + shake (translateX ±10px, 3 cycles) + haptic error
+- Next question: Slide out left, new slides in right
+
+RESULT SCREEN:
+- Score count up: 0 → final score (1s, ease-out)
+- XP badge: Pop in with bounce (scale 0→1.2→1)
+- Stats: Stagger fade in (100ms delay each)
+- If accuracy ≥ 80%: Confetti background
+
+ACHIEVEMENT UNLOCK:
+- Badge: Scale 0→1.3→1 with glow burst
+- Sound: Success chime
+- Confetti: Gold colored particles
+
+ONBOARDING:
+- Slides: Horizontal pan gesture
+- Snap: Spring physics to nearest slide
+- Dots: Active dot width animates (8px→24px)
+- Emoji: Subtle float animation (translateY ±5px, 2s loop)
+
+DESIGN DELIVERABLES FOR ANIMATIONS:
+
+For each animation, create these frames:
+1. Initial state
+2. Mid-animation (peak effect)
+3. End state
+
+Create an "Animations" page in Figma with:
+- Confetti burst overlay (can be placed on any screen)
+- Score particle examples (+50, +100, +172)
+- Glow states for multiplier (2x, 5x, 10x)
+- Timer states (normal, danger with glow)
+- Swipe card with rotation and direction hints
+- Shake animation keyframes
+- Fire effect for streak badge
+
+================================================================================
+7. EXPORT REQUIREMENTS
+================================================================================
+
+- Frame size: 390x844px (iPhone 14 Pro)
+- Safe areas included (47px top for notch, 34px bottom for home indicator)
+- All text as editable text layers (not outlines)
+- Components properly named and organized
+- Color styles defined
+- Text styles defined
+- Auto-layout where possible
+- Variants for each component state
+- French language for all UI text
+
+================================================================================
+8. DELIVERABLES CHECKLIST
+================================================================================
+
+DESIGN SYSTEM:
+[ ] Color styles (primary, accent, semantic, chain colors)
+[ ] Typography styles (9 sizes × 4 weights)
+[ ] Spacing tokens (4px base unit)
+[ ] Border radius tokens
+
+COMPONENT LIBRARY:
+[ ] Buttons (primary, secondary, ghost, danger, icon)
+[ ] Cards (standard, highlighted, game mode, stat)
+[ ] Navigation (header, bottom tabs, tab switcher)
+[ ] Form elements (input, switch, segmented control)
+[ ] Lists (achievement row, leaderboard row, setting row)
+[ ] Game elements (question card, answer button, timer, multiplier)
+[ ] Badges (NEW, XP, streak)
+[ ] Overlays (bottom sheet, error banner)
+
+SCREENS (12 total):
+[ ] Home (2 variants: default, daily completed)
+[ ] Game Chain (4 variants: playing, correct, wrong, timer danger)
+[ ] Game Result (2 variants: authenticated, anonymous)
+[ ] Onboarding (4 slides)
+[ ] Achievements (with category tabs)
+[ ] Leaderboard (with podium + list)
+[ ] Profile (2 variants: anonymous, authenticated)
+[ ] Settings (2 variants: anonymous, authenticated)
+[ ] Duel Lobby
+[ ] Duel Waiting
+[ ] Tournament (3 variants: active, participated, empty)
+[ ] Auth Modal (4 variants: login, signup, error, loading)
+
+STATES:
+[ ] Loading state template
+[ ] Empty state template
+[ ] Error state template
+[ ] Disabled button states
+
+ANIMATIONS PAGE:
+[ ] Confetti overlay (burst pattern)
+[ ] Score particles (+50, +100, +172)
+[ ] Multiplier glow states (2x, 5x, 10x with blur)
+[ ] Timer gradient (normal + danger)
+[ ] Swipe card with rotation
+[ ] Shake animation keyframes (3 positions)
+[ ] Fire streak effect
+[ ] Achievement unlock glow
+
+GESTURES ANNOTATION:
+[ ] Swipe directions on question card
+[ ] Pull-to-refresh indicator
+[ ] Long press progress on power-ups
+[ ] Tap feedback zones
+
+================================================================================
+END OF PROMPT
+================================================================================
