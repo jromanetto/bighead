@@ -538,7 +538,7 @@ export default function DuelPlayScreen() {
   const [streak, setStreak] = useState(isPreviewMode ? 3 : 0);
   const [pointsGained, setPointsGained] = useState(isPreviewMode ? 150 : 0);
   const startTime = useRef<number>(Date.now());
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isHost = isPreviewMode ? true : duel?.host_id === user?.id;
   const myScore = isPreviewMode ? MOCK_DUEL.host_score : (isHost ? duel?.host_score || 0 : duel?.guest_score || 0);

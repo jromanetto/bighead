@@ -1,11 +1,15 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Image } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "../../src/stores/gameStore";
+import { useAuth } from "../../src/contexts/AuthContext";
 import {
   getQuestions,
+  getUnseenQuestions,
   formatQuestionsForGame,
+  markQuestionSeen,
+  checkAndGenerateQuestions,
 } from "../../src/services/questions";
 
 // New QuizNext design colors
@@ -245,6 +249,7 @@ function LifelineButton({ icon, label, onPress }: { icon: string; label: string;
 }
 
 export default function ChainGameScreen() {
+  const { user } = useAuth();
   const status = useGameStore((state) => state.status);
   const score = useGameStore((state) => state.score);
   const chain = useGameStore((state) => state.chain);
@@ -262,6 +267,7 @@ export default function ChainGameScreen() {
   const mounted = useRef(true);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [level, setLevel] = useState(1);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Calculate level based on score
   useEffect(() => {
@@ -289,7 +295,15 @@ export default function ChainGameScreen() {
 
   const loadQuestions = async () => {
     try {
-      const fetchedQuestions = await getQuestions({ count: 10 });
+      // Check if we need to generate new questions for logged in users
+      if (user?.id) {
+        checkAndGenerateQuestions(user.id, "en").catch(console.error);
+      }
+
+      // Fetch questions - prioritize unseen for logged in users
+      const fetchedQuestions = user?.id
+        ? await getUnseenQuestions(user.id, undefined, 10, "en")
+        : await getQuestions({ count: 10 });
       const formatted = formatQuestionsForGame(fetchedQuestions);
 
       if (!mounted.current) return;
@@ -373,6 +387,12 @@ export default function ChainGameScreen() {
     if (status !== "playing" || hasAnswered) return;
     setSelectedIndex(index);
     useGameStore.getState().answerQuestion(index);
+
+    // Track question as seen for logged in users
+    if (user?.id && currentQuestion?.id) {
+      const isCorrect = index === currentQuestion.correctIndex;
+      markQuestionSeen(user.id, currentQuestion.id, isCorrect).catch(console.error);
+    }
   };
 
   const handleNextQuestion = () => {
@@ -459,7 +479,7 @@ export default function ChainGameScreen() {
         {/* Question Card */}
         <View className="px-6 mb-6">
           <View
-            className="rounded-2xl p-6 relative overflow-hidden"
+            className="rounded-2xl relative overflow-hidden"
             style={{
               backgroundColor: COLORS.surface,
               borderWidth: 1,
@@ -470,20 +490,41 @@ export default function ChainGameScreen() {
               shadowRadius: 16,
             }}
           >
-            {/* Cyan Left Border */}
-            <View
-              className="absolute top-0 left-0 w-1 h-full"
-              style={{ backgroundColor: COLORS.primary }}
-            />
+            {/* Question Image (if available) */}
+            {currentQuestion.imageUrl && (
+              <View className="relative">
+                <Image
+                  source={{ uri: currentQuestion.imageUrl }}
+                  className="w-full h-40"
+                  resizeMode="cover"
+                  onLoad={() => setImageLoaded(true)}
+                  onError={() => setImageLoaded(false)}
+                />
+                {/* Image credit overlay */}
+                {currentQuestion.imageCredit && (
+                  <View className="absolute bottom-0 right-0 px-2 py-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                    <Text className="text-[9px] text-white/60">{currentQuestion.imageCredit}</Text>
+                  </View>
+                )}
+              </View>
+            )}
 
-            <Text className="text-2xl font-bold leading-tight text-white">
-              {currentQuestion.question}
-            </Text>
+            <View className="p-6">
+              {/* Cyan Left Border */}
+              <View
+                className="absolute top-0 left-0 w-1 h-full"
+                style={{ backgroundColor: COLORS.primary }}
+              />
 
-            <View
-              className="h-1 w-12 rounded-full mt-4"
-              style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
-            />
+              <Text className="text-2xl font-bold leading-tight text-white">
+                {currentQuestion.question}
+              </Text>
+
+              <View
+                className="h-1 w-12 rounded-full mt-4"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+              />
+            </View>
           </View>
         </View>
 

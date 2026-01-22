@@ -30,7 +30,7 @@ export default function TournamentPlayScreen() {
   const [timeLeft, setTimeLeft] = useState(15);
 
   const questionStartTime = useRef<number>(Date.now());
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Animation
   const timerWidth = useSharedValue(100);
