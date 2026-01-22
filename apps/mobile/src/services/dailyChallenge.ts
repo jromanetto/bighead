@@ -1,10 +1,10 @@
 import { supabase } from "./supabase";
 
 export interface DailyChallenge {
-  id: string;
+  challenge_id: string;
   challenge_date: string;
   question_id: string;
-  category: string;
+  challenge_category: string;
   bonus_xp: number;
   question_text: string;
   player_name: string;

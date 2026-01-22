@@ -95,8 +95,10 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS perfect_games INTEGER DEFAULT 0;
 -- Add category to questions if not exists
 ALTER TABLE questions ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'general';
 
--- Create categories table for reference
-CREATE TABLE IF NOT EXISTS categories (
+-- Drop and recreate categories table with correct schema
+DROP TABLE IF EXISTS categories CASCADE;
+
+CREATE TABLE categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,

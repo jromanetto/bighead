@@ -90,7 +90,7 @@ export default function DailyChallengeScreen() {
         const answerTimeMs = Date.now() - startTime.current;
         const result = await submitDailyChallenge(
           user.id,
-          challenge.id,
+          challenge.challenge_id,
           correct,
           answerTimeMs
         );
