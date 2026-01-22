@@ -103,6 +103,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Update profile username
+  const updateProfileUsername = useCallback(async (userId: string, username: string): Promise<UserProfile | null> => {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ username })
+        .eq("id", userId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error updating profile:", error);
+        return null;
+      }
+
+      return data as UserProfile;
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return null;
+    }
+  }, []);
+
   // Initialize auth state
   useEffect(() => {
     const initAuth = async () => {
@@ -290,7 +312,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Create or update profile
         let profile = await fetchProfile(data.user.id);
         if (!profile) {
+          // Profile doesn't exist - create it
           profile = await createProfile(data.user.id, username);
+        } else {
+          // Profile exists - update the username
+          profile = await updateProfileUsername(data.user.id, username);
         }
 
         setState({
@@ -306,7 +332,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setState(prev => ({ ...prev, isLoading: false }));
       throw error;
     }
-  }, [fetchProfile, createProfile, state.session]);
+  }, [fetchProfile, createProfile, updateProfileUsername, state.session]);
 
   // Sign out
   const signOut = useCallback(async () => {
