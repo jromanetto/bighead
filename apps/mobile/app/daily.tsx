@@ -67,7 +67,7 @@ export default function DailyChallengeScreen() {
     if (selectedAnswer || !challenge) return;
 
     setSelectedAnswer(answer);
-    const correct = answer === challenge.options.correct;
+    const correct = answer === challenge.out_options.correct;
     setIsCorrect(correct);
 
     // Feedback
@@ -90,7 +90,7 @@ export default function DailyChallengeScreen() {
         const answerTimeMs = Date.now() - startTime.current;
         const result = await submitDailyChallenge(
           user.id,
-          challenge.challenge_id,
+          challenge.out_challenge_id,
           correct,
           answerTimeMs
         );
@@ -109,7 +109,7 @@ export default function DailyChallengeScreen() {
 
   const getButtonStyle = (option: string) => {
     if (!selectedAnswer) return "bg-gray-800";
-    if (option === challenge?.options.correct) return "bg-green-500/30 border-green-500";
+    if (option === challenge?.out_options.correct) return "bg-green-500/30 border-green-500";
     if (option === selectedAnswer && !isCorrect) return "bg-red-500/30 border-red-500";
     return "bg-gray-800 opacity-50";
   };
@@ -211,7 +211,7 @@ export default function DailyChallengeScreen() {
           <View className="bg-gray-800 rounded-2xl p-6">
             <Text className="text-gray-400 text-center mb-4">Indice</Text>
             <Text className="text-white text-xl text-center leading-8">
-              {challenge.question_text}
+              {challenge.out_question_text}
             </Text>
           </View>
         </View>
@@ -219,7 +219,7 @@ export default function DailyChallengeScreen() {
         {/* Options */}
         <View className="px-6 flex-1">
           {["A", "B", "C", "D"].map((key) => {
-            const option = challenge.options[key as keyof typeof challenge.options];
+            const option = challenge.out_options[key as keyof typeof challenge.out_options];
             if (key === "correct") return null;
             return (
               <Pressable
@@ -233,7 +233,7 @@ export default function DailyChallengeScreen() {
                     <Text className="text-white font-bold">{key}</Text>
                   </View>
                   <Text className="text-white flex-1">{option}</Text>
-                  {selectedAnswer && key === challenge.options.correct && (
+                  {selectedAnswer && key === challenge.out_options.correct && (
                     <Text className="text-green-400">✓</Text>
                   )}
                   {selectedAnswer === key && !isCorrect && (
@@ -264,7 +264,7 @@ export default function DailyChallengeScreen() {
                 </Text>
               </View>
               <Text className="text-gray-300 text-center mb-4">
-                La réponse était {challenge.player_name}
+                La réponse était {challenge.out_player_name}
               </Text>
               {xpEarned > 0 && (
                 <Text className="text-primary-400 text-center font-bold">
