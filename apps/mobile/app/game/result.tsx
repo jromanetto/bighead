@@ -1,6 +1,11 @@
 import { View, Text, Pressable, Share } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { UpgradePrompt } from "../../src/components/UpgradePrompt";
+import { AuthModal, AuthModalRef } from "../../src/components/AuthModal";
+import { saveGameResult } from "../../src/services/gameResults";
 
 export default function ResultScreen() {
   const { score, correct, total, maxChain } = useLocalSearchParams<{
@@ -10,6 +15,10 @@ export default function ResultScreen() {
     maxChain?: string;
   }>();
 
+  const { isAnonymous, user, refreshProfile } = useAuth();
+  const authModalRef = useRef<AuthModalRef>(null);
+  const [saved, setSaved] = useState(false);
+
   const scoreNum = Number(score || 0);
   const correctNum = Number(correct || 0);
   const totalNum = Number(total || 1);
@@ -18,6 +27,31 @@ export default function ResultScreen() {
 
   // XP earned (simplified calculation)
   const xpEarned = Math.round(scoreNum * 0.1) + correctNum * 5;
+
+  // Save game result when component mounts
+  useEffect(() => {
+    const saveResult = async () => {
+      if (saved || !user) return;
+
+      try {
+        await saveGameResult({
+          userId: user.id,
+          mode: "chain_solo",
+          score: scoreNum,
+          correctCount: correctNum,
+          totalQuestions: totalNum,
+          maxChain: maxChainNum,
+        });
+        setSaved(true);
+        // Refresh profile to update stats
+        await refreshProfile();
+      } catch (error) {
+        console.error("Error saving game result:", error);
+      }
+    };
+
+    saveResult();
+  }, [user, saved]);
 
   const getPerformanceEmoji = () => {
     if (accuracy >= 90) return "🏆";
@@ -41,6 +75,15 @@ export default function ResultScreen() {
     } catch (error) {
       console.error("Error sharing:", error);
     }
+  };
+
+  const handleOpenAuth = () => {
+    authModalRef.current?.open("signup");
+  };
+
+  const handleAuthSuccess = () => {
+    // Refresh profile after successful auth
+    refreshProfile();
   };
 
   return (
@@ -91,8 +134,18 @@ export default function ResultScreen() {
           )}
         </View>
 
+        {/* Upgrade Prompt for anonymous users */}
+        {isAnonymous && (
+          <View className="w-full mt-4">
+            <UpgradePrompt
+              onPress={handleOpenAuth}
+              message="Crée un compte pour sauvegarder ton score"
+            />
+          </View>
+        )}
+
         {/* Actions */}
-        <View className="w-full gap-3 mt-8">
+        <View className="w-full gap-3 mt-6">
           <Pressable
             onPress={() => router.replace("/game/chain")}
             className="bg-primary-500 rounded-xl py-4 active:opacity-80"
@@ -121,6 +174,9 @@ export default function ResultScreen() {
           </Pressable>
         </View>
       </View>
+
+      {/* Auth Modal */}
+      <AuthModal ref={authModalRef} onSuccess={handleAuthSuccess} />
     </SafeAreaView>
   );
 }
