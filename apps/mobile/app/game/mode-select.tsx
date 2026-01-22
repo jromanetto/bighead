@@ -1,28 +1,55 @@
 import { View, Text, Pressable } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { buttonPressFeedback } from "../../src/utils/feedback";
+
+// QuizNext design colors
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceLight: "#252e33",
+  primary: "#00c2cc",
+  coral: "#FF6B6B",
+  purple: "#A16EFF",
+  yellow: "#FFD100",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
 
 export default function ModeSelectScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-1 px-6 pt-4">
         {/* Header */}
         <View className="flex-row items-center mb-8">
-          <Pressable onPress={() => router.back()} className="mr-4">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.back();
+            }}
+            className="mr-4"
+          >
             <Text className="text-white text-2xl">←</Text>
           </Pressable>
-          <Text className="text-white text-2xl font-bold">Choisir un mode</Text>
+          <Text className="text-white text-2xl font-bold">Choose a Mode</Text>
         </View>
 
         {/* Game Modes */}
         <View className="gap-4">
           {/* Chain Reaction */}
           <Link href="/game/chain" asChild>
-            <Pressable className="bg-gradient-to-r from-chain-5 to-chain-8 bg-purple-600 rounded-2xl p-6 active:opacity-80">
-              <Text className="text-white text-2xl font-bold mb-2">
-                Chain Reaction
-              </Text>
-              <Text className="text-purple-100">
+            <Pressable
+              onPress={() => buttonPressFeedback()}
+              className="rounded-2xl p-6 active:opacity-80"
+              style={{ backgroundColor: COLORS.purple }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Text className="text-3xl mr-3">⚡</Text>
+                <Text className="text-white text-2xl font-bold">
+                  Chain Reaction
+                </Text>
+              </View>
+              <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
                 Chain correct answers to increase your multiplier. One mistake = reset!
               </Text>
               <View className="flex-row mt-4 gap-2">
@@ -30,40 +57,102 @@ export default function ModeSelectScreen() {
                   <Text className="text-white text-sm">Solo</Text>
                 </View>
                 <View className="bg-white/20 rounded-full px-3 py-1">
-                  <Text className="text-white text-sm">1v1</Text>
+                  <Text className="text-white text-sm">Endless</Text>
                 </View>
               </View>
             </Pressable>
           </Link>
 
-          {/* Coming Soon: Other modes */}
-          <View className="bg-gray-800 rounded-2xl p-6 opacity-50">
-            <Text className="text-gray-400 text-2xl font-bold mb-2">
-              Traitor
-            </Text>
-            <Text className="text-gray-500">
-              Find the traitor among players. Coming soon!
-            </Text>
-            <View className="mt-4">
-              <View className="bg-gray-700 rounded-full px-3 py-1 self-start">
-                <Text className="text-gray-400 text-sm">Coming soon</Text>
+          {/* Traitor Mode - NOW AVAILABLE */}
+          <Link href="/traitor" asChild>
+            <Pressable
+              onPress={() => buttonPressFeedback()}
+              className="rounded-2xl p-6 active:opacity-80"
+              style={{ backgroundColor: COLORS.coral }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Text className="text-3xl mr-3">🕵️</Text>
+                <Text className="text-white text-2xl font-bold">
+                  Traitor
+                </Text>
+                <View className="ml-2 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+                  <Text className="text-white text-xs font-bold">NEW</Text>
+                </View>
               </View>
-            </View>
-          </View>
+              <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
+                One of you is a traitor! Answer questions and vote to find them.
+              </Text>
+              <View className="flex-row mt-4 gap-2">
+                <View className="bg-white/20 rounded-full px-3 py-1">
+                  <Text className="text-white text-sm">3-6 Players</Text>
+                </View>
+                <View className="bg-white/20 rounded-full px-3 py-1">
+                  <Text className="text-white text-sm">Local</Text>
+                </View>
+              </View>
+            </Pressable>
+          </Link>
 
-          <View className="bg-gray-800 rounded-2xl p-6 opacity-50">
-            <Text className="text-gray-400 text-2xl font-bold mb-2">
-              Auction Duel
-            </Text>
-            <Text className="text-gray-500">
-              Bet your time to choose your questions. Coming soon!
-            </Text>
-            <View className="mt-4">
-              <View className="bg-gray-700 rounded-full px-3 py-1 self-start">
-                <Text className="text-gray-400 text-sm">Coming soon</Text>
+          {/* Auction Duel - NOW AVAILABLE */}
+          <Link href="/auction" asChild>
+            <Pressable
+              onPress={() => buttonPressFeedback()}
+              className="rounded-2xl p-6 active:opacity-80"
+              style={{ backgroundColor: COLORS.yellow }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Text className="text-3xl mr-3">💰</Text>
+                <Text style={{ color: COLORS.bg }} className="text-2xl font-bold">
+                  Auction Duel
+                </Text>
+                <View className="ml-2 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                  <Text style={{ color: COLORS.bg }} className="text-xs font-bold">NEW</Text>
+                </View>
               </View>
-            </View>
-          </View>
+              <Text style={{ color: 'rgba(0,0,0,0.7)' }}>
+                Bid your time to choose categories. The highest bidder picks!
+              </Text>
+              <View className="flex-row mt-4 gap-2">
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} className="rounded-full px-3 py-1">
+                  <Text style={{ color: COLORS.bg }} className="text-sm">2 Players</Text>
+                </View>
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} className="rounded-full px-3 py-1">
+                  <Text style={{ color: COLORS.bg }} className="text-sm">Local</Text>
+                </View>
+              </View>
+            </Pressable>
+          </Link>
+
+          {/* Party Mode */}
+          <Link href="/party/setup" asChild>
+            <Pressable
+              onPress={() => buttonPressFeedback()}
+              className="rounded-2xl p-6 active:opacity-80"
+              style={{
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.1)',
+              }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Text className="text-3xl mr-3">🎉</Text>
+                <Text className="text-white text-2xl font-bold">
+                  Party Mode
+                </Text>
+              </View>
+              <Text style={{ color: COLORS.textMuted }}>
+                Classic quiz with friends. Pass the phone and compete!
+              </Text>
+              <View className="flex-row mt-4 gap-2">
+                <View style={{ backgroundColor: COLORS.surfaceLight }} className="rounded-full px-3 py-1">
+                  <Text className="text-gray-300 text-sm">2-8 Players</Text>
+                </View>
+                <View style={{ backgroundColor: COLORS.surfaceLight }} className="rounded-full px-3 py-1">
+                  <Text className="text-gray-300 text-sm">Local</Text>
+                </View>
+              </View>
+            </Pressable>
+          </Link>
         </View>
       </View>
     </SafeAreaView>
