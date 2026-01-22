@@ -23,7 +23,7 @@ export default function ModeSelectScreen() {
                 Chain Reaction
               </Text>
               <Text className="text-purple-100">
-                Enchaîne les bonnes réponses pour augmenter ton multiplier. Une erreur = reset!
+                Chain correct answers to increase your multiplier. One mistake = reset!
               </Text>
               <View className="flex-row mt-4 gap-2">
                 <View className="bg-white/20 rounded-full px-3 py-1">
@@ -42,11 +42,11 @@ export default function ModeSelectScreen() {
               Traitor
             </Text>
             <Text className="text-gray-500">
-              Trouve le traître parmi les joueurs. Bientôt disponible!
+              Find the traitor among players. Coming soon!
             </Text>
             <View className="mt-4">
               <View className="bg-gray-700 rounded-full px-3 py-1 self-start">
-                <Text className="text-gray-400 text-sm">Bientôt</Text>
+                <Text className="text-gray-400 text-sm">Coming soon</Text>
               </View>
             </View>
           </View>
@@ -56,11 +56,11 @@ export default function ModeSelectScreen() {
               Auction Duel
             </Text>
             <Text className="text-gray-500">
-              Mise ton temps pour choisir tes questions. Bientôt disponible!
+              Bet your time to choose your questions. Coming soon!
             </Text>
             <View className="mt-4">
               <View className="bg-gray-700 rounded-full px-3 py-1 self-start">
-                <Text className="text-gray-400 text-sm">Bientôt</Text>
+                <Text className="text-gray-400 text-sm">Coming soon</Text>
               </View>
             </View>
           </View>

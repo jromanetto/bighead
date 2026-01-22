@@ -1,12 +1,119 @@
-import { View, Text, Pressable, Share } from "react-native";
+import { View, Text, Pressable, Share, ScrollView } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { UpgradePrompt } from "../../src/components/UpgradePrompt";
 import { AuthModal, AuthModalRef } from "../../src/components/AuthModal";
 import { saveGameResult } from "../../src/services/gameResults";
 import { ConfettiEffect } from "../../src/components/effects";
+import { buttonPressFeedback } from "../../src/utils/feedback";
+
+// New QuizNext design colors
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceActive: "#252e33",
+  primary: "#00c2cc",
+  primaryDim: "rgba(0, 194, 204, 0.15)",
+  success: "#22c55e",
+  successDim: "rgba(34, 197, 94, 0.2)",
+  error: "#ef4444",
+  errorDim: "rgba(239, 68, 68, 0.2)",
+  yellow: "#FFD100",
+  purple: "#A16EFF",
+  coral: "#FF6B6B",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
+
+// Circular Score Ring Component
+function ScoreRing({ percentage }: { percentage: number }) {
+  return (
+    <View className="relative items-center justify-center" style={{ width: 160, height: 160 }}>
+      {/* Background Circle */}
+      <View
+        className="absolute rounded-full"
+        style={{
+          width: 140,
+          height: 140,
+          borderWidth: 10,
+          borderColor: 'rgba(255,255,255,0.1)',
+        }}
+      />
+      {/* Progress Circle */}
+      <View
+        className="absolute rounded-full"
+        style={{
+          width: 140,
+          height: 140,
+          borderWidth: 10,
+          borderColor: COLORS.primary,
+          borderTopColor: percentage < 25 ? 'transparent' : COLORS.primary,
+          borderRightColor: percentage < 50 ? 'transparent' : COLORS.primary,
+          borderBottomColor: percentage < 75 ? 'transparent' : COLORS.primary,
+          borderLeftColor: 'transparent',
+          transform: [{ rotate: '-90deg' }],
+          shadowColor: COLORS.primary,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.5,
+          shadowRadius: 20,
+        }}
+      />
+      {/* Percentage Text */}
+      <Text className="text-5xl font-black text-white">{percentage}%</Text>
+    </View>
+  );
+}
+
+// Question Summary Item Component
+function QuestionSummaryItem({
+  question,
+  answer,
+  isCorrect,
+  correctAnswer
+}: {
+  question: string;
+  answer: string;
+  isCorrect: boolean;
+  correctAnswer?: string;
+}) {
+  return (
+    <View
+      className="rounded-xl p-4 flex-row items-start gap-3"
+      style={{
+        backgroundColor: COLORS.surface,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+      }}
+    >
+      {/* Status Icon */}
+      <View
+        className="w-6 h-6 rounded-full items-center justify-center mt-0.5"
+        style={{ backgroundColor: isCorrect ? COLORS.success : COLORS.error }}
+      >
+        <Text className="text-white text-xs font-bold">{isCorrect ? '✓' : '✗'}</Text>
+      </View>
+
+      {/* Content */}
+      <View className="flex-1">
+        <Text className="text-white font-medium mb-1">{question}</Text>
+        <Text
+          className="text-sm"
+          style={{ color: isCorrect ? COLORS.primary : COLORS.coral }}
+        >
+          {answer}
+        </Text>
+        {!isCorrect && correctAnswer && (
+          <Text className="text-gray-500 text-xs mt-0.5">
+            Correct: {correctAnswer}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+}
 
 export default function ResultScreen() {
   const { score, correct, total, maxChain } = useLocalSearchParams<{
@@ -28,7 +135,7 @@ export default function ResultScreen() {
   const accuracy = Math.round((correctNum / totalNum) * 100);
 
   // XP earned (simplified calculation)
-  const xpEarned = Math.round(scoreNum * 0.1) + correctNum * 5;
+  const xpEarned = Math.round(scoreNum * 0.1) + correctNum * 10;
 
   // Trigger confetti for good performance
   useEffect(() => {
@@ -52,7 +159,6 @@ export default function ResultScreen() {
           maxChain: maxChainNum,
         });
         setSaved(true);
-        // Refresh profile to update stats
         await refreshProfile();
       } catch (error) {
         console.error("Error saving game result:", error);
@@ -62,24 +168,18 @@ export default function ResultScreen() {
     saveResult();
   }, [user, saved]);
 
-  const getPerformanceEmoji = () => {
-    if (accuracy >= 90) return "🏆";
-    if (accuracy >= 70) return "⭐";
-    if (accuracy >= 50) return "👍";
-    return "💪";
-  };
-
-  const getPerformanceText = () => {
-    if (accuracy >= 90) return "Excellent!";
-    if (accuracy >= 70) return "Très bien!";
-    if (accuracy >= 50) return "Pas mal!";
-    return "Continue!";
+  const getPerformanceTitle = () => {
+    if (accuracy >= 90) return "Legendary!";
+    if (accuracy >= 70) return "Stellar Job!";
+    if (accuracy >= 50) return "Well played!";
+    return "Keep going!";
   };
 
   const handleShare = async () => {
+    buttonPressFeedback();
     try {
       await Share.share({
-        message: `J'ai marqué ${scoreNum} points sur BIGHEAD avec ${accuracy}% de bonnes réponses! Tu peux faire mieux? 🧠🔥`,
+        message: `I scored ${scoreNum.toLocaleString()} points on BIGHEAD with ${accuracy}% correct answers! Can you beat that? 🧠🔥`,
       });
     } catch (error) {
       console.error("Error sharing:", error);
@@ -91,12 +191,19 @@ export default function ResultScreen() {
   };
 
   const handleAuthSuccess = () => {
-    // Refresh profile after successful auth
     refreshProfile();
   };
 
+  // Mock question summary data
+  const questionSummary = [
+    { question: "Who won the 1998 World Cup?", answer: "France", isCorrect: true },
+    { question: "Who holds the Ligue 1 scoring record?", answer: "Sydney", isCorrect: false, correctAnswer: "Josip Skoblar" },
+    { question: "In what year did Zidane score in the final?", answer: "1998", isCorrect: true },
+    { question: "Best Premier League goalkeeper?", answer: "Edwin van der Sar", isCorrect: true },
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       {/* Confetti Effect for good performance */}
       <ConfettiEffect
         trigger={showConfetti}
@@ -104,103 +211,170 @@ export default function ResultScreen() {
         duration={2500}
       />
 
-      <View className="flex-1 items-center justify-center px-6">
-        {/* Trophy/Result */}
-        <Text className="text-7xl mb-4">{getPerformanceEmoji()}</Text>
-        <Text className="text-white text-3xl font-bold mb-1">
-          {getPerformanceText()}
+      {/* Header */}
+      <View className="flex-row items-center px-6 pt-4 pb-2">
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.replace("/");
+          }}
+          className="w-10 h-10 rounded-full items-center justify-center"
+          style={{ backgroundColor: COLORS.surface }}
+        >
+          <Text className="text-white text-xl">×</Text>
+        </Pressable>
+
+        <Text className="flex-1 text-center text-sm font-bold tracking-widest text-gray-400 uppercase">
+          Results
         </Text>
-        <Text className="text-gray-400 text-lg">Partie terminée</Text>
 
-        {/* Score */}
-        <View className="bg-gray-800 rounded-2xl p-6 w-full mt-6 items-center">
-          <Text className="text-gray-400 text-sm mb-1">Score final</Text>
-          <Text className="text-primary-400 text-5xl font-bold">{scoreNum}</Text>
-          <Text className="text-gray-500 text-sm mt-1">points</Text>
+        <View className="w-10" />
+      </View>
 
-          {/* XP Earned */}
-          <View className="flex-row items-center mt-4 bg-yellow-500/20 rounded-full px-4 py-2">
-            <Text className="text-yellow-400 font-bold">+{xpEarned} XP</Text>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="pb-32"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Title */}
+        <View className="items-center mt-4 mb-6">
+          <Text className="text-4xl font-black">
+            <Text style={{ color: COLORS.text }}>Stellar </Text>
+            <Text style={{ color: COLORS.primary }}>Job!</Text>
+          </Text>
+        </View>
+
+        {/* Score Card */}
+        <View
+          className="mx-6 rounded-2xl p-6 items-center mb-6"
+          style={{
+            backgroundColor: COLORS.surface,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.05)',
+          }}
+        >
+          {/* Score Ring */}
+          <ScoreRing percentage={accuracy} />
+
+          {/* XP Badge */}
+          <View
+            className="flex-row items-center rounded-full px-4 py-2 mt-4"
+            style={{ backgroundColor: COLORS.surfaceActive }}
+          >
+            <Text className="mr-2" style={{ color: COLORS.yellow }}>⚡</Text>
+            <Text className="font-bold text-white">+{xpEarned} XP Earned</Text>
+          </View>
+
+          <Text className="text-gray-400 text-sm mt-3">
+            You answered {correctNum} out of {totalNum} correctly
+          </Text>
+        </View>
+
+        {/* Did You Know Card */}
+        <View className="mx-6 mb-6">
+          <View className="flex-row items-center gap-2 mb-3">
+            <Text className="text-xl">💡</Text>
+            <Text className="text-white font-bold">Did You Know?</Text>
+          </View>
+
+          <View
+            className="rounded-2xl overflow-hidden"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            {/* Image Placeholder */}
+            <LinearGradient
+              colors={['#92400e', '#78350f']}
+              className="h-32"
+            />
+
+            <View className="p-4">
+              <Text className="text-white leading-6">
+                France is the only country to win the World Cup on home soil in 1998,
+                beating <Text style={{ color: COLORS.primary }}>Brazil</Text> 3-0 in the final.
+              </Text>
+              <Text className="text-gray-500 text-xs mt-2 flex-row items-center">
+                ℹ️ Related to Question 1
+              </Text>
+            </View>
           </View>
         </View>
 
-        {/* Stats */}
-        <View className="flex-row gap-3 mt-4 w-full">
-          <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-            <Text className="text-green-400 text-2xl font-bold">{correctNum}</Text>
-            <Text className="text-gray-400 text-xs">Correct</Text>
+        {/* Question Summary */}
+        <View className="mx-6 mb-6">
+          <Text className="text-white font-bold mb-3">Question Summary</Text>
+
+          <View className="gap-2">
+            {questionSummary.map((item, index) => (
+              <QuestionSummaryItem
+                key={index}
+                question={item.question}
+                answer={item.answer}
+                isCorrect={item.isCorrect}
+                correctAnswer={item.correctAnswer}
+              />
+            ))}
           </View>
-          <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-            <Text className="text-red-400 text-2xl font-bold">
-              {totalNum - correctNum}
-            </Text>
-            <Text className="text-gray-400 text-xs">Incorrect</Text>
-          </View>
-          <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-            <Text className="text-white text-2xl font-bold">{accuracy}%</Text>
-            <Text className="text-gray-400 text-xs">Précision</Text>
-          </View>
-          {maxChainNum > 1 && (
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              <Text className="text-purple-400 text-2xl font-bold">
-                {maxChainNum}x
-              </Text>
-              <Text className="text-gray-400 text-xs">Max Chain</Text>
-            </View>
-          )}
         </View>
 
         {/* Upgrade Prompt for anonymous users */}
         {isAnonymous && (
-          <View className="w-full mt-4">
+          <View className="mx-6 mb-4">
             <UpgradePrompt
               onPress={handleOpenAuth}
-              message="Crée un compte pour sauvegarder ton score"
+              message="Create an account to save your score"
             />
           </View>
         )}
+      </ScrollView>
 
-        {/* Actions */}
-        <View className="w-full gap-3 mt-6">
-          <Pressable
-            onPress={() => router.replace("/game/chain")}
-            className="bg-primary-500 rounded-xl py-4 active:opacity-80"
-          >
-            <Text className="text-white text-lg text-center font-bold">
-              Rejouer
-            </Text>
-          </Pressable>
+      {/* Fixed Bottom Actions */}
+      <View
+        className="absolute bottom-0 left-0 right-0 px-6 py-4 flex-row items-center gap-4"
+        style={{
+          backgroundColor: COLORS.bg,
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(255,255,255,0.05)',
+        }}
+      >
+        {/* Home Button */}
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.replace("/");
+          }}
+          className="w-14 h-14 rounded-full items-center justify-center"
+          style={{ backgroundColor: COLORS.surface }}
+        >
+          <Text className="text-2xl">🏠</Text>
+        </Pressable>
 
-          <Pressable
-            onPress={handleShare}
-            className="bg-accent-500 rounded-xl py-4 active:opacity-80"
-          >
-            <Text className="text-white text-lg text-center font-bold">
-              Partager mon score
-            </Text>
-          </Pressable>
+        {/* Play Again Button */}
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.replace("/game/chain");
+          }}
+          className="flex-1 h-14 rounded-full flex-row items-center justify-center active:opacity-80"
+          style={{ backgroundColor: COLORS.primary }}
+        >
+          <Text className="text-xl mr-2">↻</Text>
+          <Text className="text-lg font-bold" style={{ color: COLORS.bg }}>
+            Play Again
+          </Text>
+        </Pressable>
 
-          <Pressable
-            onPress={() => router.replace("/")}
-            className="bg-gray-700 rounded-xl py-4 active:opacity-80"
-          >
-            <Text className="text-white text-lg text-center">
-              Retour au menu
-            </Text>
-          </Pressable>
-
-          {/* Test button for confetti */}
-          {accuracy >= 70 && (
-            <Pressable
-              onPress={() => setShowConfetti(true)}
-              className="bg-yellow-500/20 border border-yellow-500/50 rounded-xl py-3 active:opacity-80"
-            >
-              <Text className="text-yellow-400 text-center">
-                🎉 Revoir le confetti
-              </Text>
-            </Pressable>
-          )}
-        </View>
+        {/* Share Button */}
+        <Pressable
+          onPress={handleShare}
+          className="w-14 h-14 rounded-full items-center justify-center"
+          style={{ backgroundColor: COLORS.surface }}
+        >
+          <Text className="text-2xl">↗</Text>
+        </Pressable>
       </View>
 
       {/* Auth Modal */}

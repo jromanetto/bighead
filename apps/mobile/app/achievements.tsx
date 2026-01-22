@@ -1,15 +1,135 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { useAuth } from "../src/contexts/AuthContext";
+import { buttonPressFeedback } from "../src/utils/feedback";
 import {
   getAllAchievements,
   getUserAchievements,
   getAchievementProgress,
   type Achievement,
-  type UserAchievement,
 } from "../src/services/achievements";
+
+// New QuizNext design colors
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceLight: "#252e33",
+  primary: "#00c2cc",
+  primaryDim: "rgba(0, 194, 204, 0.15)",
+  success: "#22c55e",
+  successDim: "rgba(34, 197, 94, 0.15)",
+  gold: "#FFD100",
+  goldDim: "rgba(255, 209, 0, 0.2)",
+  pink: "#ec4899",
+  purple: "#A16EFF",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
+
+// Achievement Card component
+function AchievementCard({
+  achievement,
+  unlocked,
+  progress,
+}: {
+  achievement: Achievement;
+  unlocked: boolean;
+  progress?: number; // 0-100 for in-progress achievements
+}) {
+  const showProgress = !unlocked && progress !== undefined && progress > 0 && progress < 100;
+
+  return (
+    <View
+      className="rounded-2xl p-4 mb-3"
+      style={{
+        backgroundColor: COLORS.surface,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+      }}
+    >
+      <View className="flex-row items-center">
+        {/* Icon */}
+        <View
+          className="w-14 h-14 rounded-xl items-center justify-center mr-4"
+          style={{
+            backgroundColor: unlocked
+              ? COLORS.primaryDim
+              : 'rgba(255,255,255,0.05)',
+          }}
+        >
+          <Text className={`text-3xl ${!unlocked ? 'opacity-40' : ''}`}>
+            {achievement.icon}
+          </Text>
+        </View>
+
+        {/* Content */}
+        <View className="flex-1">
+          <View className="flex-row items-center justify-between mb-1">
+            <Text
+              className="font-bold text-base"
+              style={{ color: unlocked ? COLORS.text : COLORS.textMuted }}
+            >
+              {achievement.name}
+            </Text>
+            <Text
+              className="font-bold text-sm"
+              style={{ color: COLORS.primary }}
+            >
+              +{achievement.xp_reward} XP
+            </Text>
+          </View>
+          <Text
+            className="text-sm mb-2"
+            style={{ color: unlocked ? COLORS.textMuted : '#6b7280' }}
+          >
+            {achievement.description}
+          </Text>
+
+          {/* Progress bar or status */}
+          {showProgress && (
+            <View className="mt-1">
+              <View
+                className="h-1.5 rounded-full overflow-hidden"
+                style={{ backgroundColor: COLORS.surfaceLight }}
+              >
+                <View
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${progress}%`,
+                    backgroundColor: COLORS.primary,
+                  }}
+                />
+              </View>
+              <Text className="text-xs mt-1" style={{ color: COLORS.textMuted }}>
+                {Math.round(progress)}% completed
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Status indicator */}
+        {unlocked && (
+          <View
+            className="w-8 h-8 rounded-full items-center justify-center ml-2"
+            style={{ backgroundColor: COLORS.success }}
+          >
+            <Text className="text-white">✓</Text>
+          </View>
+        )}
+        {!unlocked && !showProgress && (
+          <View
+            className="w-8 h-8 rounded-full items-center justify-center ml-2"
+            style={{ backgroundColor: COLORS.surfaceLight }}
+          >
+            <Text className="text-gray-500">🔒</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
 
 export default function AchievementsScreen() {
   const { user, isAnonymous } = useAuth();
@@ -44,11 +164,10 @@ export default function AchievementsScreen() {
   };
 
   const categories = [
-    { code: "all", name: "Tous", icon: "🏆" },
-    { code: "games", name: "Parties", icon: "🎮" },
-    { code: "score", name: "Score", icon: "⭐" },
-    { code: "streak", name: "Chaînes", icon: "🔥" },
-    { code: "special", name: "Spécial", icon: "💎" },
+    { code: "all", name: "All" },
+    { code: "games", name: "Games" },
+    { code: "score", name: "Score" },
+    { code: "streak", name: "Social" },
   ];
 
   const filteredAchievements = achievements.filter(
@@ -57,58 +176,98 @@ export default function AchievementsScreen() {
 
   const isUnlocked = (achievementId: string) => userAchievements.has(achievementId);
 
+  // Calculate total XP from unlocked achievements
+  const totalXP = achievements
+    .filter(a => isUnlocked(a.id))
+    .reduce((sum, a) => sum + a.xp_reward, 0);
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-1">
         {/* Header */}
-        <View className="flex-row items-center px-6 pt-4 mb-4">
-          <Pressable onPress={() => router.back()} className="mr-4 p-2">
-            <Text className="text-white text-2xl">←</Text>
+        <View className="flex-row items-center px-5 pt-4 mb-4">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.back();
+            }}
+            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-white text-lg">←</Text>
           </Pressable>
-          <Text className="text-white text-2xl font-bold">Succès</Text>
+          <Text className="text-white text-2xl font-black">Achievements</Text>
         </View>
 
-        {/* Progress */}
-        <View className="px-6 mb-4">
-          <View className="bg-gray-800 rounded-xl p-4">
-            <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-white font-bold">Progression</Text>
-              <Text className="text-primary-400 font-bold">
-                {progress.unlocked}/{progress.total}
+        {/* Progress Card */}
+        <View
+          className="mx-5 mb-5 rounded-2xl p-5"
+          style={{
+            backgroundColor: COLORS.surface,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.05)',
+          }}
+        >
+          <Text
+            className="text-xs uppercase tracking-wider mb-2"
+            style={{ color: COLORS.textMuted }}
+          >
+            Total Progress
+          </Text>
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-4xl font-black text-white">
+              {progress.unlocked} / {progress.total}
+            </Text>
+            <View
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: COLORS.primaryDim }}
+            >
+              <Text style={{ color: COLORS.primary }} className="font-bold">
+                +{totalXP} XP
               </Text>
             </View>
-            <View className="h-3 bg-gray-700 rounded-full overflow-hidden">
-              <View
-                className="h-full bg-primary-500 rounded-full"
-                style={{ width: `${progress.percentage}%` }}
-              />
-            </View>
-            <Text className="text-gray-400 text-xs mt-1 text-right">
-              {progress.percentage}% complété
-            </Text>
           </View>
+          <View
+            className="h-2 rounded-full overflow-hidden"
+            style={{ backgroundColor: COLORS.surfaceLight }}
+          >
+            <View
+              className="h-full rounded-full"
+              style={{
+                width: `${progress.percentage}%`,
+                backgroundColor: COLORS.primary,
+              }}
+            />
+          </View>
+          <Text className="text-sm mt-2" style={{ color: COLORS.textMuted }}>
+            Keep it up! You're {progress.total - progress.unlocked} achievements away from becoming a legend.
+          </Text>
         </View>
 
         {/* Category Tabs */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="px-4 mb-4"
-          contentContainerStyle={{ paddingRight: 16 }}
+          className="px-5 mb-4"
+          contentContainerStyle={{ paddingRight: 20 }}
         >
           {categories.map((cat) => (
             <Pressable
               key={cat.code}
-              onPress={() => setActiveCategory(cat.code)}
-              className={`px-4 py-2 rounded-xl mr-2 flex-row items-center ${
-                activeCategory === cat.code ? "bg-primary-500" : "bg-gray-800"
-              }`}
+              onPress={() => {
+                buttonPressFeedback();
+                setActiveCategory(cat.code);
+              }}
+              className="rounded-full px-5 py-2 mr-2"
+              style={{
+                backgroundColor: activeCategory === cat.code ? COLORS.primary : COLORS.surface,
+              }}
             >
-              <Text className="mr-1">{cat.icon}</Text>
               <Text
-                className={`font-medium ${
-                  activeCategory === cat.code ? "text-white" : "text-gray-400"
-                }`}
+                className="font-semibold"
+                style={{
+                  color: activeCategory === cat.code ? COLORS.bg : COLORS.textMuted,
+                }}
               >
                 {cat.name}
               </Text>
@@ -119,75 +278,86 @@ export default function AchievementsScreen() {
         {/* Loading */}
         {loading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#0ea5e9" />
+            <ActivityIndicator size="large" color={COLORS.primary} />
           </View>
         ) : (
-          <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-            {filteredAchievements.map((achievement) => {
-              const unlocked = isUnlocked(achievement.id);
-              return (
-                <View
-                  key={achievement.id}
-                  className={`flex-row items-center p-4 rounded-xl mb-3 ${
-                    unlocked ? "bg-primary-500/20 border border-primary-500/30" : "bg-gray-800"
-                  }`}
-                >
-                  <View
-                    className={`w-14 h-14 rounded-xl items-center justify-center mr-4 ${
-                      unlocked ? "bg-primary-500/30" : "bg-gray-700"
-                    }`}
-                  >
-                    <Text className={`text-2xl ${!unlocked && "opacity-30"}`}>
-                      {achievement.icon}
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text
-                      className={`font-bold mb-1 ${
-                        unlocked ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      {achievement.name}
-                    </Text>
-                    <Text
-                      className={`text-sm ${
-                        unlocked ? "text-gray-300" : "text-gray-500"
-                      }`}
-                    >
-                      {achievement.description}
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    {unlocked ? (
-                      <View className="bg-green-500/20 px-3 py-1 rounded-full">
-                        <Text className="text-green-400 text-xs font-bold">✓</Text>
-                      </View>
-                    ) : (
-                      <Text className="text-primary-400 font-bold text-sm">
-                        +{achievement.xp_reward} XP
-                      </Text>
-                    )}
-                  </View>
-                </View>
-              );
-            })}
+          <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+            {filteredAchievements.map((achievement) => (
+              <AchievementCard
+                key={achievement.id}
+                achievement={achievement}
+                unlocked={isUnlocked(achievement.id)}
+              />
+            ))}
 
             {/* Anonymous prompt */}
             {isAnonymous && (
               <Pressable
-                onPress={() => router.push("/profile")}
-                className="bg-gradient-to-r from-primary-500/20 to-accent-500/20 rounded-xl p-4 mt-4 mb-6"
+                onPress={() => {
+                  buttonPressFeedback();
+                  router.push("/profile");
+                }}
+                className="rounded-2xl p-4 mt-2 mb-4"
+                style={{
+                  backgroundColor: COLORS.primaryDim,
+                  borderWidth: 1,
+                  borderColor: `${COLORS.primary}30`,
+                }}
               >
-                <Text className="text-white font-bold mb-1">Crée un compte</Text>
-                <Text className="text-gray-400 text-sm">
-                  Pour débloquer et sauvegarder tes succès
-                </Text>
+                <View className="flex-row items-center">
+                  <Text className="text-2xl mr-3">🎮</Text>
+                  <View className="flex-1">
+                    <Text className="text-white font-bold">Create an account</Text>
+                    <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                      To unlock and save your achievements
+                    </Text>
+                  </View>
+                </View>
               </Pressable>
             )}
 
             <View className="h-6" />
           </ScrollView>
         )}
+
+        {/* Bottom Navigation */}
+        <View
+          className="flex-row justify-around py-3 px-2"
+          style={{
+            backgroundColor: COLORS.bg,
+            borderTopWidth: 1,
+            borderTopColor: COLORS.surfaceLight,
+          }}
+        >
+          <Link href="/" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">🏠</Text>
+              <Text className="text-gray-500 text-xs">Home</Text>
+            </Pressable>
+          </Link>
+          <Pressable className="items-center flex-1">
+            <Text className="text-xl mb-1">🏆</Text>
+            <Text style={{ color: COLORS.primary }} className="text-xs font-medium">Achievements</Text>
+          </Pressable>
+          <Link href="/leaderboard" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">📊</Text>
+              <Text className="text-gray-500 text-xs">Leaderboard</Text>
+            </Pressable>
+          </Link>
+          <Link href="/profile" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">👤</Text>
+              <Text className="text-gray-500 text-xs">Profile</Text>
+            </Pressable>
+          </Link>
+          <Link href="/settings" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">⚙️</Text>
+              <Text className="text-gray-500 text-xs">Settings</Text>
+            </Pressable>
+          </Link>
+        </View>
       </View>
     </SafeAreaView>
   );

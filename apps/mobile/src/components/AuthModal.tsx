@@ -62,11 +62,11 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
         return false;
       }
       if (password.length < 6) {
-        setError("6 caractères minimum pour le mot de passe");
+        setError("Password must be at least 6 characters");
         return false;
       }
       if (mode === "signup" && username.trim().length < 3) {
-        setError("3 caractères minimum pour le pseudo");
+        setError("Username must be at least 3 characters");
         return false;
       }
       return true;
@@ -99,9 +99,9 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
         if (err.message?.includes("Invalid login credentials")) {
           setError("Email ou mot de passe incorrect");
         } else if (err.message?.includes("User already registered")) {
-          setError("Cet email est déjà utilisé");
+          setError("This email is already in use");
         } else if (err.message?.includes("Email rate limit")) {
-          setError("Trop de tentatives, réessaie plus tard");
+          setError("Too many attempts, try again later");
         } else {
           setError(err.message || "Une erreur est survenue");
         }
@@ -143,7 +143,7 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
                     mode === "login" ? "text-white" : "text-gray-400"
                   }`}
                 >
-                  Connexion
+                  Login
                 </Text>
               </Pressable>
               <Pressable
@@ -160,7 +160,7 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
                     mode === "signup" ? "text-white" : "text-gray-400"
                   }`}
                 >
-                  Inscription
+                  Sign up
                 </Text>
               </Pressable>
             </View>
@@ -176,11 +176,11 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
             <View className="gap-4">
               {mode === "signup" && (
                 <View>
-                  <Text className="text-gray-400 mb-2">Pseudo</Text>
+                  <Text className="text-gray-400 mb-2">Username</Text>
                   <TextInput
                     value={username}
                     onChangeText={setUsername}
-                    placeholder="Ton pseudo"
+                    placeholder="Your username"
                     placeholderTextColor="#6b7280"
                     autoCapitalize="none"
                     editable={!isFormDisabled}
@@ -205,7 +205,7 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
               </View>
 
               <View>
-                <Text className="text-gray-400 mb-2">Mot de passe</Text>
+                <Text className="text-gray-400 mb-2">Password</Text>
                 <TextInput
                   value={password}
                   onChangeText={setPassword}
@@ -230,7 +230,7 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
                   <ActivityIndicator color="white" />
                 ) : (
                   <Text className="text-white text-center font-bold text-lg">
-                    {mode === "login" ? "Se connecter" : "Créer mon compte"}
+                    {mode === "login" ? "Log in" : "Create account"}
                   </Text>
                 )}
               </Pressable>
@@ -239,7 +239,7 @@ export const AuthModal = forwardRef<AuthModalRef, AuthModalProps>(
               {mode === "login" && (
                 <Pressable className="mt-2">
                   <Text className="text-gray-400 text-center">
-                    Mot de passe oublié ?
+                    Forgot password?
                   </Text>
                 </Pressable>
               )}

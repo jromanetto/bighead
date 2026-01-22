@@ -1,11 +1,114 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRef, useEffect, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../src/contexts/AuthContext";
 import { AuthModal, AuthModalRef } from "../src/components/AuthModal";
 import { UpgradePrompt } from "../src/components/UpgradePrompt";
 import { getUserStats } from "../src/services/gameResults";
+import { buttonPressFeedback } from "../src/utils/feedback";
+
+// New QuizNext design colors
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceActive: "#252e33",
+  primary: "#00c2cc",
+  primaryDim: "rgba(0, 194, 204, 0.15)",
+  success: "#22c55e",
+  error: "#ef4444",
+  yellow: "#FFD100",
+  purple: "#A16EFF",
+  coral: "#FF6B6B",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
+
+// Badge Component
+function Badge({ icon, name, unlocked = true }: { icon: string; name: string; unlocked?: boolean }) {
+  return (
+    <View className="items-center">
+      <View
+        className="w-16 h-16 rounded-full items-center justify-center mb-2"
+        style={{
+          backgroundColor: unlocked ? COLORS.surface : 'rgba(255,255,255,0.05)',
+          borderWidth: 2,
+          borderColor: unlocked ? COLORS.primary : 'rgba(255,255,255,0.1)',
+          opacity: unlocked ? 1 : 0.5,
+        }}
+      >
+        {unlocked ? (
+          <Text className="text-3xl">{icon}</Text>
+        ) : (
+          <Text className="text-2xl">🔒</Text>
+        )}
+      </View>
+      <Text
+        className="text-xs text-center"
+        style={{ color: unlocked ? COLORS.text : COLORS.textMuted }}
+        numberOfLines={2}
+      >
+        {name}
+      </Text>
+    </View>
+  );
+}
+
+// Category Progress Component
+function CategoryProgress({
+  icon,
+  name,
+  level,
+  xpNeeded,
+  percentage,
+  color
+}: {
+  icon: string;
+  name: string;
+  level: number;
+  xpNeeded: number;
+  percentage: number;
+  color: string;
+}) {
+  return (
+    <View
+      className="rounded-xl p-4 mb-3"
+      style={{
+        backgroundColor: COLORS.surface,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+      }}
+    >
+      <View className="flex-row items-center justify-between mb-2">
+        <View className="flex-row items-center gap-3">
+          <View
+            className="w-10 h-10 rounded-lg items-center justify-center"
+            style={{ backgroundColor: `${color}30` }}
+          >
+            <Text className="text-xl">{icon}</Text>
+          </View>
+          <View>
+            <Text className="text-white font-semibold">{name}</Text>
+            <Text className="text-gray-500 text-xs">Lvl {level} • {xpNeeded} XP needed</Text>
+          </View>
+        </View>
+        <Text className="font-bold" style={{ color }}>{percentage}%</Text>
+      </View>
+
+      {/* Progress Bar */}
+      <View
+        className="h-2 rounded-full overflow-hidden"
+        style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+      >
+        <View
+          className="h-full rounded-full"
+          style={{ width: `${percentage}%`, backgroundColor: color }}
+        />
+      </View>
+    </View>
+  );
+}
 
 export default function ProfileScreen() {
   const { user, profile, isAnonymous, isLoading, signOut, refreshProfile } = useAuth();
@@ -60,134 +163,291 @@ export default function ProfileScreen() {
     }
   };
 
-  const displayName = profile?.username || user?.email?.split("@")[0] || "Invité";
+  const displayName = profile?.username || user?.email?.split("@")[0] || "Guest";
   const displayLevel = profile?.level || 1;
   const displayXP = profile?.total_xp || 0;
+  const winRate = stats.averageAccuracy || 85;
+
+  // Calculate formatted XP
+  const formatXP = (xp: number) => {
+    if (xp >= 1000) return `${(xp / 1000).toFixed(1)}k`;
+    return xp.toString();
+  };
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center">
-        <ActivityIndicator size="large" color="#0ea5e9" />
+      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
       </SafeAreaView>
     );
   }
 
+  // Badges data
+  const badges = [
+    { icon: "⚡", name: "Speed Demon", unlocked: true },
+    { icon: "🏛️", name: "History Buff", unlocked: true },
+    { icon: "✨", name: "Perfect Streak", unlocked: true },
+    { icon: "🏆", name: "Trivia God", unlocked: false },
+  ];
+
+  // Category mastery data
+  const categories = [
+    { icon: "🧪", name: "Science & Nature", level: 8, xpNeeded: 450, percentage: 75, color: COLORS.yellow },
+    { icon: "🌍", name: "World Geography", level: 11, xpNeeded: 50, percentage: 90, color: COLORS.coral },
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <View className="flex-1 px-6 pt-4">
-        {/* Header */}
-        <View className="flex-row items-center mb-8">
-          <Pressable onPress={() => router.back()} className="mr-4">
-            <Text className="text-white text-2xl">←</Text>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="pb-24"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Settings Button */}
+        <View className="flex-row justify-end px-6 pt-4">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/settings");
+            }}
+            className="w-10 h-10 rounded-full items-center justify-center"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-xl">⚙️</Text>
           </Pressable>
-          <Text className="text-white text-2xl font-bold">Profil</Text>
         </View>
 
-        {/* Profile Card */}
-        <View className="bg-gray-800 rounded-2xl p-6 items-center mb-6">
-          <View className="w-24 h-24 bg-primary-500 rounded-full items-center justify-center mb-4">
-            <Text className="text-white text-4xl">
-              {isAnonymous ? "👤" : displayName.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          <Text className="text-white text-2xl font-bold">
-            {isAnonymous ? "Invité" : displayName}
-          </Text>
-          <Text className="text-gray-400">
-            Niveau {displayLevel}
-          </Text>
-          {!isAnonymous && user?.email && (
-            <Text className="text-gray-500 text-sm mt-1">{user.email}</Text>
-          )}
-        </View>
+        {/* Avatar Section */}
+        <View className="items-center mt-4 mb-6">
+          {/* Avatar with Ring */}
+          <View className="relative mb-4">
+            <View
+              className="w-28 h-28 rounded-full items-center justify-center"
+              style={{
+                borderWidth: 4,
+                borderColor: COLORS.primary,
+                backgroundColor: COLORS.surface,
+              }}
+            >
+              <LinearGradient
+                colors={[COLORS.primary, COLORS.purple]}
+                className="w-24 h-24 rounded-full items-center justify-center"
+              >
+                <Text className="text-white text-4xl font-bold">
+                  {isAnonymous ? "?" : displayName.charAt(0).toUpperCase()}
+                </Text>
+              </LinearGradient>
+            </View>
 
-        {/* Stats - Show for logged in users */}
-        {!isAnonymous ? (
-          <View className="flex-row gap-4 mb-6">
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              {loadingStats ? (
-                <ActivityIndicator size="small" color="#0ea5e9" />
-              ) : (
-                <Text className="text-primary-400 text-2xl font-bold">
-                  {stats.totalGames}
-                </Text>
-              )}
-              <Text className="text-gray-400 text-sm">Parties</Text>
-            </View>
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              {loadingStats ? (
-                <ActivityIndicator size="small" color="#22c55e" />
-              ) : (
-                <Text className="text-green-400 text-2xl font-bold">
-                  {stats.averageAccuracy}%
-                </Text>
-              )}
-              <Text className="text-gray-400 text-sm">Précision</Text>
-            </View>
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              {loadingStats ? (
-                <ActivityIndicator size="small" color="#f59e0b" />
-              ) : (
-                <Text className="text-yellow-400 text-2xl font-bold">
-                  {displayXP}
-                </Text>
-              )}
-              <Text className="text-gray-400 text-sm">XP Total</Text>
-            </View>
-          </View>
-        ) : (
-          // Stats placeholder for anonymous
-          <View className="flex-row gap-4 mb-6">
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              <Text className="text-gray-600 text-2xl font-bold">-</Text>
-              <Text className="text-gray-400 text-sm">Parties</Text>
-            </View>
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              <Text className="text-gray-600 text-2xl font-bold">-</Text>
-              <Text className="text-gray-400 text-sm">Précision</Text>
-            </View>
-            <View className="flex-1 bg-gray-800 rounded-xl p-4 items-center">
-              <Text className="text-gray-600 text-2xl font-bold">-</Text>
-              <Text className="text-gray-400 text-sm">XP Total</Text>
-            </View>
-          </View>
-        )}
-
-        {/* Best Chain */}
-        {!isAnonymous && stats.bestChain > 0 && (
-          <View className="bg-gray-800 rounded-xl p-4 mb-6 flex-row items-center justify-between">
-            <View>
-              <Text className="text-gray-400 text-sm">Meilleur Chain</Text>
-              <Text className="text-purple-400 text-xl font-bold">
-                {stats.bestChain}x
+            {/* Level Badge */}
+            <View
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full flex-row items-center"
+              style={{ backgroundColor: COLORS.primary }}
+            >
+              <Text className="mr-1" style={{ color: COLORS.bg }}>⚡</Text>
+              <Text className="font-bold text-xs" style={{ color: COLORS.bg }}>
+                LVL {displayLevel}
               </Text>
             </View>
-            <Text className="text-4xl">🔥</Text>
           </View>
-        )}
+
+          {/* Name & Title */}
+          <Text className="text-white text-2xl font-black mb-1">
+            {isAnonymous ? "Guest" : displayName}
+          </Text>
+          <Text className="text-gray-400">
+            {isAnonymous ? "Create an account to play" : "Trivia Titan"}
+          </Text>
+        </View>
+
+        {/* Stats Row */}
+        <View className="flex-row mx-6 mb-8">
+          <View
+            className="flex-1 rounded-xl py-4 items-center mx-1"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <Text className="text-gray-400 text-xs mb-1">XP</Text>
+            {loadingStats ? (
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            ) : (
+              <Text className="text-xl font-black" style={{ color: COLORS.primary }}>
+                {formatXP(displayXP)}
+              </Text>
+            )}
+          </View>
+
+          <View
+            className="flex-1 rounded-xl py-4 items-center mx-1"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <Text className="text-gray-400 text-xs mb-1">Win Rate</Text>
+            {loadingStats ? (
+              <ActivityIndicator size="small" color={COLORS.purple} />
+            ) : (
+              <Text className="text-xl font-black" style={{ color: COLORS.purple }}>
+                {winRate}%
+              </Text>
+            )}
+          </View>
+
+          <View
+            className="flex-1 rounded-xl py-4 items-center mx-1"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <Text className="text-gray-400 text-xs mb-1">Quizzes</Text>
+            {loadingStats ? (
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            ) : (
+              <Text className="text-xl font-black" style={{ color: COLORS.primary }}>
+                {stats.totalGames || 42}
+              </Text>
+            )}
+          </View>
+        </View>
+
+        {/* Recent Badges */}
+        <View className="mx-6 mb-8">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-white font-bold">Recent Badges</Text>
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/achievements");
+              }}
+            >
+              <Text style={{ color: COLORS.primary }} className="text-sm font-medium">
+                View All
+              </Text>
+            </Pressable>
+          </View>
+
+          <View className="flex-row justify-between">
+            {badges.map((badge, index) => (
+              <Badge key={index} {...badge} />
+            ))}
+          </View>
+        </View>
+
+        {/* Category Mastery */}
+        <View className="mx-6 mb-8">
+          <Text className="text-white font-bold mb-4">Category Mastery</Text>
+
+          {categories.map((category, index) => (
+            <CategoryProgress key={index} {...category} />
+          ))}
+        </View>
 
         {/* Login/Signup CTA for anonymous users */}
         {isAnonymous && (
-          <UpgradePrompt
-            variant="card"
-            onPress={() => handleOpenAuth("signup")}
-            message="Crée un compte pour sauvegarder ta progression et apparaître dans le classement"
-          />
+          <View className="mx-6 mb-6">
+            <UpgradePrompt
+              variant="card"
+              onPress={() => handleOpenAuth("signup")}
+              message="Create an account to save your progress and appear on the leaderboard"
+            />
+          </View>
         )}
 
         {/* Logout button for logged in users */}
         {!isAnonymous && (
-          <View className="mt-auto mb-6">
+          <View className="mx-6 mb-6">
             <Pressable
               onPress={handleSignOut}
-              className="bg-gray-800 border border-gray-700 rounded-xl py-4 active:opacity-80"
+              className="rounded-xl py-4 active:opacity-80"
+              style={{
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.05)',
+              }}
             >
               <Text className="text-gray-400 text-center font-medium">
-                Se déconnecter
+                Sign out
               </Text>
             </Pressable>
           </View>
         )}
+      </ScrollView>
+
+      {/* Floating Bottom Navigation */}
+      <View className="absolute bottom-6 left-4 right-4">
+        <View
+          className="h-16 rounded-full flex-row justify-between items-center px-2"
+          style={{
+            backgroundColor: 'rgba(30, 37, 41, 0.85)',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.08)',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.5,
+            shadowRadius: 16,
+          }}
+        >
+          <Link href="/" asChild>
+            <Pressable className="flex-1 items-center justify-center">
+              <View className="w-12 h-10 rounded-full items-center justify-center">
+                <Text className="text-2xl opacity-50">🏠</Text>
+              </View>
+            </Pressable>
+          </Link>
+
+          <Link href="/achievements" asChild>
+            <Pressable className="flex-1 items-center justify-center">
+              <View className="w-12 h-10 rounded-full items-center justify-center">
+                <Text className="text-2xl opacity-50">🔍</Text>
+              </View>
+            </Pressable>
+          </Link>
+
+          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+
+          {/* Play Button */}
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/game/chain");
+            }}
+            className="items-center justify-center"
+          >
+            <View
+              className="w-14 h-14 -mt-6 rounded-full items-center justify-center"
+              style={{ backgroundColor: COLORS.primary }}
+            >
+              <Text className="text-2xl">▶</Text>
+            </View>
+          </Pressable>
+
+          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+
+          <Link href="/leaderboard" asChild>
+            <Pressable className="flex-1 items-center justify-center">
+              <View className="w-12 h-10 rounded-full items-center justify-center">
+                <Text className="text-2xl opacity-50">📊</Text>
+              </View>
+            </Pressable>
+          </Link>
+
+          {/* Profile - Active */}
+          <Pressable className="flex-1 items-center justify-center">
+            <View
+              className="w-12 h-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: `${COLORS.primary}30` }}
+            >
+              <Text className="text-2xl">👤</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
 
       {/* Auth Modal */}

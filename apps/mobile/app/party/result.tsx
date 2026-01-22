@@ -35,7 +35,7 @@ export default function PartyResultScreen() {
 
     try {
       await Share.share({
-        message: `🎮 BIGHEAD Party Mode!\n\n🏆 ${winner?.name} remporte la victoire!\n\n${leaderboard}\n\nQui peut faire mieux? 🧠`,
+        message: `🎮 BIGHEAD Party Mode!\n\n🏆 ${winner?.name} wins!\n\n${leaderboard}\n\nCan you do better? 🧠`,
       });
     } catch (error) {
       console.error("Error sharing:", error);
@@ -47,10 +47,10 @@ export default function PartyResultScreen() {
       <View className="flex-1 px-6 pt-8">
         {/* Header */}
         <Text className="text-white text-3xl font-bold text-center mb-1">
-          Partie terminée!
+          Game Over!
         </Text>
         <Text className="text-white/60 text-center mb-6">
-          {players.length} joueurs
+          {players.length} players
         </Text>
 
         {/* Winner Podium */}
@@ -63,7 +63,7 @@ export default function PartyResultScreen() {
             </Text>
             <View className="flex-row items-center mt-2 bg-white/10 rounded-full px-4 py-1">
               <Text className="text-white/80 text-sm">
-                {winner.correctCount} bonnes réponses
+                {winner.correctCount} correct answers
               </Text>
             </View>
           </View>
@@ -73,7 +73,7 @@ export default function PartyResultScreen() {
         <View className="bg-white/10 rounded-2xl overflow-hidden mb-6">
           <View className="bg-white/10 px-4 py-2">
             <Text className="text-white/60 text-sm font-medium text-center">
-              Classement final
+              Final standings
             </Text>
           </View>
           {sortedPlayers.map((player, index) => (
@@ -125,7 +125,7 @@ export default function PartyResultScreen() {
             className="bg-white rounded-2xl py-4 active:opacity-80"
           >
             <Text className="text-accent-600 text-xl text-center font-bold">
-              Rejouer
+              Play Again
             </Text>
           </Pressable>
 
@@ -134,7 +134,7 @@ export default function PartyResultScreen() {
             className="bg-white/20 rounded-2xl py-4 active:opacity-80"
           >
             <Text className="text-white text-lg text-center font-medium">
-              Partager les résultats
+              Share results
             </Text>
           </Pressable>
 
@@ -142,7 +142,7 @@ export default function PartyResultScreen() {
             onPress={() => router.replace("/")}
             className="py-4 active:opacity-80"
           >
-            <Text className="text-white/60 text-center">Retour au menu</Text>
+            <Text className="text-white/60 text-center">Back to menu</Text>
           </Pressable>
         </View>
       </View>

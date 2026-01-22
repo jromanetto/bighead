@@ -47,12 +47,12 @@ export default function TournamentResultScreen() {
   };
 
   const getMessage = () => {
-    if (rankNum === 1) return "Champion du tournoi !";
-    if (rankNum === 2) return "Excellent ! Tu frôles le sommet !";
-    if (rankNum === 3) return "Superbe performance !";
-    if (rankNum <= 10) return "Top 10 ! Impressionnant !";
-    if (rankNum <= totalNum / 2) return "Bien joué !";
-    return "Continue à t'entraîner !";
+    if (rankNum === 1) return "Tournament champion!";
+    if (rankNum === 2) return "Excellent! So close to the top!";
+    if (rankNum === 3) return "Superb performance!";
+    if (rankNum <= 10) return "Top 10! Impressive!";
+    if (rankNum <= totalNum / 2) return "Well played!";
+    return "Keep practicing!";
   };
 
   return (
@@ -66,7 +66,7 @@ export default function TournamentResultScreen() {
         {/* Result */}
         <Animated.View style={contentStyle} className="w-full items-center">
           <Text className="text-white text-3xl font-bold mb-2">
-            Tournoi terminé !
+            Tournament finished!
           </Text>
           <Text className="text-gray-400 text-center mb-8">
             {getMessage()}
@@ -100,11 +100,11 @@ export default function TournamentResultScreen() {
             {totalNum > 0 && (
               <View className="bg-gray-700 rounded-xl p-4">
                 <Text className="text-gray-400 text-center text-sm">
-                  Tu fais partie du{" "}
+                  You are in the{" "}
                   <Text className="text-white font-bold">
                     top {Math.round((rankNum / totalNum) * 100)}%
                   </Text>{" "}
-                  des joueurs
+                  of players
                 </Text>
               </View>
             )}
@@ -117,7 +117,7 @@ export default function TournamentResultScreen() {
               className="bg-primary-500 rounded-xl py-4 mb-3"
             >
               <Text className="text-white text-center font-bold text-lg">
-                📊 Voir le classement
+                📊 View leaderboard
               </Text>
             </Pressable>
 
@@ -126,7 +126,7 @@ export default function TournamentResultScreen() {
               className="bg-gray-800 rounded-xl py-4"
             >
               <Text className="text-white text-center font-bold">
-                Retour à l'accueil
+                Back to home
               </Text>
             </Pressable>
           </View>

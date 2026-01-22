@@ -23,6 +23,7 @@ export interface GetQuestionsParams {
   difficulty?: number;
   count?: number;
   excludeIds?: string[];
+  language?: string;
 }
 
 export const getQuestions = async ({
@@ -30,11 +31,13 @@ export const getQuestions = async ({
   difficulty,
   count = 10,
   excludeIds = [],
+  language = "en",
 }: GetQuestionsParams = {}): Promise<Question[]> => {
   let query = supabase
     .from("questions")
     .select("*")
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .eq("language", language);
 
   if (categoryId) {
     query = query.eq("category_id", categoryId);

@@ -60,13 +60,13 @@ export default function TournamentScreen() {
     const now = Date.now();
     const diff = end - now;
 
-    if (diff <= 0) return "Terminé";
+    if (diff <= 0) return "Finished";
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-    if (days > 0) return `${days}j ${hours}h restants`;
-    return `${hours}h restantes`;
+    if (days > 0) return `${days}d ${hours}h remaining`;
+    return `${hours}h remaining`;
   };
 
   if (loading) {
@@ -88,13 +88,13 @@ export default function TournamentScreen() {
             Pas de tournoi actif
           </Text>
           <Text className="text-gray-400 text-center mb-8">
-            Reviens bientôt pour le prochain tournoi !
+            Come back soon for the next tournament!
           </Text>
           <Pressable
             onPress={() => router.back()}
             className="bg-primary-500 rounded-xl py-4 px-8"
           >
-            <Text className="text-white font-bold">Retour</Text>
+            <Text className="text-white font-bold">Back</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -188,11 +188,11 @@ export default function TournamentScreen() {
           {tournament.user_participated ? (
             <View className="bg-green-500/20 rounded-xl p-4">
               <Text className="text-green-400 text-center font-bold mb-1">
-                ✓ Tu as participé !
+                ✓ You participated!
               </Text>
               {tournament.user_rank && (
                 <Text className="text-gray-400 text-center">
-                  Classement: #{tournament.user_rank} • Score: {tournament.user_score}
+                  Rank: #{tournament.user_rank} • Score: {tournament.user_score}
                 </Text>
               )}
             </View>
@@ -206,7 +206,7 @@ export default function TournamentScreen() {
                 <ActivityIndicator color="black" />
               ) : (
                 <Text className="text-black text-center font-bold text-lg">
-                  Participer maintenant !
+                  Join now!
                 </Text>
               )}
             </Pressable>
@@ -214,8 +214,8 @@ export default function TournamentScreen() {
             <View className="bg-gray-700 rounded-xl py-4">
               <Text className="text-gray-400 text-center font-bold">
                 {tournament.tournament_status === "upcoming"
-                  ? "Bientôt disponible"
-                  : "Tournoi terminé"}
+                  ? "Coming soon"
+                  : "Tournament finished"}
               </Text>
             </View>
           )}
@@ -225,7 +225,7 @@ export default function TournamentScreen() {
         {leaderboard.length > 0 && (
           <View className="bg-gray-800 rounded-2xl p-4">
             <Text className="text-white font-bold text-lg mb-4">
-              🏅 Top 10 Classement
+              🏅 Top 10 Ranking
             </Text>
 
             {leaderboard.map((entry, index) => (
@@ -266,7 +266,7 @@ export default function TournamentScreen() {
             className="bg-orange-500/20 rounded-xl p-4 mt-4"
           >
             <Text className="text-orange-400 text-center">
-              Crée un compte pour participer aux tournois ! 🏆
+              Create an account to join tournaments! 🏆
             </Text>
           </Pressable>
         )}

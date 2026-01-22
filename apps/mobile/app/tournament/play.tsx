@@ -153,7 +153,7 @@ export default function TournamentPlayScreen() {
       <SafeAreaView className="flex-1 bg-gray-900">
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#0ea5e9" />
-          <Text className="text-gray-400 mt-4">Chargement du tournoi...</Text>
+          <Text className="text-gray-400 mt-4">Loading tournament...</Text>
         </View>
       </SafeAreaView>
     );
@@ -165,13 +165,13 @@ export default function TournamentPlayScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-5xl mb-6">❌</Text>
           <Text className="text-white text-xl font-bold text-center">
-            Erreur de chargement
+            Loading error
           </Text>
           <Pressable
             onPress={() => router.back()}
             className="bg-primary-500 rounded-xl py-4 px-8 mt-6"
           >
-            <Text className="text-white font-bold">Retour</Text>
+            <Text className="text-white font-bold">Back</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -265,7 +265,7 @@ export default function TournamentPlayScreen() {
                   isCorrect ? "text-green-400" : "text-red-400"
                 }`}
               >
-                {isCorrect ? "✓ Correct !" : `✗ C'était ${currentQuestion.player_name}`}
+                {isCorrect ? "✓ Correct!" : `✗ It was ${currentQuestion.player_name}`}
               </Text>
             </View>
           </View>

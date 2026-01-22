@@ -64,7 +64,7 @@ export default function DuelWaitingScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Rejoins mon duel BIGHEAD ! Code: ${code}`,
+        message: `Join my BIGHEAD duel! Code: ${code}`,
       });
     } catch (error) {
       console.error("Error sharing:", error);
@@ -99,7 +99,7 @@ export default function DuelWaitingScreen() {
           <Pressable onPress={handleCancel} className="p-2">
             <Text className="text-white text-2xl">←</Text>
           </Pressable>
-          <Text className="text-white text-xl font-bold">En attente...</Text>
+          <Text className="text-white text-xl font-bold">Waiting...</Text>
           <View className="w-10" />
         </View>
 
@@ -110,16 +110,16 @@ export default function DuelWaitingScreen() {
           </Animated.View>
 
           <Text className="text-white text-2xl font-bold mb-2">
-            En attente d'un adversaire
+            Waiting for opponent
           </Text>
           <Text className="text-gray-400 text-center mb-8">
-            Partage ce code avec ton ami
+            Share this code with your friend
           </Text>
 
           {/* Code Display */}
           <View className="bg-gray-800 rounded-2xl p-6 mb-8 w-full">
             <Text className="text-gray-400 text-center text-sm mb-2">
-              CODE DU DUEL
+              DUEL CODE
             </Text>
             <Text className="text-primary-400 text-center text-4xl font-bold tracking-widest">
               {code}
@@ -132,7 +132,7 @@ export default function DuelWaitingScreen() {
             className="bg-primary-500 rounded-xl py-4 px-8 mb-4 w-full"
           >
             <Text className="text-white text-center font-bold text-lg">
-              📤 Partager le code
+              📤 Share code
             </Text>
           </Pressable>
 
@@ -140,7 +140,7 @@ export default function DuelWaitingScreen() {
           <View className="flex-row items-center mt-8">
             <ActivityIndicator size="small" color="#6B7280" />
             <Text className="text-gray-500 ml-2">
-              Recherche d'adversaire...
+              Searching for opponent...
             </Text>
           </View>
         </View>
@@ -151,7 +151,7 @@ export default function DuelWaitingScreen() {
           className="bg-red-500/20 rounded-xl py-4 mb-6"
         >
           <Text className="text-red-400 text-center font-bold">
-            Annuler le duel
+            Cancel duel
           </Text>
         </Pressable>
       </View>

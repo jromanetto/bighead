@@ -24,26 +24,26 @@ interface OnboardingSlide {
 const slides: OnboardingSlide[] = [
   {
     icon: "🧠",
-    title: "Bienvenue sur BIGHEAD",
-    description: "Le quiz qui fait travailler tes méninges ! Devine le footballeur mystère et deviens le meilleur.",
+    title: "Welcome to BIGHEAD",
+    description: "The quiz that challenges your brain! Guess the mystery player and become the best.",
     color: "#6366f1",
   },
   {
     icon: "🔥",
-    title: "Mode Chaîne",
-    description: "Enchaîne les bonnes réponses pour multiplier tes points. Plus ta chaîne est longue, plus tu gagnes !",
+    title: "Chain Mode",
+    description: "Chain correct answers to multiply your points. The longer your chain, the more you win!",
     color: "#f59e0b",
   },
   {
     icon: "🎉",
-    title: "Mode Party",
-    description: "Joue avec tes amis en local ! Passez-vous le téléphone et découvrez qui est le vrai champion.",
+    title: "Party Mode",
+    description: "Play with your friends locally! Pass the phone around and find out who's the real champion.",
     color: "#ec4899",
   },
   {
     icon: "🏆",
-    title: "Grimpe le classement",
-    description: "Gagne de l'XP, débloque des succès et hisse-toi en haut du classement mondial !",
+    title: "Climb the leaderboard",
+    description: "Earn XP, unlock achievements and rise to the top of the global leaderboard!",
     color: "#22c55e",
   },
 ];
@@ -87,7 +87,7 @@ export default function OnboardingScreen() {
         {/* Skip button */}
         <View className="flex-row justify-end px-6 pt-4">
           <Pressable onPress={handleSkip} className="p-2">
-            <Text className="text-gray-400">Passer</Text>
+            <Text className="text-gray-400">Skip</Text>
           </Pressable>
         </View>
 
@@ -143,7 +143,7 @@ export default function OnboardingScreen() {
             className="bg-primary-500 rounded-xl py-4"
           >
             <Text className="text-white text-center font-bold text-lg">
-              {currentIndex === slides.length - 1 ? "C'est parti !" : "Suivant"}
+              {currentIndex === slides.length - 1 ? "Let's go!" : "Next"}
             </Text>
           </Pressable>
         </View>

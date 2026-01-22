@@ -1,15 +1,250 @@
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "../../src/stores/gameStore";
 import {
   getQuestions,
   formatQuestionsForGame,
 } from "../../src/services/questions";
 
+// New QuizNext design colors
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceActive: "#252e33",
+  primary: "#00c2cc",
+  primaryDim: "rgba(0, 194, 204, 0.15)",
+  success: "#22c55e",
+  successDim: "rgba(34, 197, 94, 0.2)",
+  error: "#ef4444",
+  errorDim: "rgba(239, 68, 68, 0.2)",
+  yellow: "#FFD100",
+  purple: "#A16EFF",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
+
+const LETTER_OPTIONS = ['A', 'B', 'C', 'D'];
+
+// Circular Timer Component - uses two half-circle technique for smooth progress
+function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
+  timeRemaining: number;
+  totalTime: number;
+  questionNumber: number;
+}) {
+  const isLow = timeRemaining <= 5;
+  const color = isLow ? COLORS.error : COLORS.primary;
+
+  // Progress from 0 to 1 (1 = full circle, 0 = empty)
+  const progress = timeRemaining / totalTime;
+
+  // Calculate rotation for the two half-circles
+  // First half (right side): rotates from 0 to 180 degrees for first 50% of progress
+  // Second half (left side): rotates from 0 to 180 degrees for last 50% of progress
+  const rightHalfRotation = progress > 0.5 ? 180 : (progress * 2) * 180;
+  const leftHalfRotation = progress > 0.5 ? ((progress - 0.5) * 2) * 180 : 0;
+
+  const SIZE = 120;
+  const STROKE = 8;
+
+  return (
+    <View className="relative items-center justify-center" style={{ width: SIZE + 20, height: SIZE + 20 }}>
+      {/* Background Circle */}
+      <View
+        className="absolute rounded-full"
+        style={{
+          width: SIZE,
+          height: SIZE,
+          borderWidth: STROKE,
+          borderColor: 'rgba(255,255,255,0.1)',
+        }}
+      />
+
+      {/* Progress Circle using clip technique */}
+      {/* Right half container */}
+      <View
+        className="absolute overflow-hidden"
+        style={{
+          width: SIZE / 2,
+          height: SIZE,
+          right: 10,
+          top: 10,
+        }}
+      >
+        <View
+          className="absolute rounded-full"
+          style={{
+            width: SIZE,
+            height: SIZE,
+            borderWidth: STROKE,
+            borderColor: color,
+            right: 0,
+            transform: [{ rotate: `${-180 + rightHalfRotation}deg` }],
+            borderLeftColor: 'transparent',
+            borderBottomColor: 'transparent',
+          }}
+        />
+      </View>
+
+      {/* Left half container */}
+      <View
+        className="absolute overflow-hidden"
+        style={{
+          width: SIZE / 2,
+          height: SIZE,
+          left: 10,
+          top: 10,
+        }}
+      >
+        <View
+          className="absolute rounded-full"
+          style={{
+            width: SIZE,
+            height: SIZE,
+            borderWidth: STROKE,
+            borderColor: progress > 0.5 ? color : 'transparent',
+            left: 0,
+            transform: [{ rotate: `${leftHalfRotation}deg` }],
+            borderRightColor: 'transparent',
+            borderTopColor: 'transparent',
+          }}
+        />
+      </View>
+
+      {/* Glow effect */}
+      <View
+        className="absolute rounded-full"
+        style={{
+          width: SIZE,
+          height: SIZE,
+          shadowColor: color,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.5,
+          shadowRadius: 15,
+        }}
+      />
+
+      {/* Timer Content */}
+      <View className="items-center justify-center">
+        <Text
+          className="text-4xl font-black leading-none"
+          style={{ color: isLow ? COLORS.error : COLORS.text }}
+        >
+          {timeRemaining}
+          <Text className="text-lg text-gray-400 font-medium">s</Text>
+        </Text>
+        <Text
+          className="text-xs font-bold tracking-widest uppercase mt-1"
+          style={{ color: isLow ? COLORS.error : COLORS.primary }}
+        >
+          Q{questionNumber}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+// Answer Option Component with Letter Badge
+function AnswerOption({
+  answer,
+  index,
+  onPress,
+  disabled,
+  isSelected,
+  isCorrect,
+  showResult
+}: {
+  answer: string;
+  index: number;
+  onPress: () => void;
+  disabled: boolean;
+  isSelected: boolean;
+  isCorrect: boolean;
+  showResult: boolean;
+}) {
+  let bgColor = COLORS.surface;
+  let borderColor = 'rgba(255,255,255,0.05)';
+  let letterBgColor = 'rgba(255,255,255,0.05)';
+  let letterBorderColor = 'rgba(255,255,255,0.1)';
+  let letterTextColor = COLORS.text;
+
+  if (showResult) {
+    if (isCorrect) {
+      bgColor = COLORS.successDim;
+      borderColor = COLORS.success;
+      letterBgColor = COLORS.success;
+      letterTextColor = COLORS.bg;
+    } else if (isSelected && !isCorrect) {
+      bgColor = COLORS.errorDim;
+      borderColor = COLORS.error;
+      letterBgColor = COLORS.error;
+      letterTextColor = COLORS.bg;
+    }
+  } else if (isSelected) {
+    bgColor = COLORS.surfaceActive;
+    borderColor = `${COLORS.primary}50`;
+    letterBgColor = COLORS.primary;
+    letterBorderColor = COLORS.primary;
+    letterTextColor = COLORS.bg;
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      className="rounded-xl p-4 flex-row items-center gap-4 active:opacity-90"
+      style={{
+        backgroundColor: bgColor,
+        borderWidth: 1,
+        borderColor: borderColor,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      }}
+    >
+      {/* Letter Badge */}
+      <View
+        className="w-10 h-10 rounded-lg items-center justify-center"
+        style={{
+          backgroundColor: letterBgColor,
+          borderWidth: 1,
+          borderColor: letterBorderColor,
+        }}
+      >
+        <Text className="font-bold text-lg" style={{ color: letterTextColor }}>
+          {LETTER_OPTIONS[index]}
+        </Text>
+      </View>
+
+      {/* Answer Text */}
+      <Text className="text-lg font-medium text-white/90 flex-1 text-left">
+        {answer}
+      </Text>
+
+      {/* Check Icon */}
+      {showResult && isCorrect && (
+        <Text className="text-xl" style={{ color: COLORS.success }}>✓</Text>
+      )}
+    </Pressable>
+  );
+}
+
+// Lifeline Button Component
+function LifelineButton({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      className="flex-col items-center justify-center w-16 h-14 rounded-full active:opacity-70"
+    >
+      <Text className="text-2xl opacity-70">{icon}</Text>
+      <Text className="text-[10px] font-bold text-white/50 mt-0.5">{label}</Text>
+    </Pressable>
+  );
+}
+
 export default function ChainGameScreen() {
-  // Use shallow selectors for state only
   const status = useGameStore((state) => state.status);
   const score = useGameStore((state) => state.score);
   const chain = useGameStore((state) => state.chain);
@@ -22,14 +257,21 @@ export default function ChainGameScreen() {
   const currentQuestion = questions[currentQuestionIndex];
   const lastAnswer = answers[answers.length - 1];
   const hasAnswered = lastAnswer?.questionId === currentQuestion?.id;
-  const progress = {
-    current: currentQuestionIndex + 1,
-    total: totalQuestions,
-    percentage: totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0,
-  };
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mounted = useRef(true);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [level, setLevel] = useState(1);
+
+  // Calculate level based on score
+  useEffect(() => {
+    setLevel(Math.floor(score / 500) + 1);
+  }, [score]);
+
+  // Reset selected index when question changes
+  useEffect(() => {
+    setSelectedIndex(null);
+  }, [currentQuestionIndex]);
 
   // Load questions on mount
   useEffect(() => {
@@ -68,13 +310,12 @@ export default function ChainGameScreen() {
 
       if (!mounted.current) return;
 
-      // Fallback to mock questions
       const mockQuestions = [
-        { id: "1", categoryId: "1", difficulty: 1, question: "Quelle est la capitale de l'Australie?", answers: ["Sydney", "Melbourne", "Canberra", "Perth"], correctIndex: 2, explanation: null },
-        { id: "2", categoryId: "1", difficulty: 1, question: "En quelle année a eu lieu la Révolution française?", answers: ["1776", "1789", "1804", "1815"], correctIndex: 1, explanation: null },
-        { id: "3", categoryId: "2", difficulty: 1, question: "Quel est le symbole chimique de l'or?", answers: ["Or", "Au", "Ag", "Fe"], correctIndex: 1, explanation: null },
-        { id: "4", categoryId: "3", difficulty: 1, question: "Combien de joueurs y a-t-il dans une équipe de football?", answers: ["10", "11", "12", "9"], correctIndex: 1, explanation: null },
-        { id: "5", categoryId: "4", difficulty: 1, question: "Qui a chanté 'Thriller'?", answers: ["Prince", "Michael Jackson", "Madonna", "Whitney Houston"], correctIndex: 1, explanation: null },
+        { id: "1", categoryId: "1", difficulty: 1, question: "Which club won the Champions League in 2021 with N'Golo Kanté as the midfield engine?", answers: ["Paris Saint-Germain", "Manchester City", "Chelsea FC", "Real Madrid"], correctIndex: 2, explanation: null },
+        { id: "2", categoryId: "1", difficulty: 1, question: "Which player holds the record for most goals in a single Ligue 1 season?", answers: ["Zlatan Ibrahimović", "Josip Skoblar", "Kylian Mbappé", "Jean-Pierre Papin"], correctIndex: 1, explanation: null },
+        { id: "3", categoryId: "2", difficulty: 1, question: "In what year did Zinédine Zidane score his two goals in the World Cup final?", answers: ["1998", "2002", "2006", "1994"], correctIndex: 0, explanation: null },
+        { id: "4", categoryId: "3", difficulty: 1, question: "Which goalkeeper holds the Premier League clean sheet record?", answers: ["Peter Schmeichel", "Petr Čech", "Edwin van der Sar", "David Seaman"], correctIndex: 2, explanation: null },
+        { id: "5", categoryId: "4", difficulty: 1, question: "How many Ballon d'Or awards has Lionel Messi won?", answers: ["6", "7", "8", "5"], correctIndex: 2, explanation: null },
       ];
 
       useGameStore.getState().initGame({
@@ -130,6 +371,7 @@ export default function ChainGameScreen() {
 
   const handleAnswer = (index: number) => {
     if (status !== "playing" || hasAnswered) return;
+    setSelectedIndex(index);
     useGameStore.getState().answerQuestion(index);
   };
 
@@ -142,126 +384,162 @@ export default function ChainGameScreen() {
     router.back();
   };
 
-  const getChainColor = (chainValue: number) => {
-    if (chainValue >= 10) return "bg-red-600";
-    if (chainValue >= 8) return "bg-orange-600";
-    if (chainValue >= 5) return "bg-purple-500";
-    if (chainValue >= 3) return "bg-blue-500";
-    if (chainValue >= 2) return "bg-green-500";
-    return "bg-gray-500";
-  };
-
-  const getChainMultiplier = (chainValue: number): number => {
-    if (chainValue >= 10) return 10;
-    if (chainValue >= 8) return 8;
-    if (chainValue >= 5) return 5;
-    if (chainValue >= 3) return 3;
-    if (chainValue >= 2) return 2;
-    return 1;
-  };
-
   // Loading state
   if (status === "loading" || status === "idle" || !currentQuestion) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center">
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-white mt-4 text-lg">Chargement des questions...</Text>
+      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text className="text-white mt-4 text-lg">Loading questions...</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <View className="flex-1 px-6 pt-4">
-        {/* Header */}
-        <View className="flex-row justify-between items-center mb-6">
-          <Pressable onPress={handleExit} className="p-2">
-            <Text className="text-white text-2xl">×</Text>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      {/* Background Elements */}
+      <View className="absolute inset-0 pointer-events-none">
+        <View
+          className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
+          style={{ backgroundColor: COLORS.primary }}
+        />
+        <View
+          className="absolute -bottom-10 -right-10 w-[400px] h-[400px] rounded-full blur-3xl opacity-20"
+          style={{ backgroundColor: COLORS.purple }}
+        />
+      </View>
+
+      <View className="flex-1 relative">
+        {/* Top HUD */}
+        <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
+          {/* Exit Button */}
+          <Pressable
+            onPress={handleExit}
+            className="w-10 h-10 rounded-full items-center justify-center"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-white text-xl">×</Text>
           </Pressable>
-          <Text className="text-white text-lg font-medium">
-            Question {progress.current}/{progress.total}
-          </Text>
-          <View className={`${getChainColor(chain)} rounded-full px-4 py-2 min-w-[60px] items-center`}>
-            <Text className="text-white font-bold text-lg">
-              {getChainMultiplier(chain)}x
+
+          {/* Level Badge */}
+          <View
+            className="px-4 py-2 rounded-full flex-row items-center gap-2"
+            style={{
+              backgroundColor: 'rgba(30, 37, 41, 0.7)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.08)',
+            }}
+          >
+            <Text className="text-xl" style={{ color: COLORS.yellow }}>⭐</Text>
+            <Text className="text-sm font-bold tracking-wide text-white">LEVEL {level}</Text>
+          </View>
+
+          {/* Points Badge */}
+          <View
+            className="px-4 py-2 rounded-full flex-row items-center gap-2"
+            style={{
+              backgroundColor: 'rgba(30, 37, 41, 0.7)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.08)',
+            }}
+          >
+            <Text className="text-xl" style={{ color: COLORS.primary }}>🏆</Text>
+            <Text className="text-sm font-bold tracking-wide text-white">{score.toLocaleString()} PTS</Text>
+          </View>
+        </View>
+
+        {/* Timer Section */}
+        <View className="items-center py-4">
+          <CircularTimer
+            timeRemaining={timeRemaining}
+            totalTime={15}
+            questionNumber={currentQuestionIndex + 1}
+          />
+        </View>
+
+        {/* Question Card */}
+        <View className="px-6 mb-6">
+          <View
+            className="rounded-2xl p-6 relative overflow-hidden"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+            }}
+          >
+            {/* Cyan Left Border */}
+            <View
+              className="absolute top-0 left-0 w-1 h-full"
+              style={{ backgroundColor: COLORS.primary }}
+            />
+
+            <Text className="text-2xl font-bold leading-tight text-white">
+              {currentQuestion.question}
             </Text>
+
+            <View
+              className="h-1 w-12 rounded-full mt-4"
+              style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+            />
           </View>
         </View>
 
-        {/* Score & Timer */}
-        <View className="flex-row justify-between items-center mb-8">
-          <View>
-            <Text className="text-gray-400 text-sm">Score</Text>
-            <Text className="text-white text-3xl font-bold">{score}</Text>
-          </View>
-          <View className={`rounded-full w-16 h-16 items-center justify-center ${timeRemaining <= 5 ? "bg-red-500" : "bg-gray-700"}`}>
-            <Text className="text-white text-2xl font-bold">{timeRemaining}</Text>
-          </View>
+        {/* Answer Options */}
+        <View className="px-6 flex-col gap-3">
+          {currentQuestion.answers.map((answer, index) => (
+            <AnswerOption
+              key={index}
+              answer={answer}
+              index={index}
+              onPress={() => handleAnswer(index)}
+              disabled={hasAnswered}
+              isSelected={selectedIndex === index || lastAnswer?.selectedAnswer === answer}
+              isCorrect={index === currentQuestion.correctIndex}
+              showResult={hasAnswered}
+            />
+          ))}
         </View>
 
-        {/* Progress bar */}
-        <View className="h-2 bg-gray-700 rounded-full mb-6 overflow-hidden">
-          <View className="h-full bg-primary-500 rounded-full" style={{ width: `${progress.percentage}%` }} />
-        </View>
-
-        {/* Question */}
-        <View className="bg-gray-800 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-xl text-center leading-7">
-            {currentQuestion.question}
-          </Text>
-        </View>
-
-        {/* Answers */}
-        <View className="gap-3">
-          {currentQuestion.answers.map((answer, index) => {
-            let bgColor = "bg-gray-700";
-            let borderColor = "border-transparent";
-
-            if (hasAnswered) {
-              if (index === currentQuestion.correctIndex) {
-                bgColor = "bg-green-600";
-                borderColor = "border-green-400";
-              } else if (lastAnswer?.selectedAnswer === answer && index !== currentQuestion.correctIndex) {
-                bgColor = "bg-red-600";
-                borderColor = "border-red-400";
-              }
-            }
-
-            return (
-              <Pressable
-                key={index}
-                onPress={() => handleAnswer(index)}
-                className={`${bgColor} border-2 ${borderColor} rounded-xl py-4 px-6 active:opacity-80`}
-                disabled={hasAnswered}
-              >
-                <Text className="text-white text-lg text-center">{answer}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* Result feedback & Next button */}
+        {/* Result Feedback & Next Button */}
         {hasAnswered && lastAnswer && (
-          <View className="mt-6">
-            <View className={`rounded-xl py-3 px-4 mb-4 ${lastAnswer.isCorrect ? "bg-green-900/50" : "bg-red-900/50"}`}>
-              <Text className={`text-center font-bold text-lg ${lastAnswer.isCorrect ? "text-green-400" : "text-red-400"}`}>
-                {lastAnswer.isCorrect ? `+${lastAnswer.pointsEarned} points!` : "Mauvaise réponse!"}
+          <View className="px-6 mt-6">
+            <Pressable
+              onPress={handleNextQuestion}
+              className="rounded-2xl py-4 px-6 active:opacity-80 flex-row items-center justify-center"
+              style={{ backgroundColor: COLORS.primary }}
+            >
+              <Text className="text-lg font-bold mr-2" style={{ color: COLORS.bg }}>
+                {currentQuestionIndex + 1 >= totalQuestions ? "View results" : "Next question"}
               </Text>
-              {lastAnswer.isCorrect && chain > 1 && (
-                <Text className="text-center text-green-300 text-sm mt-1">
-                  Chain x{getChainMultiplier(chain)}!
-                </Text>
-              )}
-              {!lastAnswer.isCorrect && (
-                <Text className="text-center text-gray-400 text-sm mt-1">Chain reset</Text>
-              )}
-            </View>
-
-            <Pressable onPress={handleNextQuestion} className="bg-primary-500 rounded-xl py-4 px-6 active:opacity-80">
-              <Text className="text-white text-lg text-center font-bold">
-                {progress.current >= progress.total ? "Voir les résultats" : "Question suivante"}
-              </Text>
+              <Text style={{ color: COLORS.bg }}>→</Text>
             </Pressable>
+          </View>
+        )}
+
+        {/* Lifeline Dock */}
+        {!hasAnswered && (
+          <View className="absolute bottom-8 left-0 right-0 items-center px-4">
+            <View
+              className="p-1.5 rounded-full flex-row items-center gap-1"
+              style={{
+                backgroundColor: 'rgba(30, 37, 41, 0.7)',
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.1)',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.5,
+                shadowRadius: 16,
+              }}
+            >
+              <LifelineButton icon="◐" label="50/50" onPress={() => {}} />
+              <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+              <LifelineButton icon="💡" label="HINT" onPress={() => {}} />
+              <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+              <LifelineButton icon="⏭" label="SKIP" onPress={() => {}} />
+            </View>
           </View>
         )}
       </View>

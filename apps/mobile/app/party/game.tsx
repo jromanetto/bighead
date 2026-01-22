@@ -17,7 +17,7 @@ export default function PartyGameScreen() {
 
   const players: string[] = playersParam
     ? JSON.parse(playersParam)
-    : ["Joueur 1", "Joueur 2"];
+    : ["Player 1", "Player 2"];
   const questionCount = Number(questionCountParam) || 10;
 
   const [waitingForPlayer, setWaitingForPlayer] = useState(true);
@@ -76,8 +76,8 @@ export default function PartyGameScreen() {
           id: "1",
           categoryId: "1",
           difficulty: 1,
-          question: "Quel pays a le plus grand nombre de fuseaux horaires?",
-          answers: ["Russie", "États-Unis", "France", "Chine"],
+          question: "Which country has the most time zones?",
+          answers: ["Russia", "United States", "France", "China"],
           correctIndex: 2,
           explanation: null,
         },
@@ -85,7 +85,7 @@ export default function PartyGameScreen() {
           id: "2",
           categoryId: "1",
           difficulty: 1,
-          question: "Quelle est la capitale de l'Australie?",
+          question: "What is the capital of Australia?",
           answers: ["Sydney", "Melbourne", "Canberra", "Perth"],
           correctIndex: 2,
           explanation: null,
@@ -94,7 +94,7 @@ export default function PartyGameScreen() {
           id: "3",
           categoryId: "2",
           difficulty: 1,
-          question: "En quelle année a eu lieu la Révolution française?",
+          question: "In what year did the French Revolution begin?",
           answers: ["1776", "1789", "1804", "1815"],
           correctIndex: 1,
           explanation: null,
@@ -103,7 +103,7 @@ export default function PartyGameScreen() {
           id: "4",
           categoryId: "3",
           difficulty: 1,
-          question: "Quel est le symbole chimique de l'or?",
+          question: "What is the chemical symbol for gold?",
           answers: ["Or", "Au", "Ag", "Fe"],
           correctIndex: 1,
           explanation: null,
@@ -112,7 +112,7 @@ export default function PartyGameScreen() {
           id: "5",
           categoryId: "4",
           difficulty: 1,
-          question: "Qui a chanté 'Thriller'?",
+          question: "Who sang 'Thriller'?",
           answers: ["Prince", "Michael Jackson", "Madonna", "Whitney Houston"],
           correctIndex: 1,
           explanation: null,
@@ -175,7 +175,7 @@ export default function PartyGameScreen() {
       <SafeAreaView className="flex-1 bg-accent-600 items-center justify-center">
         <ActivityIndicator size="large" color="#ffffff" />
         <Text className="text-white mt-4 text-lg">
-          Chargement des questions...
+          Loading questions...
         </Text>
       </SafeAreaView>
     );
@@ -192,7 +192,7 @@ export default function PartyGameScreen() {
           </Text>
 
           {/* Hand off message */}
-          <Text className="text-white text-xl mb-2">Passe le téléphone à</Text>
+          <Text className="text-white text-xl mb-2">Pass the phone to</Text>
           <Text className="text-white text-5xl font-bold mb-8">
             {currentPlayer?.name || players[currentPlayerIndex]}
           </Text>
@@ -200,7 +200,7 @@ export default function PartyGameScreen() {
           {/* Mini scoreboard */}
           <View className="bg-white/10 rounded-xl p-4 w-full mb-8">
             <Text className="text-white/60 text-sm text-center mb-3">
-              Classement
+              Leaderboard
             </Text>
             {sortedPlayers.slice(0, 4).map((player, index) => (
               <View
@@ -229,13 +229,13 @@ export default function PartyGameScreen() {
             className="bg-white rounded-2xl py-4 px-16 active:opacity-80"
           >
             <Text className="text-accent-600 text-xl font-bold">
-              Je suis prêt!
+              I'm ready!
             </Text>
           </Pressable>
 
           {/* Exit button */}
           <Pressable onPress={handleExit} className="mt-6 p-2">
-            <Text className="text-white/60">Quitter la partie</Text>
+            <Text className="text-white/60">Exit game</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -338,8 +338,8 @@ export default function PartyGameScreen() {
                 }`}
               >
                 {lastAnswer.isCorrect
-                  ? `Bravo ${currentPlayer?.name}! +${lastAnswer.pointsEarned} pts`
-                  : `Raté ${currentPlayer?.name}!`}
+                  ? `Well done ${currentPlayer?.name}! +${lastAnswer.pointsEarned} pts`
+                  : `Missed ${currentPlayer?.name}!`}
               </Text>
             </View>
 
@@ -350,8 +350,8 @@ export default function PartyGameScreen() {
             >
               <Text className="text-white text-lg text-center font-bold">
                 {progress.current >= progress.total
-                  ? "Voir les résultats"
-                  : "Joueur suivant"}
+                  ? "View results"
+                  : "Next player"}
               </Text>
             </Pressable>
           </View>

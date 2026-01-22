@@ -58,6 +58,21 @@ module.exports = {
           8: '#f97316',   // 8x - orange
           10: '#ef4444',  // 10x - red (max)
         },
+        // Arena/Duel specific colors (from Stitch design)
+        arena: {
+          teal: '#00c2cc',        // Electric Teal - primary arena color
+          'teal-dim': 'rgba(0, 194, 204, 0.15)',
+          coral: '#FF6B6B',       // Coral - opponent/danger
+          purple: '#A16EFF',      // Electric Purple - accent
+          bg: '#161a1d',          // Deep dark background
+          surface: '#22282c',     // Card/surface background
+          'surface-light': '#2c3339', // Lighter surface for highlights
+        },
+        // Streak colors
+        streak: {
+          fire: '#ec4899',        // Pink fire for streak
+          glow: 'rgba(236, 72, 153, 0.3)',
+        },
       },
       fontFamily: {
         sans: ['System'],

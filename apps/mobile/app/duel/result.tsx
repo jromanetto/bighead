@@ -64,13 +64,13 @@ export default function DuelResultScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-5xl mb-6">❌</Text>
           <Text className="text-white text-xl font-bold text-center">
-            Résultat introuvable
+            Result not found
           </Text>
           <Pressable
             onPress={() => router.replace("/")}
             className="bg-primary-500 rounded-xl py-4 px-8 mt-6"
           >
-            <Text className="text-white font-bold">Retour à l'accueil</Text>
+            <Text className="text-white font-bold">Back to home</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -99,14 +99,14 @@ export default function DuelResultScreen() {
             isWinner ? "text-yellow-400" : isDraw ? "text-gray-400" : "text-red-400"
           }`}
         >
-          {isWinner ? "VICTOIRE !" : isDraw ? "ÉGALITÉ" : "DÉFAITE"}
+          {isWinner ? "VICTORY!" : isDraw ? "DRAW" : "DEFEAT"}
         </Text>
         <Text className="text-gray-400 text-center mb-8">
           {isWinner
-            ? "Tu as dominé ce duel !"
+            ? "You dominated this duel!"
             : isDraw
-            ? "Match serré !"
-            : "La prochaine sera la bonne !"}
+            ? "Close match!"
+            : "Next time will be yours!"}
         </Text>
 
         {/* Score Display */}
@@ -115,7 +115,7 @@ export default function DuelResultScreen() {
             <View className="flex-row items-center justify-around">
               {/* Your Score */}
               <View className="items-center">
-                <Text className="text-gray-400 text-sm mb-1">TOI</Text>
+                <Text className="text-gray-400 text-sm mb-1">YOU</Text>
                 <Text
                   className={`text-5xl font-bold ${
                     myScore > opponentScore ? "text-green-400" : "text-white"
@@ -132,7 +132,7 @@ export default function DuelResultScreen() {
 
               {/* Opponent Score */}
               <View className="items-center">
-                <Text className="text-gray-400 text-sm mb-1">ADVERSAIRE</Text>
+                <Text className="text-gray-400 text-sm mb-1">OPPONENT</Text>
                 <Text
                   className={`text-5xl font-bold ${
                     opponentScore > myScore ? "text-red-400" : "text-white"
@@ -145,7 +145,7 @@ export default function DuelResultScreen() {
 
             <View className="border-t border-gray-700 mt-4 pt-4">
               <Text className="text-gray-500 text-center text-sm">
-                {duel.rounds_total} questions • {duel.category === "general" ? "Culture générale" : duel.category}
+                {duel.rounds_total} questions • {duel.category === "general" ? "General knowledge" : duel.category}
               </Text>
             </View>
           </View>
@@ -158,7 +158,7 @@ export default function DuelResultScreen() {
             className="bg-primary-500 rounded-xl py-4 mb-3"
           >
             <Text className="text-white text-center font-bold text-lg">
-              🎮 Nouveau duel
+              🎮 New duel
             </Text>
           </Pressable>
 
@@ -167,7 +167,7 @@ export default function DuelResultScreen() {
             className="bg-gray-800 rounded-xl py-4"
           >
             <Text className="text-white text-center font-bold">
-              Retour à l'accueil
+              Back to home
             </Text>
           </Pressable>
         </View>

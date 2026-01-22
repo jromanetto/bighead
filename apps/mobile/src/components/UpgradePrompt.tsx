@@ -11,7 +11,7 @@ interface UpgradePromptProps {
 export function UpgradePrompt({
   onPress,
   variant = "banner",
-  message = "Crée un compte pour sauvegarder tes scores",
+  message = "Create an account to save your scores",
 }: UpgradePromptProps) {
   const { isAnonymous } = useAuth();
 
@@ -34,7 +34,7 @@ export function UpgradePrompt({
           className="bg-white rounded-xl py-3 px-6 self-start active:opacity-80"
         >
           <Text className="text-primary-600 font-bold">
-            Créer mon compte
+            Create account
           </Text>
         </Pressable>
       </View>
@@ -54,7 +54,7 @@ export function UpgradePrompt({
       </View>
       <View className="bg-primary-500 rounded-lg px-3 py-2">
         <Text className="text-white font-bold text-sm">
-          Créer
+          Create
         </Text>
       </View>
     </Pressable>

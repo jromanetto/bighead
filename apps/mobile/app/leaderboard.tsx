@@ -1,15 +1,146 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { getLeaderboard, getWeeklyLeaderboard, getUserRank, type LeaderboardEntry } from "../src/services/games";
 import { useAuth } from "../src/contexts/AuthContext";
+import { buttonPressFeedback } from "../src/utils/feedback";
+
+// New QuizNext design colors
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceLight: "#252e33",
+  primary: "#00c2cc",
+  primaryDim: "rgba(0, 194, 204, 0.15)",
+  success: "#22c55e",
+  gold: "#FFD100",
+  goldDim: "rgba(255, 209, 0, 0.2)",
+  silver: "#9ca3af",
+  bronze: "#f97316",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
+
+// Avatar component
+function PlayerAvatar({
+  username,
+  size = 48,
+  isCurrentUser = false,
+  ringColor
+}: {
+  username?: string | null;
+  size?: number;
+  isCurrentUser?: boolean;
+  ringColor?: string;
+}) {
+  const initial = username?.charAt(0).toUpperCase() || "?";
+  const bgColor = isCurrentUser ? COLORS.primary : COLORS.surface;
+
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: bgColor,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: ringColor ? 3 : 0,
+        borderColor: ringColor,
+      }}
+    >
+      <Text className="text-white font-bold" style={{ fontSize: size * 0.4 }}>
+        {initial}
+      </Text>
+    </View>
+  );
+}
+
+// Rank Badge component
+function RankBadge({ rank }: { rank: number }) {
+  let bgColor = COLORS.surfaceLight;
+  let textColor = COLORS.text;
+
+  if (rank === 1) {
+    bgColor = COLORS.gold;
+    textColor = COLORS.bg;
+  } else if (rank === 2) {
+    bgColor = COLORS.silver;
+    textColor = COLORS.bg;
+  } else if (rank === 3) {
+    bgColor = COLORS.bronze;
+    textColor = COLORS.bg;
+  }
+
+  return (
+    <View
+      className="rounded-full items-center justify-center"
+      style={{
+        width: 24,
+        height: 24,
+        backgroundColor: bgColor,
+        position: 'absolute',
+        bottom: -4,
+        right: -4,
+      }}
+    >
+      <Text className="text-xs font-bold" style={{ color: textColor }}>#{rank}</Text>
+    </View>
+  );
+}
+
+// Leaderboard Row component
+function LeaderboardRow({
+  player,
+  rank,
+  isCurrentUser
+}: {
+  player: LeaderboardEntry;
+  rank: number;
+  isCurrentUser: boolean;
+}) {
+  return (
+    <View
+      className="flex-row items-center py-3 px-4 rounded-2xl mb-2"
+      style={{
+        backgroundColor: isCurrentUser ? COLORS.primaryDim : COLORS.surface,
+        borderWidth: isCurrentUser ? 1 : 0,
+        borderColor: isCurrentUser ? `${COLORS.primary}40` : 'transparent',
+      }}
+    >
+      <Text
+        className="w-8 text-base"
+        style={{ color: isCurrentUser ? COLORS.primary : COLORS.textMuted }}
+      >
+        {rank}
+      </Text>
+      <PlayerAvatar
+        username={player.username}
+        size={40}
+        isCurrentUser={isCurrentUser}
+      />
+      <View className="flex-1 ml-3">
+        <Text
+          className="font-semibold"
+          style={{ color: isCurrentUser ? COLORS.primary : COLORS.text }}
+        >
+          {player.username || "Player"}
+        </Text>
+      </View>
+      <Text className="font-bold" style={{ color: COLORS.text }}>
+        {player.total_xp?.toLocaleString() || 0}
+        <Text style={{ color: COLORS.textMuted }}> XP</Text>
+      </Text>
+    </View>
+  );
+}
 
 export default function LeaderboardScreen() {
   const { user, profile, isAnonymous } = useAuth();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"weekly" | "alltime">("alltime");
+  const [activeTab, setActiveTab] = useState<"weekly" | "alltime">("weekly");
   const [userRank, setUserRank] = useState<{ rank: number; total_xp: number } | null>(null);
 
   useEffect(() => {
@@ -46,54 +177,67 @@ export default function LeaderboardScreen() {
     }
   };
 
-  const getPositionStyle = (rank: number) => {
-    if (rank === 1) return "bg-yellow-500/10";
-    if (rank === 2) return "bg-gray-300/5";
-    if (rank === 3) return "bg-orange-500/5";
-    return "";
-  };
-
   const isCurrentUser = (playerId: string) => user?.id === playerId;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-1">
         {/* Header */}
-        <View className="flex-row items-center px-6 pt-4 mb-4">
-          <Pressable onPress={() => router.back()} className="mr-4 p-2">
-            <Text className="text-white text-2xl">←</Text>
+        <View className="flex-row items-center px-5 pt-4 mb-4">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.back();
+            }}
+            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-white text-lg">←</Text>
           </Pressable>
-          <Text className="text-white text-2xl font-bold">Classement</Text>
+          <Text className="text-white text-2xl font-black">LEADERBOARD</Text>
         </View>
 
         {/* Tabs */}
-        <View className="flex-row px-6 mb-4">
+        <View
+          className="flex-row mx-5 mb-6 rounded-2xl p-1"
+          style={{ backgroundColor: COLORS.surface }}
+        >
           <Pressable
-            onPress={() => setActiveTab("weekly")}
-            className={`flex-1 rounded-l-xl py-3 ${
-              activeTab === "weekly" ? "bg-primary-500" : "bg-gray-700"
-            }`}
+            onPress={() => {
+              buttonPressFeedback();
+              setActiveTab("weekly");
+            }}
+            className="flex-1 rounded-xl py-3"
+            style={{
+              backgroundColor: activeTab === "weekly" ? COLORS.primary : 'transparent',
+            }}
           >
             <Text
-              className={`text-center font-bold ${
-                activeTab === "weekly" ? "text-white" : "text-gray-400"
-              }`}
+              className="text-center font-bold"
+              style={{
+                color: activeTab === "weekly" ? COLORS.bg : COLORS.textMuted,
+              }}
             >
-              Cette semaine
+              This Week
             </Text>
           </Pressable>
           <Pressable
-            onPress={() => setActiveTab("alltime")}
-            className={`flex-1 rounded-r-xl py-3 ${
-              activeTab === "alltime" ? "bg-primary-500" : "bg-gray-700"
-            }`}
+            onPress={() => {
+              buttonPressFeedback();
+              setActiveTab("alltime");
+            }}
+            className="flex-1 rounded-xl py-3"
+            style={{
+              backgroundColor: activeTab === "alltime" ? COLORS.primary : 'transparent',
+            }}
           >
             <Text
-              className={`text-center font-bold ${
-                activeTab === "alltime" ? "text-white" : "text-gray-400"
-              }`}
+              className="text-center font-bold"
+              style={{
+                color: activeTab === "alltime" ? COLORS.bg : COLORS.textMuted,
+              }}
             >
-              Tout temps
+              All Time
             </Text>
           </Pressable>
         </View>
@@ -101,140 +245,119 @@ export default function LeaderboardScreen() {
         {/* Loading state */}
         {loading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#0ea5e9" />
-            <Text className="text-gray-400 mt-4">Chargement...</Text>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+            <Text className="text-gray-400 mt-4">Loading...</Text>
           </View>
         ) : leaderboard.length === 0 ? (
           <View className="flex-1 items-center justify-center px-6">
             <Text className="text-6xl mb-4">🏆</Text>
             <Text className="text-white text-xl font-bold text-center mb-2">
-              Pas encore de classement
+              No leaderboard yet
             </Text>
             <Text className="text-gray-400 text-center">
               {activeTab === "weekly"
-                ? "Aucun joueur cette semaine. Sois le premier !"
-                : "Joue des parties pour apparaître dans le classement !"}
+                ? "No players this week. Be the first!"
+                : "Play games to appear on the leaderboard!"}
             </Text>
             <Pressable
-              onPress={() => router.push("/game/chain")}
-              className="bg-primary-500 rounded-xl py-3 px-8 mt-6"
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/game/chain");
+              }}
+              className="rounded-2xl py-4 px-8 mt-6"
+              style={{ backgroundColor: COLORS.primary }}
             >
-              <Text className="text-white font-bold">Jouer maintenant</Text>
+              <Text className="font-bold" style={{ color: COLORS.bg }}>Play Now</Text>
             </Pressable>
           </View>
         ) : (
           <>
-            {/* Top 3 Podium - only show if we have 3+ players */}
-            {leaderboard.length >= 3 ? (
-              <View className="flex-row justify-center items-end px-6 mb-4 h-32">
+            {/* Top 3 Podium */}
+            {leaderboard.length >= 3 && (
+              <View className="flex-row justify-center items-end px-5 mb-6" style={{ height: 140 }}>
                 {/* 2nd place */}
                 <View className="items-center flex-1">
-                  <View className={`w-14 h-14 rounded-full items-center justify-center mb-2 ${
-                    isCurrentUser(leaderboard[1].id) ? "bg-primary-500" : "bg-gray-700"
-                  }`}>
-                    <Text className="text-xl text-white">
-                      {leaderboard[1].username?.charAt(0).toUpperCase() || "?"}
-                    </Text>
+                  <View className="relative">
+                    <PlayerAvatar
+                      username={leaderboard[1].username}
+                      size={56}
+                      isCurrentUser={isCurrentUser(leaderboard[1].id)}
+                      ringColor={COLORS.silver}
+                    />
+                    <RankBadge rank={2} />
                   </View>
-                  <Text className="text-2xl">🥈</Text>
-                  <Text className={`text-sm font-medium mt-1 ${
-                    isCurrentUser(leaderboard[1].id) ? "text-primary-400" : "text-white"
-                  }`} numberOfLines={1}>
+                  <Text
+                    className="text-sm font-medium mt-2"
+                    style={{ color: isCurrentUser(leaderboard[1].id) ? COLORS.primary : COLORS.text }}
+                    numberOfLines={1}
+                  >
                     {leaderboard[1].username || "Joueur"}
                   </Text>
-                  <Text className="text-gray-400 text-xs">
+                  <Text className="text-xs" style={{ color: COLORS.textMuted }}>
                     {leaderboard[1].total_xp?.toLocaleString() || 0} XP
                   </Text>
                 </View>
 
                 {/* 1st place */}
-                <View className="items-center flex-1 -mt-6">
-                  <View className={`w-16 h-16 rounded-full items-center justify-center mb-2 border-2 ${
-                    isCurrentUser(leaderboard[0].id)
-                      ? "bg-primary-500/20 border-primary-500"
-                      : "bg-yellow-500/20 border-yellow-500"
-                  }`}>
-                    <Text className="text-2xl text-white">
-                      {leaderboard[0].username?.charAt(0).toUpperCase() || "?"}
-                    </Text>
+                <View className="items-center flex-1 -mt-8">
+                  <Text className="text-2xl mb-2">👑</Text>
+                  <View className="relative">
+                    <PlayerAvatar
+                      username={leaderboard[0].username}
+                      size={72}
+                      isCurrentUser={isCurrentUser(leaderboard[0].id)}
+                      ringColor={COLORS.gold}
+                    />
+                    <RankBadge rank={1} />
                   </View>
-                  <Text className="text-3xl">🥇</Text>
-                  <Text className={`text-sm font-bold mt-1 ${
-                    isCurrentUser(leaderboard[0].id) ? "text-primary-400" : "text-yellow-400"
-                  }`} numberOfLines={1}>
+                  <Text
+                    className="text-sm font-bold mt-2"
+                    style={{ color: isCurrentUser(leaderboard[0].id) ? COLORS.primary : COLORS.gold }}
+                    numberOfLines={1}
+                  >
                     {leaderboard[0].username || "Joueur"}
                   </Text>
-                  <Text className="text-yellow-300/60 text-xs">
+                  <Text style={{ color: COLORS.gold }} className="text-xs">
                     {leaderboard[0].total_xp?.toLocaleString() || 0} XP
                   </Text>
                 </View>
 
                 {/* 3rd place */}
                 <View className="items-center flex-1">
-                  <View className={`w-14 h-14 rounded-full items-center justify-center mb-2 ${
-                    isCurrentUser(leaderboard[2].id) ? "bg-primary-500" : "bg-gray-700"
-                  }`}>
-                    <Text className="text-xl text-white">
-                      {leaderboard[2].username?.charAt(0).toUpperCase() || "?"}
-                    </Text>
+                  <View className="relative">
+                    <PlayerAvatar
+                      username={leaderboard[2].username}
+                      size={56}
+                      isCurrentUser={isCurrentUser(leaderboard[2].id)}
+                      ringColor={COLORS.bronze}
+                    />
+                    <RankBadge rank={3} />
                   </View>
-                  <Text className="text-2xl">🥉</Text>
-                  <Text className={`text-sm font-medium mt-1 ${
-                    isCurrentUser(leaderboard[2].id) ? "text-primary-400" : "text-white"
-                  }`} numberOfLines={1}>
+                  <Text
+                    className="text-sm font-medium mt-2"
+                    style={{ color: isCurrentUser(leaderboard[2].id) ? COLORS.primary : COLORS.text }}
+                    numberOfLines={1}
+                  >
                     {leaderboard[2].username || "Joueur"}
                   </Text>
-                  <Text className="text-gray-400 text-xs">
+                  <Text className="text-xs" style={{ color: COLORS.textMuted }}>
                     {leaderboard[2].total_xp?.toLocaleString() || 0} XP
                   </Text>
                 </View>
               </View>
-            ) : null}
+            )}
 
             {/* Full Leaderboard */}
-            <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-              {/* Show all players if less than 3, otherwise show from 4th position */}
+            <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
               {(leaderboard.length < 3 ? leaderboard : leaderboard.slice(3)).map((player, index) => {
                 const actualRank = leaderboard.length < 3 ? index + 1 : index + 4;
                 return (
-                <View
-                  key={player.id}
-                  className={`flex-row items-center py-3 px-3 rounded-xl mb-1 ${
-                    isCurrentUser(player.id) ? "bg-primary-500/20" : getPositionStyle(actualRank)
-                  }`}
-                >
-                  <View className="w-10">
-                    <Text className={`text-base ${
-                      isCurrentUser(player.id) ? "text-primary-400" : "text-gray-500"
-                    }`}>#{actualRank}</Text>
-                  </View>
-                  <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
-                    isCurrentUser(player.id) ? "bg-primary-500" : "bg-gray-700"
-                  }`}>
-                    <Text className="text-white">
-                      {player.username?.charAt(0).toUpperCase() || "?"}
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className={`text-base ${
-                      isCurrentUser(player.id) ? "text-primary-400 font-bold" : "text-white"
-                    }`}>
-                      {player.username || "Joueur"}
-                      {isCurrentUser(player.id) && " (Toi)"}
-                    </Text>
-                    <Text className="text-gray-500 text-xs">
-                      {activeTab === "alltime"
-                        ? `Niveau ${player.level || 1} • ${player.games_played || 0} parties`
-                        : `${player.games_played || 0} parties cette semaine`
-                      }
-                    </Text>
-                  </View>
-                  <Text className={`font-bold ${
-                    isCurrentUser(player.id) ? "text-primary-400" : "text-primary-400"
-                  }`}>
-                    {player.total_xp?.toLocaleString() || 0}
-                  </Text>
-                </View>
+                  <LeaderboardRow
+                    key={player.id}
+                    player={player}
+                    rank={actualRank}
+                    isCurrentUser={isCurrentUser(player.id)}
+                  />
                 );
               })}
               <View className="h-4" />
@@ -242,51 +365,79 @@ export default function LeaderboardScreen() {
           </>
         )}
 
-        {/* Your Position */}
-        <View className="px-6 pb-4 pt-3 border-t border-gray-800">
-          {isAnonymous ? (
-            <Pressable
-              onPress={() => router.push("/profile")}
-              className="flex-row items-center bg-gradient-to-r from-primary-500/20 to-accent-500/20 rounded-xl p-4"
+        {/* Current User Position */}
+        {!loading && userRank && (
+          <View
+            className="mx-5 mb-4 rounded-2xl p-4 flex-row items-center"
+            style={{
+              backgroundColor: COLORS.primary,
+            }}
+          >
+            <View
+              className="rounded-full items-center justify-center mr-3"
+              style={{
+                width: 32,
+                height: 32,
+                backgroundColor: 'rgba(255,255,255,0.2)',
+              }}
             >
-              <View className="w-10 h-10 rounded-full bg-gray-700 items-center justify-center mr-3">
-                <Text className="text-gray-400">?</Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-medium">Crée un compte</Text>
-                <Text className="text-gray-400 text-xs">Pour apparaître dans le classement</Text>
-              </View>
-              <Text className="text-primary-400">→</Text>
+              <Text className="font-bold" style={{ color: COLORS.bg }}>{userRank.rank}</Text>
+            </View>
+            <PlayerAvatar
+              username={profile?.username}
+              size={40}
+            />
+            <View className="flex-1 ml-3">
+              <Text className="font-bold" style={{ color: COLORS.bg }}>
+                YOU ({profile?.username || "PLAYER"})
+              </Text>
+              <Text style={{ color: 'rgba(17,24,39,0.7)' }} className="text-xs">
+                {Math.max(0, ((userRank.rank > 1 && leaderboard[userRank.rank - 2]?.total_xp) || 0) - userRank.total_xp)} XP to next rank!
+              </Text>
+            </View>
+            <Text className="font-bold" style={{ color: COLORS.bg }}>
+              {userRank.total_xp.toLocaleString()} XP
+            </Text>
+          </View>
+        )}
+
+        {/* Bottom Navigation */}
+        <View
+          className="flex-row justify-around py-3 px-2"
+          style={{
+            backgroundColor: COLORS.bg,
+            borderTopWidth: 1,
+            borderTopColor: COLORS.surfaceLight,
+          }}
+        >
+          <Link href="/" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">🏠</Text>
+              <Text className="text-gray-500 text-xs">Home</Text>
             </Pressable>
-          ) : userRank ? (
-            <View className="flex-row items-center bg-primary-500/10 rounded-xl p-4 border border-primary-500/30">
-              <Text className="text-primary-400 w-10 font-bold">#{userRank.rank}</Text>
-              <View className="w-10 h-10 rounded-full bg-primary-500 items-center justify-center mr-3">
-                <Text className="text-white font-bold">
-                  {profile?.username?.charAt(0).toUpperCase() || "?"}
-                </Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-bold">{profile?.username || "Toi"}</Text>
-                <Text className="text-gray-400 text-xs">Ta position actuelle</Text>
-              </View>
-              <Text className="text-primary-400 font-bold">{userRank.total_xp.toLocaleString()} XP</Text>
-            </View>
-          ) : (
-            <View className="flex-row items-center bg-gray-800 rounded-xl p-4">
-              <Text className="text-gray-400 w-10">#--</Text>
-              <View className="w-10 h-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
-                <Text className="text-primary-400">
-                  {profile?.username?.charAt(0).toUpperCase() || "?"}
-                </Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-white">{profile?.username || "Toi"} (non classé)</Text>
-                <Text className="text-gray-500 text-xs">Joue pour apparaître!</Text>
-              </View>
-              <Text className="text-gray-400">0 XP</Text>
-            </View>
-          )}
+          </Link>
+          <Link href="/achievements" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">🏆</Text>
+              <Text className="text-gray-500 text-xs">Achievements</Text>
+            </Pressable>
+          </Link>
+          <Pressable className="items-center flex-1">
+            <Text className="text-xl mb-1">📊</Text>
+            <Text style={{ color: COLORS.primary }} className="text-xs font-medium">Leaderboard</Text>
+          </Pressable>
+          <Link href="/profile" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">👤</Text>
+              <Text className="text-gray-500 text-xs">Profile</Text>
+            </Pressable>
+          </Link>
+          <Link href="/settings" asChild>
+            <Pressable className="items-center flex-1">
+              <Text className="text-xl mb-1">⚙️</Text>
+              <Text className="text-gray-500 text-xs">Settings</Text>
+            </Pressable>
+          </Link>
         </View>
       </View>
     </SafeAreaView>
