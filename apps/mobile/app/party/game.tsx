@@ -1,86 +1,241 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
-
-// Mock question
-const mockQuestion = {
-  question: "Quel pays a le plus grand nombre de fuseaux horaires?",
-  answers: ["Russie", "États-Unis", "France", "Chine"],
-  correctIndex: 2,
-};
+import { useState, useEffect, useRef } from "react";
+import { useGameStore } from "../../src/stores/gameStore";
+import {
+  getQuestions,
+  formatQuestionsForGame,
+} from "../../src/services/questions";
 
 export default function PartyGameScreen() {
-  const { players: playersParam } = useLocalSearchParams<{ players: string }>();
-  const players = playersParam ? JSON.parse(playersParam) : ["Joueur 1", "Joueur 2"];
+  const { players: playersParam, questionCount: questionCountParam } =
+    useLocalSearchParams<{
+      players: string;
+      questionCount: string;
+    }>();
 
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [scores, setScores] = useState<Record<string, number>>(
-    Object.fromEntries(players.map((p: string) => [p, 0]))
-  );
-  const [questionNumber, setQuestionNumber] = useState(1);
+  const players: string[] = playersParam
+    ? JSON.parse(playersParam)
+    : ["Joueur 1", "Joueur 2"];
+  const questionCount = Number(questionCountParam) || 10;
+
   const [waitingForPlayer, setWaitingForPlayer] = useState(true);
-  const [showResult, setShowResult] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const mounted = useRef(true);
 
-  const currentPlayer = players[currentPlayerIndex];
+  // Use individual primitive selectors only
+  const status = useGameStore((state) => state.status);
+  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+  const questions = useGameStore((state) => state.questions);
+  const currentQuestionIndex = useGameStore((state) => state.currentQuestionIndex);
+  const totalQuestions = useGameStore((state) => state.totalQuestions);
+  const allPlayers = useGameStore((state) => state.players);
+  const answers = useGameStore((state) => state.answers);
+
+  // Compute derived values
+  const currentQuestion = questions[currentQuestionIndex];
+  const currentPlayer = allPlayers[currentPlayerIndex];
+  const lastAnswer = answers[answers.length - 1];
+  const progress = {
+    current: currentQuestionIndex + 1,
+    total: totalQuestions,
+    percentage: totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0,
+  };
+
+  // Load questions on mount
+  useEffect(() => {
+    mounted.current = true;
+    loadQuestions();
+    return () => {
+      mounted.current = false;
+      useGameStore.getState().reset();
+    };
+  }, []);
+
+  const loadQuestions = async () => {
+    try {
+      const questions = await getQuestions({ count: questionCount });
+      const formatted = formatQuestionsForGame(questions);
+
+      if (!mounted.current) return;
+
+      useGameStore.getState().initGame({
+        mode: "party",
+        questions: formatted,
+        players: players,
+        timePerQuestion: 20,
+      });
+    } catch (error) {
+      console.error("Error loading questions:", error);
+
+      if (!mounted.current) return;
+
+      // Fallback to mock questions
+      const mockQuestions = [
+        {
+          id: "1",
+          categoryId: "1",
+          difficulty: 1,
+          question: "Quel pays a le plus grand nombre de fuseaux horaires?",
+          answers: ["Russie", "États-Unis", "France", "Chine"],
+          correctIndex: 2,
+          explanation: null,
+        },
+        {
+          id: "2",
+          categoryId: "1",
+          difficulty: 1,
+          question: "Quelle est la capitale de l'Australie?",
+          answers: ["Sydney", "Melbourne", "Canberra", "Perth"],
+          correctIndex: 2,
+          explanation: null,
+        },
+        {
+          id: "3",
+          categoryId: "2",
+          difficulty: 1,
+          question: "En quelle année a eu lieu la Révolution française?",
+          answers: ["1776", "1789", "1804", "1815"],
+          correctIndex: 1,
+          explanation: null,
+        },
+        {
+          id: "4",
+          categoryId: "3",
+          difficulty: 1,
+          question: "Quel est le symbole chimique de l'or?",
+          answers: ["Or", "Au", "Ag", "Fe"],
+          correctIndex: 1,
+          explanation: null,
+        },
+        {
+          id: "5",
+          categoryId: "4",
+          difficulty: 1,
+          question: "Qui a chanté 'Thriller'?",
+          answers: ["Prince", "Michael Jackson", "Madonna", "Whitney Houston"],
+          correctIndex: 1,
+          explanation: null,
+        },
+      ];
+
+      useGameStore.getState().initGame({
+        mode: "party",
+        questions: mockQuestions.slice(0, questionCount),
+        players: players,
+        timePerQuestion: 20,
+      });
+    }
+  };
+
+  // Navigate to results when game ends
+  useEffect(() => {
+    if (status === "finished") {
+      const state = useGameStore.getState();
+      router.replace({
+        pathname: "/party/result",
+        params: {
+          players: JSON.stringify(state.players),
+        },
+      });
+    }
+  }, [status]);
 
   const handleReady = () => {
     setWaitingForPlayer(false);
+    if (status === "loading") {
+      useGameStore.getState().startGame();
+    }
   };
 
   const handleAnswer = (index: number) => {
-    if (showResult) return;
-
-    setSelectedAnswer(index);
-    setShowResult(true);
-
-    if (index === mockQuestion.correctIndex) {
-      setScores({
-        ...scores,
-        [currentPlayer]: scores[currentPlayer] + 100,
-      });
-    }
-  };
-
-  const nextTurn = () => {
-    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    const isNewRound = nextPlayerIndex === 0;
-
-    if (isNewRound && questionNumber >= 10) {
-      // Game over
-      router.replace({
-        pathname: "/party/result",
-        params: { scores: JSON.stringify(scores), players: playersParam },
-      });
+    if (status !== "playing" || lastAnswer?.questionId === currentQuestion?.id)
       return;
-    }
-
-    setCurrentPlayerIndex(nextPlayerIndex);
-    if (isNewRound) {
-      setQuestionNumber(questionNumber + 1);
-    }
-    setWaitingForPlayer(true);
-    setShowResult(false);
-    setSelectedAnswer(null);
+    useGameStore.getState().answerQuestion(index);
   };
 
-  // Waiting screen
+  const handleNextTurn = () => {
+    setWaitingForPlayer(true);
+    useGameStore.getState().nextQuestion();
+  };
+
+  const handleExit = () => {
+    useGameStore.getState().reset();
+    router.back();
+  };
+
+  const hasAnswered = lastAnswer?.questionId === currentQuestion?.id;
+
+  // Sort players by score for mini leaderboard
+  const sortedPlayers = [...allPlayers].sort((a, b) => b.score - a.score);
+
+  // Loading state
+  if (status === "idle" || (status === "loading" && !currentPlayer)) {
+    return (
+      <SafeAreaView className="flex-1 bg-accent-600 items-center justify-center">
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text className="text-white mt-4 text-lg">
+          Chargement des questions...
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Waiting screen - show who's turn it is
   if (waitingForPlayer) {
     return (
-      <SafeAreaView className="flex-1 bg-accent-500">
+      <SafeAreaView className="flex-1 bg-accent-600">
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-white/60 text-lg mb-4">
-            Question {questionNumber}/10
+          {/* Progress */}
+          <Text className="text-white/60 text-lg mb-2">
+            Question {progress.current}/{progress.total}
           </Text>
-          <Text className="text-white text-2xl mb-2">Passe le téléphone à</Text>
-          <Text className="text-white text-4xl font-bold mb-8">{currentPlayer}</Text>
 
+          {/* Hand off message */}
+          <Text className="text-white text-xl mb-2">Passe le téléphone à</Text>
+          <Text className="text-white text-5xl font-bold mb-8">
+            {currentPlayer?.name || players[currentPlayerIndex]}
+          </Text>
+
+          {/* Mini scoreboard */}
+          <View className="bg-white/10 rounded-xl p-4 w-full mb-8">
+            <Text className="text-white/60 text-sm text-center mb-3">
+              Classement
+            </Text>
+            {sortedPlayers.slice(0, 4).map((player, index) => (
+              <View
+                key={player.name}
+                className={`flex-row justify-between items-center py-2 ${
+                  player.name === currentPlayer?.name
+                    ? "bg-white/10 rounded-lg px-2 -mx-2"
+                    : ""
+                }`}
+              >
+                <View className="flex-row items-center">
+                  <Text className="text-white/60 w-6">{index + 1}.</Text>
+                  <Text className="text-white font-medium">{player.name}</Text>
+                  {player.name === currentPlayer?.name && (
+                    <Text className="text-white/60 ml-2">←</Text>
+                  )}
+                </View>
+                <Text className="text-white font-bold">{player.score}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Ready button */}
           <Pressable
             onPress={handleReady}
-            className="bg-white rounded-2xl py-4 px-12 active:opacity-80"
+            className="bg-white rounded-2xl py-4 px-16 active:opacity-80"
           >
-            <Text className="text-accent-500 text-xl font-bold">Je suis prêt!</Text>
+            <Text className="text-accent-600 text-xl font-bold">
+              Je suis prêt!
+            </Text>
+          </Pressable>
+
+          {/* Exit button */}
+          <Pressable onPress={handleExit} className="mt-6 p-2">
+            <Text className="text-white/60">Quitter la partie</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -88,31 +243,70 @@ export default function PartyGameScreen() {
   }
 
   // Question screen
+  if (!currentQuestion) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center">
+        <ActivityIndicator size="large" color="#0ea5e9" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
       <View className="flex-1 px-6 pt-4">
         {/* Header */}
-        <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-accent-400 text-xl font-bold">{currentPlayer}</Text>
-          <Text className="text-white">{scores[currentPlayer]} pts</Text>
+        <View className="flex-row justify-between items-center mb-4">
+          <View className="flex-row items-center">
+            <View className="w-10 h-10 rounded-full bg-accent-500 items-center justify-center mr-3">
+              <Text className="text-white font-bold">
+                {currentPlayer?.name.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            <View>
+              <Text className="text-accent-400 text-lg font-bold">
+                {currentPlayer?.name}
+              </Text>
+              <Text className="text-gray-400 text-sm">
+                {currentPlayer?.score || 0} pts
+              </Text>
+            </View>
+          </View>
+          <Text className="text-gray-400">
+            {progress.current}/{progress.total}
+          </Text>
+        </View>
+
+        {/* Progress bar */}
+        <View className="h-2 bg-gray-700 rounded-full mb-6 overflow-hidden">
+          <View
+            className="h-full bg-accent-500 rounded-full"
+            style={{ width: `${progress.percentage}%` }}
+          />
         </View>
 
         {/* Question */}
         <View className="bg-gray-800 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-xl text-center">
-            {mockQuestion.question}
+          <Text className="text-white text-xl text-center leading-7">
+            {currentQuestion.question}
           </Text>
         </View>
 
         {/* Answers */}
         <View className="gap-3">
-          {mockQuestion.answers.map((answer, index) => {
+          {currentQuestion.answers.map((answer, index) => {
             let bgColor = "bg-gray-700";
-            if (showResult) {
-              if (index === mockQuestion.correctIndex) {
-                bgColor = "bg-success-500";
-              } else if (index === selectedAnswer) {
-                bgColor = "bg-error-500";
+            let borderColor = "border-transparent";
+
+            if (hasAnswered) {
+              if (index === currentQuestion.correctIndex) {
+                bgColor = "bg-green-600";
+                borderColor = "border-green-400";
+              } else if (
+                lastAnswer?.selectedAnswer === answer &&
+                index !== currentQuestion.correctIndex
+              ) {
+                bgColor = "bg-red-600";
+                borderColor = "border-red-400";
               }
             }
 
@@ -120,8 +314,8 @@ export default function PartyGameScreen() {
               <Pressable
                 key={index}
                 onPress={() => handleAnswer(index)}
-                className={`${bgColor} rounded-xl py-4 px-6 active:opacity-80`}
-                disabled={showResult}
+                className={`${bgColor} border-2 ${borderColor} rounded-xl py-4 px-6 active:opacity-80`}
+                disabled={hasAnswered}
               >
                 <Text className="text-white text-lg text-center">{answer}</Text>
               </Pressable>
@@ -129,16 +323,38 @@ export default function PartyGameScreen() {
           })}
         </View>
 
-        {/* Next button */}
-        {showResult && (
-          <Pressable
-            onPress={nextTurn}
-            className="bg-accent-500 rounded-xl py-4 px-6 mt-6 active:opacity-80"
-          >
-            <Text className="text-white text-lg text-center font-bold">
-              Joueur suivant
-            </Text>
-          </Pressable>
+        {/* Result feedback & Next button */}
+        {hasAnswered && (
+          <View className="mt-6">
+            {/* Feedback */}
+            <View
+              className={`rounded-xl py-3 px-4 mb-4 ${
+                lastAnswer.isCorrect ? "bg-green-900/50" : "bg-red-900/50"
+              }`}
+            >
+              <Text
+                className={`text-center font-bold text-lg ${
+                  lastAnswer.isCorrect ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                {lastAnswer.isCorrect
+                  ? `Bravo ${currentPlayer?.name}! +${lastAnswer.pointsEarned} pts`
+                  : `Raté ${currentPlayer?.name}!`}
+              </Text>
+            </View>
+
+            {/* Next button */}
+            <Pressable
+              onPress={handleNextTurn}
+              className="bg-accent-500 rounded-xl py-4 px-6 active:opacity-80"
+            >
+              <Text className="text-white text-lg text-center font-bold">
+                {progress.current >= progress.total
+                  ? "Voir les résultats"
+                  : "Joueur suivant"}
+              </Text>
+            </Pressable>
+          </View>
         )}
       </View>
     </SafeAreaView>
