@@ -1,35 +1,58 @@
 import { supabase } from "./supabase";
-import type { Game, GameAnswer, InsertTables } from "../types/database";
+
+// Game types (these tables may not be in generated types yet)
+interface Game {
+  id: string;
+  user_id?: string;
+  mode: string;
+  score: number;
+  max_chain: number;
+  questions_count: number;
+  correct_count: number;
+  duration_seconds: number;
+  created_at?: string;
+}
+
+interface GameAnswer {
+  id: string;
+  game_id: string;
+  question_id: string;
+  player_name?: string;
+  is_correct: boolean;
+  answer_time_ms: number;
+  chain_multiplier: number;
+  points_earned: number;
+}
 
 /**
  * Create a new game
  */
 export const createGame = async (
-  game: InsertTables<"games">
+  game: Omit<Game, "id" | "created_at">
 ): Promise<Game> => {
   const { data, error } = await supabase
-    .from("games")
-    .insert(game)
+    .from("games" as any)
+    .insert(game as any)
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Game;
 };
 
 /**
  * Save game answers
  */
 export const saveGameAnswers = async (
-  answers: InsertTables<"game_answers">[]
+  answers: Omit<GameAnswer, "id">[]
 ): Promise<GameAnswer[]> => {
   const { data, error } = await supabase
-    .from("game_answers")
-    .insert(answers)
+    .from("game_answers" as any)
+    .insert(answers as any)
     .select();
 
   if (error) throw error;
-  return data || [];
+  return (data as GameAnswer[]) || [];
 };
 
 /**
@@ -40,14 +63,14 @@ export const getUserGames = async (
   limit: number = 10
 ): Promise<Game[]> => {
   const { data, error } = await supabase
-    .from("games")
+    .from("games" as any)
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error) throw error;
-  return data || [];
+  return (data as Game[]) || [];
 };
 
 /**
@@ -96,7 +119,7 @@ export const getWeeklyLeaderboard = async (
   limit: number = 50
 ): Promise<LeaderboardEntry[]> => {
   const { data, error } = await supabase
-    .rpc("get_weekly_leaderboard", { limit_count: limit });
+    .rpc("get_weekly_leaderboard", { limit_count: limit } as any);
 
   if (error) throw error;
 

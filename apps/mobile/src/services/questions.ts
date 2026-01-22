@@ -29,7 +29,7 @@ export const markQuestionSeen = async (
     p_user_id: userId,
     p_question_id: questionId,
     p_was_correct: wasCorrect ?? null,
-  });
+  } as any);
 
   if (error) {
     console.error("Error marking question seen:", error);
@@ -49,14 +49,14 @@ export interface QuestionStats {
 export const getUserQuestionStats = async (userId: string): Promise<QuestionStats | null> => {
   const { data, error } = await supabase.rpc("get_user_question_stats", {
     p_user_id: userId,
-  });
+  } as any);
 
   if (error) {
     console.error("Error getting question stats:", error);
     return null;
   }
 
-  return data?.[0] || null;
+  return (data as any)?.[0] || null;
 };
 
 /**
@@ -73,7 +73,7 @@ export const getUnseenQuestions = async (
     p_category: category || null,
     p_limit: count,
     p_language: language,
-  });
+  } as any);
 
   if (error) {
     console.error("Error getting unseen questions:", error);
@@ -195,8 +195,9 @@ export const getQuestionsByIds = async (ids: string[]): Promise<Question[]> => {
 
   if (error) throw error;
 
+  const questions = (data || []) as Question[];
   // Return in the same order as the ids array
-  const questionMap = new Map(data?.map((q) => [q.id, q]));
+  const questionMap = new Map(questions.map((q) => [q.id, q]));
   return ids.map((id) => questionMap.get(id)).filter(Boolean) as Question[];
 };
 

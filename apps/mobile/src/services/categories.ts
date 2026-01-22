@@ -54,7 +54,7 @@ export const getCategoryStats = async (): Promise<{ code: string; count: number 
 
   // Count by category
   const counts: { [key: string]: number } = {};
-  (data || []).forEach((q) => {
+  ((data || []) as any[]).forEach((q) => {
     const cat = q.category || "general";
     counts[cat] = (counts[cat] || 0) + 1;
   });

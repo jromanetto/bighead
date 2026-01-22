@@ -48,15 +48,16 @@ export const createFriendChallenge = async (
       p_question_count: questionCount,
       p_time_per_question: timePerQuestion,
       p_language: language,
-    });
+    } as any);
 
     if (error) throw error;
 
-    if (data && data.length > 0) {
+    const result = data as any;
+    if (result && result.length > 0) {
       return {
-        challengeId: data[0].challenge_id,
-        code: data[0].challenge_code,
-        shareUrl: data[0].share_url,
+        challengeId: result[0].challenge_id,
+        code: result[0].challenge_code,
+        shareUrl: result[0].share_url,
       };
     }
 
@@ -74,12 +75,13 @@ export const getFriendChallenge = async (code: string): Promise<FriendChallenge 
   try {
     const { data, error } = await supabase.rpc("get_friend_challenge", {
       p_code: code.toUpperCase(),
-    });
+    } as any);
 
     if (error) throw error;
 
-    if (data && data.length > 0) {
-      return data[0] as FriendChallenge;
+    const result = data as any;
+    if (result && result.length > 0) {
+      return result[0] as FriendChallenge;
     }
 
     return null;
@@ -108,15 +110,16 @@ export const submitChallengeAttempt = async (
       p_score: score,
       p_correct_count: correctCount,
       p_total_time_ms: totalTimeMs,
-    });
+    } as any);
 
     if (error) throw error;
 
-    if (data && data.length > 0) {
+    const result = data as any;
+    if (result && result.length > 0) {
       return {
-        success: data[0].success,
-        rank: data[0].rank,
-        totalAttempts: data[0].total_attempts,
+        success: result[0].success,
+        rank: result[0].rank,
+        totalAttempts: result[0].total_attempts,
       };
     }
 

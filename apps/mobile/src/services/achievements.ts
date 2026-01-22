@@ -65,7 +65,7 @@ export const getUserAchievements = async (userId: string): Promise<UserAchieveme
  */
 export const checkAchievements = async (userId: string): Promise<NewAchievement[]> => {
   const { data, error } = await supabase
-    .rpc("check_achievements", { p_user_id: userId });
+    .rpc("check_achievements", { p_user_id: userId } as any);
 
   if (error) throw error;
   return (data as NewAchievement[]) || [];

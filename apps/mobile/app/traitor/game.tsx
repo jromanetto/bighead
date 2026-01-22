@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { getQuestions, formatQuestionsForGame } from "../../src/services/questions";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic } from "../../src/utils/feedback";
+import { playSound } from "../../src/services/sounds";
 
 // QuizNext design colors
 const COLORS = {
@@ -116,11 +117,13 @@ export default function TraitorGameScreen() {
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answerIndex === currentQuestion.correctIndex;
 
-    // Feedback
+    // Feedback with sound
     if (isCorrect) {
+      playSound("correct");
       await correctAnswerFeedback();
       scale.value = withSequence(withSpring(1.1), withSpring(1));
     } else {
+      playSound("wrong");
       await wrongAnswerFeedback();
     }
 

@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           level: 1,
           games_played: 0,
           best_chain: 0,
-        })
+        } as any)
         .select()
         .single();
 
@@ -106,8 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Update profile username
   const updateProfileUsername = useCallback(async (userId: string, username: string): Promise<UserProfile | null> => {
     try {
-      const { data, error } = await supabase
-        .from("users")
+      const { data, error } = await (supabase
+        .from("users") as any)
         .update({ username })
         .eq("id", userId)
         .select()

@@ -249,6 +249,70 @@ export default function SettingsScreen() {
             />
           </View>
 
+          {/* Language */}
+          <Text
+            className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
+            style={{ color: COLORS.textMuted }}
+          >
+            Language
+          </Text>
+          <View
+            className="rounded-2xl px-4"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <MenuRow
+              icon="🇬🇧"
+              title="English"
+              subtitle={settings.language === "en" ? "Selected" : undefined}
+              onPress={() => updateSetting("language", "en")}
+            />
+            <MenuRow
+              icon="🇫🇷"
+              title="Français"
+              subtitle={settings.language === "fr" ? "Selected" : undefined}
+              onPress={() => updateSetting("language", "fr")}
+            />
+          </View>
+
+          {/* Premium & Stats */}
+          <Text
+            className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
+            style={{ color: COLORS.textMuted }}
+          >
+            Premium
+          </Text>
+          <View
+            className="rounded-2xl px-4"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <MenuRow
+              icon="👑"
+              title="Go Premium"
+              subtitle="Unlock all features"
+              onPress={() => router.push("/premium")}
+            />
+            <MenuRow
+              icon="📊"
+              title="Your Stats"
+              subtitle="View detailed statistics"
+              onPress={() => router.push("/stats")}
+            />
+            <MenuRow
+              icon="🤝"
+              title="Friend Challenges"
+              subtitle="Challenge your friends"
+              onPress={() => router.push("/challenge")}
+            />
+          </View>
+
           {/* Account */}
           <Text
             className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"

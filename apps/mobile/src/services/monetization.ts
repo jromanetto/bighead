@@ -229,7 +229,19 @@ class MonetizationService {
 // Singleton instance
 export const monetization = new MonetizationService();
 
+// Alias for backwards compatibility
+export const monetizationService = monetization;
+
 // Convenience functions
 export const isPremium = () => monetization.isPremium();
 export const hasNoAds = () => monetization.hasNoAds();
 export const getPremiumFeatures = () => monetization.getPremiumFeatures();
+export const getOfferings = () => monetization.getOfferings();
+export const purchasePackage = async (pkg: any) => {
+  const result = await monetization.purchase(pkg);
+  return result.success;
+};
+export const restorePurchases = async () => {
+  const result = await monetization.restorePurchases();
+  return result.success;
+};

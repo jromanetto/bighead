@@ -7,6 +7,7 @@ import {
   getQuestions,
   formatQuestionsForGame,
 } from "../../src/services/questions";
+import { playSound } from "../../src/services/sounds";
 
 export default function PartyGameScreen() {
   const { players: playersParam, questionCount: questionCountParam } =
@@ -75,47 +76,62 @@ export default function PartyGameScreen() {
         {
           id: "1",
           categoryId: "1",
+          category: "Geography",
           difficulty: 1,
           question: "Which country has the most time zones?",
           answers: ["Russia", "United States", "France", "China"],
           correctIndex: 2,
           explanation: null,
+          imageUrl: null,
+          imageCredit: null,
         },
         {
           id: "2",
           categoryId: "1",
+          category: "Geography",
           difficulty: 1,
           question: "What is the capital of Australia?",
           answers: ["Sydney", "Melbourne", "Canberra", "Perth"],
           correctIndex: 2,
           explanation: null,
+          imageUrl: null,
+          imageCredit: null,
         },
         {
           id: "3",
           categoryId: "2",
+          category: "History",
           difficulty: 1,
           question: "In what year did the French Revolution begin?",
           answers: ["1776", "1789", "1804", "1815"],
           correctIndex: 1,
           explanation: null,
+          imageUrl: null,
+          imageCredit: null,
         },
         {
           id: "4",
           categoryId: "3",
+          category: "Science",
           difficulty: 1,
           question: "What is the chemical symbol for gold?",
           answers: ["Or", "Au", "Ag", "Fe"],
           correctIndex: 1,
           explanation: null,
+          imageUrl: null,
+          imageCredit: null,
         },
         {
           id: "5",
           categoryId: "4",
+          category: "Music",
           difficulty: 1,
           question: "Who sang 'Thriller'?",
           answers: ["Prince", "Michael Jackson", "Madonna", "Whitney Houston"],
           correctIndex: 1,
           explanation: null,
+          imageUrl: null,
+          imageCredit: null,
         },
       ];
 
@@ -151,6 +167,15 @@ export default function PartyGameScreen() {
   const handleAnswer = (index: number) => {
     if (status !== "playing" || lastAnswer?.questionId === currentQuestion?.id)
       return;
+
+    // Play sound based on answer
+    const isCorrect = index === currentQuestion?.correctIndex;
+    if (isCorrect) {
+      playSound("correct");
+    } else {
+      playSound("wrong");
+    }
+
     useGameStore.getState().answerQuestion(index);
   };
 

@@ -71,7 +71,7 @@ export const saveSettings = async (
         user_id: userId,
         ...newSettings,
         updated_at: new Date().toISOString(),
-      })
+      } as any)
       .select()
       .single();
 

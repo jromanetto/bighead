@@ -11,6 +11,7 @@ import {
   markQuestionSeen,
   checkAndGenerateQuestions,
 } from "../../src/services/questions";
+import { playSound } from "../../src/services/sounds";
 
 // New QuizNext design colors
 const COLORS = {
@@ -325,11 +326,11 @@ export default function ChainGameScreen() {
       if (!mounted.current) return;
 
       const mockQuestions = [
-        { id: "1", categoryId: "1", difficulty: 1, question: "Which club won the Champions League in 2021 with N'Golo Kanté as the midfield engine?", answers: ["Paris Saint-Germain", "Manchester City", "Chelsea FC", "Real Madrid"], correctIndex: 2, explanation: null },
-        { id: "2", categoryId: "1", difficulty: 1, question: "Which player holds the record for most goals in a single Ligue 1 season?", answers: ["Zlatan Ibrahimović", "Josip Skoblar", "Kylian Mbappé", "Jean-Pierre Papin"], correctIndex: 1, explanation: null },
-        { id: "3", categoryId: "2", difficulty: 1, question: "In what year did Zinédine Zidane score his two goals in the World Cup final?", answers: ["1998", "2002", "2006", "1994"], correctIndex: 0, explanation: null },
-        { id: "4", categoryId: "3", difficulty: 1, question: "Which goalkeeper holds the Premier League clean sheet record?", answers: ["Peter Schmeichel", "Petr Čech", "Edwin van der Sar", "David Seaman"], correctIndex: 2, explanation: null },
-        { id: "5", categoryId: "4", difficulty: 1, question: "How many Ballon d'Or awards has Lionel Messi won?", answers: ["6", "7", "8", "5"], correctIndex: 2, explanation: null },
+        { id: "1", categoryId: "1", category: "Football", difficulty: 1, question: "Which club won the Champions League in 2021 with N'Golo Kanté as the midfield engine?", answers: ["Paris Saint-Germain", "Manchester City", "Chelsea FC", "Real Madrid"], correctIndex: 2, explanation: null, imageUrl: null, imageCredit: null },
+        { id: "2", categoryId: "1", category: "Football", difficulty: 1, question: "Which player holds the record for most goals in a single Ligue 1 season?", answers: ["Zlatan Ibrahimović", "Josip Skoblar", "Kylian Mbappé", "Jean-Pierre Papin"], correctIndex: 1, explanation: null, imageUrl: null, imageCredit: null },
+        { id: "3", categoryId: "2", category: "Football", difficulty: 1, question: "In what year did Zinédine Zidane score his two goals in the World Cup final?", answers: ["1998", "2002", "2006", "1994"], correctIndex: 0, explanation: null, imageUrl: null, imageCredit: null },
+        { id: "4", categoryId: "3", category: "Football", difficulty: 1, question: "Which goalkeeper holds the Premier League clean sheet record?", answers: ["Peter Schmeichel", "Petr Čech", "Edwin van der Sar", "David Seaman"], correctIndex: 2, explanation: null, imageUrl: null, imageCredit: null },
+        { id: "5", categoryId: "4", category: "Football", difficulty: 1, question: "How many Ballon d'Or awards has Lionel Messi won?", answers: ["6", "7", "8", "5"], correctIndex: 2, explanation: null, imageUrl: null, imageCredit: null },
       ];
 
       useGameStore.getState().initGame({
@@ -346,10 +347,26 @@ export default function ChainGameScreen() {
     }
   };
 
-  // Timer effect
+  // Play game start sound
+  useEffect(() => {
+    if (status === "playing" && currentQuestionIndex === 0) {
+      playSound("gameStart");
+    }
+  }, [status]);
+
+  // Timer effect with tick sound
   useEffect(() => {
     if (status === "playing") {
       timerRef.current = setInterval(() => {
+        const currentTime = useGameStore.getState().timeRemaining;
+        // Play tick sound when time is low
+        if (currentTime <= 5 && currentTime > 0) {
+          playSound("tick");
+        }
+        // Play timeout sound when time runs out
+        if (currentTime === 1) {
+          playSound("timeout");
+        }
         useGameStore.getState().tick();
       }, 1000);
     } else {
@@ -370,6 +387,7 @@ export default function ChainGameScreen() {
   // Navigate to results when game ends
   useEffect(() => {
     if (status === "finished") {
+      playSound("gameOver");
       const state = useGameStore.getState();
       router.replace({
         pathname: "/game/result",
@@ -386,16 +404,30 @@ export default function ChainGameScreen() {
   const handleAnswer = (index: number) => {
     if (status !== "playing" || hasAnswered) return;
     setSelectedIndex(index);
+
+    const isCorrect = index === currentQuestion.correctIndex;
+
+    // Play sound based on answer
+    if (isCorrect) {
+      playSound("correct");
+      // Play chain sound if we're building a streak
+      if (chain >= 2) {
+        setTimeout(() => playSound("chain"), 300);
+      }
+    } else {
+      playSound("wrong");
+    }
+
     useGameStore.getState().answerQuestion(index);
 
     // Track question as seen for logged in users
     if (user?.id && currentQuestion?.id) {
-      const isCorrect = index === currentQuestion.correctIndex;
       markQuestionSeen(user.id, currentQuestion.id, isCorrect).catch(console.error);
     }
   };
 
   const handleNextQuestion = () => {
+    playSound("buttonPress");
     useGameStore.getState().nextQuestion();
   };
 

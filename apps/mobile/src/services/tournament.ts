@@ -59,12 +59,13 @@ export const joinTournament = async (
 ): Promise<{ success: boolean; message: string }> => {
   const { data, error } = await supabase.rpc("join_tournament", {
     p_tournament_id: tournamentId,
-  });
+  } as any);
 
   if (error) throw error;
+  const result = data as any;
   return {
-    success: data[0].success,
-    message: data[0].message,
+    success: result[0].success,
+    message: result[0].message,
   };
 };
 
@@ -76,10 +77,10 @@ export const getTournamentQuestions = async (
 ): Promise<TournamentQuestion[]> => {
   const { data, error } = await supabase.rpc("get_tournament_questions", {
     p_tournament_id: tournamentId,
-  });
+  } as any);
 
   if (error) throw error;
-  return data || [];
+  return (data as TournamentQuestion[]) || [];
 };
 
 /**
@@ -96,13 +97,14 @@ export const submitTournamentResult = async (
     p_score: score,
     p_correct_answers: correctAnswers,
     p_total_time_ms: totalTimeMs,
-  });
+  } as any);
 
   if (error) throw error;
+  const result = data as any;
   return {
-    success: data[0].success,
-    rank: data[0].final_rank,
-    totalParticipants: data[0].total_participants,
+    success: result[0].success,
+    rank: result[0].final_rank,
+    totalParticipants: result[0].total_participants,
   };
 };
 
@@ -116,8 +118,8 @@ export const getTournamentLeaderboard = async (
   const { data, error } = await supabase.rpc("get_tournament_leaderboard", {
     p_tournament_id: tournamentId,
     p_limit: limit,
-  });
+  } as any);
 
   if (error) throw error;
-  return data || [];
+  return (data as TournamentLeaderboardEntry[]) || [];
 };

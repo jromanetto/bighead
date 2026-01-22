@@ -25,7 +25,7 @@ export async function saveGameResult(result: GameResult): Promise<void> {
     total_questions: result.totalQuestions,
     max_chain: result.maxChain,
     duration_seconds: result.durationSeconds,
-  });
+  } as any);
 
   if (error) {
     console.error("Error saving game result:", error);
@@ -172,12 +172,13 @@ export async function getUserStats(userId: string): Promise<{
     };
   }
 
-  const totalGames = data.length;
-  const totalScore = data.reduce((sum, r) => sum + r.score, 0);
-  const bestScore = Math.max(...data.map((r) => r.score));
-  const bestChain = Math.max(...data.map((r) => r.max_chain));
-  const totalCorrect = data.reduce((sum, r) => sum + r.correct_count, 0);
-  const totalQuestions = data.reduce((sum, r) => sum + r.total_questions, 0);
+  const results = data as any[];
+  const totalGames = results.length;
+  const totalScore = results.reduce((sum, r) => sum + r.score, 0);
+  const bestScore = Math.max(...results.map((r) => r.score));
+  const bestChain = Math.max(...results.map((r) => r.max_chain));
+  const totalCorrect = results.reduce((sum, r) => sum + r.correct_count, 0);
+  const totalQuestions = results.reduce((sum, r) => sum + r.total_questions, 0);
   const averageAccuracy =
     totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 

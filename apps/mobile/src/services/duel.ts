@@ -43,12 +43,13 @@ export const createDuel = async (
     p_host_id: hostId,
     p_category: category,
     p_rounds: rounds,
-  });
+  } as any);
 
   if (error) throw error;
+  const result = data as any;
   return {
-    duelId: data[0].duel_id,
-    code: data[0].duel_code,
+    duelId: result[0].duel_id,
+    code: result[0].duel_code,
   };
 };
 
@@ -62,13 +63,14 @@ export const joinDuel = async (
   const { data, error } = await supabase.rpc("join_duel", {
     p_code: code.toUpperCase(),
     p_guest_id: guestId,
-  });
+  } as any);
 
   if (error) throw error;
+  const result = data as any;
   return {
-    success: data[0].success,
-    duelId: data[0].duel_id,
-    message: data[0].message,
+    success: result[0].success,
+    duelId: result[0].duel_id,
+    message: result[0].message,
   };
 };
 
@@ -108,10 +110,10 @@ export const getDuelQuestions = async (
 ): Promise<DuelQuestion[]> => {
   const { data, error } = await supabase.rpc("get_duel_questions", {
     p_duel_id: duelId,
-  });
+  } as any);
 
   if (error) throw error;
-  return data || [];
+  return (data as DuelQuestion[]) || [];
 };
 
 /**
@@ -130,13 +132,14 @@ export const submitDuelAnswer = async (
     p_round_number: roundNumber,
     p_answer: answer,
     p_answer_time_ms: answerTimeMs,
-  });
+  } as any);
 
   if (error) throw error;
+  const result = data as any;
   return {
-    success: data[0].success,
-    isCorrect: data[0].is_correct,
-    correctAnswer: data[0].correct_answer,
+    success: result[0].success,
+    isCorrect: result[0].is_correct,
+    correctAnswer: result[0].correct_answer,
   };
 };
 
@@ -148,13 +151,14 @@ export const finishDuel = async (
 ): Promise<{ winnerId: string | null; hostScore: number; guestScore: number }> => {
   const { data, error } = await supabase.rpc("finish_duel", {
     p_duel_id: duelId,
-  });
+  } as any);
 
   if (error) throw error;
+  const result = data as any;
   return {
-    winnerId: data[0].winner_id,
-    hostScore: data[0].host_score,
-    guestScore: data[0].guest_score,
+    winnerId: result[0].winner_id,
+    hostScore: result[0].host_score,
+    guestScore: result[0].guest_score,
   };
 };
 
@@ -162,8 +166,8 @@ export const finishDuel = async (
  * Cancel a duel
  */
 export const cancelDuel = async (duelId: string): Promise<void> => {
-  const { error } = await supabase
-    .from("duels")
+  const { error } = await (supabase
+    .from("duels") as any)
     .update({ status: "cancelled" })
     .eq("id", duelId);
 

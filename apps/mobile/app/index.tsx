@@ -312,7 +312,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Quick Actions */}
+          {/* Quick Actions Row 1 */}
           <View className="flex-row gap-3">
             <Pressable
               onPress={() => {
@@ -337,6 +337,29 @@ export default function HomeScreen() {
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
+                router.push("/challenge");
+              }}
+              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
+              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <View
+                className="p-2 rounded-md"
+                style={{ backgroundColor: `${COLORS.coral}30` }}
+              >
+                <Text className="text-xl" style={{ color: COLORS.coral }}>🤝</Text>
+              </View>
+              <View>
+                <Text className="font-bold text-sm text-white">Challenge</Text>
+                <Text className="text-[10px] text-gray-400">Friends battle</Text>
+              </View>
+            </Pressable>
+          </View>
+
+          {/* Quick Actions Row 2 */}
+          <View className="flex-row gap-3">
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
                 router.push("/leaderboard");
               }}
               className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
@@ -351,6 +374,26 @@ export default function HomeScreen() {
               <View>
                 <Text className="font-bold text-sm text-white">Leaderboard</Text>
                 <Text className="text-[10px] text-gray-400">Top players</Text>
+              </View>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/stats");
+              }}
+              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
+              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <View
+                className="p-2 rounded-md"
+                style={{ backgroundColor: `${COLORS.primary}30` }}
+              >
+                <Text className="text-xl" style={{ color: COLORS.primary }}>📊</Text>
+              </View>
+              <View>
+                <Text className="font-bold text-sm text-white">Stats</Text>
+                <Text className="text-[10px] text-gray-400">Your progress</Text>
               </View>
             </Pressable>
           </View>
@@ -381,18 +424,6 @@ export default function HomeScreen() {
             </View>
           </Pressable>
 
-          {/* Search */}
-          <Link href="/achievements" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">🔍</Text>
-              </View>
-            </Pressable>
-          </Link>
-
-          {/* Divider */}
-          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-
           {/* Trophy */}
           <Link href="/leaderboard" asChild>
             <Pressable className="flex-1 items-center justify-center">
@@ -402,11 +433,23 @@ export default function HomeScreen() {
             </Pressable>
           </Link>
 
+          {/* Divider */}
+          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+
           {/* Profile */}
           <Link href="/profile" asChild>
             <Pressable className="flex-1 items-center justify-center">
               <View className="w-12 h-10 rounded-full items-center justify-center">
                 <Text className="text-2xl opacity-50">👤</Text>
+              </View>
+            </Pressable>
+          </Link>
+
+          {/* Settings */}
+          <Link href="/settings" asChild>
+            <Pressable className="flex-1 items-center justify-center">
+              <View className="w-12 h-10 rounded-full items-center justify-center">
+                <Text className="text-2xl opacity-50">⚙️</Text>
               </View>
             </Pressable>
           </Link>

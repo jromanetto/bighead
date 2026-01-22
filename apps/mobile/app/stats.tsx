@@ -150,11 +150,12 @@ export default function StatsScreen() {
         .eq("user_id", user.id);
 
       // Calculate stats
-      const totalGames = gameResults?.length || 0;
-      const totalCorrect = gameResults?.reduce((sum, g) => sum + (g.correct_count || 0), 0) || 0;
-      const totalQuestions = gameResults?.reduce((sum, g) => sum + (g.total_questions || 0), 0) || 0;
+      const games = (gameResults || []) as any[];
+      const totalGames = games.length;
+      const totalCorrect = games.reduce((sum, g) => sum + (g.correct_count || 0), 0);
+      const totalQuestions = games.reduce((sum, g) => sum + (g.total_questions || 0), 0);
       const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-      const bestChain = gameResults?.reduce((max, g) => Math.max(max, g.max_chain || 0), 0) || 0;
+      const bestChain = games.reduce((max, g) => Math.max(max, g.max_chain || 0), 0);
 
       // Calculate category stats
       const categoryMap = new Map<string, { correct: number; total: number }>();
@@ -183,7 +184,7 @@ export default function StatsScreen() {
         bestChain,
         totalXP: profile?.total_xp || 0,
         level: profile?.level || 1,
-        dailyStreak: profile?.daily_streak || 0,
+        dailyStreak: (profile as any)?.daily_streak || 0,
         achievementsUnlocked: userAchievements?.length || 0,
         totalAchievements: allAchievements?.length || 0,
         categoryStats,

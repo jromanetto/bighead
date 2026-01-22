@@ -71,7 +71,7 @@ export const submitDailyChallenge = async (
       challenge_id: challengeId,
       is_correct: isCorrect,
       answer_time_ms: answerTimeMs,
-    });
+    } as any);
 
   if (insertError) throw insertError;
 
@@ -82,7 +82,7 @@ export const submitDailyChallenge = async (
     .eq("id", challengeId)
     .single();
 
-  const bonusXp = isCorrect ? (challenge?.bonus_xp || 100) : 25;
+  const bonusXp = isCorrect ? ((challenge as any)?.bonus_xp || 100) : 25;
 
   // Update user stats
   const { data: user, error: userError } = await supabase
@@ -93,21 +93,22 @@ export const submitDailyChallenge = async (
 
   if (userError) throw userError;
 
+  const userData = user as any;
   const today = new Date().toISOString().split("T")[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
 
   let newStreak = 1;
-  if (user?.last_daily_challenge === yesterday) {
-    newStreak = (user.daily_streak || 0) + 1;
+  if (userData?.last_daily_challenge === yesterday) {
+    newStreak = (userData.daily_streak || 0) + 1;
   }
 
   // Update user
-  const { error: updateError } = await supabase
-    .from("users")
+  const { error: updateError } = await (supabase
+    .from("users") as any)
     .update({
       daily_streak: newStreak,
       last_daily_challenge: today,
-      total_xp: (user?.total_xp || 0) + bonusXp,
+      total_xp: (userData?.total_xp || 0) + bonusXp,
     })
     .eq("id", userId);
 
@@ -131,12 +132,13 @@ export const getDailyStreak = async (userId: string): Promise<number> => {
 
   if (error) throw error;
 
+  const userData = data as any;
   // Check if streak is still valid (completed yesterday or today)
   const today = new Date().toISOString().split("T")[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
 
-  if (data?.last_daily_challenge === today || data?.last_daily_challenge === yesterday) {
-    return data.daily_streak || 0;
+  if (userData?.last_daily_challenge === today || userData?.last_daily_challenge === yesterday) {
+    return userData.daily_streak || 0;
   }
 
   return 0;

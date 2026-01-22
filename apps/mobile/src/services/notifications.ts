@@ -9,6 +9,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -61,8 +63,8 @@ export const savePushToken = async (
   userId: string,
   token: string
 ): Promise<void> => {
-  const { error } = await supabase
-    .from("users")
+  const { error } = await (supabase
+    .from("users") as any)
     .update({ push_token: token })
     .eq("id", userId);
 
@@ -86,9 +88,9 @@ export const scheduleDailyReminder = async (): Promise<void> => {
       sound: true,
     },
     trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour: 19,
       minute: 0,
-      repeats: true,
     },
   });
 };

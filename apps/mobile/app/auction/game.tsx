@@ -12,6 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { getQuestions, formatQuestionsForGame } from "../../src/services/questions";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
+import { playSound } from "../../src/services/sounds";
 
 // QuizNext design colors
 const COLORS = {
@@ -179,8 +180,10 @@ export default function AuctionGameScreen() {
     const isCorrect = answerIndex === currentQuestion.correctIndex;
 
     if (isCorrect) {
+      playSound("correct");
       await correctAnswerFeedback();
     } else {
+      playSound("wrong");
       await wrongAnswerFeedback();
     }
 
