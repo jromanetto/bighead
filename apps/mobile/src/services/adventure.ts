@@ -262,18 +262,34 @@ export async function getAdventureQuestions(
 
 /**
  * Get family mode questions
+ * Uses min_age field to filter questions appropriate for the youngest player
  */
 export async function getFamilyQuestions(
   category: Category | "mix",
   minAge: number,
   limit: number
 ): Promise<any[]> {
+  // Map age selection to the actual min_age values in database
+  // Database has min_age: 6, 8, 12, 14, 16
+  const ageToMinAge: Record<number, number> = {
+    6: 6,   // Only difficulty 1 questions
+    8: 8,   // Difficulty 1-2 questions
+    10: 8,  // Same as 8
+    12: 12, // Difficulty 1-3 questions
+    14: 14, // Difficulty 1-4 questions
+    16: 16, // All questions
+    18: 16, // All questions (adults)
+    99: 16, // Adults (18+)
+  };
+
+  const effectiveMinAge = ageToMinAge[minAge] || 16;
+
   let query = supabase
     .from("questions")
     .select("*")
     .eq("is_active", true)
     .eq("language", "fr")
-    .lte("difficulty", Math.ceil(minAge / 4)); // Simple age to difficulty mapping
+    .lte("min_age", effectiveMinAge); // Filter by min_age field directly
 
   if (category !== "mix") {
     query = query.eq("category", category);
@@ -310,10 +326,10 @@ function shuffleArray<T>(array: T[]): T[] {
  */
 export function calculateMountainProgress(tier: Tier, level: 1 | 2 | 3, completedCategories: number): number {
   const currentLevelNum = getCurrentLevelNumber(tier, level);
-  const totalLevels = 12; // 4 tiers * 3 levels
+  const totalLevels = 33; // 11 tiers × 3 levels
   const categoryProgress = completedCategories / CATEGORIES.length;
 
-  // Each level is worth 1/12 of total progress
+  // Each level is worth 1/33 of total progress
   // Within a level, category completion adds partial progress
   const levelProgress = (currentLevelNum - 1) / totalLevels;
   const withinLevelProgress = (1 / totalLevels) * categoryProgress;

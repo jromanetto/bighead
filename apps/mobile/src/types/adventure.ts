@@ -63,20 +63,21 @@ export interface TierInfo {
   color: string;
   bgColor: string;
   description: string;
+  icon: string;
 }
 
 export const TIERS: TierInfo[] = [
-  { code: 'coton', name: 'Cotton', nameFr: 'Coton', color: '#f0f0f0', bgColor: '#e8f4f8', description: 'Débutant' },
-  { code: 'carton', name: 'Cardboard', nameFr: 'Carton', color: '#c4a35a', bgColor: '#f5f0e1', description: 'Novice' },
-  { code: 'bois', name: 'Wood', nameFr: 'Bois', color: '#8B4513', bgColor: '#f5e6d3', description: 'Amateur' },
-  { code: 'bronze', name: 'Bronze', nameFr: 'Bronze', color: '#CD7F32', bgColor: '#f5ebe0', description: 'Confirmé' },
-  { code: 'argent', name: 'Silver', nameFr: 'Argent', color: '#C0C0C0', bgColor: '#f0f0f0', description: 'Expérimenté' },
-  { code: 'gold', name: 'Gold', nameFr: 'Gold', color: '#FFD700', bgColor: '#fff8dc', description: 'Avancé' },
-  { code: 'platinium', name: 'Platinum', nameFr: 'Platinium', color: '#E5E4E2', bgColor: '#f8f8f8', description: 'Expert' },
-  { code: 'titane', name: 'Titanium', nameFr: 'Titane', color: '#878681', bgColor: '#e8e8e6', description: 'Maître' },
-  { code: 'diamant', name: 'Diamond', nameFr: 'Diamant', color: '#b9f2ff', bgColor: '#e6faff', description: 'Champion' },
-  { code: 'mythique', name: 'Mythic', nameFr: 'Mythique', color: '#9b59b6', bgColor: '#f3e5f5', description: 'Héros' },
-  { code: 'legendaire', name: 'Legendary', nameFr: 'Légendaire', color: '#ff6b35', bgColor: '#fff0eb', description: 'Légende' },
+  { code: 'coton', name: 'Cotton', nameFr: 'Coton', color: '#f0f0f0', bgColor: '#e8f4f8', description: 'Débutant', icon: '🌱' },
+  { code: 'carton', name: 'Cardboard', nameFr: 'Carton', color: '#c4a35a', bgColor: '#f5f0e1', description: 'Novice', icon: '📦' },
+  { code: 'bois', name: 'Wood', nameFr: 'Bois', color: '#8B4513', bgColor: '#f5e6d3', description: 'Amateur', icon: '🪵' },
+  { code: 'bronze', name: 'Bronze', nameFr: 'Bronze', color: '#CD7F32', bgColor: '#f5ebe0', description: 'Confirmé', icon: '🥉' },
+  { code: 'argent', name: 'Silver', nameFr: 'Argent', color: '#C0C0C0', bgColor: '#f0f0f0', description: 'Expérimenté', icon: '🥈' },
+  { code: 'gold', name: 'Gold', nameFr: 'Gold', color: '#FFD700', bgColor: '#fff8dc', description: 'Avancé', icon: '🥇' },
+  { code: 'platinium', name: 'Platinum', nameFr: 'Platinium', color: '#E5E4E2', bgColor: '#f8f8f8', description: 'Expert', icon: '💎' },
+  { code: 'titane', name: 'Titanium', nameFr: 'Titane', color: '#878681', bgColor: '#e8e8e6', description: 'Maître', icon: '⚙️' },
+  { code: 'diamant', name: 'Diamond', nameFr: 'Diamant', color: '#b9f2ff', bgColor: '#e6faff', description: 'Champion', icon: '💠' },
+  { code: 'mythique', name: 'Mythic', nameFr: 'Mythique', color: '#9b59b6', bgColor: '#f3e5f5', description: 'Héros', icon: '🔮' },
+  { code: 'legendaire', name: 'Legendary', nameFr: 'Légendaire', color: '#ff6b35', bgColor: '#fff0eb', description: 'Légende', icon: '🏆' },
 ];
 
 // User progress

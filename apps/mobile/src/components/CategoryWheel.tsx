@@ -52,26 +52,31 @@ export function CategoryWheel({
     buttonPressFeedback();
     setIsSpinning(true);
     setShowResult(false);
+    setSelectedCategory(null);
     resultOpacity.value = 0;
 
     // Pick a random category
     const randomIndex = Math.floor(Math.random() * uncompletedCategories.length);
     const selected = uncompletedCategories[randomIndex];
 
-    // Calculate spin: multiple full rotations + offset to land on selected
-    const categoryAngle = (360 / CATEGORIES.length) * CATEGORIES.indexOf(selected);
-    const totalRotation = 360 * 5 + categoryAngle; // 5 full spins + target
+    // Calculate spin: the indicator points UP (top of wheel)
+    // Each category takes up 360/11 = ~32.7 degrees
+    // We want the selected category to end up at the TOP (0 degrees)
+    const categoryIndex = CATEGORIES.indexOf(selected);
+    const anglePerCategory = 360 / CATEGORIES.length;
+    // The category at index 0 is already at top, so we need to rotate to bring selected to top
+    const targetAngle = categoryIndex * anglePerCategory;
+    // Add multiple full rotations for visual effect, then subtract to land on target
+    const totalRotation = rotation.value + 360 * 4 + (360 - targetAngle);
 
     // Play spinning sound
-    soundService.play("whoosh");
+    soundService.play("gameStart");
 
     // Animate the spin
-    rotation.value = withSequence(
-      withTiming(totalRotation, {
-        duration: 3500,
-        easing: Easing.bezier(0.2, 0.8, 0.2, 1), // Slow at end
-      }),
-    );
+    rotation.value = withTiming(totalRotation, {
+      duration: 3000,
+      easing: Easing.bezier(0.1, 0.7, 0.1, 1), // Fast start, slow end
+    });
 
     // Show result after spin
     setTimeout(() => {
@@ -79,13 +84,13 @@ export function CategoryWheel({
       setShowResult(true);
       resultOpacity.value = withTiming(1, { duration: 300 });
       scale.value = withSequence(
-        withTiming(1.1, { duration: 150 }),
-        withTiming(1, { duration: 150 })
+        withTiming(1.15, { duration: 200 }),
+        withTiming(1, { duration: 200 })
       );
       soundService.play("correct"); // Ding sound
       setIsSpinning(false);
-    }, 3600);
-  }, [isSpinning, disabled, uncompletedCategories, onCategorySelected]);
+    }, 3100);
+  }, [isSpinning, disabled, uncompletedCategories]);
 
   const handlePlay = useCallback(() => {
     if (selectedCategory) {
@@ -116,46 +121,48 @@ export function CategoryWheel({
 
       {/* Wheel */}
       <Animated.View
-        className="w-72 h-72 rounded-full items-center justify-center relative"
+        className="w-80 h-80 rounded-full items-center justify-center relative"
         style={[
           {
             backgroundColor: COLORS.surface,
-            borderWidth: 4,
+            borderWidth: 5,
             borderColor: COLORS.primary,
+            shadowColor: COLORS.primary,
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.3,
+            shadowRadius: 15,
           },
           wheelStyle,
         ]}
       >
         {CATEGORIES.map((cat, index) => {
-          const angle = (360 / CATEGORIES.length) * index;
+          const angle = (360 / CATEGORIES.length) * index - 90; // -90 to start from top
           const isCompleted = completedCategories.includes(cat.code);
 
           return (
             <View
               key={cat.code}
-              className="absolute items-center"
+              className="absolute items-center justify-center"
               style={{
+                width: 50,
+                height: 50,
                 transform: [
                   { rotate: `${angle}deg` },
-                  { translateY: -100 },
+                  { translateX: 115 },
+                  { rotate: `${-angle}deg` }, // Counter-rotate to keep icon upright
                 ],
               }}
             >
               <View
                 className="w-12 h-12 rounded-full items-center justify-center"
                 style={{
-                  backgroundColor: isCompleted ? "rgba(255,255,255,0.1)" : `${cat.color}30`,
+                  backgroundColor: isCompleted ? "rgba(255,255,255,0.1)" : `${cat.color}40`,
                   borderWidth: 2,
                   borderColor: isCompleted ? "rgba(255,255,255,0.2)" : cat.color,
                   opacity: isCompleted ? 0.4 : 1,
                 }}
               >
-                <Text
-                  className="text-2xl"
-                  style={{
-                    transform: [{ rotate: `${-angle}deg` }],
-                  }}
-                >
+                <Text className="text-2xl">
                   {isCompleted ? "✓" : cat.icon}
                 </Text>
               </View>
@@ -165,10 +172,14 @@ export function CategoryWheel({
 
         {/* Center */}
         <View
-          className="w-20 h-20 rounded-full items-center justify-center"
-          style={{ backgroundColor: COLORS.surfaceLight }}
+          className="w-24 h-24 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: COLORS.surfaceLight,
+            borderWidth: 3,
+            borderColor: "rgba(255,255,255,0.1)",
+          }}
         >
-          <Text className="text-3xl">🎡</Text>
+          <Text className="text-4xl">🎡</Text>
         </View>
       </Animated.View>
 
