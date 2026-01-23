@@ -121,7 +121,7 @@ export default function SettingsScreen() {
         className="w-10 h-10 rounded-xl items-center justify-center mr-4"
         style={{ backgroundColor: COLORS.surfaceLight }}
       >
-        <Text className="text-xl">{icon}</Text>
+        <Text className="text-xl" style={{ color: COLORS.text }}>{icon}</Text>
       </View>
       <View className="flex-1">
         <Text className="text-white font-medium">{title}</Text>
@@ -161,7 +161,7 @@ export default function SettingsScreen() {
         className="w-10 h-10 rounded-xl items-center justify-center mr-4"
         style={{ backgroundColor: danger ? COLORS.errorDim : COLORS.surfaceLight }}
       >
-        <Text className="text-xl">{icon}</Text>
+        <Text className="text-xl" style={{ color: danger ? COLORS.error : COLORS.text }}>{icon}</Text>
       </View>
       <View className="flex-1">
         <Text
