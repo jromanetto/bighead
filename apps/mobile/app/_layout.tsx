@@ -27,6 +27,8 @@ export default function RootLayout() {
       } catch (e) {
         console.warn(e);
       } finally {
+        // Delay to ensure splash component mounts first
+        await new Promise(resolve => setTimeout(resolve, 50));
         setAppIsReady(true);
       }
     }

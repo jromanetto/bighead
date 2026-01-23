@@ -1,26 +1,14 @@
-import { useEffect, useMemo, useCallback, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-import {
-  Canvas,
-  Circle,
-  Group,
-  LinearGradient,
-  Text as SkiaText,
-  useFont,
-  vec,
-  Rect,
-  BlurMask,
-  RadialGradient,
-} from "@shopify/react-native-skia";
+import { useEffect, useMemo, useCallback } from "react";
+import { Dimensions, StyleSheet, View, Text, Platform } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withDelay,
   withSequence,
+  withRepeat,
   Easing,
   runOnJS,
-  useAnimatedReaction,
 } from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
@@ -32,6 +20,7 @@ const COLORS = {
   primary: "#00c2cc",
   primaryGlow: "#00e5f0",
   text: "#ffffff",
+  textDim: "#9ca3af",
 };
 
 interface AnimatedSplashProps {
@@ -39,67 +28,109 @@ interface AnimatedSplashProps {
 }
 
 export function AnimatedSplash({ onAnimationEnd }: AnimatedSplashProps) {
-  // Animation state for Skia (driven by Reanimated via state updates)
-  const [ringScale1, setRingScale1] = useState(0.5);
-  const [ringScale2, setRingScale2] = useState(0.5);
-  const [ringScale3, setRingScale3] = useState(0.5);
-  const [ringOpacity1, setRingOpacity1] = useState(0);
-  const [ringOpacity2, setRingOpacity2] = useState(0);
-  const [ringOpacity3, setRingOpacity3] = useState(0);
-  const [glowPulse, setGlowPulse] = useState(0);
-  const [textOpacity, setTextOpacity] = useState(0);
-  const [logoOpacity, setLogoOpacity] = useState(0);
-
-  // Reanimated values for smooth container fade
   const containerOpacity = useSharedValue(1);
-
-  // Load fonts
-  const font = useFont(
-    require("@shopify/react-native-skia/src/skia/__tests__/assets/Roboto-Bold.ttf"),
-    52
-  );
-
-  const smallFont = useFont(
-    require("@shopify/react-native-skia/src/skia/__tests__/assets/Roboto-Medium.ttf"),
-    14
-  );
+  const brainScale = useSharedValue(0.3);
+  const brainOpacity = useSharedValue(0);
+  const ring1Scale = useSharedValue(0.5);
+  const ring1Opacity = useSharedValue(0);
+  const ring2Scale = useSharedValue(0.5);
+  const ring2Opacity = useSharedValue(0);
+  const ring3Scale = useSharedValue(0.5);
+  const ring3Opacity = useSharedValue(0);
+  const textOpacity = useSharedValue(0);
+  const textTranslateY = useSharedValue(20);
+  const glowOpacity = useSharedValue(0);
+  const sloganOpacity = useSharedValue(0);
 
   const handleAnimationComplete = useCallback(() => {
     onAnimationEnd();
   }, [onAnimationEnd]);
 
   useEffect(() => {
-    // Sequence animations using setTimeout for state updates
-    // 1. Logo fade in
-    const t1 = setTimeout(() => setLogoOpacity(1), 50);
+    // 1. Brain appears with bounce
+    brainOpacity.value = withTiming(1, { duration: 500 });
+    brainScale.value = withSequence(
+      withTiming(1.15, { duration: 400, easing: Easing.out(Easing.back(2)) }),
+      withTiming(1, { duration: 200 })
+    );
 
-    // 2. Ring 1
-    const t2 = setTimeout(() => {
-      setRingOpacity1(1);
-      setRingScale1(1);
-    }, 150);
+    // 2. Ring 1 (inner)
+    ring1Opacity.value = withDelay(200, withTiming(1, { duration: 400 }));
+    ring1Scale.value = withDelay(
+      200,
+      withSequence(
+        withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) }),
+        withRepeat(
+          withSequence(
+            withTiming(1.05, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+            withTiming(0.95, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+          ),
+          -1,
+          true
+        )
+      )
+    );
 
-    // 3. Ring 2
-    const t3 = setTimeout(() => {
-      setRingOpacity2(0.7);
-      setRingScale2(1);
-    }, 300);
+    // 3. Ring 2 (middle)
+    ring2Opacity.value = withDelay(350, withTiming(0.7, { duration: 400 }));
+    ring2Scale.value = withDelay(
+      350,
+      withSequence(
+        withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) }),
+        withRepeat(
+          withSequence(
+            withTiming(1.08, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
+            withTiming(0.92, { duration: 1200, easing: Easing.inOut(Easing.ease) })
+          ),
+          -1,
+          true
+        )
+      )
+    );
 
-    // 4. Ring 3
-    const t4 = setTimeout(() => {
-      setRingOpacity3(0.4);
-      setRingScale3(1);
-    }, 450);
+    // 4. Ring 3 (outer)
+    ring3Opacity.value = withDelay(500, withTiming(0.4, { duration: 400 }));
+    ring3Scale.value = withDelay(
+      500,
+      withSequence(
+        withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) }),
+        withRepeat(
+          withSequence(
+            withTiming(1.1, { duration: 1400, easing: Easing.inOut(Easing.ease) }),
+            withTiming(0.9, { duration: 1400, easing: Easing.inOut(Easing.ease) })
+          ),
+          -1,
+          true
+        )
+      )
+    );
 
-    // 5. Glow
-    const t5 = setTimeout(() => setGlowPulse(1), 600);
+    // 5. Glow pulse
+    glowOpacity.value = withDelay(
+      600,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.3, { duration: 800, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        true
+      )
+    );
 
-    // 6. Text
-    const t6 = setTimeout(() => setTextOpacity(1), 700);
+    // 6. BIGHEAD text appears
+    textOpacity.value = withDelay(700, withTiming(1, { duration: 500 }));
+    textTranslateY.value = withDelay(
+      700,
+      withTiming(0, { duration: 500, easing: Easing.out(Easing.cubic) })
+    );
 
-    // 7. Fade out
+    // 7. Slogan appears
+    sloganOpacity.value = withDelay(1000, withTiming(1, { duration: 600 }));
+
+    // 8. Fade out after 3.5 seconds
     containerOpacity.value = withDelay(
-      3000,
+      3500,
       withTiming(0, { duration: 500, easing: Easing.out(Easing.ease) }, (finished) => {
         if (finished) {
           runOnJS(handleAnimationComplete)();
@@ -107,236 +138,137 @@ export function AnimatedSplash({ onAnimationEnd }: AnimatedSplashProps) {
       })
     );
 
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
-      clearTimeout(t6);
-    };
-  }, []);
+    // Fallback timeout
+    const fallbackTimer = setTimeout(() => {
+      handleAnimationComplete();
+    }, 4500);
+
+    return () => clearTimeout(fallbackTimer);
+  }, [handleAnimationComplete]);
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: containerOpacity.value,
   }));
 
+  const brainStyle = useAnimatedStyle(() => ({
+    opacity: brainOpacity.value,
+    transform: [{ scale: brainScale.value }],
+  }));
+
+  const ring1Style = useAnimatedStyle(() => ({
+    opacity: ring1Opacity.value,
+    transform: [{ scale: ring1Scale.value }],
+  }));
+
+  const ring2Style = useAnimatedStyle(() => ({
+    opacity: ring2Opacity.value,
+    transform: [{ scale: ring2Scale.value }],
+  }));
+
+  const ring3Style = useAnimatedStyle(() => ({
+    opacity: ring3Opacity.value,
+    transform: [{ scale: ring3Scale.value }],
+  }));
+
+  const textStyle = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
+    transform: [{ translateY: textTranslateY.value }],
+  }));
+
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowOpacity.value,
+  }));
+
+  const sloganStyle = useAnimatedStyle(() => ({
+    opacity: sloganOpacity.value,
+  }));
+
   // Generate particles
   const particles = useMemo(() => {
     const items = [];
-    for (let i = 0; i < 16; i++) {
-      const angle = (i / 16) * Math.PI * 2;
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const radius = 140 + (i % 3) * 20;
       items.push({
-        angle,
-        baseRadius: 120 + (i % 3) * 25,
-        size: 2 + Math.random() * 3,
+        left: width / 2 + Math.cos(angle) * radius - 3,
+        top: height / 2 - 60 + Math.sin(angle) * radius - 3,
+        size: 3 + (i % 3) * 2,
       });
     }
     return items;
   }, []);
 
-  if (!font || !smallFont) {
-    return (
-      <Animated.View style={[styles.container, containerStyle]}>
-        <View style={styles.fallback} />
-      </Animated.View>
-    );
-  }
-
-  const centerX = width / 2;
-  const centerY = height / 2 - 30;
-
-  // Calculate text position to center it
-  const textWidth = font.measureText("BIGHEAD").width;
-  const subtitleWidth = smallFont.measureText("FOOTBALL QUIZ").width;
-
   return (
     <Animated.View style={[styles.container, containerStyle]}>
-      <Canvas style={styles.canvas}>
-        {/* Background gradient */}
-        <Rect x={0} y={0} width={width} height={height}>
-          <LinearGradient
-            start={vec(0, 0)}
-            end={vec(width, height)}
-            colors={[COLORS.bgDark, COLORS.bg, COLORS.bgDark]}
-          />
-        </Rect>
+      {/* Background */}
+      <View style={styles.background} />
 
-        {/* Center glow */}
-        <Group opacity={glowPulse}>
-          <Circle cx={centerX} cy={centerY} r={80}>
-            <RadialGradient
-              c={vec(centerX, centerY)}
-              r={80}
-              colors={[COLORS.primaryGlow, "transparent"]}
-            />
-          </Circle>
-        </Group>
+      {/* Center glow */}
+      <Animated.View style={[styles.glow, glowStyle]} />
 
-        {/* Outer ring - ring 3 */}
-        <Group
-          transform={[
-            { translateX: centerX },
-            { translateY: centerY },
-            { scale: ringScale3 },
-            { translateX: -centerX },
-            { translateY: -centerY },
+      {/* Rings */}
+      <Animated.View style={[styles.ring, styles.ring3, ring3Style]} />
+      <Animated.View style={[styles.ring, styles.ring2, ring2Style]} />
+      <Animated.View style={[styles.ring, styles.ring1, ring1Style]} />
+
+      {/* Brain Logo */}
+      <Animated.View style={[styles.brainContainer, brainStyle]}>
+        {/* Left hemisphere */}
+        <View style={[styles.brainHalf, styles.brainLeft]}>
+          <View style={[styles.brainLobe, styles.lobeTL]} />
+          <View style={[styles.brainLobe, styles.lobeBL]} />
+          <View style={[styles.brainLobe, styles.lobeML]} />
+        </View>
+        {/* Right hemisphere */}
+        <View style={[styles.brainHalf, styles.brainRight]}>
+          <View style={[styles.brainLobe, styles.lobeTR]} />
+          <View style={[styles.brainLobe, styles.lobeBR]} />
+          <View style={[styles.brainLobe, styles.lobeMR]} />
+        </View>
+        {/* Center stem */}
+        <View style={styles.brainStem} />
+        {/* Neural connections - glowing dots */}
+        <View style={[styles.neuron, { top: 15, left: 25 }]} />
+        <View style={[styles.neuron, { top: 35, left: 15 }]} />
+        <View style={[styles.neuron, { top: 55, left: 28 }]} />
+        <View style={[styles.neuron, { top: 15, right: 25 }]} />
+        <View style={[styles.neuron, { top: 35, right: 15 }]} />
+        <View style={[styles.neuron, { top: 55, right: 28 }]} />
+        <View style={[styles.neuron, { top: 25, left: 45 }]} />
+        <View style={[styles.neuron, { top: 25, right: 45 }]} />
+        {/* Brain glow */}
+        <View style={styles.brainGlow} />
+      </Animated.View>
+
+      {/* Particles */}
+      {particles.map((particle, index) => (
+        <Animated.View
+          key={index}
+          style={[
+            styles.particle,
+            ring2Style,
+            {
+              left: particle.left,
+              top: particle.top,
+              width: particle.size,
+              height: particle.size,
+              borderRadius: particle.size / 2,
+            },
           ]}
-          opacity={ringOpacity3}
-        >
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={100}
-            color={COLORS.primary}
-            style="stroke"
-            strokeWidth={1}
-          >
-            <BlurMask blur={8} style="solid" />
-          </Circle>
-        </Group>
+        />
+      ))}
 
-        {/* Middle ring - ring 2 */}
-        <Group
-          transform={[
-            { translateX: centerX },
-            { translateY: centerY },
-            { scale: ringScale2 },
-            { translateX: -centerX },
-            { translateY: -centerY },
-          ]}
-          opacity={ringOpacity2}
-        >
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={70}
-            color={COLORS.primaryGlow}
-            style="stroke"
-            strokeWidth={2}
-          >
-            <BlurMask blur={4} style="solid" />
-          </Circle>
-        </Group>
+      {/* Text */}
+      <Animated.View style={[styles.textContainer, textStyle]}>
+        <Text style={styles.title}>BIGHEAD</Text>
+      </Animated.View>
 
-        {/* Inner ring - ring 1 */}
-        <Group
-          transform={[
-            { translateX: centerX },
-            { translateY: centerY },
-            { scale: ringScale1 },
-            { translateX: -centerX },
-            { translateY: -centerY },
-          ]}
-          opacity={ringOpacity1}
-        >
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={45}
-            color={COLORS.primary}
-            style="stroke"
-            strokeWidth={3}
-          />
-        </Group>
-
-        {/* Center filled circle */}
-        <Group opacity={logoOpacity}>
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={30}
-            color={COLORS.primary}
-            opacity={0.2}
-          />
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={15}
-            color={COLORS.primary}
-            opacity={0.4}
-          />
-        </Group>
-
-        {/* Floating particles */}
-        {particles.map((particle, index) => {
-          const px = centerX + Math.cos(particle.angle) * particle.baseRadius;
-          const py = centerY + Math.sin(particle.angle) * particle.baseRadius;
-          return (
-            <Group key={index} opacity={ringOpacity2}>
-              <Circle
-                cx={px}
-                cy={py}
-                r={particle.size}
-                color={COLORS.primary}
-                opacity={0.6}
-              >
-                <BlurMask blur={2} style="solid" />
-              </Circle>
-            </Group>
-          );
-        })}
-
-        {/* BIGHEAD text with glow effect */}
-        <Group opacity={textOpacity}>
-          {/* Text glow layer 1 - outer glow */}
-          <SkiaText
-            x={centerX - textWidth / 2}
-            y={centerY + 120}
-            text="BIGHEAD"
-            font={font}
-            color={COLORS.primary}
-            opacity={0.3}
-          >
-            <BlurMask blur={20} style="solid" />
-          </SkiaText>
-
-          {/* Text glow layer 2 - inner glow */}
-          <SkiaText
-            x={centerX - textWidth / 2}
-            y={centerY + 120}
-            text="BIGHEAD"
-            font={font}
-            color={COLORS.primaryGlow}
-            opacity={0.5}
-          >
-            <BlurMask blur={8} style="solid" />
-          </SkiaText>
-
-          {/* Main text */}
-          <SkiaText
-            x={centerX - textWidth / 2}
-            y={centerY + 120}
-            text="BIGHEAD"
-            font={font}
-            color={COLORS.text}
-          />
-
-          {/* Subtitle */}
-          <SkiaText
-            x={centerX - subtitleWidth / 2}
-            y={centerY + 150}
-            text="FOOTBALL QUIZ"
-            font={smallFont}
-            color={COLORS.primary}
-            opacity={0.9}
-          />
-        </Group>
-
-        {/* Bottom accent line */}
-        <Group opacity={textOpacity}>
-          <Rect
-            x={centerX - 40}
-            y={centerY + 165}
-            width={80}
-            height={2}
-            color={COLORS.primary}
-            opacity={0.5}
-          >
-            <BlurMask blur={4} style="solid" />
-          </Rect>
-        </Group>
-      </Canvas>
+      {/* Slogan */}
+      <Animated.View style={[styles.sloganContainer, sloganStyle]}>
+        <Text style={styles.slogan}>Knowledge is power.</Text>
+        <Text style={styles.sloganAccent}>Use it.</Text>
+        <View style={styles.accentLine} />
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -346,12 +278,230 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: COLORS.bg,
     zIndex: 999,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  canvas: {
-    flex: 1,
-  },
-  fallback: {
-    flex: 1,
+  background: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: COLORS.bg,
+  },
+  glow: {
+    position: "absolute",
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: COLORS.primary,
+    top: height / 2 - 150,
+    left: width / 2 - 90,
+    ...Platform.select({
+      web: {
+        boxShadow: `0 0 80px 40px ${COLORS.primaryGlow}`,
+      },
+      default: {
+        shadowColor: COLORS.primaryGlow,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 50,
+      },
+    }),
+    opacity: 0.25,
+  },
+  ring: {
+    position: "absolute",
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderRadius: 1000,
+  },
+  ring1: {
+    width: 120,
+    height: 120,
+    top: height / 2 - 120,
+    left: width / 2 - 60,
+    borderWidth: 3,
+  },
+  ring2: {
+    width: 170,
+    height: 170,
+    top: height / 2 - 145,
+    left: width / 2 - 85,
+    borderColor: COLORS.primaryGlow,
+    borderWidth: 2,
+  },
+  ring3: {
+    width: 220,
+    height: 220,
+    top: height / 2 - 170,
+    left: width / 2 - 110,
+    borderWidth: 1,
+    ...Platform.select({
+      web: {
+        boxShadow: `0 0 20px 8px ${COLORS.primary}40`,
+      },
+      default: {
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 15,
+      },
+    }),
+  },
+  // Brain styles
+  brainContainer: {
+    position: "absolute",
+    top: height / 2 - 100,
+    left: width / 2 - 45,
+    width: 90,
+    height: 80,
+  },
+  brainGlow: {
+    position: "absolute",
+    width: 70,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.primary,
+    opacity: 0.15,
+    top: 10,
+    left: 10,
+    zIndex: -1,
+  },
+  brainHalf: {
+    position: "absolute",
+    width: 40,
+    height: 70,
+    top: 5,
+  },
+  brainLeft: {
+    left: 5,
+  },
+  brainRight: {
+    right: 5,
+  },
+  brainLobe: {
+    position: "absolute",
+    backgroundColor: COLORS.primary,
+    opacity: 0.3,
+  },
+  lobeTL: {
+    width: 32,
+    height: 28,
+    borderRadius: 16,
+    top: 0,
+    left: 4,
+  },
+  lobeBL: {
+    width: 28,
+    height: 24,
+    borderRadius: 14,
+    top: 40,
+    left: 8,
+  },
+  lobeML: {
+    width: 24,
+    height: 20,
+    borderRadius: 12,
+    top: 22,
+    left: 0,
+  },
+  lobeTR: {
+    width: 32,
+    height: 28,
+    borderRadius: 16,
+    top: 0,
+    right: 4,
+  },
+  lobeBR: {
+    width: 28,
+    height: 24,
+    borderRadius: 14,
+    top: 40,
+    right: 8,
+  },
+  lobeMR: {
+    width: 24,
+    height: 20,
+    borderRadius: 12,
+    top: 22,
+    right: 0,
+  },
+  brainStem: {
+    position: "absolute",
+    width: 12,
+    height: 18,
+    backgroundColor: COLORS.primary,
+    opacity: 0.25,
+    borderRadius: 6,
+    bottom: 0,
+    left: 39,
+  },
+  neuron: {
+    position: "absolute",
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.primaryGlow,
+    ...Platform.select({
+      web: {
+        boxShadow: `0 0 6px 2px ${COLORS.primaryGlow}`,
+      },
+      default: {
+        shadowColor: COLORS.primaryGlow,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 4,
+      },
+    }),
+  },
+  particle: {
+    position: "absolute",
+    backgroundColor: COLORS.primary,
+    opacity: 0.6,
+  },
+  textContainer: {
+    position: "absolute",
+    top: height / 2 + 50,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 52,
+    fontWeight: "900",
+    color: COLORS.text,
+    letterSpacing: 6,
+    ...Platform.select({
+      web: {
+        textShadow: `0 0 30px ${COLORS.primary}, 0 0 60px ${COLORS.primary}60`,
+      },
+      default: {
+        textShadowColor: COLORS.primary,
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 25,
+      },
+    }),
+  },
+  sloganContainer: {
+    position: "absolute",
+    top: height / 2 + 115,
+    alignItems: "center",
+  },
+  slogan: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: COLORS.textDim,
+    letterSpacing: 2,
+    fontStyle: "italic",
+  },
+  sloganAccent: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.primary,
+    letterSpacing: 3,
+    marginTop: 4,
+  },
+  accentLine: {
+    width: 60,
+    height: 2,
+    backgroundColor: COLORS.primary,
+    marginTop: 20,
+    opacity: 0.5,
+    borderRadius: 1,
   },
 });
