@@ -245,3 +245,32 @@ export const restorePurchases = async () => {
   const result = await monetization.restorePurchases();
   return result.success;
 };
+
+/**
+ * Grant premium status to user in Supabase after successful purchase
+ * This syncs the RevenueCat purchase with our database
+ */
+export const grantPremiumToUser = async (
+  userId: string,
+  durationDays: number | null = null
+): Promise<boolean> => {
+  try {
+    // Import supabase dynamically to avoid circular dependency
+    const { supabase } = await import("./supabase");
+
+    const { data, error } = await supabase.rpc("grant_premium", {
+      p_user_id: userId,
+      p_duration_days: durationDays,
+    });
+
+    if (error) {
+      console.error("Failed to grant premium in database:", error);
+      return false;
+    }
+
+    return data === true;
+  } catch (error) {
+    console.error("Error granting premium:", error);
+    return false;
+  }
+};

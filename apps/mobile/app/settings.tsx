@@ -178,23 +178,22 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-      <View className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center px-5 pt-4 mb-4">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
-          <Text className="text-white text-2xl font-black">Settings</Text>
-        </View>
+      {/* Header */}
+      <View className="flex-row items-center px-5 pt-4 mb-4">
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.back();
+          }}
+          className="w-10 h-10 rounded-full items-center justify-center mr-3"
+          style={{ backgroundColor: COLORS.surface }}
+        >
+          <Text className="text-white text-lg">←</Text>
+        </Pressable>
+        <Text className="text-white text-2xl font-black">Settings</Text>
+      </View>
 
-        <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-28" showsVerticalScrollIndicator={false}>
           {/* Sound & Haptics */}
           <Text
             className="text-xs font-bold mb-2 mt-4 uppercase tracking-wider"
@@ -395,7 +394,7 @@ export default function SettingsScreen() {
           </View>
 
           {/* Version */}
-          <View className="items-center py-8 pb-24">
+          <View className="items-center py-8">
             <Text style={{ color: COLORS.textMuted }} className="text-sm font-bold">
               BIGHEAD V1.0.0
             </Text>
@@ -405,9 +404,8 @@ export default function SettingsScreen() {
           </View>
         </ScrollView>
 
-        {/* Bottom Navigation */}
-        <BottomNavigation />
-      </View>
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </SafeAreaView>
   );
 }

@@ -7,6 +7,7 @@ import { useAuth } from "../src/contexts/AuthContext";
 import { getDailyStreak, hasCompletedDailyChallenge } from "../src/services/dailyChallenge";
 import { loadFeedbackSettings, buttonPressFeedback } from "../src/utils/feedback";
 import { BottomNavigation } from "../src/components/BottomNavigation";
+import { SmallAvatar } from "../src/components/ProfileAvatar";
 
 // New QuizNext design colors
 const COLORS = {
@@ -26,31 +27,6 @@ const COLORS = {
   text: "#ffffff",
   textMuted: "#9ca3af",
 };
-
-// Avatar component
-function UserAvatar({ username, size = 40 }: { username?: string | null; size?: number }) {
-  const initial = username?.charAt(0).toUpperCase() || "?";
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        borderWidth: 2,
-        borderColor: COLORS.primary,
-      }}
-      className="items-center justify-center overflow-hidden"
-    >
-      <LinearGradient
-        colors={[COLORS.primary, COLORS.purple]}
-        className="absolute inset-0"
-      />
-      <Text className="text-white font-bold" style={{ fontSize: size * 0.4 }}>
-        {initial}
-      </Text>
-    </View>
-  );
-}
 
 // Stats Pill component
 function StatsPill({ icon, value, color }: { icon: string; value: string | number; color: string }) {
@@ -122,7 +98,7 @@ export default function HomeScreen() {
               }}
               className="active:opacity-80"
             >
-              <UserAvatar username={profile?.username} size={40} />
+              <SmallAvatar userId={user?.id} username={profile?.username} avatarUrl={profile?.avatar_url} size={40} />
             </Pressable>
             <Text className="text-2xl font-bold tracking-tight text-white">
               BigHead
@@ -160,8 +136,9 @@ export default function HomeScreen() {
                 buttonPressFeedback();
                 router.push("/daily");
               }}
-              className="rounded-2xl overflow-hidden active:opacity-95 h-44"
+              className="rounded-2xl overflow-hidden active:opacity-95"
               style={{
+                height: 176,
                 backgroundColor: COLORS.surface,
                 borderWidth: 1,
                 borderColor: 'rgba(255,255,255,0.05)',
@@ -176,19 +153,19 @@ export default function HomeScreen() {
                 colors={['#3b82f6', '#8b5cf6', '#ec4899', '#f97316']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                className="absolute inset-0"
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
               >
                 {/* Decorative circles for depth */}
-                <View className="absolute top-4 right-4 w-24 h-24 rounded-full opacity-40" style={{ backgroundColor: '#fbbf24' }} />
-                <View className="absolute top-16 right-20 w-16 h-16 rounded-full opacity-50" style={{ backgroundColor: '#ec4899' }} />
-                <View className="absolute bottom-8 left-8 w-20 h-20 rounded-full opacity-40" style={{ backgroundColor: '#3b82f6' }} />
+                <View style={{ position: 'absolute', top: 16, right: 16, width: 96, height: 96, borderRadius: 48, backgroundColor: '#fbbf24', opacity: 0.4 }} />
+                <View style={{ position: 'absolute', top: 64, right: 80, width: 64, height: 64, borderRadius: 32, backgroundColor: '#ec4899', opacity: 0.5 }} />
+                <View style={{ position: 'absolute', bottom: 32, left: 32, width: 80, height: 80, borderRadius: 40, backgroundColor: '#3b82f6', opacity: 0.4 }} />
               </LinearGradient>
 
               {/* Bottom Gradient Overlay for readability */}
               <LinearGradient
                 colors={['transparent', 'rgba(30, 37, 41, 0.7)']}
                 locations={[0.3, 1]}
-                className="absolute inset-0"
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
               />
 
               {/* Card Content - positioned at bottom */}
@@ -244,14 +221,14 @@ export default function HomeScreen() {
                 buttonPressFeedback();
                 router.push("/game/chain");
               }}
-              className="h-32 rounded-xl overflow-hidden active:opacity-95"
-              style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              className="rounded-xl overflow-hidden active:opacity-95"
+              style={{ height: 128, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
             >
               <LinearGradient
                 colors={['#134e4a', '#0f766e']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                className="flex-1 p-5 flex-row items-center justify-between"
+                style={{ flex: 1, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
               >
                 <View className="flex-col justify-center">
                   <Text className="text-2xl font-bold italic tracking-tighter text-white">
@@ -275,14 +252,14 @@ export default function HomeScreen() {
                   buttonPressFeedback();
                   router.push("/duel");
                 }}
-                className="flex-1 h-36 rounded-xl overflow-hidden active:opacity-95"
-                style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
+                style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
               >
                 <LinearGradient
                   colors={['#450a0a', '#7f1d1d']}
                   start={{ x: 0, y: 1 }}
                   end={{ x: 0, y: 0 }}
-                  className="flex-1 p-4 flex-col justify-between"
+                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
                 >
                   <View
                     className="w-10 h-10 rounded-lg items-center justify-center"
@@ -301,30 +278,59 @@ export default function HomeScreen() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.push("/achievements");
+                  router.push("/themes");
                 }}
-                className="flex-1 h-36 rounded-xl overflow-hidden active:opacity-95"
-                style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
+                style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
               >
                 <LinearGradient
                   colors={['#3b0764', '#6b21a8']}
                   start={{ x: 0, y: 1 }}
                   end={{ x: 0, y: 0 }}
-                  className="flex-1 p-4 flex-col justify-between"
+                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
                 >
                   <View
                     className="w-10 h-10 rounded-lg items-center justify-center"
                     style={{ backgroundColor: `${COLORS.purple}20` }}
                   >
-                    <Text className="text-xl font-black" style={{ color: COLORS.purple }}>◎</Text>
+                    <Text className="text-xl font-black" style={{ color: COLORS.purple }}>🎨</Text>
                   </View>
                   <View>
                     <Text className="text-xl font-bold tracking-tight text-white">THEMES</Text>
-                    <Text className="text-purple-200 text-xs mt-0.5">Explore</Text>
+                    <Text className="text-purple-200 text-xs mt-0.5">Customize</Text>
                   </View>
                 </LinearGradient>
               </Pressable>
             </View>
+
+            {/* Trophies Row */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/achievements");
+              }}
+              className="rounded-xl overflow-hidden active:opacity-95"
+              style={{ height: 80, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <LinearGradient
+                colors={['#134e4a', '#0d9488']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ flex: 1, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center' }}
+              >
+                <View
+                  className="w-12 h-12 rounded-xl items-center justify-center mr-4"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
+                >
+                  <Text className="text-2xl">🏆</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className="text-xl font-bold text-white">ACHIEVEMENTS</Text>
+                  <Text className="text-teal-200 text-xs">Unlock badges & rewards</Text>
+                </View>
+                <Text className="text-white text-2xl">→</Text>
+              </LinearGradient>
+            </Pressable>
           </View>
 
           {/* Quick Actions Row 1 */}

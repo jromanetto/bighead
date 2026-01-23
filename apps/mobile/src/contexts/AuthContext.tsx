@@ -10,6 +10,8 @@ interface UserProfile {
   level: number;
   games_played: number;
   best_chain: number;
+  is_premium: boolean;
+  premium_expires_at: string | null;
 }
 
 interface AuthState {
@@ -17,6 +19,7 @@ interface AuthState {
   session: Session | null;
   profile: UserProfile | null;
   isAnonymous: boolean;
+  isPremium: boolean;
   isLoading: boolean;
   isInitialized: boolean;
 }
@@ -28,6 +31,8 @@ interface AuthContextType extends AuthState {
   upgradeAnonymousAccount: (email: string, password: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  updateAvatar: (avatarUrl: string) => Promise<void>;
+  updateUsername: (username: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -46,9 +51,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session: null,
     profile: null,
     isAnonymous: false,
+    isPremium: false,
     isLoading: true,
     isInitialized: false,
   });
+
+  // Check if premium is still valid
+  const checkPremiumStatus = (profile: UserProfile | null): boolean => {
+    if (!profile?.is_premium) return false;
+    if (!profile.premium_expires_at) return true; // Lifetime premium
+    return new Date(profile.premium_expires_at) > new Date();
+  };
 
   // Fetch user profile from users table
   const fetchProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
@@ -141,6 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             session,
             profile,
             isAnonymous: isAnon,
+            isPremium: checkPremiumStatus(profile),
             isLoading: false,
             isInitialized: true,
           });
@@ -172,6 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             session,
             profile,
             isAnonymous: isAnon,
+            isPremium: checkPremiumStatus(profile),
             isLoading: false,
             isInitialized: true,
           });
@@ -181,6 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             session: null,
             profile: null,
             isAnonymous: false,
+            isPremium: false,
             isLoading: false,
             isInitialized: true,
           });
@@ -206,6 +222,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           session: data.session,
           profile: null,
           isAnonymous: true,
+          isPremium: false,
           isLoading: false,
           isInitialized: true,
         });
@@ -219,6 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         session: null,
         profile: null,
         isAnonymous: true, // Treat as anonymous even without session
+        isPremium: false,
         isLoading: false,
         isInitialized: true,
       });
@@ -250,6 +268,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           session: data.session,
           profile,
           isAnonymous: false,
+          isPremium: checkPremiumStatus(profile),
           isLoading: false,
           isInitialized: true,
         });
@@ -284,6 +303,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           session: data.session,
           profile,
           isAnonymous: false,
+          isPremium: false,
           isLoading: false,
           isInitialized: true,
         });
@@ -324,6 +344,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           session: state.session,
           profile,
           isAnonymous: false,
+          isPremium: checkPremiumStatus(profile),
           isLoading: false,
           isInitialized: true,
         });
@@ -358,6 +379,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState(prev => ({ ...prev, profile }));
   }, [state.user, fetchProfile]);
 
+  // Update avatar URL
+  const updateAvatar = useCallback(async (avatarUrl: string) => {
+    if (!state.user) return;
+
+    try {
+      const { error } = await (supabase
+        .from("users") as any)
+        .update({ avatar_url: avatarUrl })
+        .eq("id", state.user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setState(prev => ({
+        ...prev,
+        profile: prev.profile ? { ...prev.profile, avatar_url: avatarUrl } : null,
+      }));
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      throw error;
+    }
+  }, [state.user]);
+
+  const updateUsername = useCallback(async (username: string) => {
+    if (!state.user) return;
+
+    try {
+      const { error } = await (supabase
+        .from("users") as any)
+        .update({ username })
+        .eq("id", state.user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setState(prev => ({
+        ...prev,
+        profile: prev.profile ? { ...prev.profile, username } : null,
+      }));
+    } catch (error) {
+      console.error("Error updating username:", error);
+      throw error;
+    }
+  }, [state.user]);
+
   const value: AuthContextType = {
     ...state,
     signInAnonymously,
@@ -366,6 +432,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     upgradeAnonymousAccount,
     signOut,
     refreshProfile,
+    updateAvatar,
+    updateUsername,
   };
 
   return (

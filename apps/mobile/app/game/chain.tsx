@@ -428,6 +428,20 @@ export default function ChainGameScreen() {
     if (status === "finished") {
       playSound("gameOver");
       const state = useGameStore.getState();
+
+      // Build question summary data for results page
+      const questionSummary = state.questions.map((q, idx) => {
+        const answer = state.answers[idx];
+        return {
+          question: q.question,
+          selectedAnswer: answer?.selectedAnswer || "No answer",
+          correctAnswer: q.answers[q.correctIndex],
+          isCorrect: answer?.isCorrect || false,
+          explanation: q.explanation,
+          imageUrl: q.imageUrl,
+        };
+      });
+
       router.replace({
         pathname: "/game/result",
         params: {
@@ -435,6 +449,7 @@ export default function ChainGameScreen() {
           correct: state.correctCount.toString(),
           total: state.totalQuestions.toString(),
           maxChain: state.maxChain.toString(),
+          questionSummary: JSON.stringify(questionSummary),
         },
       });
     }
@@ -602,18 +617,18 @@ export default function ChainGameScreen() {
           >
             {/* Question Image (if available) */}
             {currentQuestion.imageUrl && (
-              <View className="relative">
+              <View style={{ position: 'relative' }}>
                 <Image
                   source={{ uri: currentQuestion.imageUrl }}
-                  className="w-full h-40"
+                  style={{ width: '100%', height: 160 }}
                   resizeMode="cover"
                   onLoad={() => setImageLoaded(true)}
                   onError={() => setImageLoaded(false)}
                 />
                 {/* Image credit overlay */}
                 {currentQuestion.imageCredit && (
-                  <View className="absolute bottom-0 right-0 px-2 py-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
-                    <Text className="text-[9px] text-white/60">{currentQuestion.imageCredit}</Text>
+                  <View style={{ position: 'absolute', bottom: 0, right: 0, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                    <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)' }}>{currentQuestion.imageCredit}</Text>
                   </View>
                 )}
               </View>

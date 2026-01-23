@@ -6,6 +6,7 @@ import { getLeaderboard, getWeeklyLeaderboard, getUserRank, type LeaderboardEntr
 import { useAuth } from "../src/contexts/AuthContext";
 import { buttonPressFeedback } from "../src/utils/feedback";
 import { BottomNavigation } from "../src/components/BottomNavigation";
+import { SmallAvatar } from "../src/components/ProfileAvatar";
 
 // New QuizNext design colors
 const COLORS = {
@@ -22,41 +23,6 @@ const COLORS = {
   text: "#ffffff",
   textMuted: "#9ca3af",
 };
-
-// Avatar component
-function PlayerAvatar({
-  username,
-  size = 48,
-  isCurrentUser = false,
-  ringColor
-}: {
-  username?: string | null;
-  size?: number;
-  isCurrentUser?: boolean;
-  ringColor?: string;
-}) {
-  const initial = username?.charAt(0).toUpperCase() || "?";
-  const bgColor = isCurrentUser ? COLORS.primary : COLORS.surface;
-
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: bgColor,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: ringColor ? 3 : 0,
-        borderColor: ringColor,
-      }}
-    >
-      <Text className="text-white font-bold" style={{ fontSize: size * 0.4 }}>
-        {initial}
-      </Text>
-    </View>
-  );
-}
 
 // Rank Badge component
 function RankBadge({ rank }: { rank: number }) {
@@ -116,8 +82,10 @@ function LeaderboardRow({
       >
         {rank}
       </Text>
-      <PlayerAvatar
+      <SmallAvatar
+        userId={player.id}
         username={player.username}
+        avatarUrl={player.avatar_url}
         size={40}
         isCurrentUser={isCurrentUser}
       />
@@ -182,21 +150,20 @@ export default function LeaderboardScreen() {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-      <View className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center px-5 pt-4 mb-4">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
-          <Text className="text-white text-2xl font-black">LEADERBOARD</Text>
-        </View>
+      {/* Header */}
+      <View className="flex-row items-center px-5 pt-4 mb-4">
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.back();
+          }}
+          className="w-10 h-10 rounded-full items-center justify-center mr-3"
+          style={{ backgroundColor: COLORS.surface }}
+        >
+          <Text className="text-white text-lg">←</Text>
+        </Pressable>
+        <Text className="text-white text-2xl font-black">LEADERBOARD</Text>
+      </View>
 
         {/* Tabs */}
         <View
@@ -279,8 +246,10 @@ export default function LeaderboardScreen() {
                 {/* 2nd place */}
                 <View className="items-center flex-1">
                   <View className="relative">
-                    <PlayerAvatar
+                    <SmallAvatar
+                      userId={leaderboard[1].id}
                       username={leaderboard[1].username}
+                      avatarUrl={leaderboard[1].avatar_url}
                       size={56}
                       isCurrentUser={isCurrentUser(leaderboard[1].id)}
                       ringColor={COLORS.silver}
@@ -303,8 +272,10 @@ export default function LeaderboardScreen() {
                 <View className="items-center flex-1 -mt-8">
                   <Text className="text-2xl mb-2">👑</Text>
                   <View className="relative">
-                    <PlayerAvatar
+                    <SmallAvatar
+                      userId={leaderboard[0].id}
                       username={leaderboard[0].username}
+                      avatarUrl={leaderboard[0].avatar_url}
                       size={72}
                       isCurrentUser={isCurrentUser(leaderboard[0].id)}
                       ringColor={COLORS.gold}
@@ -326,8 +297,10 @@ export default function LeaderboardScreen() {
                 {/* 3rd place */}
                 <View className="items-center flex-1">
                   <View className="relative">
-                    <PlayerAvatar
+                    <SmallAvatar
+                      userId={leaderboard[2].id}
                       username={leaderboard[2].username}
+                      avatarUrl={leaderboard[2].avatar_url}
                       size={56}
                       isCurrentUser={isCurrentUser(leaderboard[2].id)}
                       ringColor={COLORS.bronze}
@@ -349,7 +322,7 @@ export default function LeaderboardScreen() {
             )}
 
             {/* Full Leaderboard */}
-            <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+            <ScrollView className="flex-1 px-5" contentContainerClassName="pb-28" showsVerticalScrollIndicator={false}>
               {(leaderboard.length < 3 ? leaderboard : leaderboard.slice(3)).map((player, index) => {
                 const actualRank = leaderboard.length < 3 ? index + 1 : index + 4;
                 return (
@@ -361,50 +334,50 @@ export default function LeaderboardScreen() {
                   />
                 );
               })}
-              <View className="h-4" />
             </ScrollView>
           </>
         )}
 
-        {/* Current User Position */}
-        {!loading && userRank && (
-          <View
-            className="mx-5 mb-4 rounded-2xl p-4 flex-row items-center"
+      {/* Current User Position */}
+      {!loading && userRank && (
+        <View
+          className="mx-5 mb-24 rounded-2xl p-4 flex-row items-center"
+          style={{
+            backgroundColor: COLORS.primary,
+          }}
+        >
+            <View
+            className="rounded-full items-center justify-center mr-3"
             style={{
-              backgroundColor: COLORS.primary,
+              width: 32,
+              height: 32,
+              backgroundColor: 'rgba(255,255,255,0.2)',
             }}
           >
-            <View
-              className="rounded-full items-center justify-center mr-3"
-              style={{
-                width: 32,
-                height: 32,
-                backgroundColor: 'rgba(255,255,255,0.2)',
-              }}
-            >
-              <Text className="font-bold" style={{ color: COLORS.bg }}>{userRank.rank}</Text>
-            </View>
-            <PlayerAvatar
-              username={profile?.username}
-              size={40}
-            />
-            <View className="flex-1 ml-3">
-              <Text className="font-bold" style={{ color: COLORS.bg }}>
-                YOU ({profile?.username || "PLAYER"})
-              </Text>
-              <Text style={{ color: 'rgba(17,24,39,0.7)' }} className="text-xs">
-                {Math.max(0, ((userRank.rank > 1 && leaderboard[userRank.rank - 2]?.total_xp) || 0) - userRank.total_xp)} XP to next rank!
-              </Text>
-            </View>
+            <Text className="font-bold" style={{ color: COLORS.bg }}>{userRank.rank}</Text>
+          </View>
+          <SmallAvatar
+            userId={user?.id}
+            username={profile?.username}
+            avatarUrl={profile?.avatar_url}
+            size={40}
+          />
+          <View className="flex-1 ml-3">
             <Text className="font-bold" style={{ color: COLORS.bg }}>
-              {userRank.total_xp.toLocaleString()} XP
+              YOU ({profile?.username || "PLAYER"})
+            </Text>
+            <Text style={{ color: 'rgba(17,24,39,0.7)' }} className="text-xs">
+              {Math.max(0, ((userRank.rank > 1 && leaderboard[userRank.rank - 2]?.total_xp) || 0) - userRank.total_xp)} XP to next rank!
             </Text>
           </View>
-        )}
+          <Text className="font-bold" style={{ color: COLORS.bg }}>
+            {userRank.total_xp.toLocaleString()} XP
+          </Text>
+        </View>
+      )}
 
-        {/* Bottom Navigation */}
-        <BottomNavigation />
-      </View>
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </SafeAreaView>
   );
 }

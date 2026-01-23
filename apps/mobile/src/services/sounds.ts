@@ -80,9 +80,8 @@ class SoundService {
       await this.loadSettings();
 
       this.isInitialized = true;
-      console.log("Sound service initialized");
-    } catch (error) {
-      console.error("Failed to initialize sound service:", error);
+    } catch {
+      // Silently fail - sounds are optional
     }
   }
 
@@ -102,13 +101,14 @@ class SoundService {
       if (musicEnabled !== null) this.musicEnabled = musicEnabled === "true";
       if (soundVolume !== null) this.soundVolume = parseFloat(soundVolume);
       if (musicVolume !== null) this.musicVolume = parseFloat(musicVolume);
-    } catch (error) {
-      console.error("Failed to load sound settings:", error);
+    } catch {
+      // Use default settings
     }
   }
 
   /**
    * Play a sound effect
+   * Fails silently if sound can't be played
    */
   async play(effect: SoundEffect): Promise<void> {
     if (!this.soundEnabled) return;
@@ -130,13 +130,14 @@ class SoundService {
       await sound.setPositionAsync(0);
       await sound.setVolumeAsync(this.soundVolume);
       await sound.playAsync();
-    } catch (error) {
-      console.error(`Failed to play sound ${effect}:`, error);
+    } catch {
+      // Silently fail - sounds are optional
     }
   }
 
   /**
    * Play background music
+   * Fails silently if music can't be played
    */
   async playMusic(track: keyof typeof MUSIC_URLS): Promise<void> {
     if (!this.musicEnabled) return;
@@ -155,8 +156,8 @@ class SoundService {
       this.musicObject = sound;
       this.currentMusic = track;
       await sound.playAsync();
-    } catch (error) {
-      console.error(`Failed to play music ${track}:`, error);
+    } catch {
+      // Silently fail - music is optional
     }
   }
 
@@ -168,8 +169,8 @@ class SoundService {
       try {
         await this.musicObject.stopAsync();
         await this.musicObject.unloadAsync();
-      } catch (error) {
-        console.error("Failed to stop music:", error);
+      } catch {
+        // Ignore cleanup errors
       }
       this.musicObject = null;
       this.currentMusic = null;
@@ -183,8 +184,8 @@ class SoundService {
     if (this.musicObject) {
       try {
         await this.musicObject.pauseAsync();
-      } catch (error) {
-        console.error("Failed to pause music:", error);
+      } catch {
+        // Silently fail
       }
     }
   }
@@ -196,8 +197,8 @@ class SoundService {
     if (this.musicObject && this.musicEnabled) {
       try {
         await this.musicObject.playAsync();
-      } catch (error) {
-        console.error("Failed to resume music:", error);
+      } catch {
+        // Silently fail
       }
     }
   }
@@ -256,20 +257,23 @@ class SoundService {
 
   /**
    * Preload commonly used sounds
+   * Fails silently if sounds can't be loaded (e.g., no network)
    */
   async preload(): Promise<void> {
-    const commonSounds: SoundEffect[] = ["correct", "wrong", "tick", "buttonPress"];
+    const commonSounds: SoundEffect[] = ["correct", "wrong", "buttonPress"];
 
     await Promise.all(
       commonSounds.map(async (effect) => {
         try {
           const { sound } = await Audio.Sound.createAsync(
             { uri: SOUND_URLS[effect] },
-            { volume: this.soundVolume }
+            { volume: this.soundVolume },
+            undefined,
+            false // Don't download immediately
           );
           this.soundObjects.set(effect, sound);
-        } catch (error) {
-          console.error(`Failed to preload sound ${effect}:`, error);
+        } catch {
+          // Silently fail - sounds are optional
         }
       })
     );

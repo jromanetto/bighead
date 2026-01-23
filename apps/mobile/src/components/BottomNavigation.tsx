@@ -12,9 +12,9 @@ const COLORS = {
 
 // Navigation items configuration
 const NAV_ITEMS = [
-  { href: "/", icon: "⌂", label: "Home" },
+  { href: "/", icon: "🏠", label: "Home" },
   { href: "/leaderboard", icon: "♛", label: "Ranking" },
-  { href: "/profile", icon: "◉", label: "Profile" },
+  { href: "/profile", icon: "👤", label: "Profile" },
   { href: "/settings", icon: "⚙", label: "Settings" },
 ];
 
@@ -29,9 +29,10 @@ export function BottomNavigation() {
   return (
     <View className="absolute bottom-6 left-4 right-4">
       <View
-        className="h-16 rounded-full flex-row justify-between items-center px-2"
+        className="h-18 rounded-full flex-row justify-between items-center px-3"
         style={{
-          backgroundColor: "rgba(30, 37, 41, 0.9)",
+          height: 72,
+          backgroundColor: "rgba(30, 37, 41, 0.95)",
           borderWidth: 1,
           borderColor: "rgba(255,255,255,0.08)",
           shadowColor: "#000",
@@ -54,11 +55,11 @@ export function BottomNavigation() {
                   onPressIn={buttonPressFeedback}
                 >
                   <View
-                    className="w-12 h-10 rounded-full items-center justify-center"
+                    className="w-14 h-12 rounded-full items-center justify-center"
                     style={active ? { backgroundColor: `${COLORS.primary}25` } : undefined}
                   >
                     <Text
-                      className="text-lg font-bold"
+                      className="text-2xl font-bold"
                       style={{ color: active ? COLORS.primary : COLORS.textMuted }}
                     >
                       {item.icon}

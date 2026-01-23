@@ -1,12 +1,12 @@
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView, Alert, Modal, TextInput } from "react-native";
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../src/contexts/AuthContext";
-import { AuthModal, AuthModalRef } from "../src/components/AuthModal";
-import { UpgradePrompt } from "../src/components/UpgradePrompt";
+import { ProfileAvatar } from "../src/components/ProfileAvatar";
 import { getUserStats } from "../src/services/gameResults";
+import { uploadAvatar } from "../src/services/avatar";
 import { buttonPressFeedback } from "../src/utils/feedback";
 import { BottomNavigation } from "../src/components/BottomNavigation";
 
@@ -112,8 +112,7 @@ function CategoryProgress({
 }
 
 export default function ProfileScreen() {
-  const { user, profile, isAnonymous, isLoading, signOut, refreshProfile } = useAuth();
-  const authModalRef = useRef<AuthModalRef>(null);
+  const { user, profile, isAnonymous, isPremium, isLoading, refreshProfile, updateAvatar, updateUsername } = useAuth();
 
   const [stats, setStats] = useState({
     totalGames: 0,
@@ -122,6 +121,10 @@ export default function ProfileScreen() {
     bestChain: 0,
   });
   const [loadingStats, setLoadingStats] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
 
   // Load stats when user changes
   useEffect(() => {
@@ -147,20 +150,52 @@ export default function ProfileScreen() {
     loadStats();
   }, [user, isAnonymous]);
 
-  const handleOpenAuth = (mode: "login" | "signup" = "login") => {
-    authModalRef.current?.open(mode);
+  const handleEditUsername = () => {
+    setNewUsername(profile?.username || "");
+    setShowUsernameModal(true);
   };
 
-  const handleAuthSuccess = async () => {
-    await refreshProfile();
-  };
+  const handleSaveUsername = async () => {
+    if (!newUsername.trim()) {
+      Alert.alert("Error", "Please enter a username");
+      return;
+    }
+    if (newUsername.trim().length < 2) {
+      Alert.alert("Error", "Username must be at least 2 characters");
+      return;
+    }
 
-  const handleSignOut = async () => {
+    setSavingUsername(true);
     try {
-      await signOut();
-      router.replace("/");
+      await updateUsername(newUsername.trim());
+      setShowUsernameModal(false);
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error saving username:", error);
+      Alert.alert("Error", "Failed to save username. Please try again.");
+    } finally {
+      setSavingUsername(false);
+    }
+  };
+
+  const handleAvatarChange = async (imageUri: string) => {
+    if (!user) {
+      Alert.alert("Error", "Please wait for the app to load.");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const avatarUrl = await uploadAvatar(user.id, imageUri);
+      if (avatarUrl) {
+        await updateAvatar(avatarUrl);
+      } else {
+        Alert.alert("Error", "Failed to upload photo. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      Alert.alert("Error", "Failed to upload photo. Please try again.");
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -222,23 +257,15 @@ export default function ProfileScreen() {
         <View className="items-center mt-4 mb-6">
           {/* Avatar with Ring */}
           <View className="relative mb-4">
-            <View
-              className="w-28 h-28 rounded-full items-center justify-center"
-              style={{
-                borderWidth: 4,
-                borderColor: COLORS.primary,
-                backgroundColor: COLORS.surface,
-              }}
-            >
-              <LinearGradient
-                colors={[COLORS.primary, COLORS.purple]}
-                className="w-24 h-24 rounded-full items-center justify-center"
-              >
-                <Text className="text-white text-4xl font-bold">
-                  {isAnonymous ? "?" : displayName.charAt(0).toUpperCase()}
-                </Text>
-              </LinearGradient>
-            </View>
+            <ProfileAvatar
+              userId={user?.id}
+              username={displayName}
+              avatarUrl={profile?.avatar_url}
+              size={112}
+              editable={true}
+              onAvatarChange={handleAvatarChange}
+              borderColor={COLORS.primary}
+            />
 
             {/* Level Badge */}
             <View
@@ -250,15 +277,36 @@ export default function ProfileScreen() {
                 LVL {displayLevel}
               </Text>
             </View>
+
+            {/* Uploading indicator */}
+            {uploadingAvatar && (
+              <View
+                className="absolute inset-0 items-center justify-center"
+                style={{ backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 56 }}
+              >
+                <ActivityIndicator color="#fff" />
+              </View>
+            )}
           </View>
 
           {/* Name & Title */}
-          <Text className="text-white text-2xl font-black mb-1">
-            {isAnonymous ? "Guest" : displayName}
-          </Text>
-          <Text className="text-gray-400">
-            {isAnonymous ? "Create an account to play" : "Trivia Titan"}
-          </Text>
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              handleEditUsername();
+            }}
+            className="items-center active:opacity-70"
+          >
+            <View className="flex-row items-center mb-1">
+              <Text className="text-white text-2xl font-black">
+                {displayName}
+              </Text>
+              <Text className="text-gray-500 ml-2">✏️</Text>
+            </View>
+            <Text className="text-gray-400">
+              {isAnonymous ? "Tap to set your name" : "Trivia Titan"}
+            </Text>
+          </Pressable>
         </View>
 
         {/* Stats Row */}
@@ -350,42 +398,105 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        {/* Login/Signup CTA for anonymous users */}
-        {isAnonymous && (
-          <View className="mx-6 mb-6">
-            <UpgradePrompt
-              variant="card"
-              onPress={() => handleOpenAuth("signup")}
-              message="Create an account to save your progress and appear on the leaderboard"
-            />
-          </View>
-        )}
-
-        {/* Logout button for logged in users */}
-        {!isAnonymous && (
-          <View className="mx-6 mb-6">
-            <Pressable
-              onPress={handleSignOut}
-              className="rounded-xl py-4 active:opacity-80"
-              style={{
-                backgroundColor: COLORS.surface,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.05)',
-              }}
-            >
-              <Text className="text-gray-400 text-center font-medium">
-                Sign out
-              </Text>
-            </Pressable>
-          </View>
+        {/* Premium CTA */}
+        {!isPremium && (
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/premium");
+            }}
+            className="mx-6 mb-6 rounded-2xl p-5 active:opacity-80"
+            style={{
+              backgroundColor: 'rgba(255, 209, 0, 0.15)',
+              borderWidth: 1,
+              borderColor: 'rgba(255, 209, 0, 0.3)',
+            }}
+          >
+            <View className="flex-row items-center">
+              <View
+                className="w-14 h-14 rounded-xl items-center justify-center mr-4"
+                style={{ backgroundColor: 'rgba(255, 209, 0, 0.2)' }}
+              >
+                <Text className="text-3xl">👑</Text>
+              </View>
+              <View className="flex-1">
+                <Text style={{ color: '#FFD100' }} className="font-bold text-lg">
+                  Upgrade to Premium
+                </Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                  Unlock duels, themes & more!
+                </Text>
+              </View>
+              <Text style={{ color: '#FFD100' }} className="text-xl">→</Text>
+            </View>
+          </Pressable>
         )}
       </ScrollView>
 
       {/* Bottom Navigation */}
       <BottomNavigation />
 
-      {/* Auth Modal */}
-      <AuthModal ref={authModalRef} onSuccess={handleAuthSuccess} />
+      {/* Username Edit Modal */}
+      <Modal
+        visible={showUsernameModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowUsernameModal(false)}
+      >
+        <Pressable
+          className="flex-1 justify-center items-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+          onPress={() => setShowUsernameModal(false)}
+        >
+          <Pressable
+            className="w-80 rounded-2xl p-6"
+            style={{ backgroundColor: COLORS.surface }}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text className="text-white text-xl font-bold mb-4 text-center">
+              Change Username
+            </Text>
+
+            <TextInput
+              value={newUsername}
+              onChangeText={setNewUsername}
+              placeholder="Enter your username"
+              placeholderTextColor={COLORS.textMuted}
+              autoFocus
+              maxLength={20}
+              className="text-white text-lg rounded-xl px-4 py-3 mb-4"
+              style={{ backgroundColor: COLORS.surfaceActive }}
+            />
+
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={() => setShowUsernameModal(false)}
+                className="flex-1 rounded-xl py-3"
+                style={{ backgroundColor: COLORS.surfaceActive }}
+              >
+                <Text className="text-center font-medium" style={{ color: COLORS.textMuted }}>
+                  Cancel
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={handleSaveUsername}
+                disabled={savingUsername}
+                className="flex-1 rounded-xl py-3"
+                style={{ backgroundColor: COLORS.primary }}
+              >
+                {savingUsername ? (
+                  <ActivityIndicator color={COLORS.bg} size="small" />
+                ) : (
+                  <Text className="text-center font-bold" style={{ color: COLORS.bg }}>
+                    Save
+                  </Text>
+                )}
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

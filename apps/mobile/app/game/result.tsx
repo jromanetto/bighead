@@ -115,13 +115,28 @@ function QuestionSummaryItem({
   );
 }
 
+interface QuestionSummaryData {
+  question: string;
+  selectedAnswer: string;
+  correctAnswer: string;
+  isCorrect: boolean;
+  explanation: string | null;
+  imageUrl: string | null;
+}
+
 export default function ResultScreen() {
-  const { score, correct, total, maxChain } = useLocalSearchParams<{
+  const { score, correct, total, maxChain, questionSummary } = useLocalSearchParams<{
     score: string;
     correct: string;
     total: string;
     maxChain?: string;
+    questionSummary?: string;
   }>();
+
+  // Parse question summary data
+  const parsedQuestionSummary: QuestionSummaryData[] = questionSummary
+    ? JSON.parse(questionSummary)
+    : [];
 
   const { isAnonymous, user, refreshProfile } = useAuth();
   const authModalRef = useRef<AuthModalRef>(null);
@@ -194,13 +209,13 @@ export default function ResultScreen() {
     refreshProfile();
   };
 
-  // Mock question summary data
-  const questionSummary = [
-    { question: "Who won the 1998 World Cup?", answer: "France", isCorrect: true },
-    { question: "Who holds the Ligue 1 scoring record?", answer: "Sydney", isCorrect: false, correctAnswer: "Josip Skoblar" },
-    { question: "In what year did Zidane score in the final?", answer: "1998", isCorrect: true },
-    { question: "Best Premier League goalkeeper?", answer: "Edwin van der Sar", isCorrect: true },
-  ];
+  // Find a "Did You Know" fact from a correct answer with explanation
+  const didYouKnowFact = parsedQuestionSummary.find(
+    (q) => q.isCorrect && q.explanation
+  );
+
+  // Find the first question with an image
+  const questionWithImage = parsedQuestionSummary.find((q) => q.imageUrl);
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
@@ -270,55 +285,69 @@ export default function ResultScreen() {
           </Text>
         </View>
 
-        {/* Did You Know Card */}
-        <View className="mx-6 mb-6">
-          <View className="flex-row items-center gap-2 mb-3">
-            <Text className="text-xl">💡</Text>
-            <Text className="text-white font-bold">Did You Know?</Text>
-          </View>
+        {/* Did You Know Card - only show if we have an explanation */}
+        {didYouKnowFact && (
+          <View className="mx-6 mb-6">
+            <View className="flex-row items-center gap-2 mb-3">
+              <Text className="text-xl">💡</Text>
+              <Text className="text-white font-bold">Did You Know?</Text>
+            </View>
 
-          <View
-            className="rounded-2xl overflow-hidden"
-            style={{
-              backgroundColor: COLORS.surface,
-              borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.05)',
-            }}
-          >
-            {/* Image Placeholder */}
-            <LinearGradient
-              colors={['#92400e', '#78350f']}
-              className="h-32"
-            />
+            <View
+              className="rounded-2xl overflow-hidden"
+              style={{
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.05)',
+              }}
+            >
+              {/* Question Image if available */}
+              {questionWithImage?.imageUrl ? (
+                <View style={{ height: 128, backgroundColor: COLORS.surfaceActive }}>
+                  <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.6)']}
+                    style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40 }}
+                  />
+                </View>
+              ) : (
+                <LinearGradient
+                  colors={[COLORS.primary, COLORS.purple]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{ height: 80, opacity: 0.3 }}
+                />
+              )}
 
-            <View className="p-4">
-              <Text className="text-white leading-6">
-                France is the only country to win the World Cup on home soil in 1998,
-                beating <Text style={{ color: COLORS.primary }}>Brazil</Text> 3-0 in the final.
-              </Text>
-              <Text className="text-gray-500 text-xs mt-2 flex-row items-center">
-                ℹ️ Related to Question 1
-              </Text>
+              <View className="p-4">
+                <Text className="text-white leading-6">
+                  {didYouKnowFact.explanation}
+                </Text>
+                <Text className="text-gray-500 text-xs mt-2">
+                  ℹ️ {didYouKnowFact.question.substring(0, 50)}...
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
+        )}
 
         {/* Question Summary */}
-        <View className="mx-6 mb-6">
-          <Text className="text-white font-bold mb-3">Question Summary</Text>
+        {parsedQuestionSummary.length > 0 && (
+          <View className="mx-6 mb-6">
+            <Text className="text-white font-bold mb-3">Question Summary</Text>
 
-          <View className="gap-2">
-            {questionSummary.map((item, index) => (
-              <QuestionSummaryItem
-                key={index}
-                question={item.question}
-                answer={item.answer}
-                isCorrect={item.isCorrect}
-                correctAnswer={item.correctAnswer}
-              />
-            ))}
+            <View style={{ gap: 8 }}>
+              {parsedQuestionSummary.map((item, index) => (
+                <QuestionSummaryItem
+                  key={index}
+                  question={item.question}
+                  answer={item.selectedAnswer}
+                  isCorrect={item.isCorrect}
+                  correctAnswer={item.isCorrect ? undefined : item.correctAnswer}
+                />
+              ))}
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Upgrade Prompt for anonymous users */}
         {isAnonymous && (

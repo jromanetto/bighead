@@ -234,8 +234,8 @@ export const formatQuestionForGame = (question: Question): FormattedQuestion => 
     answers: shuffledAnswers,
     correctIndex,
     explanation: question.explanation,
-    imageUrl: (question as any).image_url || null,
-    imageCredit: (question as any).image_credit || null,
+    imageUrl: question.image_url || null,
+    imageCredit: question.image_credit || null,
   };
 };
 

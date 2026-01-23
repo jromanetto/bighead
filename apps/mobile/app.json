@@ -17,7 +17,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.bighead.app",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -27,7 +29,10 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.bighead.app",
-      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE"]
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -57,8 +62,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
-      }
-    }
+        "projectId": "327940cd-9b96-4c8d-962e-f707e5b0a000"
+      },
+      "router": {}
+    },
+    "owner": "jroma51"
   }
 }

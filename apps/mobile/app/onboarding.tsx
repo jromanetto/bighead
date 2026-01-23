@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Dimensions } from "react-native";
+import { View, Text, Pressable, Dimensions, TextInput } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef } from "react";
@@ -11,6 +11,15 @@ import Animated, {
 import { useAuth } from "../src/contexts/AuthContext";
 import { completeOnboarding } from "../src/services/settings";
 import { playHaptic } from "../src/utils/feedback";
+
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceActive: "#252e33",
+  primary: "#00c2cc",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
 
 const { width } = Dimensions.get("window");
 
@@ -49,8 +58,10 @@ const slides: OnboardingSlide[] = [
 ];
 
 export default function OnboardingScreen() {
-  const { user } = useAuth();
+  const { user, updateUsername } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [username, setUsername] = useState("");
+  const [showUsernameStep, setShowUsernameStep] = useState(false);
   const translateX = useSharedValue(0);
 
   const goToSlide = (index: number) => {
@@ -63,16 +74,27 @@ export default function OnboardingScreen() {
     if (currentIndex < slides.length - 1) {
       goToSlide(currentIndex + 1);
     } else {
-      handleComplete();
+      // Show username step instead of completing directly
+      setShowUsernameStep(true);
     }
   };
 
   const handleSkip = () => {
-    handleComplete();
+    setShowUsernameStep(true);
   };
 
   const handleComplete = async () => {
     playHaptic("success");
+
+    // Save username if provided
+    if (username.trim().length >= 2) {
+      try {
+        await updateUsername(username.trim());
+      } catch (error) {
+        console.error("Error saving username:", error);
+      }
+    }
+
     await completeOnboarding(user?.id);
     router.replace("/");
   };
@@ -81,8 +103,59 @@ export default function OnboardingScreen() {
     transform: [{ translateX: translateX.value }],
   }));
 
+  // Username step
+  if (showUsernameStep) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <View className="flex-1 px-8 justify-center">
+          <View className="items-center mb-8">
+            <View
+              className="w-24 h-24 rounded-full items-center justify-center mb-6"
+              style={{ backgroundColor: `${COLORS.primary}20` }}
+            >
+              <Text className="text-5xl">👤</Text>
+            </View>
+            <Text className="text-white text-2xl font-bold text-center mb-2">
+              What's your name?
+            </Text>
+            <Text className="text-gray-400 text-center">
+              Choose a username for the leaderboard
+            </Text>
+          </View>
+
+          <TextInput
+            value={username}
+            onChangeText={setUsername}
+            placeholder="Enter your username"
+            placeholderTextColor={COLORS.textMuted}
+            autoFocus
+            maxLength={20}
+            className="text-white text-xl text-center rounded-2xl px-6 py-4 mb-8"
+            style={{ backgroundColor: COLORS.surface }}
+          />
+
+          <Pressable
+            onPress={handleComplete}
+            className="rounded-2xl py-4 mb-4"
+            style={{ backgroundColor: COLORS.primary }}
+          >
+            <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
+              {username.trim().length >= 2 ? "Let's go!" : "Skip for now"}
+            </Text>
+          </Pressable>
+
+          {username.trim().length < 2 && (
+            <Text className="text-gray-500 text-center text-sm">
+              You can set your username later in your profile
+            </Text>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-1">
         {/* Skip button */}
         <View className="flex-row justify-end px-6 pt-4">
@@ -128,9 +201,11 @@ export default function OnboardingScreen() {
               className="p-2"
             >
               <View
-                className={`w-2 h-2 rounded-full ${
-                  index === currentIndex ? "bg-primary-500 w-6" : "bg-gray-600"
-                }`}
+                className="h-2 rounded-full"
+                style={{
+                  width: index === currentIndex ? 24 : 8,
+                  backgroundColor: index === currentIndex ? COLORS.primary : '#4b5563',
+                }}
               />
             </Pressable>
           ))}
@@ -140,10 +215,11 @@ export default function OnboardingScreen() {
         <View className="px-6 pb-6">
           <Pressable
             onPress={handleNext}
-            className="bg-primary-500 rounded-xl py-4"
+            className="rounded-xl py-4"
+            style={{ backgroundColor: COLORS.primary }}
           >
-            <Text className="text-white text-center font-bold text-lg">
-              {currentIndex === slides.length - 1 ? "Let's go!" : "Next"}
+            <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
+              {currentIndex === slides.length - 1 ? "Continue" : "Next"}
             </Text>
           </Pressable>
         </View>

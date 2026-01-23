@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TextInput, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, TextInput, ActivityIndicator, ScrollView, Modal } from "react-native";
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
@@ -23,23 +23,35 @@ const COLORS = {
   textMuted: "#9ca3af",
 };
 
+// Available categories for duels
+const DUEL_CATEGORIES = [
+  { id: "general", name: "General Knowledge", icon: "🧠", color: "#00c2cc" },
+  { id: "history", name: "History", icon: "🏛️", color: "#8B5CF6" },
+  { id: "geography", name: "Geography", icon: "🌍", color: "#10B981" },
+  { id: "science", name: "Science", icon: "🔬", color: "#3B82F6" },
+  { id: "sports", name: "Sports", icon: "⚽", color: "#F59E0B" },
+  { id: "pop-culture", name: "Pop Culture", icon: "🎬", color: "#EC4899" },
+];
+
 export default function DuelLobbyScreen() {
-  const { user, isAnonymous } = useAuth();
+  const { user, isPremium } = useAuth();
   const [joinCode, setJoinCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState(DUEL_CATEGORIES[0]);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
   const handleCreateDuel = async () => {
     buttonPressFeedback();
-    if (!user || isAnonymous) {
-      router.push("/profile");
+    if (!isPremium) {
+      router.push("/premium");
       return;
     }
 
     setLoading(true);
     setError(null);
     try {
-      const { duelId, code } = await createDuel(user.id);
+      const { duelId, code } = await createDuel(user.id, selectedCategory.id);
       router.push(`/duel/waiting?id=${duelId}&code=${code}`);
     } catch (e) {
       console.error("Error creating duel:", e);
@@ -50,8 +62,8 @@ export default function DuelLobbyScreen() {
 
   const handleJoinDuel = async () => {
     buttonPressFeedback();
-    if (!user || isAnonymous) {
-      router.push("/profile");
+    if (!isPremium) {
+      router.push("/premium");
       return;
     }
 
@@ -113,19 +125,23 @@ export default function DuelLobbyScreen() {
             </Text>
           </View>
 
-          {/* Category selector (cosmetic) */}
+          {/* Category selector */}
           <View className="mb-4">
             <Text className="text-gray-400 text-xs uppercase tracking-wider mb-2">
               Category
             </Text>
-            <View
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                setShowCategoryPicker(true);
+              }}
               className="flex-row items-center rounded-xl py-3 px-4"
               style={{ backgroundColor: COLORS.surfaceLight }}
             >
-              <Text className="text-xl mr-2">⚽</Text>
-              <Text className="text-white flex-1">General Knowledge</Text>
+              <Text className="text-xl mr-2">{selectedCategory.icon}</Text>
+              <Text className="text-white flex-1">{selectedCategory.name}</Text>
               <Text className="text-gray-400">▼</Text>
-            </View>
+            </Pressable>
           </View>
 
           <Pressable
@@ -207,23 +223,33 @@ export default function DuelLobbyScreen() {
           </View>
         )}
 
-        {/* Anonymous Prompt */}
-        {isAnonymous && (
-          <View
-            className="rounded-2xl p-4 mt-4"
+        {/* Premium Prompt */}
+        {!isPremium && (
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/premium");
+            }}
+            className="rounded-2xl p-4 mt-4 active:opacity-80"
             style={{
-              backgroundColor: COLORS.coralDim,
+              backgroundColor: 'rgba(255, 209, 0, 0.15)',
               borderWidth: 1,
-              borderColor: `${COLORS.coral}30`,
+              borderColor: 'rgba(255, 209, 0, 0.3)',
             }}
           >
             <View className="flex-row items-center">
-              <Text className="text-2xl mr-3">🎮</Text>
-              <Text style={{ color: COLORS.coral }} className="flex-1">
-                Create an account to challenge your friends and save your stats!
-              </Text>
+              <Text className="text-2xl mr-3">👑</Text>
+              <View className="flex-1">
+                <Text style={{ color: '#FFD100' }} className="font-bold">
+                  Premium Required
+                </Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                  Unlock duels and challenge your friends!
+                </Text>
+              </View>
+              <Text style={{ color: '#FFD100' }}>→</Text>
             </View>
-          </View>
+          </Pressable>
         )}
 
         {/* Footer */}
@@ -236,6 +262,69 @@ export default function DuelLobbyScreen() {
 
       {/* Bottom Navigation */}
       <BottomNavigation />
+
+      {/* Category Picker Modal */}
+      <Modal
+        visible={showCategoryPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowCategoryPicker(false)}
+      >
+        <Pressable
+          className="flex-1 justify-end"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onPress={() => setShowCategoryPicker(false)}
+        >
+          <Pressable
+            className="rounded-t-3xl p-6"
+            style={{ backgroundColor: COLORS.surface }}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View className="w-12 h-1 rounded-full mx-auto mb-6" style={{ backgroundColor: COLORS.surfaceLight }} />
+
+            <Text className="text-white text-xl font-bold mb-4">Choose a category</Text>
+
+            <ScrollView style={{ maxHeight: 400 }}>
+              {DUEL_CATEGORIES.map((category) => (
+                <Pressable
+                  key={category.id}
+                  onPress={() => {
+                    buttonPressFeedback();
+                    setSelectedCategory(category);
+                    setShowCategoryPicker(false);
+                  }}
+                  className="flex-row items-center p-4 rounded-xl mb-2"
+                  style={{
+                    backgroundColor: selectedCategory.id === category.id
+                      ? `${category.color}20`
+                      : COLORS.surfaceLight,
+                    borderWidth: selectedCategory.id === category.id ? 1 : 0,
+                    borderColor: category.color,
+                  }}
+                >
+                  <View
+                    className="w-12 h-12 rounded-xl items-center justify-center mr-4"
+                    style={{ backgroundColor: `${category.color}30` }}
+                  >
+                    <Text className="text-2xl">{category.icon}</Text>
+                  </View>
+                  <Text
+                    className="text-lg font-medium flex-1"
+                    style={{ color: selectedCategory.id === category.id ? category.color : COLORS.text }}
+                  >
+                    {category.name}
+                  </Text>
+                  {selectedCategory.id === category.id && (
+                    <Text style={{ color: category.color }} className="text-xl">✓</Text>
+                  )}
+                </Pressable>
+              ))}
+            </ScrollView>
+
+            <View style={{ height: 20 }} />
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
