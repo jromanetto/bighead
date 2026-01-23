@@ -11,6 +11,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { getQuestions, formatQuestionsForGame } from "../../src/services/questions";
+import { getSettings } from "../../src/services/settings";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
 import { playSound } from "../../src/services/sounds";
 
@@ -90,7 +91,11 @@ export default function AuctionGameScreen() {
 
   const loadQuestions = async () => {
     try {
-      const fetched = await getQuestions({ count: totalRounds * 2 });
+      // Get user's language preference
+      const settings = await getSettings();
+      const language = settings.language || "fr";
+
+      const fetched = await getQuestions({ count: totalRounds * 2, language });
       const formatted = formatQuestionsForGame(fetched);
       setQuestions(formatted);
     } catch (error) {

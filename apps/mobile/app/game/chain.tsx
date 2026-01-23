@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ActivityIndicator, Image } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useGameStore } from "../../src/stores/gameStore";
 import { useAuth } from "../../src/contexts/AuthContext";
 import {
@@ -11,7 +11,16 @@ import {
   markQuestionSeen,
   checkAndGenerateQuestions,
 } from "../../src/services/questions";
+import { getSettings } from "../../src/services/settings";
 import { playSound } from "../../src/services/sounds";
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+  Easing,
+  runOnJS
+} from "react-native-reanimated";
+import Svg, { Circle } from "react-native-svg";
 
 // New QuizNext design colors
 const COLORS = {
@@ -32,7 +41,10 @@ const COLORS = {
 
 const LETTER_OPTIONS = ['A', 'B', 'C', 'D'];
 
-// Circular Timer Component - uses two half-circle technique for smooth progress
+// Create animated circle component
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+// Circular Timer Component - uses SVG with Reanimated for smooth countdown
 function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
   timeRemaining: number;
   totalTime: number;
@@ -41,82 +53,29 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
   const isLow = timeRemaining <= 5;
   const color = isLow ? COLORS.error : COLORS.primary;
 
-  // Progress from 0 to 1 (1 = full circle, 0 = empty)
-  const progress = timeRemaining / totalTime;
-
-  // Calculate rotation for the two half-circles
-  // First half (right side): rotates from 0 to 180 degrees for first 50% of progress
-  // Second half (left side): rotates from 0 to 180 degrees for last 50% of progress
-  const rightHalfRotation = progress > 0.5 ? 180 : (progress * 2) * 180;
-  const leftHalfRotation = progress > 0.5 ? ((progress - 0.5) * 2) * 180 : 0;
-
   const SIZE = 120;
-  const STROKE = 8;
+  const STROKE_WIDTH = 8;
+  const RADIUS = (SIZE - STROKE_WIDTH) / 2;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+  // Animated progress value
+  const progress = useSharedValue(timeRemaining / totalTime);
+
+  // Update progress when timeRemaining changes
+  useEffect(() => {
+    progress.value = withTiming(timeRemaining / totalTime, {
+      duration: 300,
+      easing: Easing.linear,
+    });
+  }, [timeRemaining, totalTime]);
+
+  // Animated props for the progress circle
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: CIRCUMFERENCE * (1 - progress.value),
+  }));
 
   return (
     <View className="relative items-center justify-center" style={{ width: SIZE + 20, height: SIZE + 20 }}>
-      {/* Background Circle */}
-      <View
-        className="absolute rounded-full"
-        style={{
-          width: SIZE,
-          height: SIZE,
-          borderWidth: STROKE,
-          borderColor: 'rgba(255,255,255,0.1)',
-        }}
-      />
-
-      {/* Progress Circle using clip technique */}
-      {/* Right half container */}
-      <View
-        className="absolute overflow-hidden"
-        style={{
-          width: SIZE / 2,
-          height: SIZE,
-          right: 10,
-          top: 10,
-        }}
-      >
-        <View
-          className="absolute rounded-full"
-          style={{
-            width: SIZE,
-            height: SIZE,
-            borderWidth: STROKE,
-            borderColor: color,
-            right: 0,
-            transform: [{ rotate: `${-180 + rightHalfRotation}deg` }],
-            borderLeftColor: 'transparent',
-            borderBottomColor: 'transparent',
-          }}
-        />
-      </View>
-
-      {/* Left half container */}
-      <View
-        className="absolute overflow-hidden"
-        style={{
-          width: SIZE / 2,
-          height: SIZE,
-          left: 10,
-          top: 10,
-        }}
-      >
-        <View
-          className="absolute rounded-full"
-          style={{
-            width: SIZE,
-            height: SIZE,
-            borderWidth: STROKE,
-            borderColor: progress > 0.5 ? color : 'transparent',
-            left: 0,
-            transform: [{ rotate: `${leftHalfRotation}deg` }],
-            borderRightColor: 'transparent',
-            borderTopColor: 'transparent',
-          }}
-        />
-      </View>
-
       {/* Glow effect */}
       <View
         className="absolute rounded-full"
@@ -125,13 +84,38 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
           height: SIZE,
           shadowColor: color,
           shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.5,
-          shadowRadius: 15,
+          shadowOpacity: 0.6,
+          shadowRadius: 20,
         }}
       />
 
-      {/* Timer Content */}
-      <View className="items-center justify-center">
+      {/* SVG Timer */}
+      <Svg width={SIZE} height={SIZE} style={{ transform: [{ rotate: '-90deg' }] }}>
+        {/* Background Circle */}
+        <Circle
+          cx={SIZE / 2}
+          cy={SIZE / 2}
+          r={RADIUS}
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth={STROKE_WIDTH}
+          fill="transparent"
+        />
+        {/* Progress Circle */}
+        <AnimatedCircle
+          cx={SIZE / 2}
+          cy={SIZE / 2}
+          r={RADIUS}
+          stroke={color}
+          strokeWidth={STROKE_WIDTH}
+          fill="transparent"
+          strokeDasharray={CIRCUMFERENCE}
+          animatedProps={animatedProps}
+          strokeLinecap="round"
+        />
+      </Svg>
+
+      {/* Timer Content - centered absolutely */}
+      <View className="absolute items-center justify-center" style={{ width: SIZE, height: SIZE }}>
         <Text
           className="text-4xl font-black leading-none"
           style={{ color: isLow ? COLORS.error : COLORS.text }}
@@ -237,14 +221,28 @@ function AnswerOption({
 }
 
 // Lifeline Button Component
-function LifelineButton({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
+function LifelineButton({
+  icon,
+  label,
+  onPress,
+  disabled = false,
+  used = false
+}: {
+  icon: string;
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+  used?: boolean;
+}) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled || used}
       className="flex-col items-center justify-center w-16 h-14 rounded-full active:opacity-70"
+      style={{ opacity: used ? 0.3 : disabled ? 0.5 : 1 }}
     >
-      <Text className="text-2xl opacity-70">{icon}</Text>
-      <Text className="text-[10px] font-bold text-white/50 mt-0.5">{label}</Text>
+      <Text className="text-2xl" style={{ opacity: used ? 0.3 : 0.7 }}>{icon}</Text>
+      <Text className="text-[10px] font-bold text-white/50 mt-0.5">{used ? "USED" : label}</Text>
     </Pressable>
   );
 }
@@ -265,20 +263,57 @@ export default function ChainGameScreen() {
   const hasAnswered = lastAnswer?.questionId === currentQuestion?.id;
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [level, setLevel] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Lifelines state
+  const [used50_50, setUsed50_50] = useState(false);
+  const [usedSkip, setUsedSkip] = useState(false);
+  const [usedHint, setUsedHint] = useState(false);
+  const [hiddenAnswers, setHiddenAnswers] = useState<number[]>([]);
+  const [showHint, setShowHint] = useState(false);
+
+  // Auto-advance setting (can be toggled in settings later)
+  const [autoAdvanceEnabled] = useState(true);
+  const AUTO_ADVANCE_DELAY = 2000; // 2 seconds
 
   // Calculate level based on score
   useEffect(() => {
     setLevel(Math.floor(score / 500) + 1);
   }, [score]);
 
-  // Reset selected index when question changes
+  // Reset state when question changes
   useEffect(() => {
     setSelectedIndex(null);
+    setHiddenAnswers([]);
+    setShowHint(false);
+    // Clear any pending auto-advance
+    if (autoAdvanceRef.current) {
+      clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
   }, [currentQuestionIndex]);
+
+  // Auto-advance after answering
+  useEffect(() => {
+    if (hasAnswered && autoAdvanceEnabled && status === "playing") {
+      autoAdvanceRef.current = setTimeout(() => {
+        if (mounted.current) {
+          handleNextQuestion();
+        }
+      }, AUTO_ADVANCE_DELAY);
+    }
+
+    return () => {
+      if (autoAdvanceRef.current) {
+        clearTimeout(autoAdvanceRef.current);
+        autoAdvanceRef.current = null;
+      }
+    };
+  }, [hasAnswered, autoAdvanceEnabled, status]);
 
   // Load questions on mount
   useEffect(() => {
@@ -296,15 +331,19 @@ export default function ChainGameScreen() {
 
   const loadQuestions = async () => {
     try {
+      // Get user's language preference from settings
+      const settings = await getSettings(user?.id);
+      const language = settings.language || "fr";
+
       // Check if we need to generate new questions for logged in users
       if (user?.id) {
-        checkAndGenerateQuestions(user.id, "en").catch(console.error);
+        checkAndGenerateQuestions(user.id, language).catch(console.error);
       }
 
       // Fetch questions - prioritize unseen for logged in users
       const fetchedQuestions = user?.id
-        ? await getUnseenQuestions(user.id, undefined, 10, "en")
-        : await getQuestions({ count: 10 });
+        ? await getUnseenQuestions(user.id, undefined, 10, language)
+        : await getQuestions({ count: 10, language });
       const formatted = formatQuestionsForGame(fetchedQuestions);
 
       if (!mounted.current) return;
@@ -436,6 +475,45 @@ export default function ChainGameScreen() {
     router.back();
   };
 
+  // 50/50 Lifeline - remove 2 wrong answers
+  const handle50_50 = useCallback(() => {
+    if (used50_50 || hasAnswered || !currentQuestion) return;
+
+    playSound("buttonPress");
+    setUsed50_50(true);
+
+    // Find indices of wrong answers
+    const wrongIndices = currentQuestion.answers
+      .map((_, idx) => idx)
+      .filter(idx => idx !== currentQuestion.correctIndex);
+
+    // Randomly select 2 wrong answers to hide
+    const shuffled = wrongIndices.sort(() => Math.random() - 0.5);
+    const toHide = shuffled.slice(0, 2);
+
+    setHiddenAnswers(toHide);
+  }, [used50_50, hasAnswered, currentQuestion]);
+
+  // Skip Lifeline - skip without penalty
+  const handleSkip = useCallback(() => {
+    if (usedSkip || hasAnswered) return;
+
+    playSound("buttonPress");
+    setUsedSkip(true);
+
+    // Move to next question without counting as wrong
+    useGameStore.getState().nextQuestion();
+  }, [usedSkip, hasAnswered]);
+
+  // Hint Lifeline - show hint if available
+  const handleHint = useCallback(() => {
+    if (usedHint || hasAnswered) return;
+
+    playSound("buttonPress");
+    setUsedHint(true);
+    setShowHint(true);
+  }, [usedHint, hasAnswered]);
+
   // Loading state
   if (status === "loading" || status === "idle" || !currentQuestion) {
     return (
@@ -560,20 +638,44 @@ export default function ChainGameScreen() {
           </View>
         </View>
 
+        {/* Hint Display */}
+        {showHint && currentQuestion.explanation && (
+          <View className="px-6 mb-4">
+            <View
+              className="p-4 rounded-xl"
+              style={{
+                backgroundColor: `${COLORS.yellow}20`,
+                borderWidth: 1,
+                borderColor: `${COLORS.yellow}40`,
+              }}
+            >
+              <Text className="text-sm font-medium" style={{ color: COLORS.yellow }}>
+                💡 Hint: {currentQuestion.explanation}
+              </Text>
+            </View>
+          </View>
+        )}
+
         {/* Answer Options */}
         <View className="px-6 flex-col gap-3">
-          {currentQuestion.answers.map((answer, index) => (
-            <AnswerOption
-              key={index}
-              answer={answer}
-              index={index}
-              onPress={() => handleAnswer(index)}
-              disabled={hasAnswered}
-              isSelected={selectedIndex === index || lastAnswer?.selectedAnswer === answer}
-              isCorrect={index === currentQuestion.correctIndex}
-              showResult={hasAnswered}
-            />
-          ))}
+          {currentQuestion.answers.map((answer, index) => {
+            // Hide answers if 50/50 was used
+            if (hiddenAnswers.includes(index)) {
+              return null;
+            }
+            return (
+              <AnswerOption
+                key={index}
+                answer={answer}
+                index={index}
+                onPress={() => handleAnswer(index)}
+                disabled={hasAnswered}
+                isSelected={selectedIndex === index || lastAnswer?.selectedAnswer === answer}
+                isCorrect={index === currentQuestion.correctIndex}
+                showResult={hasAnswered}
+              />
+            );
+          })}
         </View>
 
         {/* Result Feedback & Next Button */}
@@ -589,6 +691,11 @@ export default function ChainGameScreen() {
               </Text>
               <Text style={{ color: COLORS.bg }}>→</Text>
             </Pressable>
+            {autoAdvanceEnabled && currentQuestionIndex + 1 < totalQuestions && (
+              <Text className="text-center text-xs text-gray-500 mt-2">
+                Auto-advancing in 2s...
+              </Text>
+            )}
           </View>
         )}
 
@@ -607,11 +714,27 @@ export default function ChainGameScreen() {
                 shadowRadius: 16,
               }}
             >
-              <LifelineButton icon="◐" label="50/50" onPress={() => {}} />
+              <LifelineButton
+                icon="◐"
+                label="50/50"
+                onPress={handle50_50}
+                used={used50_50}
+              />
               <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-              <LifelineButton icon="💡" label="HINT" onPress={() => {}} />
+              <LifelineButton
+                icon="💡"
+                label="HINT"
+                onPress={handleHint}
+                used={usedHint}
+                disabled={!currentQuestion.explanation}
+              />
               <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-              <LifelineButton icon="⏭" label="SKIP" onPress={() => {}} />
+              <LifelineButton
+                icon="⏭"
+                label="SKIP"
+                onPress={handleSkip}
+                used={usedSkip}
+              />
             </View>
           </View>
         )}

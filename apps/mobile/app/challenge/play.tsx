@@ -11,6 +11,7 @@ import Animated, {
 import { useAuth } from "../../src/contexts/AuthContext";
 import { getFriendChallenge, submitChallengeAttempt, FriendChallenge } from "../../src/services/friendChallenge";
 import { getQuestions, formatQuestionsForGame, FormattedQuestion } from "../../src/services/questions";
+import { getSettings } from "../../src/services/settings";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic } from "../../src/utils/feedback";
 import { playSound } from "../../src/services/sounds";
 
@@ -66,10 +67,15 @@ export default function ChallengePlayScreen() {
 
       setChallenge(challengeData);
 
+      // Get user's language preference
+      const settings = await getSettings(user?.id);
+      const language = settings.language || "fr";
+
       // Load questions for this challenge
       const fetchedQuestions = await getQuestions({
         count: challengeData.question_count,
         categoryId: challengeData.category,
+        language,
       });
       const formatted = formatQuestionsForGame(fetchedQuestions);
       setQuestions(formatted);

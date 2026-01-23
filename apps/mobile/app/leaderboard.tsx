@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { getLeaderboard, getWeeklyLeaderboard, getUserRank, type LeaderboardEntry } from "../src/services/games";
 import { useAuth } from "../src/contexts/AuthContext";
 import { buttonPressFeedback } from "../src/utils/feedback";
+import { BottomNavigation } from "../src/components/BottomNavigation";
 
 // New QuizNext design colors
 const COLORS = {
@@ -402,43 +403,7 @@ export default function LeaderboardScreen() {
         )}
 
         {/* Bottom Navigation */}
-        <View
-          className="flex-row justify-around py-3 px-2"
-          style={{
-            backgroundColor: COLORS.bg,
-            borderTopWidth: 1,
-            borderTopColor: COLORS.surfaceLight,
-          }}
-        >
-          <Link href="/" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">🏠</Text>
-              <Text className="text-gray-500 text-xs">Home</Text>
-            </Pressable>
-          </Link>
-          <Link href="/achievements" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">🏆</Text>
-              <Text className="text-gray-500 text-xs">Achievements</Text>
-            </Pressable>
-          </Link>
-          <Pressable className="items-center flex-1">
-            <Text className="text-xl mb-1">📊</Text>
-            <Text style={{ color: COLORS.primary }} className="text-xs font-medium">Leaderboard</Text>
-          </Pressable>
-          <Link href="/profile" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">👤</Text>
-              <Text className="text-gray-500 text-xs">Profile</Text>
-            </Pressable>
-          </Link>
-          <Link href="/settings" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">⚙️</Text>
-              <Text className="text-gray-500 text-xs">Settings</Text>
-            </Pressable>
-          </Link>
-        </View>
+        <BottomNavigation variant="fixed" />
       </View>
     </SafeAreaView>
   );

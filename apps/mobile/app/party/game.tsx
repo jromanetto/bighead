@@ -7,6 +7,7 @@ import {
   getQuestions,
   formatQuestionsForGame,
 } from "../../src/services/questions";
+import { getSettings } from "../../src/services/settings";
 import { playSound } from "../../src/services/sounds";
 
 export default function PartyGameScreen() {
@@ -55,7 +56,11 @@ export default function PartyGameScreen() {
 
   const loadQuestions = async () => {
     try {
-      const questions = await getQuestions({ count: questionCount });
+      // Get user's language preference
+      const settings = await getSettings();
+      const language = settings.language || "fr";
+
+      const questions = await getQuestions({ count: questionCount, language });
       const formatted = formatQuestionsForGame(questions);
 
       if (!mounted.current) return;

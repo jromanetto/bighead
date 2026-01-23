@@ -11,6 +11,7 @@ import {
   scheduleDailyReminder,
   cancelAllNotifications,
 } from "../src/services/notifications";
+import { BottomNavigation } from "../src/components/BottomNavigation";
 
 // New QuizNext design colors
 const COLORS = {
@@ -405,43 +406,7 @@ export default function SettingsScreen() {
         </ScrollView>
 
         {/* Bottom Navigation */}
-        <View
-          className="flex-row justify-around py-3 px-2"
-          style={{
-            backgroundColor: COLORS.bg,
-            borderTopWidth: 1,
-            borderTopColor: COLORS.surfaceLight,
-          }}
-        >
-          <Link href="/" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">🏠</Text>
-              <Text className="text-gray-500 text-xs">Home</Text>
-            </Pressable>
-          </Link>
-          <Link href="/achievements" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">🏆</Text>
-              <Text className="text-gray-500 text-xs">Achievements</Text>
-            </Pressable>
-          </Link>
-          <Link href="/leaderboard" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">📊</Text>
-              <Text className="text-gray-500 text-xs">Leaderboard</Text>
-            </Pressable>
-          </Link>
-          <Link href="/profile" asChild>
-            <Pressable className="items-center flex-1">
-              <Text className="text-xl mb-1">👤</Text>
-              <Text className="text-gray-500 text-xs">Profile</Text>
-            </Pressable>
-          </Link>
-          <Pressable className="items-center flex-1">
-            <Text className="text-xl mb-1">⚙️</Text>
-            <Text style={{ color: COLORS.primary }} className="text-xs font-medium">Options</Text>
-          </Pressable>
-        </View>
+        <BottomNavigation variant="fixed" />
       </View>
     </SafeAreaView>
   );

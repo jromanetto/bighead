@@ -8,6 +8,7 @@ import { AuthModal, AuthModalRef } from "../src/components/AuthModal";
 import { UpgradePrompt } from "../src/components/UpgradePrompt";
 import { getUserStats } from "../src/services/gameResults";
 import { buttonPressFeedback } from "../src/utils/feedback";
+import { BottomNavigation } from "../src/components/BottomNavigation";
 
 // New QuizNext design colors
 const COLORS = {
@@ -380,75 +381,8 @@ export default function ProfileScreen() {
         )}
       </ScrollView>
 
-      {/* Floating Bottom Navigation */}
-      <View className="absolute bottom-6 left-4 right-4">
-        <View
-          className="h-16 rounded-full flex-row justify-between items-center px-2"
-          style={{
-            backgroundColor: 'rgba(30, 37, 41, 0.85)',
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.5,
-            shadowRadius: 16,
-          }}
-        >
-          <Link href="/" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">🏠</Text>
-              </View>
-            </Pressable>
-          </Link>
-
-          <Link href="/achievements" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">🔍</Text>
-              </View>
-            </Pressable>
-          </Link>
-
-          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-
-          {/* Play Button */}
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.push("/game/chain");
-            }}
-            className="items-center justify-center"
-          >
-            <View
-              className="w-14 h-14 -mt-6 rounded-full items-center justify-center"
-              style={{ backgroundColor: COLORS.primary }}
-            >
-              <Text className="text-2xl">▶</Text>
-            </View>
-          </Pressable>
-
-          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-
-          <Link href="/leaderboard" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">📊</Text>
-              </View>
-            </Pressable>
-          </Link>
-
-          {/* Profile - Active */}
-          <Pressable className="flex-1 items-center justify-center">
-            <View
-              className="w-12 h-10 rounded-full items-center justify-center"
-              style={{ backgroundColor: `${COLORS.primary}30` }}
-            >
-              <Text className="text-2xl">👤</Text>
-            </View>
-          </Pressable>
-        </View>
-      </View>
+      {/* Bottom Navigation */}
+      <BottomNavigation />
 
       {/* Auth Modal */}
       <AuthModal ref={authModalRef} onSuccess={handleAuthSuccess} />

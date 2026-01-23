@@ -10,6 +10,7 @@ import Animated, {
   withSequence,
 } from "react-native-reanimated";
 import { getQuestions, formatQuestionsForGame } from "../../src/services/questions";
+import { getSettings } from "../../src/services/settings";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic } from "../../src/utils/feedback";
 import { playSound } from "../../src/services/sounds";
 
@@ -76,8 +77,12 @@ export default function TraitorGameScreen() {
       const traitor = Math.floor(Math.random() * players.length);
       setTraitorIndex(traitor);
 
+      // Get user's language preference
+      const settings = await getSettings();
+      const language = settings.language || "fr";
+
       // Load questions
-      const fetchedQuestions = await getQuestions({ count: questionCount });
+      const fetchedQuestions = await getQuestions({ count: questionCount, language });
       const formatted = formatQuestionsForGame(fetchedQuestions);
       setQuestions(formatted);
 

@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../src/contexts/AuthContext";
 import { getDailyStreak, hasCompletedDailyChallenge } from "../src/services/dailyChallenge";
 import { loadFeedbackSettings, buttonPressFeedback } from "../src/utils/feedback";
+import { BottomNavigation } from "../src/components/BottomNavigation";
 
 // New QuizNext design colors
 const COLORS = {
@@ -153,33 +154,45 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Featured Card */}
+            {/* Featured Card - Daily Brain Teaser */}
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
                 router.push("/daily");
               }}
-              className="rounded-2xl overflow-hidden active:opacity-95"
+              className="rounded-2xl overflow-hidden active:opacity-95 h-44"
               style={{
                 backgroundColor: COLORS.surface,
                 borderWidth: 1,
                 borderColor: 'rgba(255,255,255,0.05)',
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.3,
-                shadowRadius: 16,
+                shadowOpacity: 0.4,
+                shadowRadius: 20,
               }}
             >
-              {/* Gradient Background */}
+              {/* Full Background Gradient */}
               <LinearGradient
-                colors={['#3b82f6', '#8b5cf6', '#ec4899']}
+                colors={['#3b82f6', '#8b5cf6', '#ec4899', '#f97316']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                className="h-32"
+                className="absolute inset-0"
+              >
+                {/* Decorative circles for depth */}
+                <View className="absolute top-4 right-4 w-24 h-24 rounded-full opacity-40" style={{ backgroundColor: '#fbbf24' }} />
+                <View className="absolute top-16 right-20 w-16 h-16 rounded-full opacity-50" style={{ backgroundColor: '#ec4899' }} />
+                <View className="absolute bottom-8 left-8 w-20 h-20 rounded-full opacity-40" style={{ backgroundColor: '#3b82f6' }} />
+              </LinearGradient>
+
+              {/* Bottom Gradient Overlay for readability */}
+              <LinearGradient
+                colors={['transparent', 'rgba(30, 37, 41, 0.7)']}
+                locations={[0.3, 1]}
+                className="absolute inset-0"
               />
 
-              {/* Card Content */}
-              <View className="p-5 -mt-8">
+              {/* Card Content - positioned at bottom */}
+              <View className="absolute bottom-0 left-0 right-0 p-5">
                 <View className="flex-row justify-between items-end">
                   <View className="flex-col gap-1">
                     <View className="flex-row items-center gap-2 mb-1">
@@ -191,23 +204,23 @@ export default function HomeScreen() {
                           {dailyCompleted ? "Done" : "Hard"}
                         </Text>
                       </View>
-                      <Text className="text-gray-400 text-xs font-medium flex-row items-center">
+                      <Text className="text-gray-400 text-xs font-medium">
                         ⏱ {timeLeft} left
                       </Text>
                     </View>
-                    <Text className="text-3xl font-extrabold text-white leading-tight">
-                      Daily{'\n'}Challenge
+                    <Text className="text-3xl font-extrabold text-white leading-tight drop-shadow-lg">
+                      Daily{'\n'}Brain Teaser
                     </Text>
                   </View>
 
                   <View
-                    className="w-12 h-12 rounded-full items-center justify-center"
+                    className="w-14 h-14 rounded-full items-center justify-center"
                     style={{
                       backgroundColor: dailyCompleted ? '#22c55e' : COLORS.primary,
                       shadowColor: dailyCompleted ? '#22c55e' : COLORS.primary,
                       shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.4,
-                      shadowRadius: 8,
+                      shadowOpacity: 0.5,
+                      shadowRadius: 12,
                     }}
                   >
                     <Text className="text-2xl" style={{ color: COLORS.bg }}>
@@ -248,7 +261,9 @@ export default function HomeScreen() {
                     Endless mode • Beat the clock
                   </Text>
                 </View>
-                <Text className="text-5xl opacity-80" style={{ color: '#5eead4' }}>⚡</Text>
+                <View className="w-14 h-14 rounded-xl items-center justify-center" style={{ backgroundColor: 'rgba(94, 234, 212, 0.2)' }}>
+                  <Text className="text-3xl font-black" style={{ color: '#5eead4' }}>⚡</Text>
+                </View>
               </LinearGradient>
             </Pressable>
 
@@ -271,9 +286,9 @@ export default function HomeScreen() {
                 >
                   <View
                     className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: `${COLORS.coral}30` }}
+                    style={{ backgroundColor: `${COLORS.coral}20` }}
                   >
-                    <Text className="text-2xl" style={{ color: COLORS.coral }}>⚔️</Text>
+                    <Text className="text-xl font-black" style={{ color: COLORS.coral }}>×</Text>
                   </View>
                   <View>
                     <Text className="text-xl font-bold tracking-tight text-white">VERSUS</Text>
@@ -299,9 +314,9 @@ export default function HomeScreen() {
                 >
                   <View
                     className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: `${COLORS.purple}30` }}
+                    style={{ backgroundColor: `${COLORS.purple}20` }}
                   >
-                    <Text className="text-2xl" style={{ color: COLORS.purple }}>🎯</Text>
+                    <Text className="text-xl font-black" style={{ color: COLORS.purple }}>◎</Text>
                   </View>
                   <View>
                     <Text className="text-xl font-bold tracking-tight text-white">THEMES</Text>
@@ -323,10 +338,10 @@ export default function HomeScreen() {
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
             >
               <View
-                className="p-2 rounded-md"
-                style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }}
+                className="w-9 h-9 rounded-lg items-center justify-center"
+                style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)' }}
               >
-                <Text className="text-xl" style={{ color: '#60a5fa' }}>👥</Text>
+                <Text className="text-base font-bold" style={{ color: '#60a5fa' }}>⊕⊕</Text>
               </View>
               <View>
                 <Text className="font-bold text-sm text-white">Party</Text>
@@ -343,10 +358,10 @@ export default function HomeScreen() {
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
             >
               <View
-                className="p-2 rounded-md"
-                style={{ backgroundColor: `${COLORS.coral}30` }}
+                className="w-9 h-9 rounded-lg items-center justify-center"
+                style={{ backgroundColor: `${COLORS.coral}15` }}
               >
-                <Text className="text-xl" style={{ color: COLORS.coral }}>🤝</Text>
+                <Text className="text-lg font-bold" style={{ color: COLORS.coral }}>⇆</Text>
               </View>
               <View>
                 <Text className="font-bold text-sm text-white">Challenge</Text>
@@ -366,10 +381,10 @@ export default function HomeScreen() {
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
             >
               <View
-                className="p-2 rounded-md"
-                style={{ backgroundColor: `${COLORS.yellow}30` }}
+                className="w-9 h-9 rounded-lg items-center justify-center"
+                style={{ backgroundColor: `${COLORS.yellow}15` }}
               >
-                <Text className="text-xl" style={{ color: COLORS.yellow }}>🏆</Text>
+                <Text className="text-lg font-bold" style={{ color: COLORS.yellow }}>♛</Text>
               </View>
               <View>
                 <Text className="font-bold text-sm text-white">Leaderboard</Text>
@@ -386,10 +401,10 @@ export default function HomeScreen() {
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
             >
               <View
-                className="p-2 rounded-md"
-                style={{ backgroundColor: `${COLORS.primary}30` }}
+                className="w-9 h-9 rounded-lg items-center justify-center"
+                style={{ backgroundColor: `${COLORS.primary}15` }}
               >
-                <Text className="text-xl" style={{ color: COLORS.primary }}>📊</Text>
+                <Text className="text-lg font-bold" style={{ color: COLORS.primary }}>▮▮▯</Text>
               </View>
               <View>
                 <Text className="font-bold text-sm text-white">Stats</Text>
@@ -397,64 +412,54 @@ export default function HomeScreen() {
               </View>
             </Pressable>
           </View>
+
+          {/* Quick Actions Row 3 - Invite & Shop */}
+          <View className="flex-row gap-3">
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                // TODO: Implement invite flow
+              }}
+              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
+              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <View
+                className="w-9 h-9 rounded-lg items-center justify-center"
+                style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}
+              >
+                <Text className="text-lg font-bold" style={{ color: '#22c55e' }}>+◯</Text>
+              </View>
+              <View>
+                <Text className="font-bold text-sm text-white">Invite</Text>
+                <Text className="text-[10px] text-gray-400">Get +500 coins</Text>
+              </View>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/premium");
+              }}
+              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
+              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <View
+                className="w-9 h-9 rounded-lg items-center justify-center"
+                style={{ backgroundColor: `${COLORS.yellow}15` }}
+              >
+                <Text className="text-lg font-bold" style={{ color: COLORS.yellow }}>◇</Text>
+              </View>
+              <View>
+                <Text className="font-bold text-sm text-white">Shop</Text>
+                <Text className="text-[10px] text-gray-400">Premium & More</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
 
-      {/* Floating Bottom Navigation */}
-      <View className="absolute bottom-6 left-4 right-4">
-        <View
-          className="h-16 rounded-full flex-row justify-between items-center px-2"
-          style={{
-            backgroundColor: 'rgba(30, 37, 41, 0.85)',
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.5,
-            shadowRadius: 16,
-          }}
-        >
-          {/* Home - Active */}
-          <Pressable className="flex-1 items-center justify-center">
-            <View
-              className="w-12 h-10 rounded-full items-center justify-center"
-              style={{ backgroundColor: `${COLORS.primary}30` }}
-            >
-              <Text className="text-2xl">🏠</Text>
-            </View>
-          </Pressable>
-
-          {/* Trophy */}
-          <Link href="/leaderboard" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">🏆</Text>
-              </View>
-            </Pressable>
-          </Link>
-
-          {/* Divider */}
-          <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-
-          {/* Profile */}
-          <Link href="/profile" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">👤</Text>
-              </View>
-            </Pressable>
-          </Link>
-
-          {/* Settings */}
-          <Link href="/settings" asChild>
-            <Pressable className="flex-1 items-center justify-center">
-              <View className="w-12 h-10 rounded-full items-center justify-center">
-                <Text className="text-2xl opacity-50">⚙️</Text>
-              </View>
-            </Pressable>
-          </Link>
-        </View>
-      </View>
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </SafeAreaView>
   );
 }
