@@ -30,6 +30,10 @@ export interface Database {
           daily_streak: number;
           last_daily_challenge: string | null;
           perfect_games: number;
+          is_premium: boolean;
+          premium_expires_at: string | null;
+          referral_code: string | null;
+          referred_by: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -46,6 +50,10 @@ export interface Database {
           daily_streak?: number;
           last_daily_challenge?: string | null;
           perfect_games?: number;
+          is_premium?: boolean;
+          premium_expires_at?: string | null;
+          referral_code?: string | null;
+          referred_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -62,6 +70,10 @@ export interface Database {
           daily_streak?: number;
           last_daily_challenge?: string | null;
           perfect_games?: number;
+          is_premium?: boolean;
+          premium_expires_at?: string | null;
+          referral_code?: string | null;
+          referred_by?: string | null;
           updated_at?: string;
         };
       };
@@ -613,6 +625,18 @@ export interface Database {
           image_url: string | null;
           image_credit: string | null;
         }[];
+      };
+      grant_premium: {
+        Args: { p_user_id: string; p_duration_days?: number | null };
+        Returns: boolean;
+      };
+      is_user_premium: {
+        Args: { p_user_id: string };
+        Returns: boolean;
+      };
+      apply_referral: {
+        Args: { p_user_id: string; p_referral_code: string };
+        Returns: { success: boolean; error?: string; reward?: number };
       };
     };
   };

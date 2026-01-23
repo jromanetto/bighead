@@ -261,7 +261,7 @@ export const grantPremiumToUser = async (
     const { data, error } = await supabase.rpc("grant_premium", {
       p_user_id: userId,
       p_duration_days: durationDays,
-    });
+    } as any);
 
     if (error) {
       console.error("Failed to grant premium in database:", error);

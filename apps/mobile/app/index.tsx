@@ -424,7 +424,7 @@ export default function HomeScreen() {
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
-                // TODO: Implement invite flow
+                router.push("/invite" as any);
               }}
               className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}

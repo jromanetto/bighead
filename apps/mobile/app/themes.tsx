@@ -1,10 +1,11 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../src/contexts/AuthContext";
-import { buttonPressFeedback } from "../src/utils/feedback";
+import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
 import { BottomNavigation } from "../src/components/BottomNavigation";
+import { getSettings, saveSettings } from "../src/services/settings";
 
 // Design colors
 const COLORS = {
@@ -218,23 +219,76 @@ function ThemeCard({
 }
 
 export default function ThemesScreen() {
-  const { user, isPremium } = useAuth();
+  const { user, isPremium, profile } = useAuth();
   const [activeTheme, setActiveTheme] = useState("default");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // Apply premium unlock to themes
-  const themesWithPremiumStatus = THEMES.map(theme => ({
-    ...theme,
-    unlocked: theme.premium ? isPremium : theme.unlocked,
-  }));
+  // Load saved theme on mount
+  useEffect(() => {
+    loadTheme();
+  }, [user]);
 
-  const handleSelectTheme = (themeId: string) => {
-    setActiveTheme(themeId);
-    // TODO: Save theme preference to user settings
+  const loadTheme = async () => {
+    try {
+      const settings = await getSettings(user?.id);
+      if (settings.theme) {
+        setActiveTheme(settings.theme);
+      }
+    } catch (error) {
+      console.error("Error loading theme:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const unlockedCount = themesWithPremiumStatus.filter(t => t.unlocked).length;
-  const totalCount = themesWithPremiumStatus.length;
+  // Check if theme is unlocked based on user progress
+  const isThemeUnlocked = (theme: Theme): boolean => {
+    if (theme.unlocked) return true;
+    if (theme.premium) return isPremium;
+
+    // Check requirements based on user profile
+    if (!profile) return false;
+
+    switch (theme.id) {
+      case "forest":
+        return profile.games_played >= 10;
+      case "sunset":
+        // Win 5 duels - would need duel wins tracking
+        return false;
+      case "royal":
+        return profile.level >= 10;
+      case "cherry":
+        // Would need achievement count
+        return false;
+      default:
+        return false;
+    }
+  };
+
+  // Apply premium and progress-based unlock to themes
+  const themesWithUnlockStatus = THEMES.map(theme => ({
+    ...theme,
+    unlocked: isThemeUnlocked(theme),
+  }));
+
+  const handleSelectTheme = async (themeId: string) => {
+    playHaptic("light");
+    setActiveTheme(themeId);
+
+    // Save theme to settings
+    setSaving(true);
+    try {
+      await saveSettings({ theme: themeId }, user?.id);
+    } catch (error) {
+      console.error("Error saving theme:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const unlockedCount = themesWithUnlockStatus.filter(t => t.unlocked).length;
+  const totalCount = themesWithUnlockStatus.length;
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
@@ -251,7 +305,10 @@ export default function ThemesScreen() {
           >
             <Text className="text-white text-lg">←</Text>
           </Pressable>
-          <Text className="text-white text-2xl font-black">THEMES</Text>
+          <Text className="text-white text-2xl font-black flex-1">THEMES</Text>
+          {saving && (
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          )}
         </View>
 
         {/* Stats Card */}
@@ -309,14 +366,20 @@ export default function ThemesScreen() {
             Available Themes
           </Text>
 
-          {themesWithPremiumStatus.map((theme) => (
-            <ThemeCard
-              key={theme.id}
-              theme={theme}
-              isActive={activeTheme === theme.id}
-              onSelect={() => handleSelectTheme(theme.id)}
-            />
-          ))}
+          {loading ? (
+            <View className="items-center py-10">
+              <ActivityIndicator color={COLORS.primary} />
+            </View>
+          ) : (
+            themesWithUnlockStatus.map((theme) => (
+              <ThemeCard
+                key={theme.id}
+                theme={theme}
+                isActive={activeTheme === theme.id}
+                onSelect={() => handleSelectTheme(theme.id)}
+              />
+            ))
+          )}
 
           {/* Premium CTA - hide if already premium */}
           {!isPremium && (
