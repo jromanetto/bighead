@@ -2,11 +2,10 @@ import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-nati
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
-import { getLeaderboard, getWeeklyLeaderboard, getUserRank, type LeaderboardEntry } from "../src/services/games";
-import { useAuth } from "../src/contexts/AuthContext";
-import { buttonPressFeedback } from "../src/utils/feedback";
-import { BottomNavigation } from "../src/components/BottomNavigation";
-import { SmallAvatar } from "../src/components/ProfileAvatar";
+import { getLeaderboard, getWeeklyLeaderboard, getUserRank, type LeaderboardEntry } from "../../src/services/games";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { buttonPressFeedback } from "../../src/utils/feedback";
+import { SmallAvatar } from "../../src/components/ProfileAvatar";
 
 // New QuizNext design colors
 const COLORS = {
@@ -322,7 +321,7 @@ export default function LeaderboardScreen() {
             )}
 
             {/* Full Leaderboard */}
-            <ScrollView className="flex-1 px-5" contentContainerClassName="pb-28" showsVerticalScrollIndicator={false}>
+            <ScrollView className="flex-1 px-5" contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
               {(leaderboard.length < 3 ? leaderboard : leaderboard.slice(3)).map((player, index) => {
                 const actualRank = leaderboard.length < 3 ? index + 1 : index + 4;
                 return (
@@ -375,9 +374,6 @@ export default function LeaderboardScreen() {
           </Text>
         </View>
       )}
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
     </SafeAreaView>
   );
 }

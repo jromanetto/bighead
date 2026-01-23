@@ -2,16 +2,16 @@ import { View, Text, Pressable, Switch, ScrollView, Alert } from "react-native";
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
-import { useAuth } from "../src/contexts/AuthContext";
-import { getSettings, saveSettings, type UserSettings } from "../src/services/settings";
-import { playHaptic, buttonPressFeedback } from "../src/utils/feedback";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { useLanguage } from "../../src/contexts/LanguageContext";
+import { getSettings, saveSettings, type UserSettings } from "../../src/services/settings";
+import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
 import {
   registerForPushNotifications,
   savePushToken,
   scheduleDailyReminder,
   cancelAllNotifications,
-} from "../src/services/notifications";
-import { BottomNavigation } from "../src/components/BottomNavigation";
+} from "../../src/services/notifications";
 
 // New QuizNext design colors
 const COLORS = {
@@ -29,6 +29,7 @@ const COLORS = {
 
 export default function SettingsScreen() {
   const { user, isAnonymous, signOut } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const [settings, setSettings] = useState<UserSettings>({
     sound_enabled: true,
     haptic_enabled: true,
@@ -78,14 +79,20 @@ export default function SettingsScreen() {
     setSaving(false);
   };
 
+  const handleLanguageChange = async (lang: "en" | "fr") => {
+    playHaptic("light");
+    await setLanguage(lang);
+    setSettings((prev) => ({ ...prev, language: lang }));
+  };
+
   const handleSignOut = () => {
     Alert.alert(
-      "Sign out",
-      "Are you sure you want to sign out?",
+      t("signOut"),
+      t("signOutConfirm"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Sign out",
+          text: t("signOut"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -190,16 +197,16 @@ export default function SettingsScreen() {
         >
           <Text className="text-white text-lg">←</Text>
         </Pressable>
-        <Text className="text-white text-2xl font-black">Settings</Text>
+        <Text className="text-white text-2xl font-black">{t("settings")}</Text>
       </View>
 
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-28" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
           {/* Sound & Haptics */}
           <Text
             className="text-xs font-bold mb-2 mt-4 uppercase tracking-wider"
             style={{ color: COLORS.textMuted }}
           >
-            Sound & Vibrations
+            {t("soundAndVibrations")}
           </Text>
           <View
             className="rounded-2xl px-4"
@@ -211,15 +218,15 @@ export default function SettingsScreen() {
           >
             <SettingRow
               icon="♪"
-              title="Sounds"
-              subtitle="Game sound effects"
+              title={t("sounds")}
+              subtitle={t("gameSoundEffects")}
               value={settings.sound_enabled}
               onToggle={(v) => updateSetting("sound_enabled", v)}
             />
             <SettingRow
               icon="∿"
-              title="Vibrations"
-              subtitle="Haptic feedback"
+              title={t("vibrations")}
+              subtitle={t("hapticFeedback")}
               value={settings.haptic_enabled}
               onToggle={(v) => updateSetting("haptic_enabled", v)}
             />
@@ -230,7 +237,7 @@ export default function SettingsScreen() {
             className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
             style={{ color: COLORS.textMuted }}
           >
-            Notifications
+            {t("notifications")}
           </Text>
           <View
             className="rounded-2xl px-4"
@@ -242,8 +249,8 @@ export default function SettingsScreen() {
           >
             <SettingRow
               icon="◎"
-              title="Notifications"
-              subtitle="Daily reminders and updates"
+              title={t("notifications")}
+              subtitle={t("dailyReminders")}
               value={settings.notifications_enabled}
               onToggle={(v) => updateSetting("notifications_enabled", v)}
             />
@@ -254,7 +261,7 @@ export default function SettingsScreen() {
             className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
             style={{ color: COLORS.textMuted }}
           >
-            Language
+            {t("language")}
           </Text>
           <View
             className="rounded-2xl px-4"
@@ -267,14 +274,14 @@ export default function SettingsScreen() {
             <MenuRow
               icon="EN"
               title="English"
-              subtitle={settings.language === "en" ? "Selected" : undefined}
-              onPress={() => updateSetting("language", "en")}
+              subtitle={language === "en" ? t("selected") : undefined}
+              onPress={() => handleLanguageChange("en")}
             />
             <MenuRow
               icon="FR"
               title="Français"
-              subtitle={settings.language === "fr" ? "Selected" : undefined}
-              onPress={() => updateSetting("language", "fr")}
+              subtitle={language === "fr" ? t("selected") : undefined}
+              onPress={() => handleLanguageChange("fr")}
             />
           </View>
 
@@ -283,7 +290,7 @@ export default function SettingsScreen() {
             className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
             style={{ color: COLORS.textMuted }}
           >
-            Premium
+            {t("premium")}
           </Text>
           <View
             className="rounded-2xl px-4"
@@ -295,20 +302,20 @@ export default function SettingsScreen() {
           >
             <MenuRow
               icon="★"
-              title="Go Premium"
-              subtitle="Unlock all features"
+              title={t("goPremium")}
+              subtitle={t("unlockAllFeatures")}
               onPress={() => router.push("/premium")}
             />
             <MenuRow
               icon="▮▯"
-              title="Your Stats"
-              subtitle="View detailed statistics"
+              title={t("yourStats")}
+              subtitle={t("viewDetailedStats")}
               onPress={() => router.push("/stats")}
             />
             <MenuRow
               icon="⇆"
-              title="Friend Challenges"
-              subtitle="Challenge your friends"
+              title={t("friendChallenges")}
+              subtitle={t("challengeYourFriends")}
               onPress={() => router.push("/challenge")}
             />
           </View>
@@ -318,7 +325,7 @@ export default function SettingsScreen() {
             className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
             style={{ color: COLORS.textMuted }}
           >
-            Account
+            {t("account")}
           </Text>
           <View
             className="rounded-2xl px-4"
@@ -331,22 +338,22 @@ export default function SettingsScreen() {
             {isAnonymous ? (
               <MenuRow
                 icon="◉"
-                title="Create account"
-                subtitle="Save your progress"
+                title={t("createAccount")}
+                subtitle={t("saveYourProgress")}
                 onPress={() => router.push("/profile")}
               />
             ) : (
               <>
                 <MenuRow
                   icon="◉"
-                  title="My profile"
-                  subtitle="Manage your personal info"
+                  title={t("myProfile")}
+                  subtitle={t("managePersonalInfo")}
                   onPress={() => router.push("/profile")}
                 />
                 <MenuRow
                   icon="→"
-                  title="Sign out"
-                  subtitle="Leave your current session"
+                  title={t("signOut")}
+                  subtitle={t("leaveSession")}
                   onPress={handleSignOut}
                   danger
                 />
@@ -359,7 +366,7 @@ export default function SettingsScreen() {
             className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
             style={{ color: COLORS.textMuted }}
           >
-            About
+            {t("about")}
           </Text>
           <View
             className="rounded-2xl px-4"
@@ -371,24 +378,24 @@ export default function SettingsScreen() {
           >
             <MenuRow
               icon="≡"
-              title="Tutorial"
-              subtitle="Review the introduction"
+              title={t("tutorial")}
+              subtitle={t("reviewIntroduction")}
               onPress={() => router.push("/onboarding")}
             />
             <MenuRow
               icon="☆"
-              title="Rate the app"
-              subtitle="Leave us a review"
+              title={t("rateApp")}
+              subtitle={t("leaveReview")}
               onPress={() => {
-                Alert.alert("Thanks!", "This feature is coming soon.");
+                Alert.alert(t("thanks"), t("comingSoon"));
               }}
             />
             <MenuRow
               icon="@"
-              title="Contact"
-              subtitle="Report a problem"
+              title={t("contact")}
+              subtitle={t("reportProblem")}
               onPress={() => {
-                Alert.alert("Contact", "support@bighead.app");
+                Alert.alert(t("contact"), "support@bighead.app");
               }}
             />
           </View>
@@ -399,13 +406,10 @@ export default function SettingsScreen() {
               BIGHEAD V1.0.0
             </Text>
             <Text className="text-gray-600 text-xs mt-1">
-              Made by the team
+              {t("madeByTeam")}
             </Text>
           </View>
         </ScrollView>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
     </SafeAreaView>
   );
 }

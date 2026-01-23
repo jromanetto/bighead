@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "../src/contexts/AuthContext";
+import { LanguageProvider } from "../src/contexts/LanguageContext";
 import { soundService } from "../src/services/sounds";
 import { AnimatedSplash } from "../src/components/AnimatedSplash";
 
@@ -59,18 +60,22 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AuthProvider>
-          <BottomSheetModalProvider>
-            <StatusBar style="light" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                animation: "slide_from_right",
-              }}
-            />
-            {showAnimatedSplash && (
-              <AnimatedSplash onAnimationEnd={handleAnimationEnd} />
-            )}
-          </BottomSheetModalProvider>
+          <LanguageProvider>
+            <BottomSheetModalProvider>
+              <StatusBar style="light" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: "slide_from_right",
+                }}
+              >
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </Stack>
+              {showAnimatedSplash && (
+                <AnimatedSplash onAnimationEnd={handleAnimationEnd} />
+              )}
+            </BottomSheetModalProvider>
+          </LanguageProvider>
         </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

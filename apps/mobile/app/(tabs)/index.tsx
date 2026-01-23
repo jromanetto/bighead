@@ -3,11 +3,10 @@ import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAuth } from "../src/contexts/AuthContext";
-import { getDailyStreak, hasCompletedDailyChallenge } from "../src/services/dailyChallenge";
-import { loadFeedbackSettings, buttonPressFeedback } from "../src/utils/feedback";
-import { BottomNavigation } from "../src/components/BottomNavigation";
-import { SmallAvatar } from "../src/components/ProfileAvatar";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/dailyChallenge";
+import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
+import { SmallAvatar } from "../../src/components/ProfileAvatar";
 
 // New QuizNext design colors
 const COLORS = {
@@ -85,7 +84,7 @@ export default function HomeScreen() {
 
       <ScrollView
         className="flex-1"
-        contentContainerClassName="pb-24"
+        contentContainerClassName="pb-32"
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
@@ -215,34 +214,103 @@ export default function HomeScreen() {
               Game Modes
             </Text>
 
-            {/* Solo Run - Large Card */}
+            {/* Adventure Mode - Main Feature Card */}
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
-                router.push("/game/chain");
+                router.push("/game/adventure");
               }}
               className="rounded-xl overflow-hidden active:opacity-95"
-              style={{ height: 128, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              style={{ height: 140, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
             >
               <LinearGradient
-                colors={['#134e4a', '#0f766e']}
-                start={{ x: 0, y: 0 }}
+                colors={['#1e3a5f', '#2d5a87', '#3b82f6']}
+                start={{ x: 0, y: 1 }}
                 end={{ x: 1, y: 0 }}
                 style={{ flex: 1, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
               >
-                <View className="flex-col justify-center">
-                  <Text className="text-2xl font-bold italic tracking-tighter text-white">
-                    SOLO RUN
+                <View className="flex-col justify-center flex-1">
+                  <View className="flex-row items-center gap-2 mb-1">
+                    <View
+                      className="px-2 py-0.5 rounded-sm"
+                      style={{ backgroundColor: '#FFD700' }}
+                    >
+                      <Text className="text-[10px] font-bold tracking-wider uppercase" style={{ color: '#1e3a5f' }}>
+                        NEW
+                      </Text>
+                    </View>
+                  </View>
+                  <Text className="text-2xl font-black tracking-tight text-white">
+                    🏔️ AVENTURE
                   </Text>
-                  <Text className="text-teal-200 text-sm font-medium mt-1">
-                    Endless mode • Beat the clock
+                  <Text className="text-blue-200 text-sm font-medium mt-1">
+                    Gravis la Montagne de la Connaissance
                   </Text>
                 </View>
-                <View className="w-14 h-14 rounded-xl items-center justify-center" style={{ backgroundColor: 'rgba(94, 234, 212, 0.2)' }}>
-                  <Text className="text-3xl font-black" style={{ color: '#5eead4' }}>⚡</Text>
+                <View className="w-16 h-16 rounded-2xl items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                  <Text className="text-4xl">🧗</Text>
                 </View>
               </LinearGradient>
             </Pressable>
+
+            {/* Two cards row: Solo Run + Family */}
+            <View className="flex-row gap-3">
+              {/* Solo Run Card */}
+              <Pressable
+                onPress={() => {
+                  buttonPressFeedback();
+                  router.push("/game/chain");
+                }}
+                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
+                style={{ height: 120, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              >
+                <LinearGradient
+                  colors={['#134e4a', '#0f766e']}
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 0, y: 0 }}
+                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
+                >
+                  <View
+                    className="w-10 h-10 rounded-lg items-center justify-center"
+                    style={{ backgroundColor: 'rgba(94, 234, 212, 0.2)' }}
+                  >
+                    <Text className="text-xl font-black" style={{ color: '#5eead4' }}>⚡</Text>
+                  </View>
+                  <View>
+                    <Text className="text-lg font-bold tracking-tight text-white">SOLO RUN</Text>
+                    <Text className="text-teal-200 text-xs mt-0.5">Mode infini</Text>
+                  </View>
+                </LinearGradient>
+              </Pressable>
+
+              {/* Family Mode Card */}
+              <Pressable
+                onPress={() => {
+                  buttonPressFeedback();
+                  router.push("/game/family");
+                }}
+                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
+                style={{ height: 120, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              >
+                <LinearGradient
+                  colors={['#7c2d12', '#c2410c']}
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 0, y: 0 }}
+                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
+                >
+                  <View
+                    className="w-10 h-10 rounded-lg items-center justify-center"
+                    style={{ backgroundColor: 'rgba(251, 146, 60, 0.2)' }}
+                  >
+                    <Text className="text-xl">👨‍👩‍👧‍👦</Text>
+                  </View>
+                  <View>
+                    <Text className="text-lg font-bold tracking-tight text-white">FAMILLE</Text>
+                    <Text className="text-orange-200 text-xs mt-0.5">Quiz en groupe</Text>
+                  </View>
+                </LinearGradient>
+              </Pressable>
+            </View>
 
             {/* Small Cards Row */}
             <View className="flex-row gap-3">
@@ -463,9 +531,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
     </SafeAreaView>
   );
 }

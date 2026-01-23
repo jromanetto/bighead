@@ -272,9 +272,7 @@ export default function ChainGameScreen() {
   // Lifelines state
   const [used50_50, setUsed50_50] = useState(false);
   const [usedSkip, setUsedSkip] = useState(false);
-  const [usedHint, setUsedHint] = useState(false);
   const [hiddenAnswers, setHiddenAnswers] = useState<number[]>([]);
-  const [showHint, setShowHint] = useState(false);
 
   // Auto-advance setting (can be toggled in settings later)
   const [autoAdvanceEnabled] = useState(true);
@@ -289,7 +287,6 @@ export default function ChainGameScreen() {
   useEffect(() => {
     setSelectedIndex(null);
     setHiddenAnswers([]);
-    setShowHint(false);
     // Clear any pending auto-advance
     if (autoAdvanceRef.current) {
       clearTimeout(autoAdvanceRef.current);
@@ -520,15 +517,6 @@ export default function ChainGameScreen() {
     useGameStore.getState().nextQuestion();
   }, [usedSkip, hasAnswered]);
 
-  // Hint Lifeline - show hint if available
-  const handleHint = useCallback(() => {
-    if (usedHint || hasAnswered) return;
-
-    playSound("buttonPress");
-    setUsedHint(true);
-    setShowHint(true);
-  }, [usedHint, hasAnswered]);
-
   // Loading state
   if (status === "loading" || status === "idle" || !currentQuestion) {
     return (
@@ -653,24 +641,6 @@ export default function ChainGameScreen() {
           </View>
         </View>
 
-        {/* Hint Display */}
-        {showHint && currentQuestion.explanation && (
-          <View className="px-6 mb-4">
-            <View
-              className="p-4 rounded-xl"
-              style={{
-                backgroundColor: `${COLORS.yellow}20`,
-                borderWidth: 1,
-                borderColor: `${COLORS.yellow}40`,
-              }}
-            >
-              <Text className="text-sm font-medium" style={{ color: COLORS.yellow }}>
-                💡 Hint: {currentQuestion.explanation}
-              </Text>
-            </View>
-          </View>
-        )}
-
         {/* Answer Options */}
         <View className="px-6 flex-col gap-3">
           {currentQuestion.answers.map((answer, index) => {
@@ -734,14 +704,6 @@ export default function ChainGameScreen() {
                 label="50/50"
                 onPress={handle50_50}
                 used={used50_50}
-              />
-              <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-              <LifelineButton
-                icon="💡"
-                label="HINT"
-                onPress={handleHint}
-                used={usedHint}
-                disabled={!currentQuestion.explanation}
               />
               <View className="w-px h-8" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
               <LifelineButton

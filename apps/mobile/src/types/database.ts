@@ -531,6 +531,54 @@ export interface Database {
           last_correct?: boolean | null;
         };
       };
+      adventure_progress: {
+        Row: {
+          id: string;
+          user_id: string;
+          tier: "coton" | "carton" | "bois" | "bronze" | "argent" | "gold" | "platinium" | "titane" | "diamant" | "mythique" | "legendaire";
+          level: number;
+          completed_categories: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tier?: "coton" | "carton" | "bois" | "bronze" | "argent" | "gold" | "platinium" | "titane" | "diamant" | "mythique" | "legendaire";
+          level?: number;
+          completed_categories?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          tier?: "coton" | "carton" | "bois" | "bronze" | "argent" | "gold" | "platinium" | "titane" | "diamant" | "mythique" | "legendaire";
+          level?: number;
+          completed_categories?: string[];
+          updated_at?: string;
+        };
+      };
+      daily_attempts: {
+        Row: {
+          id: string;
+          user_id: string;
+          date: string;
+          attempts_used: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          date?: string;
+          attempts_used?: number;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          date?: string;
+          attempts_used?: number;
+        };
+      };
     };
     Views: {
       leaderboard: {
@@ -675,3 +723,5 @@ export type TournamentParticipant = Tables<"tournament_participants">;
 export type PushToken = Tables<"push_tokens">;
 export type UserQuestionSeen = Tables<"user_questions_seen">;
 export type LeaderboardEntry = Views<"leaderboard">;
+export type AdventureProgressRow = Tables<"adventure_progress">;
+export type DailyAttemptsRow = Tables<"daily_attempts">;

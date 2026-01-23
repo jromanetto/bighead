@@ -10,12 +10,12 @@ const COLORS = {
   textMuted: "#9ca3af",
 };
 
-// Navigation items configuration
+// Navigation items configuration - simple, monochrome icons
 const NAV_ITEMS = [
-  { href: "/", icon: "🏠", label: "Home" },
-  { href: "/leaderboard", icon: "♛", label: "Ranking" },
-  { href: "/profile", icon: "👤", label: "Profile" },
-  { href: "/settings", icon: "⚙", label: "Settings" },
+  { href: "/", icon: "⌂", label: "Home" },
+  { href: "/leaderboard", icon: "★", label: "Ranking" },
+  { href: "/profile", icon: "○", label: "Profile" },
+  { href: "/settings", icon: "☰", label: "Settings" },
 ];
 
 export function BottomNavigation() {
@@ -59,8 +59,10 @@ export function BottomNavigation() {
                     style={active ? { backgroundColor: `${COLORS.primary}25` } : undefined}
                   >
                     <Text
-                      className="text-2xl font-bold"
-                      style={{ color: active ? COLORS.primary : COLORS.textMuted }}
+                      className="text-2xl"
+                      style={{
+                        color: active ? COLORS.primary : COLORS.textMuted,
+                      }}
                     >
                       {item.icon}
                     </Text>

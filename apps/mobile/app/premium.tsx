@@ -120,6 +120,30 @@ export default function PremiumScreen() {
     loadOfferings();
   }, [isProfilePremium]);
 
+  const setDemoPackages = () => {
+    setPackages([
+      {
+        identifier: "monthly",
+        product: {
+          title: "Monthly",
+          description: "Billed monthly",
+          priceString: "€4.99/mo",
+        },
+        packageType: "MONTHLY",
+      },
+      {
+        identifier: "annual",
+        product: {
+          title: "Annual",
+          description: "Best value - Save 50%",
+          priceString: "€29.99/yr",
+        },
+        packageType: "ANNUAL",
+      },
+    ]);
+    setSelectedPackage("annual");
+  };
+
   const loadOfferings = async () => {
     try {
       if (user?.id) {
@@ -133,7 +157,7 @@ export default function PremiumScreen() {
 
       if (!premium) {
         const offering = await getOfferings();
-        if (offering?.availablePackages) {
+        if (offering?.availablePackages && offering.availablePackages.length > 0) {
           setPackages(offering.availablePackages as Package[]);
           const monthly = offering.availablePackages.find(
             (p: any) => p.packageType === "MONTHLY"
@@ -141,32 +165,14 @@ export default function PremiumScreen() {
           if (monthly) {
             setSelectedPackage(monthly.identifier);
           }
+        } else {
+          // Fallback to demo packages if no offerings
+          setDemoPackages();
         }
       }
     } catch (err) {
       console.error("Error loading offerings:", err);
-      // Demo packages
-      setPackages([
-        {
-          identifier: "monthly",
-          product: {
-            title: "Monthly",
-            description: "Billed monthly",
-            priceString: "€4.99/mo",
-          },
-          packageType: "MONTHLY",
-        },
-        {
-          identifier: "annual",
-          product: {
-            title: "Annual",
-            description: "Best value",
-            priceString: "€29.99/yr",
-          },
-          packageType: "ANNUAL",
-        },
-      ]);
-      setSelectedPackage("annual");
+      setDemoPackages();
     } finally {
       setLoading(false);
     }

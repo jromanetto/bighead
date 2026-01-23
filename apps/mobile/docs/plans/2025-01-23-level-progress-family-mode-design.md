@@ -20,14 +20,21 @@ Deux nouveaux modes de jeu pour BIGHEAD :
 
 ### 2.1 Système de progression
 
-**4 Tiers × 3 Niveaux = 12 étapes**
+**11 Tiers × 3 Niveaux = 33 étapes**
 
 | Tier | Niveaux | Difficulté |
 |------|---------|------------|
 | Coton | 1, 2, 3 | Débutant |
-| Carton | 1, 2, 3 | Intermédiaire |
+| Carton | 1, 2, 3 | Novice |
+| Bois | 1, 2, 3 | Amateur |
+| Bronze | 1, 2, 3 | Confirmé |
+| Argent | 1, 2, 3 | Expérimenté |
 | Gold | 1, 2, 3 | Avancé |
 | Platinium | 1, 2, 3 | Expert |
+| Titane | 1, 2, 3 | Maître |
+| Diamant | 1, 2, 3 | Champion |
+| Mythique | 1, 2, 3 | Héros |
+| Légendaire | 1, 2, 3 | Légende |
 
 ### 2.2 Règles de jeu
 

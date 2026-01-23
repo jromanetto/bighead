@@ -3,12 +3,11 @@ import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAuth } from "../src/contexts/AuthContext";
-import { ProfileAvatar } from "../src/components/ProfileAvatar";
-import { getUserStats } from "../src/services/gameResults";
-import { uploadAvatar } from "../src/services/avatar";
-import { buttonPressFeedback } from "../src/utils/feedback";
-import { BottomNavigation } from "../src/components/BottomNavigation";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { ProfileAvatar } from "../../src/components/ProfileAvatar";
+import { getUserStats } from "../../src/services/gameResults";
+import { uploadAvatar } from "../../src/services/avatar";
+import { buttonPressFeedback } from "../../src/utils/feedback";
 
 // New QuizNext design colors
 const COLORS = {
@@ -236,7 +235,7 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <ScrollView
         className="flex-1"
-        contentContainerClassName="pb-24"
+        contentContainerClassName="pb-32"
         showsVerticalScrollIndicator={false}
       >
         {/* Settings Button */}
@@ -432,9 +431,6 @@ export default function ProfileScreen() {
           </Pressable>
         )}
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
 
       {/* Username Edit Modal */}
       <Modal
