@@ -143,35 +143,47 @@ export default function FamilyConfigScreen() {
         <View className="mb-8">
           <Text className="text-white font-bold mb-3">Catégorie</Text>
 
-          {/* Mix Option */}
+          {/* Mix Option - Featured */}
           <Pressable
             onPress={() => {
               buttonPressFeedback();
               setSelectedCategory("mix");
             }}
-            className="p-4 rounded-xl mb-3 flex-row items-center"
+            className="p-5 rounded-2xl mb-4 flex-row items-center"
             style={{
               backgroundColor: selectedCategory === "mix" ? COLORS.primaryDim : COLORS.surface,
               borderWidth: 2,
               borderColor: selectedCategory === "mix" ? COLORS.primary : "rgba(255,255,255,0.1)",
             }}
           >
-            <Text className="text-3xl mr-4">🎲</Text>
+            <View
+              className="w-14 h-14 rounded-xl items-center justify-center mr-4"
+              style={{
+                backgroundColor: selectedCategory === "mix"
+                  ? `${COLORS.primary}30`
+                  : "rgba(255,255,255,0.1)",
+              }}
+            >
+              <Text className="text-3xl">🎲</Text>
+            </View>
             <View className="flex-1">
-              <Text className="text-white font-bold">Mix de tout</Text>
+              <Text className="text-white font-bold text-lg">Mix de tout</Text>
               <Text style={{ color: COLORS.textMuted }} className="text-sm">
                 Recommandé - Questions variées
               </Text>
             </View>
             {selectedCategory === "mix" && (
-              <Text style={{ color: COLORS.primary }} className="text-xl">
-                ✓
-              </Text>
+              <View
+                className="w-8 h-8 rounded-full items-center justify-center"
+                style={{ backgroundColor: COLORS.primary }}
+              >
+                <Text style={{ color: COLORS.bg }} className="font-bold">✓</Text>
+              </View>
             )}
           </Pressable>
 
-          {/* Categories */}
-          <View className="flex-row flex-wrap gap-2">
+          {/* Categories Grid */}
+          <View className="flex-row flex-wrap">
             {CATEGORIES.map((cat) => (
               <Pressable
                 key={cat.code}
@@ -179,18 +191,35 @@ export default function FamilyConfigScreen() {
                   buttonPressFeedback();
                   setSelectedCategory(cat.code);
                 }}
-                className="px-3 py-2 rounded-xl flex-row items-center"
+                className="w-[48%] m-[1%] p-4 rounded-2xl"
                 style={{
                   backgroundColor:
-                    selectedCategory === cat.code ? `${cat.color}30` : COLORS.surface,
-                  borderWidth: 1,
+                    selectedCategory === cat.code ? `${cat.color}20` : COLORS.surface,
+                  borderWidth: 2,
                   borderColor:
-                    selectedCategory === cat.code ? cat.color : "rgba(255,255,255,0.1)",
+                    selectedCategory === cat.code ? cat.color : "rgba(255,255,255,0.08)",
                 }}
               >
-                <Text className="text-lg mr-2">{cat.icon}</Text>
+                <View className="flex-row items-center justify-between mb-2">
+                  <View
+                    className="w-10 h-10 rounded-xl items-center justify-center"
+                    style={{
+                      backgroundColor: `${cat.color}25`,
+                    }}
+                  >
+                    <Text className="text-xl">{cat.icon}</Text>
+                  </View>
+                  {selectedCategory === cat.code && (
+                    <View
+                      className="w-6 h-6 rounded-full items-center justify-center"
+                      style={{ backgroundColor: cat.color }}
+                    >
+                      <Text style={{ color: COLORS.bg }} className="text-xs font-bold">✓</Text>
+                    </View>
+                  )}
+                </View>
                 <Text
-                  className="font-medium"
+                  className="font-bold"
                   style={{
                     color: selectedCategory === cat.code ? cat.color : COLORS.text,
                   }}

@@ -2,13 +2,13 @@ import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-nati
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { MountainProgress } from "../../../src/components/MountainProgress";
 import { CategoryWheel } from "../../../src/components/CategoryWheel";
 import {
   getOrCreateProgress,
   canPlay,
-  getDailyAttempts,
 } from "../../../src/services/adventure";
 import {
   AdventureProgress,
@@ -17,6 +17,9 @@ import {
   MAX_FREE_ATTEMPTS,
 } from "../../../src/types/adventure";
 import { buttonPressFeedback } from "../../../src/utils/feedback";
+
+const STORAGE_KEY = "adventure_progress";
+const ATTEMPTS_KEY = "adventure_attempts";
 
 const COLORS = {
   bg: "#161a1d",
@@ -42,18 +45,55 @@ export default function AdventureScreen() {
   const [viewMode, setViewMode] = useState<ViewMode>("mountain");
 
   const loadProgress = useCallback(async () => {
-    if (!user) return;
-
     setLoading(true);
     try {
-      const userProgress = await getOrCreateProgress(user.id);
-      setProgress(userProgress);
+      // Try to load from local storage first (works for all users)
+      const storedProgress = await AsyncStorage.getItem(STORAGE_KEY);
+      const storedAttempts = await AsyncStorage.getItem(ATTEMPTS_KEY);
 
-      const playStatus = await canPlay(user.id, isPremium);
-      setCanPlayGame(playStatus.canPlay);
-      setAttemptsRemaining(playStatus.attemptsRemaining);
+      if (storedProgress) {
+        setProgress(JSON.parse(storedProgress));
+      } else {
+        // Initialize default progress
+        const defaultProgress: AdventureProgress = {
+          user_id: user?.id || "guest",
+          tier: "coton",
+          level: 1,
+          completed_categories: [],
+        };
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProgress));
+        setProgress(defaultProgress);
+      }
+
+      // Check daily attempts from local storage
+      const today = new Date().toISOString().split("T")[0];
+      if (storedAttempts) {
+        const attempts = JSON.parse(storedAttempts);
+        if (attempts.date === today) {
+          const remaining = Math.max(0, MAX_FREE_ATTEMPTS - attempts.used);
+          setAttemptsRemaining(remaining);
+          setCanPlayGame(isPremium || remaining > 0);
+        } else {
+          // New day, reset attempts
+          await AsyncStorage.setItem(ATTEMPTS_KEY, JSON.stringify({ date: today, used: 0 }));
+          setAttemptsRemaining(MAX_FREE_ATTEMPTS);
+          setCanPlayGame(true);
+        }
+      } else {
+        await AsyncStorage.setItem(ATTEMPTS_KEY, JSON.stringify({ date: today, used: 0 }));
+        setAttemptsRemaining(MAX_FREE_ATTEMPTS);
+        setCanPlayGame(true);
+      }
     } catch (error) {
       console.error("Error loading progress:", error);
+      // Fallback to default
+      setProgress({
+        user_id: user?.id || "guest",
+        tier: "coton",
+        level: 1,
+        completed_categories: [],
+      });
+      setCanPlayGame(true);
     } finally {
       setLoading(false);
     }
@@ -97,47 +137,6 @@ export default function AdventureScreen() {
     );
   }
 
-  if (isAnonymous) {
-    return (
-      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-        <View className="flex-row items-center px-5 pt-4 mb-6">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
-          <Text className="text-white text-2xl font-black">AVENTURE</Text>
-        </View>
-
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-6xl mb-4">🔒</Text>
-          <Text className="text-white text-xl font-bold text-center mb-2">
-            Créez un compte pour jouer
-          </Text>
-          <Text style={{ color: COLORS.textMuted }} className="text-center mb-6">
-            Le mode Aventure nécessite un compte pour sauvegarder votre progression.
-          </Text>
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.push("/profile");
-            }}
-            className="px-8 py-4 rounded-2xl"
-            style={{ backgroundColor: COLORS.primary }}
-          >
-            <Text className="font-bold text-lg" style={{ color: COLORS.bg }}>
-              Créer un compte
-            </Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>

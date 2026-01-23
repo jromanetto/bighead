@@ -2,12 +2,9 @@ import { View, Text, Pressable, ActivityIndicator, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../src/contexts/AuthContext";
-import {
-  getAdventureQuestions,
-  completeCategory,
-  useAttempt,
-} from "../../../src/services/adventure";
+import { getAdventureQuestions } from "../../../src/services/adventure";
 import { markQuestionSeen } from "../../../src/services/questions";
 import { playSound } from "../../../src/services/sounds";
 import {
@@ -15,9 +12,15 @@ import {
   Tier,
   getCategoryInfo,
   getTierInfo,
+  getNextLevel,
+  CATEGORIES,
   QUESTIONS_PER_CATEGORY,
   MAX_ERRORS_ALLOWED,
+  AdventureProgress,
 } from "../../../src/types/adventure";
+
+const STORAGE_KEY = "adventure_progress";
+const ATTEMPTS_KEY = "adventure_attempts";
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -345,9 +348,22 @@ export default function AdventurePlayScreen() {
       setGameOver(true);
       setSuccess(false);
       playSound("gameOver");
-      // Use an attempt
-      if (user && !isPremium) {
-        await useAttempt(user.id).catch(console.error);
+      // Use an attempt (local storage)
+      if (!isPremium) {
+        try {
+          const today = new Date().toISOString().split("T")[0];
+          const storedAttempts = await AsyncStorage.getItem(ATTEMPTS_KEY);
+          const attempts = storedAttempts ? JSON.parse(storedAttempts) : { date: today, used: 0 };
+          if (attempts.date === today) {
+            attempts.used += 1;
+          } else {
+            attempts.date = today;
+            attempts.used = 1;
+          }
+          await AsyncStorage.setItem(ATTEMPTS_KEY, JSON.stringify(attempts));
+        } catch (e) {
+          console.error("Error saving attempt:", e);
+        }
       }
       return;
     }
@@ -357,9 +373,36 @@ export default function AdventurePlayScreen() {
       setGameOver(true);
       setSuccess(true);
       playSound("levelUp");
-      // Mark category as completed
-      if (user) {
-        await completeCategory(user.id, category as Category).catch(console.error);
+      // Mark category as completed (local storage)
+      try {
+        const storedProgress = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedProgress) {
+          const progress: AdventureProgress = JSON.parse(storedProgress);
+
+          // Add category to completed list
+          if (!progress.completed_categories.includes(category as Category)) {
+            progress.completed_categories.push(category as Category);
+          }
+
+          // Check if all categories are completed
+          const allCategoriesCompleted = CATEGORIES.every(cat =>
+            progress.completed_categories.includes(cat.code)
+          );
+
+          if (allCategoriesCompleted) {
+            // Level up!
+            const nextLevelInfo = getNextLevel(progress.tier, progress.level);
+            if (nextLevelInfo) {
+              progress.tier = nextLevelInfo.tier;
+              progress.level = nextLevelInfo.level;
+            }
+            progress.completed_categories = [];
+          }
+
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        }
+      } catch (e) {
+        console.error("Error saving progress:", e);
       }
     }
   };
