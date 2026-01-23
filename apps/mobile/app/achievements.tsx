@@ -322,7 +322,7 @@ export default function AchievementsScreen() {
         )}
 
         {/* Bottom Navigation */}
-        <BottomNavigation variant="fixed" />
+        <BottomNavigation />
       </View>
     </SafeAreaView>
   );

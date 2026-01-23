@@ -211,14 +211,14 @@ export default function SettingsScreen() {
             }}
           >
             <SettingRow
-              icon="🔊"
+              icon="♪"
               title="Sounds"
               subtitle="Game sound effects"
               value={settings.sound_enabled}
               onToggle={(v) => updateSetting("sound_enabled", v)}
             />
             <SettingRow
-              icon="📳"
+              icon="∿"
               title="Vibrations"
               subtitle="Haptic feedback"
               value={settings.haptic_enabled}
@@ -242,7 +242,7 @@ export default function SettingsScreen() {
             }}
           >
             <SettingRow
-              icon="🔔"
+              icon="◎"
               title="Notifications"
               subtitle="Daily reminders and updates"
               value={settings.notifications_enabled}
@@ -266,13 +266,13 @@ export default function SettingsScreen() {
             }}
           >
             <MenuRow
-              icon="🇬🇧"
+              icon="EN"
               title="English"
               subtitle={settings.language === "en" ? "Selected" : undefined}
               onPress={() => updateSetting("language", "en")}
             />
             <MenuRow
-              icon="🇫🇷"
+              icon="FR"
               title="Français"
               subtitle={settings.language === "fr" ? "Selected" : undefined}
               onPress={() => updateSetting("language", "fr")}
@@ -295,19 +295,19 @@ export default function SettingsScreen() {
             }}
           >
             <MenuRow
-              icon="👑"
+              icon="★"
               title="Go Premium"
               subtitle="Unlock all features"
               onPress={() => router.push("/premium")}
             />
             <MenuRow
-              icon="📊"
+              icon="▮▯"
               title="Your Stats"
               subtitle="View detailed statistics"
               onPress={() => router.push("/stats")}
             />
             <MenuRow
-              icon="🤝"
+              icon="⇆"
               title="Friend Challenges"
               subtitle="Challenge your friends"
               onPress={() => router.push("/challenge")}
@@ -331,7 +331,7 @@ export default function SettingsScreen() {
           >
             {isAnonymous ? (
               <MenuRow
-                icon="👤"
+                icon="◉"
                 title="Create account"
                 subtitle="Save your progress"
                 onPress={() => router.push("/profile")}
@@ -339,13 +339,13 @@ export default function SettingsScreen() {
             ) : (
               <>
                 <MenuRow
-                  icon="👤"
+                  icon="◉"
                   title="My profile"
                   subtitle="Manage your personal info"
                   onPress={() => router.push("/profile")}
                 />
                 <MenuRow
-                  icon="🚪"
+                  icon="→"
                   title="Sign out"
                   subtitle="Leave your current session"
                   onPress={handleSignOut}
@@ -371,13 +371,13 @@ export default function SettingsScreen() {
             }}
           >
             <MenuRow
-              icon="📖"
+              icon="≡"
               title="Tutorial"
               subtitle="Review the introduction"
               onPress={() => router.push("/onboarding")}
             />
             <MenuRow
-              icon="⭐"
+              icon="☆"
               title="Rate the app"
               subtitle="Leave us a review"
               onPress={() => {
@@ -385,7 +385,7 @@ export default function SettingsScreen() {
               }}
             />
             <MenuRow
-              icon="📧"
+              icon="@"
               title="Contact"
               subtitle="Report a problem"
               onPress={() => {
@@ -395,18 +395,18 @@ export default function SettingsScreen() {
           </View>
 
           {/* Version */}
-          <View className="items-center py-8">
+          <View className="items-center py-8 pb-24">
             <Text style={{ color: COLORS.textMuted }} className="text-sm font-bold">
               BIGHEAD V1.0.0
             </Text>
             <Text className="text-gray-600 text-xs mt-1">
-              Made with ❤️ by the team
+              Made by the team
             </Text>
           </View>
         </ScrollView>
 
         {/* Bottom Navigation */}
-        <BottomNavigation variant="fixed" />
+        <BottomNavigation />
       </View>
     </SafeAreaView>
   );

@@ -235,7 +235,7 @@ export default function DuelLobbyScreen() {
       </View>
 
       {/* Bottom Navigation */}
-      <BottomNavigation variant="fixed" />
+      <BottomNavigation />
     </SafeAreaView>
   );
 }

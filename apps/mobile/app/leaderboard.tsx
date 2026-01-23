@@ -403,7 +403,7 @@ export default function LeaderboardScreen() {
         )}
 
         {/* Bottom Navigation */}
-        <BottomNavigation variant="fixed" />
+        <BottomNavigation />
       </View>
     </SafeAreaView>
   );

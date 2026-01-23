@@ -18,16 +18,7 @@ const NAV_ITEMS = [
   { href: "/settings", icon: "⚙", label: "Settings" },
 ];
 
-interface BottomNavigationProps {
-  /**
-   * Style variant for the navigation
-   * - "floating": Floating rounded pill style (default)
-   * - "fixed": Fixed to bottom with border-top
-   */
-  variant?: "floating" | "fixed";
-}
-
-export function BottomNavigation({ variant = "floating" }: BottomNavigationProps) {
+export function BottomNavigation() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -35,45 +26,6 @@ export function BottomNavigation({ variant = "floating" }: BottomNavigationProps
     return pathname.startsWith(href);
   };
 
-  if (variant === "fixed") {
-    return (
-      <View
-        className="flex-row justify-around py-3 px-2"
-        style={{
-          backgroundColor: COLORS.bg,
-          borderTopWidth: 1,
-          borderTopColor: COLORS.surface,
-        }}
-      >
-        {NAV_ITEMS.map((item) => {
-          const active = isActive(item.href);
-          return (
-            <Link key={item.href} href={item.href as any} asChild>
-              <Pressable
-                className="items-center flex-1"
-                onPressIn={buttonPressFeedback}
-              >
-                <Text
-                  className="text-lg font-bold mb-1"
-                  style={{ color: active ? COLORS.primary : COLORS.textMuted }}
-                >
-                  {item.icon}
-                </Text>
-                <Text
-                  className="text-xs"
-                  style={{ color: active ? COLORS.primary : COLORS.textMuted }}
-                >
-                  {item.label}
-                </Text>
-              </Pressable>
-            </Link>
-          );
-        })}
-      </View>
-    );
-  }
-
-  // Floating variant (default)
   return (
     <View className="absolute bottom-6 left-4 right-4">
       <View
