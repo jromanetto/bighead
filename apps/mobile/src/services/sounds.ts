@@ -120,15 +120,17 @@ class SoundService {
       if (!sound) {
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: SOUND_URLS[effect] },
-          { volume: this.soundVolume }
+          { volume: this.soundVolume, isLooping: false }
         );
         sound = newSound;
         this.soundObjects.set(effect, sound);
       }
 
-      // Reset and play
+      // Stop any current playback, reset and play once
+      await sound.stopAsync();
       await sound.setPositionAsync(0);
       await sound.setVolumeAsync(this.soundVolume);
+      await sound.setIsLoopingAsync(false);
       await sound.playAsync();
     } catch {
       // Silently fail - sounds are optional
@@ -267,7 +269,7 @@ class SoundService {
         try {
           const { sound } = await Audio.Sound.createAsync(
             { uri: SOUND_URLS[effect] },
-            { volume: this.soundVolume },
+            { volume: this.soundVolume, isLooping: false },
             undefined,
             false // Don't download immediately
           );

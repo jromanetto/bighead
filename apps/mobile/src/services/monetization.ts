@@ -239,6 +239,12 @@ export const getPremiumFeatures = () => monetization.getPremiumFeatures();
 export const getOfferings = () => monetization.getOfferings();
 export const purchasePackage = async (pkg: any) => {
   const result = await monetization.purchase(pkg);
+  if (!result.success && result.error && result.error !== "cancelled") {
+    // Throw error with details for the UI to display
+    const error = new Error(result.error);
+    (error as any).userCancelled = result.error === "cancelled";
+    throw error;
+  }
   return result.success;
 };
 export const restorePurchases = async () => {

@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../src/contexts/AuthContext";
 import {
@@ -13,6 +13,7 @@ import {
   grantPremiumToUser,
 } from "../src/services/monetization";
 import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
+import { ConfettiEffect } from "../src/components/effects/ConfettiEffect";
 
 const COLORS = {
   bg: "#161a1d",
@@ -115,6 +116,9 @@ export default function PremiumScreen() {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [userIsPremium, setUserIsPremium] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [justPurchased, setJustPurchased] = useState(false);
+  const hasShownConfetti = useRef(false);
 
   useEffect(() => {
     loadOfferings();
@@ -202,15 +206,25 @@ export default function PremiumScreen() {
           await refreshProfile();
         }
 
+        setJustPurchased(true);
         setUserIsPremium(true);
+
+        // Trigger confetti after a short delay
+        setTimeout(() => {
+          setShowConfetti(true);
+        }, 100);
       } else {
-        setError("Purchase failed. Please try again.");
+        setError("Purchase failed. Check App Store Connect products and RevenueCat config.");
       }
     } catch (err: any) {
       console.error("Purchase error:", err);
-      if (!err.userCancelled) {
-        setError("Purchase failed. Please try again.");
+      if (err.userCancelled) {
+        // User cancelled - no error message needed
+        return;
       }
+      // Show detailed error for debugging
+      const errorMessage = err.message || err.code || "Unknown error";
+      setError(`Purchase failed: ${errorMessage}`);
     } finally {
       setPurchasing(false);
     }
@@ -232,7 +246,13 @@ export default function PremiumScreen() {
           await refreshProfile();
         }
 
+        setJustPurchased(true);
         setUserIsPremium(true);
+
+        // Trigger confetti after a short delay
+        setTimeout(() => {
+          setShowConfetti(true);
+        }, 100);
       } else {
         setError("No purchases found to restore.");
       }
@@ -244,10 +264,25 @@ export default function PremiumScreen() {
     }
   };
 
+  // Trigger confetti when becoming premium
+  useEffect(() => {
+    if (userIsPremium && justPurchased && !hasShownConfetti.current) {
+      hasShownConfetti.current = true;
+      setShowConfetti(true);
+    }
+  }, [userIsPremium, justPurchased]);
+
   // Already premium - success screen
   if (userIsPremium) {
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        {/* Confetti Effect */}
+        <ConfettiEffect
+          trigger={showConfetti}
+          duration={3000}
+          onComplete={() => setShowConfetti(false)}
+        />
+
         <View className="flex-1 px-6 items-center justify-center">
           {/* Success glow */}
           <View
@@ -276,10 +311,12 @@ export default function PremiumScreen() {
           </View>
 
           <Text className="text-3xl font-black mb-2" style={{ color: COLORS.gold }}>
-            You're Premium!
+            {justPurchased ? "🎉 Bienvenue Premium!" : "Tu es Premium!"}
           </Text>
           <Text style={{ color: COLORS.textMuted }} className="text-center mb-8 px-4">
-            Thank you for your support. Enjoy all premium features!
+            {justPurchased
+              ? "Félicitations ! Tu as débloqué toutes les fonctionnalités premium !"
+              : "Profite de toutes les fonctionnalités premium !"}
           </Text>
 
           {/* Features unlocked */}
@@ -319,7 +356,7 @@ export default function PremiumScreen() {
             }}
           >
             <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
-              Continue Playing
+              Continuer à jouer
             </Text>
           </Pressable>
         </View>

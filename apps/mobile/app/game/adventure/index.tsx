@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -37,12 +37,19 @@ const COLORS = {
 type ViewMode = "mountain" | "wheel";
 
 export default function AdventureScreen() {
-  const { user, isPremium, isAnonymous } = useAuth();
+  const { user, isPremium, isAnonymous, refreshProfile, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<AdventureProgress | null>(null);
   const [attemptsRemaining, setAttemptsRemaining] = useState(MAX_FREE_ATTEMPTS);
   const [canPlayGame, setCanPlayGame] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("mountain");
+
+  // Refresh profile when screen gains focus (to get latest premium status)
+  useFocusEffect(
+    useCallback(() => {
+      refreshProfile();
+    }, [refreshProfile])
+  );
 
   const loadProgress = useCallback(async () => {
     setLoading(true);
@@ -102,6 +109,13 @@ export default function AdventureScreen() {
   useEffect(() => {
     loadProgress();
   }, [loadProgress]);
+
+  // React to premium status changes immediately
+  useEffect(() => {
+    if (isPremium) {
+      setCanPlayGame(true);
+    }
+  }, [isPremium]);
 
   const handleCategorySelected = (category: Category) => {
     if (!progress) return;
@@ -204,6 +218,7 @@ export default function AdventureScreen() {
               level={progress.level}
               completedCategories={progress.completed_categories.length}
               totalCategories={CATEGORIES.length}
+              avatarUrl={profile?.avatar_url}
             />
 
             {/* Categories Progress */}
@@ -289,6 +304,7 @@ export default function AdventureScreen() {
               completedCategories={progress.completed_categories as Category[]}
               onCategorySelected={handleCategorySelected}
               disabled={!canPlayGame && !isPremium}
+              tier={progress.tier}
             />
           </View>
         )}

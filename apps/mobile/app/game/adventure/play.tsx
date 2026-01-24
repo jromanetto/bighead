@@ -1,21 +1,151 @@
-import { View, Text, Pressable, ActivityIndicator, Image } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Image, ImageStyle, StyleProp } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
+
+// Image with fallback component - handles loading and errors gracefully
+// For logos, tries multiple sources automatically
+function ImageWithFallback({
+  uri,
+  style,
+  fallbackText = "🖼️",
+}: {
+  uri: string;
+  style: StyleProp<ImageStyle>;
+  fallbackText?: string;
+}) {
+  const [loading, setLoading] = useState(true);
+  const [currentUri, setCurrentUri] = useState(uri);
+  const [attemptIndex, setAttemptIndex] = useState(0);
+  const [finalError, setFinalError] = useState(false);
+
+  // Reset state when uri changes (new question)
+  useEffect(() => {
+    setCurrentUri(uri);
+    setAttemptIndex(0);
+    setFinalError(false);
+    setLoading(true);
+  }, [uri]);
+
+  // Generate alternative URLs for logo images
+  const getAlternativeUrls = useCallback((originalUri: string): string[] => {
+    const urls = [originalUri];
+
+    // If it's a Clearbit URL, extract domain and try alternatives
+    if (originalUri.includes("logo.clearbit.com")) {
+      const domainMatch = originalUri.match(/logo\.clearbit\.com\/([^/]+)/);
+      if (domainMatch) {
+        const domain = domainMatch[1];
+        // Try different Clearbit size
+        urls.push(`https://logo.clearbit.com/${domain}?size=200`);
+        // Try Google favicon as fallback
+        urls.push(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
+        // Try Brandfetch
+        urls.push(`https://cdn.brandfetch.io/${domain}/fallback/logo`);
+        // Try without subdomain if it has www
+        if (!domain.startsWith("www.")) {
+          urls.push(`https://logo.clearbit.com/www.${domain}`);
+        }
+      }
+    }
+
+    // For flag URLs, try alternative sources
+    if (originalUri.includes("flagcdn.com")) {
+      const codeMatch = originalUri.match(/\/([a-z]{2})\.png$/);
+      if (codeMatch) {
+        const code = codeMatch[1];
+        urls.push(`https://flagsapi.com/${code.toUpperCase()}/flat/64.png`);
+      }
+    }
+
+    return urls;
+  }, []);
+
+  const alternativeUrls = getAlternativeUrls(uri);
+
+  const handleError = () => {
+    console.warn("Image failed to load:", currentUri);
+
+    // Try next alternative URL
+    const nextIndex = attemptIndex + 1;
+    if (nextIndex < alternativeUrls.length) {
+      console.log("Trying alternative:", alternativeUrls[nextIndex]);
+      setAttemptIndex(nextIndex);
+      setCurrentUri(alternativeUrls[nextIndex]);
+      setLoading(true);
+    } else {
+      // All alternatives failed
+      setLoading(false);
+      setFinalError(true);
+    }
+  };
+
+  if (finalError) {
+    return (
+      <View
+        style={[
+          style,
+          {
+            backgroundColor: "rgba(255,255,255,0.1)",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+        ]}
+      >
+        <Text style={{ fontSize: 40 }}>{fallbackText}</Text>
+        <Text style={{ color: "#9ca3af", fontSize: 12, marginTop: 8 }}>
+          Image non disponible
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ position: "relative" }}>
+      {loading && (
+        <View
+          style={[
+            style,
+            {
+              backgroundColor: "rgba(255,255,255,0.05)",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
+              zIndex: 1,
+            },
+          ]}
+        >
+          <ActivityIndicator size="small" color="#00c2cc" />
+        </View>
+      )}
+      <Image
+        source={{ uri: currentUri }}
+        style={style}
+        resizeMode="contain"
+        onLoadStart={() => setLoading(true)}
+        onLoadEnd={() => setLoading(false)}
+        onError={handleError}
+      />
+    </View>
+  );
+}
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { getAdventureQuestions } from "../../../src/services/adventure";
 import { markQuestionSeen } from "../../../src/services/questions";
 import { playSound } from "../../../src/services/sounds";
+import { recordAnswer, updateLocalSkill } from "../../../src/services/difficulty";
 import {
   Category,
   Tier,
   getCategoryInfo,
   getTierInfo,
   getNextLevel,
+  getQuestionsForTier,
   CATEGORIES,
   QUESTIONS_PER_CATEGORY,
   MAX_ERRORS_ALLOWED,
+  MAX_FREE_ATTEMPTS,
   AdventureProgress,
 } from "../../../src/types/adventure";
 
@@ -270,26 +400,31 @@ const MOCK_QUESTIONS: Record<string, Question[]> = {
     { id: "t20", question_text: "Quel langage de programmation a été créé par Guido van Rossum ?", correct_answer: "Python", wrong_answers: ["Java", "JavaScript", "C++"], category: "technologie", difficulty: 4 },
   ],
   logo: [
-    { id: "l1", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Apple", wrong_answers: ["Samsung", "Huawei", "LG"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/200px-Apple_logo_black.svg.png" },
-    { id: "l2", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Nike", wrong_answers: ["Adidas", "Puma", "Reebok"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/200px-Logo_NIKE.svg.png" },
-    { id: "l3", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "McDonald's", wrong_answers: ["Burger King", "KFC", "Subway"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/200px-McDonald%27s_Golden_Arches.svg.png" },
-    { id: "l4", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Mercedes-Benz", wrong_answers: ["BMW", "Audi", "Volkswagen"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/200px-Mercedes-Logo.svg.png" },
-    { id: "l5", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Adidas", wrong_answers: ["Nike", "Puma", "Under Armour"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Adidas_Logo.svg/200px-Adidas_Logo.svg.png" },
-    { id: "l6", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Audi", wrong_answers: ["BMW", "Mercedes", "Volkswagen"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/200px-Audi-Logo_2016.svg.png" },
-    { id: "l7", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "BMW", wrong_answers: ["Mercedes", "Audi", "Volkswagen"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/200px-BMW.svg.png" },
-    { id: "l8", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Ferrari", wrong_answers: ["Lamborghini", "Porsche", "Maserati"], category: "logo", difficulty: 3, image_url: "https://upload.wikimedia.org/wikipedia/en/thumb/d/d1/Ferrari-Logo.svg/200px-Ferrari-Logo.svg.png" },
-    { id: "l9", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Starbucks", wrong_answers: ["Costa Coffee", "Dunkin", "Peet's"], category: "logo", difficulty: 3, image_url: "https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/200px-Starbucks_Corporation_Logo_2011.svg.png" },
-    { id: "l10", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Porsche", wrong_answers: ["Ferrari", "Lamborghini", "Aston Martin"], category: "logo", difficulty: 3, image_url: "https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Porsche_logo.svg/200px-Porsche_logo.svg.png" },
-    { id: "l11", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Google", wrong_answers: ["Microsoft", "Apple", "Amazon"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png" },
-    { id: "l12", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Amazon", wrong_answers: ["eBay", "Alibaba", "Walmart"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/200px-Amazon_logo.svg.png" },
-    { id: "l13", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Coca-Cola", wrong_answers: ["Pepsi", "Fanta", "Sprite"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/200px-Coca-Cola_logo.svg.png" },
-    { id: "l14", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Toyota", wrong_answers: ["Honda", "Nissan", "Mazda"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carance_logo.svg/200px-Toyota_carancy_logo.svg.png" },
-    { id: "l15", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Netflix", wrong_answers: ["Disney+", "HBO Max", "Amazon Prime"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/200px-Netflix_2015_logo.svg.png" },
-    { id: "l16", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "PlayStation", wrong_answers: ["Xbox", "Nintendo", "Sega"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Playstation_logo_colour.svg/200px-Playstation_logo_colour.svg.png" },
-    { id: "l17", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Spotify", wrong_answers: ["Apple Music", "Deezer", "Tidal"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/200px-Spotify_logo_without_text.svg.png" },
-    { id: "l18", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Instagram", wrong_answers: ["Facebook", "Snapchat", "TikTok"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/200px-Instagram_icon.png" },
-    { id: "l19", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Twitter/X", wrong_answers: ["Facebook", "LinkedIn", "Reddit"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/200px-Logo_of_Twitter.svg.png" },
-    { id: "l20", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "YouTube", wrong_answers: ["Vimeo", "Dailymotion", "Twitch"], category: "logo", difficulty: 1, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/200px-YouTube_full-color_icon_%282017%29.svg.png" },
+    { id: "l1", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Apple", wrong_answers: ["Samsung", "Huawei", "LG"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/apple.com" },
+    { id: "l2", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Nike", wrong_answers: ["Adidas", "Puma", "Reebok"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/nike.com" },
+    { id: "l3", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "McDonald's", wrong_answers: ["Burger King", "KFC", "Subway"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/mcdonalds.com" },
+    { id: "l4", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Mercedes-Benz", wrong_answers: ["BMW", "Audi", "Volkswagen"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/mercedes-benz.com" },
+    { id: "l5", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Adidas", wrong_answers: ["Nike", "Puma", "Under Armour"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/adidas.com" },
+    { id: "l6", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Audi", wrong_answers: ["BMW", "Mercedes", "Volkswagen"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/audi.com" },
+    { id: "l7", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "BMW", wrong_answers: ["Mercedes", "Audi", "Volkswagen"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/bmw.com" },
+    { id: "l8", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Ferrari", wrong_answers: ["Lamborghini", "Porsche", "Maserati"], category: "logo", difficulty: 3, image_url: "https://logo.clearbit.com/ferrari.com" },
+    { id: "l9", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Starbucks", wrong_answers: ["Costa Coffee", "Dunkin", "Peet's"], category: "logo", difficulty: 3, image_url: "https://logo.clearbit.com/starbucks.com" },
+    { id: "l10", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Porsche", wrong_answers: ["Ferrari", "Lamborghini", "Aston Martin"], category: "logo", difficulty: 3, image_url: "https://logo.clearbit.com/porsche.com" },
+    { id: "l11", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Google", wrong_answers: ["Microsoft", "Apple", "Amazon"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/google.com" },
+    { id: "l12", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Amazon", wrong_answers: ["eBay", "Alibaba", "Walmart"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/amazon.com" },
+    { id: "l13", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Coca-Cola", wrong_answers: ["Pepsi", "Fanta", "Sprite"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/coca-cola.com" },
+    { id: "l14", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Toyota", wrong_answers: ["Honda", "Nissan", "Mazda"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/toyota.com" },
+    { id: "l15", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Netflix", wrong_answers: ["Disney+", "HBO Max", "Amazon Prime"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/netflix.com" },
+    { id: "l16", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "PlayStation", wrong_answers: ["Xbox", "Nintendo", "Sega"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/playstation.com" },
+    { id: "l17", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Spotify", wrong_answers: ["Apple Music", "Deezer", "Tidal"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/spotify.com" },
+    { id: "l18", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Instagram", wrong_answers: ["Facebook", "Snapchat", "TikTok"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/instagram.com" },
+    { id: "l19", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Twitter/X", wrong_answers: ["Facebook", "LinkedIn", "Reddit"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/x.com" },
+    { id: "l20", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "YouTube", wrong_answers: ["Vimeo", "Dailymotion", "Twitch"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/youtube.com" },
+    { id: "l21", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Samsung", wrong_answers: ["Sony", "LG", "Huawei"], category: "logo", difficulty: 2, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/200px-Samsung_Logo.svg.png" },
+    { id: "l22", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Microsoft", wrong_answers: ["Apple", "Google", "IBM"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/microsoft.com" },
+    { id: "l23", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Facebook", wrong_answers: ["Twitter", "Instagram", "WhatsApp"], category: "logo", difficulty: 1, image_url: "https://logo.clearbit.com/facebook.com" },
+    { id: "l24", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Pepsi", wrong_answers: ["Coca-Cola", "Fanta", "7Up"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/pepsi.com" },
+    { id: "l25", question_text: "Quelle marque est représentée par ce logo ?", correct_answer: "Honda", wrong_answers: ["Toyota", "Nissan", "Suzuki"], category: "logo", difficulty: 2, image_url: "https://logo.clearbit.com/honda.com" },
   ],
 };
 
@@ -321,10 +456,12 @@ function CircularTimer({
   timeRemaining,
   totalTime,
   questionNumber,
+  totalQuestions,
 }: {
   timeRemaining: number;
   totalTime: number;
   questionNumber: number;
+  totalQuestions: number;
 }) {
   const isLow = timeRemaining <= 5;
   const color = isLow ? COLORS.error : COLORS.primary;
@@ -378,7 +515,7 @@ function CircularTimer({
           {timeRemaining}
         </Text>
         <Text className="text-xs font-bold" style={{ color: COLORS.textMuted }}>
-          Q{questionNumber}/{QUESTIONS_PER_CATEGORY}
+          Q{questionNumber}/{totalQuestions}
         </Text>
       </View>
     </View>
@@ -473,6 +610,7 @@ export default function AdventurePlayScreen() {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mounted = useRef(true);
+  const questionStartTime = useRef<number>(Date.now());
 
   const categoryInfo = getCategoryInfo(category as Category);
   const tierInfo = getTierInfo(tier as Tier);
@@ -511,6 +649,24 @@ export default function AdventurePlayScreen() {
         return;
       }
 
+      // Security check: verify attempts before allowing play
+      if (!isPremium) {
+        try {
+          const today = new Date().toISOString().split("T")[0];
+          const storedAttempts = await AsyncStorage.getItem(ATTEMPTS_KEY);
+          if (storedAttempts) {
+            const attempts = JSON.parse(storedAttempts);
+            if (attempts.date === today && attempts.used >= MAX_FREE_ATTEMPTS) {
+              console.log("No attempts remaining, redirecting to home");
+              router.replace("/");
+              return;
+            }
+          }
+        } catch (e) {
+          console.error("Error checking attempts:", e);
+        }
+      }
+
       console.log("Loading questions for category:", category, "tier:", tier);
       setLoading(true);
 
@@ -518,11 +674,12 @@ export default function AdventurePlayScreen() {
         // Try to fetch from database if user exists
         if (user?.id) {
           console.log("Trying database for user:", user.id);
+          const questionsNeeded = getQuestionsForTier(tier as Tier);
           const fetchedQuestions = await getAdventureQuestions(
             user.id,
             category as Category,
             tier as Tier,
-            QUESTIONS_PER_CATEGORY
+            questionsNeeded
           );
           if (fetchedQuestions && fetchedQuestions.length > 0) {
             console.log("Got", fetchedQuestions.length, "questions from DB");
@@ -540,25 +697,37 @@ export default function AdventurePlayScreen() {
         const categoryQuestions = MOCK_QUESTIONS[category as string];
         console.log("Found mock questions:", categoryQuestions?.length || 0);
 
+        const questionsNeeded = getQuestionsForTier(tier as Tier);
+
         if (categoryQuestions && categoryQuestions.length > 0) {
-          const formatted = formatQuestions(categoryQuestions);
-          console.log("Formatted questions:", formatted.length);
+          // Shuffle and limit to questions needed for this tier
+          const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
+          const limited = shuffled.slice(0, questionsNeeded);
+          const formatted = formatQuestions(limited);
+          console.log("Formatted questions:", formatted.length, "for tier:", tier);
           setQuestions(formatted);
         } else {
           // Ultimate fallback
           console.log("No mock questions for category, using culture_generale");
           const fallbackQuestions = MOCK_QUESTIONS.culture_generale;
-          const formatted = formatQuestions(fallbackQuestions);
+          const shuffled = [...fallbackQuestions].sort(() => Math.random() - 0.5);
+          const limited = shuffled.slice(0, questionsNeeded);
+          const formatted = formatQuestions(limited);
           setQuestions(formatted);
         }
       } catch (error) {
         console.error("Error loading questions:", error);
         // Use mock questions as fallback
+        const questionsNeeded = getQuestionsForTier(tier as Tier);
         const categoryQuestions = MOCK_QUESTIONS[category as string] || MOCK_QUESTIONS.culture_generale;
-        const formatted = formatQuestions(categoryQuestions);
+        const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
+        const limited = shuffled.slice(0, questionsNeeded);
+        const formatted = formatQuestions(limited);
         setQuestions(formatted);
       } finally {
         setLoading(false);
+        // Reset question start time when questions are loaded
+        questionStartTime.current = Date.now();
       }
     };
 
@@ -595,16 +764,33 @@ export default function AdventurePlayScreen() {
     playSound("timeout");
     setShowResult(true);
     setErrors((prev) => prev + 1);
+
+    // Track timeout as incorrect answer for adaptive difficulty
+    if (currentQuestion?.id) {
+      const timeToAnswer = TIME_PER_QUESTION * 1000; // Full time elapsed
+      if (user?.id) {
+        recordAnswer(user.id, currentQuestion.id, false, timeToAnswer, tier).catch((err) => {
+          console.log("Error recording timeout answer:", err);
+        });
+        markQuestionSeen(user.id, currentQuestion.id, false).catch(console.error);
+      } else {
+        updateLocalSkill(category as string, false).catch((err) => {
+          console.log("Error updating local skill on timeout:", err);
+        });
+      }
+    }
+
     checkGameEnd(errors + 1, correctCount);
   };
 
-  const handleAnswer = (index: number) => {
+  const handleAnswer = async (index: number) => {
     if (showResult || gameOver) return;
 
     setSelectedAnswer(index);
     setShowResult(true);
 
     const isCorrect = index === currentQuestion.correctIndex;
+    const timeToAnswer = Date.now() - questionStartTime.current;
 
     if (isCorrect) {
       playSound("correct");
@@ -614,9 +800,21 @@ export default function AdventurePlayScreen() {
       setErrors((prev) => prev + 1);
     }
 
-    // Mark question as seen
-    if (user?.id && currentQuestion?.id) {
-      markQuestionSeen(user.id, currentQuestion.id, isCorrect).catch(console.error);
+    // Track answer for adaptive difficulty
+    if (currentQuestion?.id) {
+      if (user?.id) {
+        // Logged-in user: record to database
+        recordAnswer(user.id, currentQuestion.id, isCorrect, timeToAnswer, tier).catch((err) => {
+          console.log("Error recording answer:", err);
+        });
+        // Also mark question as seen
+        markQuestionSeen(user.id, currentQuestion.id, isCorrect).catch(console.error);
+      } else {
+        // Guest user: track locally
+        updateLocalSkill(category as string, isCorrect).catch((err) => {
+          console.log("Error updating local skill:", err);
+        });
+      }
     }
 
     checkGameEnd(isCorrect ? errors : errors + 1, isCorrect ? correctCount + 1 : correctCount);
@@ -648,8 +846,8 @@ export default function AdventurePlayScreen() {
       return;
     }
 
-    // Check if completed all questions
-    if (currentIndex + 1 >= questions.length) {
+    // Check if completed all questions successfully (must be within error limit)
+    if (currentIndex + 1 >= questions.length && currentErrors <= MAX_ERRORS_ALLOWED) {
       setGameOver(true);
       setSuccess(true);
       playSound("levelUp");
@@ -659,8 +857,9 @@ export default function AdventurePlayScreen() {
         if (storedProgress) {
           const progress: AdventureProgress = JSON.parse(storedProgress);
 
-          // Add category to completed list
+          // Add category to completed list - ONLY if truly successful
           if (!progress.completed_categories.includes(category as Category)) {
+            console.log("Adding category to completed:", category);
             progress.completed_categories.push(category as Category);
           }
 
@@ -689,7 +888,8 @@ export default function AdventurePlayScreen() {
 
   const handleNext = () => {
     if (gameOver) {
-      router.replace("/game/adventure");
+      // If lost, go to home. If won, go back to mountain
+      router.replace(success ? "/game/adventure" : "/");
       return;
     }
 
@@ -697,11 +897,18 @@ export default function AdventurePlayScreen() {
     setShowResult(false);
     setTimeRemaining(TIME_PER_QUESTION);
     setCurrentIndex((prev) => prev + 1);
+    // Reset question start time for next question
+    questionStartTime.current = Date.now();
     playSound("buttonPress");
   };
 
   const handleExit = () => {
-    router.replace("/game/adventure");
+    // If game is over and lost, go to home
+    if (gameOver && !success) {
+      router.replace("/");
+    } else {
+      router.replace("/game/adventure");
+    }
   };
 
   if (loading) {
@@ -837,6 +1044,7 @@ export default function AdventurePlayScreen() {
           timeRemaining={timeRemaining}
           totalTime={TIME_PER_QUESTION}
           questionNumber={currentIndex + 1}
+          totalQuestions={getQuestionsForTier(tier as Tier)}
         />
       </View>
 
@@ -851,10 +1059,10 @@ export default function AdventurePlayScreen() {
           }}
         >
           {currentQuestion?.imageUrl && (
-            <Image
-              source={{ uri: currentQuestion.imageUrl }}
+            <ImageWithFallback
+              uri={currentQuestion.imageUrl}
               style={{ width: "100%", height: 140, borderRadius: 12, marginBottom: 16 }}
-              resizeMode="cover"
+              fallbackText={currentQuestion.question.includes("logo") ? "🏷️" : "🖼️"}
             />
           )}
           <Text className="text-xl font-bold text-white">{currentQuestion?.question}</Text>
