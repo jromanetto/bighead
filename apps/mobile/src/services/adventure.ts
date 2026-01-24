@@ -283,27 +283,42 @@ export async function getFamilyQuestions(
   };
 
   const effectiveMinAge = ageToMinAge[minAge] || 16;
+  const effectiveLimit = limit === Infinity ? 100 : limit;
+
+  // Try using the RPC function first (more efficient)
+  const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
+    p_min_age: effectiveMinAge,
+    p_category: category === "mix" ? null : category,
+    p_limit: effectiveLimit,
+    p_language: "fr",
+  } as any);
+
+  if (!rpcError && rpcData && rpcData.length > 0) {
+    return rpcData;
+  }
+
+  // Fallback to direct query if RPC fails
+  console.log("RPC failed, using direct query:", rpcError?.message);
 
   let query = supabase
     .from("questions")
-    .select("*")
+    .select("id, question_text, correct_answer, category, difficulty, min_age")
     .eq("is_active", true)
     .eq("language", "fr")
-    .lte("min_age", effectiveMinAge); // Filter by min_age field directly
+    .lte("min_age", effectiveMinAge);
 
   if (category !== "mix") {
     query = query.eq("category", category);
   }
 
-  if (limit !== Infinity) {
-    query = query.limit(limit);
-  } else {
-    query = query.limit(100); // Max for unlimited
-  }
+  query = query.limit(effectiveLimit);
 
   const { data, error } = await query.order("difficulty", { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    console.error("Direct query also failed:", error);
+    throw error;
+  }
 
   // Shuffle the questions
   return shuffleArray(data || []);
