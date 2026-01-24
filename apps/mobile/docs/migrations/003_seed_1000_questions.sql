@@ -1,0 +1,1251 @@
+-- =====================================================
+-- BIGHEAD - 1000 Questions Seed File
+-- Réparties sur 11 catégories et 5 niveaux de difficulté
+-- =====================================================
+
+-- =====================================================
+-- CULTURE GÉNÉRALE (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1 (Facile)
+('culture_generale', 1, 'Combien de jours y a-t-il dans une semaine ?', '7', ARRAY['5', '6', '8'], 'fr', true),
+('culture_generale', 1, 'Quelle est la couleur du ciel par beau temps ?', 'Bleu', ARRAY['Vert', 'Rouge', 'Jaune'], 'fr', true),
+('culture_generale', 1, 'Combien de pattes a un chien ?', '4', ARRAY['2', '6', '8'], 'fr', true),
+('culture_generale', 1, 'Quelle saison vient après l''été ?', 'Automne', ARRAY['Hiver', 'Printemps', 'Été'], 'fr', true),
+('culture_generale', 1, 'Quel animal miaule ?', 'Chat', ARRAY['Chien', 'Vache', 'Cochon'], 'fr', true),
+('culture_generale', 1, 'Combien font 2 + 2 ?', '4', ARRAY['3', '5', '6'], 'fr', true),
+('culture_generale', 1, 'Quelle est la capitale de la France ?', 'Paris', ARRAY['Lyon', 'Marseille', 'Bordeaux'], 'fr', true),
+('culture_generale', 1, 'De quelle couleur est une banane mûre ?', 'Jaune', ARRAY['Verte', 'Rouge', 'Bleue'], 'fr', true),
+('culture_generale', 1, 'Combien de mois compte une année ?', '12', ARRAY['10', '11', '14'], 'fr', true),
+('culture_generale', 1, 'Quel est le contraire de "chaud" ?', 'Froid', ARRAY['Tiède', 'Brûlant', 'Doux'], 'fr', true),
+('culture_generale', 1, 'Quel animal est le roi de la jungle ?', 'Lion', ARRAY['Tigre', 'Éléphant', 'Gorille'], 'fr', true),
+('culture_generale', 1, 'Combien y a-t-il de continents ?', '7', ARRAY['5', '6', '8'], 'fr', true),
+('culture_generale', 1, 'Quel fruit est rouge et pousse sur un arbre ?', 'Pomme', ARRAY['Banane', 'Orange', 'Raisin'], 'fr', true),
+('culture_generale', 1, 'Quelle planète habitons-nous ?', 'Terre', ARRAY['Mars', 'Vénus', 'Jupiter'], 'fr', true),
+('culture_generale', 1, 'Combien de doigts avons-nous aux deux mains ?', '10', ARRAY['8', '12', '20'], 'fr', true),
+
+-- Niveau 2
+('culture_generale', 2, 'Quel est le plus grand océan du monde ?', 'Pacifique', ARRAY['Atlantique', 'Indien', 'Arctique'], 'fr', true),
+('culture_generale', 2, 'Quelle est la monnaie utilisée au Japon ?', 'Yen', ARRAY['Yuan', 'Won', 'Dollar'], 'fr', true),
+('culture_generale', 2, 'Qui a peint La Joconde ?', 'Léonard de Vinci', ARRAY['Michel-Ange', 'Raphaël', 'Picasso'], 'fr', true),
+('culture_generale', 2, 'Quel est le plus long fleuve de France ?', 'Loire', ARRAY['Seine', 'Rhône', 'Garonne'], 'fr', true),
+('culture_generale', 2, 'Combien de dents a un adulte ?', '32', ARRAY['28', '30', '36'], 'fr', true),
+('culture_generale', 2, 'Quel pays a la forme d''une botte ?', 'Italie', ARRAY['Espagne', 'Grèce', 'Portugal'], 'fr', true),
+('culture_generale', 2, 'Quelle est la plus haute montagne du monde ?', 'Everest', ARRAY['K2', 'Mont Blanc', 'Kilimandjaro'], 'fr', true),
+('culture_generale', 2, 'Quel animal est le plus rapide du monde ?', 'Guépard', ARRAY['Lion', 'Léopard', 'Tigre'], 'fr', true),
+('culture_generale', 2, 'Dans quel pays se trouve la Tour de Pise ?', 'Italie', ARRAY['France', 'Espagne', 'Grèce'], 'fr', true),
+('culture_generale', 2, 'Quelle est la langue la plus parlée au monde ?', 'Mandarin', ARRAY['Anglais', 'Espagnol', 'Hindi'], 'fr', true),
+('culture_generale', 2, 'Combien de couleurs a l''arc-en-ciel ?', '7', ARRAY['5', '6', '8'], 'fr', true),
+('culture_generale', 2, 'Quel est le plus petit pays du monde ?', 'Vatican', ARRAY['Monaco', 'Saint-Marin', 'Liechtenstein'], 'fr', true),
+('culture_generale', 2, 'Quelle est la devise de la France ?', 'Liberté, Égalité, Fraternité', ARRAY['Unité, Force, Progrès', 'Honneur et Patrie', 'Dieu et mon droit'], 'fr', true),
+('culture_generale', 2, 'Quel instrument a 88 touches ?', 'Piano', ARRAY['Orgue', 'Accordéon', 'Synthétiseur'], 'fr', true),
+('culture_generale', 2, 'Quel est le symbole chimique de l''or ?', 'Au', ARRAY['Or', 'Ag', 'Fe'], 'fr', true),
+
+-- Niveau 3
+('culture_generale', 3, 'En quelle année l''homme a-t-il marché sur la Lune ?', '1969', ARRAY['1965', '1971', '1973'], 'fr', true),
+('culture_generale', 3, 'Quel est l''élément chimique le plus abondant dans l''univers ?', 'Hydrogène', ARRAY['Hélium', 'Oxygène', 'Carbone'], 'fr', true),
+('culture_generale', 3, 'Combien d''os compte le corps humain adulte ?', '206', ARRAY['186', '226', '256'], 'fr', true),
+('culture_generale', 3, 'Quelle mer borde la côte sud de la France ?', 'Méditerranée', ARRAY['Adriatique', 'Égée', 'Tyrrhénienne'], 'fr', true),
+('culture_generale', 3, 'Qui a écrit "Les Misérables" ?', 'Victor Hugo', ARRAY['Émile Zola', 'Balzac', 'Alexandre Dumas'], 'fr', true),
+('culture_generale', 3, 'Quelle est la capitale de l''Australie ?', 'Canberra', ARRAY['Sydney', 'Melbourne', 'Perth'], 'fr', true),
+('culture_generale', 3, 'Combien de vertèbres possède le cou humain ?', '7', ARRAY['5', '6', '8'], 'fr', true),
+('culture_generale', 3, 'Quel est le plus grand désert du monde ?', 'Antarctique', ARRAY['Sahara', 'Gobi', 'Arabie'], 'fr', true),
+('culture_generale', 3, 'Quelle vitamine est produite par le soleil ?', 'Vitamine D', ARRAY['Vitamine C', 'Vitamine A', 'Vitamine B'], 'fr', true),
+('culture_generale', 3, 'Quel pays a le plus de fuseaux horaires ?', 'France', ARRAY['Russie', 'États-Unis', 'Chine'], 'fr', true),
+('culture_generale', 3, 'Quelle est la planète la plus chaude du système solaire ?', 'Vénus', ARRAY['Mercure', 'Mars', 'Jupiter'], 'fr', true),
+('culture_generale', 3, 'Combien de paires de chromosomes a l''être humain ?', '23', ARRAY['21', '22', '24'], 'fr', true),
+('culture_generale', 3, 'Quel est le métal le plus conducteur d''électricité ?', 'Argent', ARRAY['Cuivre', 'Or', 'Aluminium'], 'fr', true),
+('culture_generale', 3, 'Dans quel organe est produite la bile ?', 'Foie', ARRAY['Estomac', 'Pancréas', 'Intestin'], 'fr', true),
+('culture_generale', 3, 'Quelle est la monnaie du Royaume-Uni ?', 'Livre sterling', ARRAY['Euro', 'Dollar', 'Franc'], 'fr', true),
+
+-- Niveau 4
+('culture_generale', 4, 'Quel est le point le plus profond des océans ?', 'Fosse des Mariannes', ARRAY['Fosse de Porto Rico', 'Fosse du Japon', 'Fosse des Philippines'], 'fr', true),
+('culture_generale', 4, 'Combien de satellites naturels a Mars ?', '2', ARRAY['0', '1', '4'], 'fr', true),
+('culture_generale', 4, 'Quel philosophe grec a été le maître d''Alexandre le Grand ?', 'Aristote', ARRAY['Platon', 'Socrate', 'Épicure'], 'fr', true),
+('culture_generale', 4, 'Quelle est la distance Terre-Soleil en millions de km ?', '150', ARRAY['100', '200', '250'], 'fr', true),
+('culture_generale', 4, 'Quel élément chimique a le numéro atomique 79 ?', 'Or', ARRAY['Argent', 'Platine', 'Cuivre'], 'fr', true),
+('culture_generale', 4, 'En quelle année a été signée la Déclaration des Droits de l''Homme ?', '1789', ARRAY['1776', '1791', '1793'], 'fr', true),
+('culture_generale', 4, 'Quel est le plus grand lac d''eau douce au monde ?', 'Lac Supérieur', ARRAY['Lac Victoria', 'Lac Baïkal', 'Lac Michigan'], 'fr', true),
+('culture_generale', 4, 'Combien de temps met la lumière du Soleil pour atteindre la Terre ?', '8 minutes', ARRAY['1 minute', '4 minutes', '15 minutes'], 'fr', true),
+('culture_generale', 4, 'Quel pays possède le plus grand nombre d''îles ?', 'Suède', ARRAY['Indonésie', 'Philippines', 'Japon'], 'fr', true),
+('culture_generale', 4, 'Quelle est la formule chimique de l''eau ?', 'H2O', ARRAY['H2O2', 'HO', 'H3O'], 'fr', true),
+('culture_generale', 4, 'Quel est le plus petit os du corps humain ?', 'Étrier', ARRAY['Marteau', 'Enclume', 'Phalange'], 'fr', true),
+('culture_generale', 4, 'En quelle année Christophe Colomb a-t-il découvert l''Amérique ?', '1492', ARRAY['1482', '1498', '1502'], 'fr', true),
+('culture_generale', 4, 'Quel est le fleuve le plus long du monde ?', 'Nil', ARRAY['Amazone', 'Mississippi', 'Yangtsé'], 'fr', true),
+('culture_generale', 4, 'Combien de litres de sang contient le corps humain ?', '5', ARRAY['3', '7', '10'], 'fr', true),
+('culture_generale', 4, 'Quelle est la température du corps humain en Celsius ?', '37°C', ARRAY['36°C', '38°C', '39°C'], 'fr', true),
+
+-- Niveau 5 (Difficile)
+('culture_generale', 5, 'Quel est le nom du plus grand diamant jamais découvert ?', 'Cullinan', ARRAY['Hope', 'Koh-i-Noor', 'Régent'], 'fr', true),
+('culture_generale', 5, 'En quelle année a eu lieu le premier vol des frères Wright ?', '1903', ARRAY['1899', '1905', '1910'], 'fr', true),
+('culture_generale', 5, 'Quel est le seul mammifère capable de voler ?', 'Chauve-souris', ARRAY['Écureuil volant', 'Polatouche', 'Colugo'], 'fr', true),
+('culture_generale', 5, 'Combien de muscles le corps humain possède-t-il environ ?', '600', ARRAY['400', '500', '700'], 'fr', true),
+('culture_generale', 5, 'Quel est le nom du processus par lequel les plantes fabriquent leur nourriture ?', 'Photosynthèse', ARRAY['Respiration', 'Fermentation', 'Transpiration'], 'fr', true),
+('culture_generale', 5, 'Quelle est la plus ancienne université encore en activité ?', 'Université de Bologne', ARRAY['Oxford', 'Cambridge', 'Sorbonne'], 'fr', true),
+('culture_generale', 5, 'Quel est l''animal terrestre le plus lourd ?', 'Éléphant d''Afrique', ARRAY['Rhinocéros blanc', 'Hippopotame', 'Girafe'], 'fr', true),
+('culture_generale', 5, 'En quelle année le mur de Berlin est-il tombé ?', '1989', ARRAY['1987', '1991', '1993'], 'fr', true),
+('culture_generale', 5, 'Quel est le plus long nerf du corps humain ?', 'Nerf sciatique', ARRAY['Nerf vague', 'Nerf optique', 'Nerf facial'], 'fr', true),
+('culture_generale', 5, 'Combien de pays font partie de l''Union Européenne en 2024 ?', '27', ARRAY['25', '28', '30'], 'fr', true),
+('culture_generale', 5, 'Quel est le point culminant de l''Afrique ?', 'Kilimandjaro', ARRAY['Mont Kenya', 'Mont Stanley', 'Ras Dashen'], 'fr', true),
+('culture_generale', 5, 'Quelle est la plus grande cellule du corps humain ?', 'Ovule', ARRAY['Neurone', 'Cellule musculaire', 'Globule rouge'], 'fr', true),
+('culture_generale', 5, 'En quelle année a été créée l''ONU ?', '1945', ARRAY['1918', '1939', '1950'], 'fr', true),
+('culture_generale', 5, 'Quel est le nom du premier satellite artificiel ?', 'Spoutnik 1', ARRAY['Explorer 1', 'Vanguard 1', 'Luna 1'], 'fr', true),
+('culture_generale', 5, 'Combien de dents de lait a un enfant ?', '20', ARRAY['16', '24', '28'], 'fr', true);
+
+-- =====================================================
+-- HISTOIRE (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('histoire', 1, 'Qui était le roi de France surnommé le Roi Soleil ?', 'Louis XIV', ARRAY['Louis XV', 'Louis XVI', 'François Ier'], 'fr', true),
+('histoire', 1, 'Quel monument égyptien a une tête humaine et un corps de lion ?', 'Sphinx', ARRAY['Pyramide', 'Obélisque', 'Temple'], 'fr', true),
+('histoire', 1, 'Qui a découvert l''Amérique en 1492 ?', 'Christophe Colomb', ARRAY['Marco Polo', 'Vasco de Gama', 'Magellan'], 'fr', true),
+('histoire', 1, 'Quel peuple a construit les pyramides ?', 'Égyptiens', ARRAY['Romains', 'Grecs', 'Mayas'], 'fr', true),
+('histoire', 1, 'Comment s''appelait le bateau de Christophe Colomb ?', 'Santa Maria', ARRAY['Mayflower', 'Victoria', 'Endeavour'], 'fr', true),
+('histoire', 1, 'Qui était Cléopâtre ?', 'Reine d''Égypte', ARRAY['Impératrice de Rome', 'Reine de Grèce', 'Princesse perse'], 'fr', true),
+('histoire', 1, 'Quel empereur français a été exilé à Sainte-Hélène ?', 'Napoléon', ARRAY['Louis XVIII', 'Charles X', 'Louis-Philippe'], 'fr', true),
+('histoire', 1, 'Quel événement a eu lieu le 14 juillet 1789 ?', 'Prise de la Bastille', ARRAY['Sacre de Napoléon', 'Mort de Louis XVI', 'Fin de la Révolution'], 'fr', true),
+('histoire', 1, 'Comment s''appelaient les guerriers japonais ?', 'Samouraïs', ARRAY['Ninjas', 'Shoguns', 'Ronins'], 'fr', true),
+('histoire', 1, 'Quel animal Hannibal a-t-il utilisé pour traverser les Alpes ?', 'Éléphants', ARRAY['Chevaux', 'Chameaux', 'Bœufs'], 'fr', true),
+('histoire', 1, 'Qui a inventé l''imprimerie ?', 'Gutenberg', ARRAY['Léonard de Vinci', 'Galilée', 'Newton'], 'fr', true),
+('histoire', 1, 'Dans quelle ville se trouve le Colisée ?', 'Rome', ARRAY['Athènes', 'Paris', 'Londres'], 'fr', true),
+('histoire', 1, 'Quel était le nom des bateaux vikings ?', 'Drakkars', ARRAY['Galères', 'Caravelles', 'Trirèmes'], 'fr', true),
+('histoire', 1, 'Qui était Jules César ?', 'Empereur romain', ARRAY['Roi de France', 'Pharaon', 'Roi de Grèce'], 'fr', true),
+('histoire', 1, 'Quelle reine de France a dit "Qu''ils mangent de la brioche" ?', 'Marie-Antoinette', ARRAY['Catherine de Médicis', 'Anne d''Autriche', 'Marie de Médicis'], 'fr', true),
+
+-- Niveau 2
+('histoire', 2, 'En quelle année a eu lieu la chute du mur de Berlin ?', '1989', ARRAY['1987', '1991', '1985'], 'fr', true),
+('histoire', 2, 'Qui a été le premier président des États-Unis ?', 'George Washington', ARRAY['Thomas Jefferson', 'Abraham Lincoln', 'Benjamin Franklin'], 'fr', true),
+('histoire', 2, 'En quelle année a commencé la Première Guerre mondiale ?', '1914', ARRAY['1912', '1916', '1918'], 'fr', true),
+('histoire', 2, 'Quelle civilisation a inventé l''écriture ?', 'Sumériens', ARRAY['Égyptiens', 'Chinois', 'Grecs'], 'fr', true),
+('histoire', 2, 'Qui a peint le plafond de la Chapelle Sixtine ?', 'Michel-Ange', ARRAY['Raphaël', 'Léonard de Vinci', 'Botticelli'], 'fr', true),
+('histoire', 2, 'Quel roi de France a fait construire Versailles ?', 'Louis XIV', ARRAY['Louis XIII', 'Louis XV', 'Henri IV'], 'fr', true),
+('histoire', 2, 'En quelle année Napoléon est-il devenu empereur ?', '1804', ARRAY['1799', '1806', '1810'], 'fr', true),
+('histoire', 2, 'Qui était le leader de l''Allemagne nazie ?', 'Adolf Hitler', ARRAY['Mussolini', 'Staline', 'Franco'], 'fr', true),
+('histoire', 2, 'Quelle guerre a opposé le Nord et le Sud des États-Unis ?', 'Guerre de Sécession', ARRAY['Guerre d''indépendance', 'Guerre du Vietnam', 'Guerre de Corée'], 'fr', true),
+('histoire', 2, 'Qui a aboli l''esclavage en France ?', 'Victor Schœlcher', ARRAY['Napoléon', 'Louis XIV', 'De Gaulle'], 'fr', true),
+('histoire', 2, 'Quelle dynastie a régné sur la Chine pendant plus de 250 ans jusqu''en 1912 ?', 'Qing', ARRAY['Ming', 'Tang', 'Han'], 'fr', true),
+('histoire', 2, 'Qui était Martin Luther King ?', 'Militant des droits civiques', ARRAY['Président américain', 'Réformateur religieux', 'Général de guerre'], 'fr', true),
+('histoire', 2, 'En quelle année a eu lieu le débarquement en Normandie ?', '1944', ARRAY['1942', '1943', '1945'], 'fr', true),
+('histoire', 2, 'Quel empire a dominé la Méditerranée pendant l''Antiquité ?', 'Empire romain', ARRAY['Empire grec', 'Empire perse', 'Empire égyptien'], 'fr', true),
+('histoire', 2, 'Qui a fondé l''empire mongol ?', 'Gengis Khan', ARRAY['Kubilai Khan', 'Tamerlan', 'Attila'], 'fr', true),
+
+-- Niveau 3
+('histoire', 3, 'Quelle bataille a mis fin à l''Empire de Napoléon ?', 'Waterloo', ARRAY['Austerlitz', 'Trafalgar', 'Iéna'], 'fr', true),
+('histoire', 3, 'En quelle année la Seconde Guerre mondiale s''est-elle terminée ?', '1945', ARRAY['1943', '1944', '1946'], 'fr', true),
+('histoire', 3, 'Qui a assassiné Jules César ?', 'Brutus', ARRAY['Marc Antoine', 'Pompée', 'Crassus'], 'fr', true),
+('histoire', 3, 'Quelle révolution a eu lieu en Russie en 1917 ?', 'Révolution bolchévique', ARRAY['Révolution de velours', 'Révolution des œillets', 'Révolution de février'], 'fr', true),
+('histoire', 3, 'Qui était le pharaon dont le tombeau a été découvert intact en 1922 ?', 'Toutânkhamon', ARRAY['Ramsès II', 'Khéops', 'Akhenaton'], 'fr', true),
+('histoire', 3, 'Quelle guerre a duré de 1337 à 1453 ?', 'Guerre de Cent Ans', ARRAY['Guerre de Trente Ans', 'Guerre des Roses', 'Croisades'], 'fr', true),
+('histoire', 3, 'Qui a été le dernier tsar de Russie ?', 'Nicolas II', ARRAY['Alexandre III', 'Nicolas Ier', 'Alexandre II'], 'fr', true),
+('histoire', 3, 'En quelle année a eu lieu la découverte de l''Amérique par les Vikings ?', 'Vers l''an 1000', ARRAY['800', '1100', '1200'], 'fr', true),
+('histoire', 3, 'Quelle civilisation a construit Machu Picchu ?', 'Incas', ARRAY['Mayas', 'Aztèques', 'Olmèques'], 'fr', true),
+('histoire', 3, 'Qui a écrit "Le Prince" ?', 'Machiavel', ARRAY['Platon', 'Aristote', 'Montesquieu'], 'fr', true),
+('histoire', 3, 'Quelle ville a été détruite par le Vésuve en 79 ?', 'Pompéi', ARRAY['Rome', 'Naples', 'Herculanum'], 'fr', true),
+('histoire', 3, 'Qui était Charlemagne ?', 'Empereur des Francs', ARRAY['Roi de France', 'Empereur romain', 'Roi d''Angleterre'], 'fr', true),
+('histoire', 3, 'En quelle année a été signé l''armistice de la Première Guerre mondiale ?', '1918', ARRAY['1917', '1919', '1920'], 'fr', true),
+('histoire', 3, 'Quelle reine d''Angleterre a régné 63 ans ?', 'Victoria', ARRAY['Élisabeth I', 'Élisabeth II', 'Marie Ire'], 'fr', true),
+('histoire', 3, 'Qui a fondé la psychanalyse ?', 'Sigmund Freud', ARRAY['Carl Jung', 'Jacques Lacan', 'Wilhelm Reich'], 'fr', true),
+
+-- Niveau 4
+('histoire', 4, 'Quelle dynastie française a succédé aux Valois ?', 'Bourbons', ARRAY['Capétiens', 'Carolingiens', 'Orléans'], 'fr', true),
+('histoire', 4, 'En quelle année a eu lieu le Traité de Versailles ?', '1919', ARRAY['1918', '1920', '1921'], 'fr', true),
+('histoire', 4, 'Qui a été le premier empereur de Chine ?', 'Qin Shi Huang', ARRAY['Liu Bang', 'Wu Zetian', 'Kangxi'], 'fr', true),
+('histoire', 4, 'Quelle guerre a opposé Athènes et Sparte ?', 'Guerre du Péloponnèse', ARRAY['Guerres médiques', 'Guerre de Troie', 'Guerre de Corinthe'], 'fr', true),
+('histoire', 4, 'En quelle année Constantinople est-elle tombée aux mains des Ottomans ?', '1453', ARRAY['1421', '1479', '1492'], 'fr', true),
+('histoire', 4, 'Qui a été le dernier roi de France ?', 'Louis-Philippe Ier', ARRAY['Charles X', 'Louis XVIII', 'Napoléon III'], 'fr', true),
+('histoire', 4, 'Quelle était la capitale de l''Empire byzantin ?', 'Constantinople', ARRAY['Rome', 'Athènes', 'Antioche'], 'fr', true),
+('histoire', 4, 'Qui a découvert le tombeau de Toutânkhamon ?', 'Howard Carter', ARRAY['Jean-François Champollion', 'Heinrich Schliemann', 'Arthur Evans'], 'fr', true),
+('histoire', 4, 'En quelle année a eu lieu la Révolution de Juillet en France ?', '1830', ARRAY['1789', '1848', '1871'], 'fr', true),
+('histoire', 4, 'Quel traité a mis fin à la guerre de Cent Ans ?', 'Traité de Picquigny', ARRAY['Traité de Troyes', 'Traité de Paris', 'Traité de Brétigny'], 'fr', true),
+('histoire', 4, 'Qui était Spartacus ?', 'Esclave et gladiateur rebelle', ARRAY['Empereur romain', 'Général carthaginois', 'Roi de Sparte'], 'fr', true),
+('histoire', 4, 'Quelle dynastie a précédé les Romanov en Russie ?', 'Riourikides', ARRAY['Godounov', 'Romanov', 'Dolgorouki'], 'fr', true),
+('histoire', 4, 'En quelle année a été proclamée la Ire République française ?', '1792', ARRAY['1789', '1793', '1795'], 'fr', true),
+('histoire', 4, 'Qui a été le premier homme à faire le tour du monde ?', 'Juan Sebastián Elcano', ARRAY['Magellan', 'Christophe Colomb', 'Vasco de Gama'], 'fr', true),
+('histoire', 4, 'Quelle bataille a marqué la fin de l''Empire perse achéménide ?', 'Bataille de Gaugamèles', ARRAY['Bataille de Marathon', 'Bataille des Thermopyles', 'Bataille d''Issos'], 'fr', true),
+
+-- Niveau 5
+('histoire', 5, 'En quelle année a eu lieu le Congrès de Vienne ?', '1815', ARRAY['1814', '1816', '1818'], 'fr', true),
+('histoire', 5, 'Qui a été le premier calife de l''Islam ?', 'Abou Bakr', ARRAY['Omar', 'Ali', 'Othman'], 'fr', true),
+('histoire', 5, 'Quelle bataille a marqué la fin de l''invasion arabe en France ?', 'Bataille de Poitiers', ARRAY['Bataille de Tours', 'Bataille de Roncevaux', 'Bataille de Vouillé'], 'fr', true),
+('histoire', 5, 'En quelle année le traité de Rome a-t-il été signé ?', '1957', ARRAY['1955', '1958', '1960'], 'fr', true),
+('histoire', 5, 'Qui était Périclès ?', 'Homme d''État athénien', ARRAY['Philosophe grec', 'Général spartiate', 'Empereur romain'], 'fr', true),
+('histoire', 5, 'Quelle dynastie a fondé l''Empire ottoman ?', 'Osman', ARRAY['Seldjoukides', 'Abbassides', 'Mamelouks'], 'fr', true),
+('histoire', 5, 'En quelle année a eu lieu la Nuit de Cristal ?', '1938', ARRAY['1933', '1936', '1939'], 'fr', true),
+('histoire', 5, 'Qui a inventé la guillotine ?', 'Joseph-Ignace Guillotin', ARRAY['Antoine Louis', 'Robespierre', 'Danton'], 'fr', true),
+('histoire', 5, 'Quelle bataille a mis fin à la Reconquista espagnole ?', 'Prise de Grenade', ARRAY['Bataille de Las Navas', 'Siège de Tolède', 'Bataille de Cordoue'], 'fr', true),
+('histoire', 5, 'En quelle année Jeanne d''Arc a-t-elle été brûlée ?', '1431', ARRAY['1429', '1430', '1432'], 'fr', true),
+('histoire', 5, 'Qui était Saladin ?', 'Sultan d''Égypte et de Syrie', ARRAY['Calife abbasside', 'Empereur mongol', 'Roi de Perse'], 'fr', true),
+('histoire', 5, 'Quelle civilisation a inventé le zéro ?', 'Indienne', ARRAY['Arabe', 'Grecque', 'Chinoise'], 'fr', true),
+('histoire', 5, 'En quelle année a eu lieu le massacre de la Saint-Barthélemy ?', '1572', ARRAY['1562', '1582', '1598'], 'fr', true),
+('histoire', 5, 'Qui a été le premier empereur du Saint-Empire romain germanique ?', 'Otton Ier', ARRAY['Charlemagne', 'Henri Ier', 'Conrad Ier'], 'fr', true),
+('histoire', 5, 'Quelle était la monnaie de la Grèce antique ?', 'Drachme', ARRAY['Denier', 'Sesterce', 'Obole'], 'fr', true);
+
+-- =====================================================
+-- GÉOGRAPHIE (90 questions - avec drapeaux et monuments)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active, image_url) VALUES
+-- Drapeaux Niveau 1
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'France', ARRAY['Belgique', 'Italie', 'Pays-Bas'], 'fr', true, 'https://flagcdn.com/w320/fr.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Allemagne', ARRAY['Belgique', 'Autriche', 'Suisse'], 'fr', true, 'https://flagcdn.com/w320/de.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Italie', ARRAY['Mexique', 'Irlande', 'Côte d''Ivoire'], 'fr', true, 'https://flagcdn.com/w320/it.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Espagne', ARRAY['Portugal', 'Andorre', 'Monaco'], 'fr', true, 'https://flagcdn.com/w320/es.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Royaume-Uni', ARRAY['Australie', 'Nouvelle-Zélande', 'États-Unis'], 'fr', true, 'https://flagcdn.com/w320/gb.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'États-Unis', ARRAY['Liberia', 'Malaisie', 'Porto Rico'], 'fr', true, 'https://flagcdn.com/w320/us.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Japon', ARRAY['Corée du Sud', 'Chine', 'Bangladesh'], 'fr', true, 'https://flagcdn.com/w320/jp.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Chine', ARRAY['Vietnam', 'Corée du Nord', 'Taïwan'], 'fr', true, 'https://flagcdn.com/w320/cn.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Brésil', ARRAY['Argentine', 'Portugal', 'Colombie'], 'fr', true, 'https://flagcdn.com/w320/br.png'),
+('geographie', 1, 'À quel pays appartient ce drapeau ?', 'Canada', ARRAY['États-Unis', 'Pérou', 'Liban'], 'fr', true, 'https://flagcdn.com/w320/ca.png'),
+
+-- Drapeaux Niveau 2
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Belgique', ARRAY['Allemagne', 'Roumanie', 'Tchad'], 'fr', true, 'https://flagcdn.com/w320/be.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Pays-Bas', ARRAY['Luxembourg', 'Russie', 'Paraguay'], 'fr', true, 'https://flagcdn.com/w320/nl.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Portugal', ARRAY['Brésil', 'Angola', 'Mozambique'], 'fr', true, 'https://flagcdn.com/w320/pt.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Suisse', ARRAY['Danemark', 'Tonga', 'Géorgie'], 'fr', true, 'https://flagcdn.com/w320/ch.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Autriche', ARRAY['Lettonie', 'Liban', 'Pologne'], 'fr', true, 'https://flagcdn.com/w320/at.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Pologne', ARRAY['Monaco', 'Indonésie', 'Singapour'], 'fr', true, 'https://flagcdn.com/w320/pl.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Suède', ARRAY['Finlande', 'Norvège', 'Danemark'], 'fr', true, 'https://flagcdn.com/w320/se.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Norvège', ARRAY['Islande', 'Danemark', 'Finlande'], 'fr', true, 'https://flagcdn.com/w320/no.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Grèce', ARRAY['Uruguay', 'Argentine', 'Israël'], 'fr', true, 'https://flagcdn.com/w320/gr.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Turquie', ARRAY['Tunisie', 'Singapour', 'Pakistan'], 'fr', true, 'https://flagcdn.com/w320/tr.png'),
+
+-- Drapeaux Niveau 3
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Corée du Sud', ARRAY['Japon', 'Taïwan', 'Philippines'], 'fr', true, 'https://flagcdn.com/w320/kr.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Inde', ARRAY['Niger', 'Irlande', 'Côte d''Ivoire'], 'fr', true, 'https://flagcdn.com/w320/in.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Afrique du Sud', ARRAY['Namibie', 'Lesotho', 'Botswana'], 'fr', true, 'https://flagcdn.com/w320/za.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Argentine', ARRAY['Guatemala', 'Salvador', 'Honduras'], 'fr', true, 'https://flagcdn.com/w320/ar.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Mexique', ARRAY['Italie', 'Irlande', 'Hongrie'], 'fr', true, 'https://flagcdn.com/w320/mx.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Australie', ARRAY['Nouvelle-Zélande', 'Fidji', 'Tuvalu'], 'fr', true, 'https://flagcdn.com/w320/au.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Égypte', ARRAY['Irak', 'Yémen', 'Syrie'], 'fr', true, 'https://flagcdn.com/w320/eg.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Russie', ARRAY['Serbie', 'Slovaquie', 'Slovénie'], 'fr', true, 'https://flagcdn.com/w320/ru.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Maroc', ARRAY['Algérie', 'Tunisie', 'Mauritanie'], 'fr', true, 'https://flagcdn.com/w320/ma.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Thaïlande', ARRAY['Costa Rica', 'Cambodge', 'Laos'], 'fr', true, 'https://flagcdn.com/w320/th.png'),
+
+-- Drapeaux Niveau 4
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Indonésie', ARRAY['Monaco', 'Pologne', 'Singapour'], 'fr', true, 'https://flagcdn.com/w320/id.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Malaisie', ARRAY['Liberia', 'États-Unis', 'Porto Rico'], 'fr', true, 'https://flagcdn.com/w320/my.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Philippines', ARRAY['Tchéquie', 'Cuba', 'Porto Rico'], 'fr', true, 'https://flagcdn.com/w320/ph.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Vietnam', ARRAY['Chine', 'Maroc', 'Turquie'], 'fr', true, 'https://flagcdn.com/w320/vn.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Iran', ARRAY['Tadjikistan', 'Irak', 'Koweit'], 'fr', true, 'https://flagcdn.com/w320/ir.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Pakistan', ARRAY['Algérie', 'Arabie Saoudite', 'Mauritanie'], 'fr', true, 'https://flagcdn.com/w320/pk.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Colombie', ARRAY['Équateur', 'Venezuela', 'Roumanie'], 'fr', true, 'https://flagcdn.com/w320/co.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Pérou', ARRAY['Canada', 'Autriche', 'Pologne'], 'fr', true, 'https://flagcdn.com/w320/pe.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Chili', ARRAY['Texas', 'Cuba', 'Porto Rico'], 'fr', true, 'https://flagcdn.com/w320/cl.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Ukraine', ARRAY['Suède', 'Palau', 'Bosnie'], 'fr', true, 'https://flagcdn.com/w320/ua.png'),
+
+-- Drapeaux Niveau 5
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Kazakhstan', ARRAY['Ouzbékistan', 'Turkménistan', 'Kirghizistan'], 'fr', true, 'https://flagcdn.com/w320/kz.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Népal', ARRAY['Bhoutan', 'Bangladesh', 'Sri Lanka'], 'fr', true, 'https://flagcdn.com/w320/np.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Sri Lanka', ARRAY['Bangladesh', 'Maldives', 'Myanmar'], 'fr', true, 'https://flagcdn.com/w320/lk.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Qatar', ARRAY['Bahreïn', 'Émirats Arabes Unis', 'Oman'], 'fr', true, 'https://flagcdn.com/w320/qa.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Oman', ARRAY['Émirats Arabes Unis', 'Qatar', 'Koweït'], 'fr', true, 'https://flagcdn.com/w320/om.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Mongolie', ARRAY['Kazakhstan', 'Kirghizistan', 'Turkménistan'], 'fr', true, 'https://flagcdn.com/w320/mn.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Bhoutan', ARRAY['Népal', 'Tibet', 'Myanmar'], 'fr', true, 'https://flagcdn.com/w320/bt.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Brunei', ARRAY['Malaisie', 'Singapour', 'Cambodge'], 'fr', true, 'https://flagcdn.com/w320/bn.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Laos', ARRAY['Cambodge', 'Thaïlande', 'Vietnam'], 'fr', true, 'https://flagcdn.com/w320/la.png'),
+('geographie', 5, 'À quel pays appartient ce drapeau ?', 'Cambodge', ARRAY['Laos', 'Myanmar', 'Thaïlande'], 'fr', true, 'https://flagcdn.com/w320/kh.png');
+
+-- Questions géographie sans images
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('geographie', 1, 'Quelle est la capitale de l''Espagne ?', 'Madrid', ARRAY['Barcelone', 'Séville', 'Valence'], 'fr', true),
+('geographie', 1, 'Quel est le plus grand pays du monde ?', 'Russie', ARRAY['Canada', 'Chine', 'États-Unis'], 'fr', true),
+('geographie', 1, 'Combien y a-t-il d''océans ?', '5', ARRAY['3', '4', '6'], 'fr', true),
+('geographie', 1, 'Quelle est la capitale de l''Italie ?', 'Rome', ARRAY['Milan', 'Naples', 'Florence'], 'fr', true),
+('geographie', 1, 'Sur quel continent se trouve l''Égypte ?', 'Afrique', ARRAY['Asie', 'Europe', 'Amérique'], 'fr', true),
+
+-- Niveau 2
+('geographie', 2, 'Quelle est la capitale du Portugal ?', 'Lisbonne', ARRAY['Porto', 'Faro', 'Braga'], 'fr', true),
+('geographie', 2, 'Quel fleuve traverse Paris ?', 'Seine', ARRAY['Loire', 'Rhône', 'Garonne'], 'fr', true),
+('geographie', 2, 'Quelle mer sépare l''Europe de l''Afrique ?', 'Méditerranée', ARRAY['Mer Rouge', 'Mer Noire', 'Mer Baltique'], 'fr', true),
+('geographie', 2, 'Quelle est la capitale de la Belgique ?', 'Bruxelles', ARRAY['Anvers', 'Gand', 'Liège'], 'fr', true),
+('geographie', 2, 'Quel est le plus long fleuve d''Afrique ?', 'Nil', ARRAY['Congo', 'Niger', 'Zambèze'], 'fr', true),
+
+-- Niveau 3
+('geographie', 3, 'Quelle est la capitale de l''Australie ?', 'Canberra', ARRAY['Sydney', 'Melbourne', 'Perth'], 'fr', true),
+('geographie', 3, 'Quel détroit sépare l''Europe de l''Asie ?', 'Bosphore', ARRAY['Gibraltar', 'Malacca', 'Magellan'], 'fr', true),
+('geographie', 3, 'Quelle est la plus grande île du monde ?', 'Groenland', ARRAY['Nouvelle-Guinée', 'Bornéo', 'Madagascar'], 'fr', true),
+('geographie', 3, 'Quelle est la capitale du Maroc ?', 'Rabat', ARRAY['Casablanca', 'Marrakech', 'Fès'], 'fr', true),
+('geographie', 3, 'Quel pays a la plus grande population ?', 'Inde', ARRAY['Chine', 'États-Unis', 'Indonésie'], 'fr', true),
+
+-- Niveau 4
+('geographie', 4, 'Quelle est la capitale du Kazakhstan ?', 'Astana', ARRAY['Almaty', 'Bichkek', 'Tachkent'], 'fr', true),
+('geographie', 4, 'Quel est le point culminant de l''Amérique du Sud ?', 'Aconcagua', ARRAY['Chimborazo', 'Cotopaxi', 'Ojos del Salado'], 'fr', true),
+('geographie', 4, 'Quelle est la capitale du Myanmar ?', 'Naypyidaw', ARRAY['Rangoun', 'Mandalay', 'Bago'], 'fr', true),
+('geographie', 4, 'Quel pays a le plus de voisins frontaliers ?', 'Chine', ARRAY['Russie', 'Brésil', 'Allemagne'], 'fr', true),
+('geographie', 4, 'Quelle est la capitale de la Nouvelle-Zélande ?', 'Wellington', ARRAY['Auckland', 'Christchurch', 'Hamilton'], 'fr', true),
+
+-- Niveau 5
+('geographie', 5, 'Quelle est la capitale de la Mongolie ?', 'Oulan-Bator', ARRAY['Darkhan', 'Erdenet', 'Choibalsan'], 'fr', true),
+('geographie', 5, 'Quel est le plus petit pays d''Asie ?', 'Maldives', ARRAY['Singapour', 'Bahreïn', 'Brunei'], 'fr', true),
+('geographie', 5, 'Quelle est la capitale du Bhoutan ?', 'Thimphou', ARRAY['Paro', 'Punakha', 'Gelephu'], 'fr', true),
+('geographie', 5, 'Quel est le plus haut volcan actif d''Europe ?', 'Etna', ARRAY['Stromboli', 'Vésuve', 'Teide'], 'fr', true),
+('geographie', 5, 'Quelle est la capitale du Suriname ?', 'Paramaribo', ARRAY['Georgetown', 'Cayenne', 'Nieuw Amsterdam'], 'fr', true),
+('geographie', 5, 'Quel fleuve traverse le plus de capitales ?', 'Danube', ARRAY['Rhin', 'Nil', 'Amazone'], 'fr', true),
+('geographie', 5, 'Quelle est la capitale du Turkménistan ?', 'Achgabat', ARRAY['Mary', 'Türkmenabat', 'Daşoguz'], 'fr', true),
+('geographie', 5, 'Quel pays africain n''a jamais été colonisé ?', 'Éthiopie', ARRAY['Liberia', 'Ghana', 'Sénégal'], 'fr', true),
+('geographie', 5, 'Quelle est la capitale du Liechtenstein ?', 'Vaduz', ARRAY['Schaan', 'Balzers', 'Triesen'], 'fr', true),
+('geographie', 5, 'Quel est le plus grand lac d''Afrique ?', 'Victoria', ARRAY['Tanganyika', 'Malawi', 'Tchad'], 'fr', true);
+
+-- =====================================================
+-- SCIENCES (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('sciences', 1, 'Quelle planète est la plus proche du Soleil ?', 'Mercure', ARRAY['Vénus', 'Mars', 'Terre'], 'fr', true),
+('sciences', 1, 'Quel gaz respirons-nous principalement ?', 'Oxygène', ARRAY['Azote', 'Dioxyde de carbone', 'Hydrogène'], 'fr', true),
+('sciences', 1, 'Quel organe pompe le sang dans notre corps ?', 'Cœur', ARRAY['Poumons', 'Foie', 'Reins'], 'fr', true),
+('sciences', 1, 'Combien de planètes dans notre système solaire ?', '8', ARRAY['7', '9', '10'], 'fr', true),
+('sciences', 1, 'Quelle est la température d''ébullition de l''eau ?', '100°C', ARRAY['90°C', '110°C', '80°C'], 'fr', true),
+('sciences', 1, 'Quel est le plus grand organe du corps humain ?', 'Peau', ARRAY['Foie', 'Poumons', 'Intestin'], 'fr', true),
+('sciences', 1, 'Quel animal pond des œufs et a des plumes ?', 'Oiseau', ARRAY['Reptile', 'Mammifère', 'Amphibien'], 'fr', true),
+('sciences', 1, 'Quelle planète est surnommée la planète rouge ?', 'Mars', ARRAY['Vénus', 'Jupiter', 'Saturne'], 'fr', true),
+('sciences', 1, 'Quel est l''état de l''eau à 0°C ?', 'Solide', ARRAY['Liquide', 'Gaz', 'Plasma'], 'fr', true),
+('sciences', 1, 'Qu''est-ce qui attire les objets vers la Terre ?', 'Gravité', ARRAY['Magnétisme', 'Électricité', 'Vent'], 'fr', true),
+('sciences', 1, 'De quelle couleur est la chlorophylle ?', 'Verte', ARRAY['Rouge', 'Jaune', 'Bleue'], 'fr', true),
+('sciences', 1, 'Quel os protège le cerveau ?', 'Crâne', ARRAY['Colonne vertébrale', 'Côtes', 'Bassin'], 'fr', true),
+('sciences', 1, 'Qu''est-ce qu''un herbivore ?', 'Animal qui mange des plantes', ARRAY['Animal qui mange de la viande', 'Animal qui mange tout', 'Animal qui mange des insectes'], 'fr', true),
+('sciences', 1, 'Quel sens utilise-t-on pour voir ?', 'Vue', ARRAY['Ouïe', 'Toucher', 'Odorat'], 'fr', true),
+('sciences', 1, 'Combien de saisons y a-t-il dans une année ?', '4', ARRAY['2', '3', '5'], 'fr', true),
+
+-- Niveau 2
+('sciences', 2, 'Quel est le symbole chimique de l''or ?', 'Au', ARRAY['Or', 'Ag', 'Fe'], 'fr', true),
+('sciences', 2, 'Quelle est la planète la plus grande du système solaire ?', 'Jupiter', ARRAY['Saturne', 'Uranus', 'Neptune'], 'fr', true),
+('sciences', 2, 'Combien de chromosomes a l''être humain ?', '46', ARRAY['44', '48', '42'], 'fr', true),
+('sciences', 2, 'Quel gaz les plantes absorbent-elles ?', 'Dioxyde de carbone', ARRAY['Oxygène', 'Azote', 'Hydrogène'], 'fr', true),
+('sciences', 2, 'Quel est le métal le plus léger ?', 'Lithium', ARRAY['Aluminium', 'Magnésium', 'Titane'], 'fr', true),
+('sciences', 2, 'Quelle partie de l''œil donne sa couleur ?', 'Iris', ARRAY['Pupille', 'Cornée', 'Rétine'], 'fr', true),
+('sciences', 2, 'Quel est le plus petit os du corps humain ?', 'Étrier', ARRAY['Marteau', 'Enclume', 'Phalange'], 'fr', true),
+('sciences', 2, 'Combien de litres de sang contient le corps humain ?', '5', ARRAY['3', '7', '10'], 'fr', true),
+('sciences', 2, 'Quelle vitamine est produite par le soleil ?', 'Vitamine D', ARRAY['Vitamine C', 'Vitamine A', 'Vitamine B'], 'fr', true),
+('sciences', 2, 'Quel est l''élément chimique le plus abondant sur Terre ?', 'Fer', ARRAY['Oxygène', 'Silicium', 'Aluminium'], 'fr', true),
+('sciences', 2, 'Quelle planète a le plus de lunes ?', 'Saturne', ARRAY['Jupiter', 'Uranus', 'Neptune'], 'fr', true),
+('sciences', 2, 'Quel type de roche est formé par les volcans ?', 'Ignée', ARRAY['Sédimentaire', 'Métamorphique', 'Calcaire'], 'fr', true),
+('sciences', 2, 'Combien de temps met la Terre à faire le tour du Soleil ?', '365 jours', ARRAY['360 jours', '370 jours', '350 jours'], 'fr', true),
+('sciences', 2, 'Quel est l''organe qui filtre le sang ?', 'Reins', ARRAY['Foie', 'Poumons', 'Rate'], 'fr', true),
+('sciences', 2, 'Quelle est la formule chimique du sel de table ?', 'NaCl', ARRAY['KCl', 'CaCl2', 'MgCl2'], 'fr', true),
+
+-- Niveau 3
+('sciences', 3, 'Quel scientifique a découvert la pénicilline ?', 'Alexander Fleming', ARRAY['Louis Pasteur', 'Marie Curie', 'Robert Koch'], 'fr', true),
+('sciences', 3, 'Quelle est la vitesse de la lumière ?', '300 000 km/s', ARRAY['150 000 km/s', '450 000 km/s', '200 000 km/s'], 'fr', true),
+('sciences', 3, 'Quel est le pH de l''eau pure ?', '7', ARRAY['6', '8', '5'], 'fr', true),
+('sciences', 3, 'Combien d''os y a-t-il dans la main humaine ?', '27', ARRAY['22', '32', '19'], 'fr', true),
+('sciences', 3, 'Quel gaz compose majoritairement l''atmosphère terrestre ?', 'Azote', ARRAY['Oxygène', 'Dioxyde de carbone', 'Argon'], 'fr', true),
+('sciences', 3, 'Quelle est la plus petite unité de la vie ?', 'Cellule', ARRAY['Atome', 'Molécule', 'Organe'], 'fr', true),
+('sciences', 3, 'Quel élément chimique a le symbole Fe ?', 'Fer', ARRAY['Fluor', 'Francium', 'Fermium'], 'fr', true),
+('sciences', 3, 'Combien de paires de côtes l''homme possède-t-il ?', '12', ARRAY['10', '14', '16'], 'fr', true),
+('sciences', 3, 'Quelle est la durée d''une année-lumière ?', 'Distance parcourue par la lumière en un an', ARRAY['365 jours', 'Un million d''années', 'Une seconde'], 'fr', true),
+('sciences', 3, 'Quel est le plus grand satellite naturel du système solaire ?', 'Ganymède', ARRAY['Titan', 'Lune', 'Callisto'], 'fr', true),
+('sciences', 3, 'Quelle partie du cerveau contrôle l''équilibre ?', 'Cervelet', ARRAY['Cortex', 'Tronc cérébral', 'Hypothalamus'], 'fr', true),
+('sciences', 3, 'Quel est le nombre d''Avogadro ?', '6,022 × 10²³', ARRAY['3,14', '9,81', '2,718'], 'fr', true),
+('sciences', 3, 'Quelle planète tourne sur elle-même en sens inverse ?', 'Vénus', ARRAY['Uranus', 'Neptune', 'Pluton'], 'fr', true),
+('sciences', 3, 'Quel est l''acide présent dans l''estomac ?', 'Acide chlorhydrique', ARRAY['Acide sulfurique', 'Acide citrique', 'Acide acétique'], 'fr', true),
+('sciences', 3, 'Combien de muscles compte le corps humain ?', 'Environ 600', ARRAY['Environ 400', 'Environ 800', 'Environ 200'], 'fr', true),
+
+-- Niveau 4
+('sciences', 4, 'Quel scientifique a formulé E=mc² ?', 'Albert Einstein', ARRAY['Isaac Newton', 'Niels Bohr', 'Max Planck'], 'fr', true),
+('sciences', 4, 'Quelle est la charge d''un électron ?', 'Négative', ARRAY['Positive', 'Neutre', 'Variable'], 'fr', true),
+('sciences', 4, 'Quel est l''élément le plus électronégatif ?', 'Fluor', ARRAY['Oxygène', 'Chlore', 'Azote'], 'fr', true),
+('sciences', 4, 'Combien de paires de nerfs crâniens l''homme possède-t-il ?', '12', ARRAY['10', '8', '14'], 'fr', true),
+('sciences', 4, 'Quelle est la constante gravitationnelle ?', '6,67 × 10⁻¹¹', ARRAY['9,81', '3,14', '2,718'], 'fr', true),
+('sciences', 4, 'Quel type de liaison unit les atomes dans l''eau ?', 'Liaison covalente', ARRAY['Liaison ionique', 'Liaison métallique', 'Liaison hydrogène'], 'fr', true),
+('sciences', 4, 'Quelle est la température du zéro absolu en Celsius ?', '-273,15°C', ARRAY['-100°C', '-300°C', '-200°C'], 'fr', true),
+('sciences', 4, 'Quel organe produit l''insuline ?', 'Pancréas', ARRAY['Foie', 'Reins', 'Rate'], 'fr', true),
+('sciences', 4, 'Quelle particule a été découverte au CERN en 2012 ?', 'Boson de Higgs', ARRAY['Neutrino', 'Quark', 'Gluon'], 'fr', true),
+('sciences', 4, 'Combien de vertèbres compte la colonne vertébrale humaine ?', '33', ARRAY['30', '36', '28'], 'fr', true),
+('sciences', 4, 'Quel est le nom du processus de division cellulaire ?', 'Mitose', ARRAY['Méiose', 'Cytokinèse', 'Apoptose'], 'fr', true),
+('sciences', 4, 'Quelle est l''unité de mesure de la fréquence ?', 'Hertz', ARRAY['Joule', 'Watt', 'Newton'], 'fr', true),
+('sciences', 4, 'Quel est le plus grand organe interne du corps humain ?', 'Foie', ARRAY['Poumons', 'Intestin', 'Estomac'], 'fr', true),
+('sciences', 4, 'Quelle est la durée de vie moyenne d''un globule rouge ?', '120 jours', ARRAY['30 jours', '60 jours', '180 jours'], 'fr', true),
+('sciences', 4, 'Quel élément chimique a le plus haut point de fusion ?', 'Tungstène', ARRAY['Fer', 'Platine', 'Titane'], 'fr', true),
+
+-- Niveau 5
+('sciences', 5, 'Quelle est la constante de Planck ?', '6,626 × 10⁻³⁴ J·s', ARRAY['3,14', '9,81', '2,718'], 'fr', true),
+('sciences', 5, 'Quel scientifique a découvert la structure de l''ADN ?', 'Watson et Crick', ARRAY['Mendel', 'Darwin', 'Pasteur'], 'fr', true),
+('sciences', 5, 'Combien de quarks composent un proton ?', '3', ARRAY['2', '4', '6'], 'fr', true),
+('sciences', 5, 'Quelle est la température du cœur du Soleil ?', '15 millions de degrés', ARRAY['5 millions', '50 millions', '1 million'], 'fr', true),
+('sciences', 5, 'Quel est le nombre atomique du carbone ?', '6', ARRAY['8', '12', '14'], 'fr', true),
+('sciences', 5, 'Quelle enzyme décompose l''amidon en sucres ?', 'Amylase', ARRAY['Lipase', 'Protéase', 'Lactase'], 'fr', true),
+('sciences', 5, 'Quel est le principe d''incertitude de Heisenberg ?', 'On ne peut connaître simultanément position et vitesse', ARRAY['E=mc²', 'F=ma', 'PV=nRT'], 'fr', true),
+('sciences', 5, 'Combien de bases azotées composent l''ADN ?', '4', ARRAY['2', '6', '8'], 'fr', true),
+('sciences', 5, 'Quelle est la masse du Soleil par rapport à la Terre ?', '333 000 fois', ARRAY['100 000 fois', '1 million de fois', '10 000 fois'], 'fr', true),
+('sciences', 5, 'Quel est le nom de la théorie de l''évolution ?', 'Sélection naturelle', ARRAY['Création spontanée', 'Fixisme', 'Lamarckisme'], 'fr', true),
+('sciences', 5, 'Quelle est l''unité SI de la pression ?', 'Pascal', ARRAY['Newton', 'Joule', 'Watt'], 'fr', true),
+('sciences', 5, 'Combien de lobes le cerveau humain possède-t-il ?', '4', ARRAY['2', '3', '6'], 'fr', true),
+('sciences', 5, 'Quel est le pH du sang humain normal ?', '7,4', ARRAY['7,0', '6,8', '8,0'], 'fr', true),
+('sciences', 5, 'Quelle particule subatomique n''a pas de charge ?', 'Neutron', ARRAY['Proton', 'Électron', 'Positron'], 'fr', true),
+('sciences', 5, 'Quel est le nom du processus de formation des étoiles ?', 'Accrétion', ARRAY['Fusion', 'Fission', 'Combustion'], 'fr', true);
+
+-- =====================================================
+-- SPORT (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('sport', 1, 'Combien de joueurs composent une équipe de football ?', '11', ARRAY['9', '10', '12'], 'fr', true),
+('sport', 1, 'Dans quel sport utilise-t-on une raquette et une balle jaune ?', 'Tennis', ARRAY['Badminton', 'Squash', 'Ping-pong'], 'fr', true),
+('sport', 1, 'Quel est le sport le plus pratiqué au monde ?', 'Football', ARRAY['Basketball', 'Cricket', 'Tennis'], 'fr', true),
+('sport', 1, 'Combien de points vaut un panier en basketball ?', '2', ARRAY['1', '3', '5'], 'fr', true),
+('sport', 1, 'Quel sport se pratique dans une piscine ?', 'Natation', ARRAY['Gymnastique', 'Athlétisme', 'Cyclisme'], 'fr', true),
+('sport', 1, 'Comment s''appelle la ligne d''arrivée d''une course ?', 'Ligne d''arrivée', ARRAY['Ligne de départ', 'Ligne de touche', 'Ligne de but'], 'fr', true),
+('sport', 1, 'Quel équipement protège la tête du cycliste ?', 'Casque', ARRAY['Gants', 'Genouillères', 'Lunettes'], 'fr', true),
+('sport', 1, 'Combien de temps dure un match de football ?', '90 minutes', ARRAY['60 minutes', '80 minutes', '120 minutes'], 'fr', true),
+('sport', 1, 'Quel sport pratique-t-on sur un terrain de glace avec un palet ?', 'Hockey sur glace', ARRAY['Curling', 'Patinage', 'Ski'], 'fr', true),
+('sport', 1, 'Quel est le nom du gardien au football ?', 'Gardien de but', ARRAY['Défenseur', 'Milieu', 'Attaquant'], 'fr', true),
+('sport', 1, 'Dans quel sport lance-t-on un ballon dans un panier ?', 'Basketball', ARRAY['Volleyball', 'Handball', 'Rugby'], 'fr', true),
+('sport', 1, 'Quel sport se pratique avec des gants et un ring ?', 'Boxe', ARRAY['Judo', 'Karaté', 'Lutte'], 'fr', true),
+('sport', 1, 'Combien de sets faut-il gagner au tennis pour remporter un match (hommes, Grand Chelem) ?', '3', ARRAY['2', '4', '5'], 'fr', true),
+('sport', 1, 'Quel sport utilise un vélo ?', 'Cyclisme', ARRAY['Équitation', 'Ski', 'Natation'], 'fr', true),
+('sport', 1, 'Comment s''appelle le coup d''envoi au football ?', 'Coup d''envoi', ARRAY['Penalty', 'Corner', 'Coup franc'], 'fr', true),
+
+-- Niveau 2
+('sport', 2, 'Qui a remporté le plus de Ballons d''Or ?', 'Lionel Messi', ARRAY['Cristiano Ronaldo', 'Michel Platini', 'Johan Cruyff'], 'fr', true),
+('sport', 2, 'Quel pays a remporté le plus de Coupes du monde de football ?', 'Brésil', ARRAY['Allemagne', 'Italie', 'Argentine'], 'fr', true),
+('sport', 2, 'Quelle est la distance d''un marathon ?', '42,195 km', ARRAY['40 km', '45 km', '50 km'], 'fr', true),
+('sport', 2, 'Qui détient le record du monde du 100m ?', 'Usain Bolt', ARRAY['Tyson Gay', 'Yohan Blake', 'Justin Gatlin'], 'fr', true),
+('sport', 2, 'Quel sport pratique Tiger Woods ?', 'Golf', ARRAY['Tennis', 'Cricket', 'Polo'], 'fr', true),
+('sport', 2, 'Quel nageur a remporté le plus de médailles olympiques ?', 'Michael Phelps', ARRAY['Mark Spitz', 'Ryan Lochte', 'Ian Thorpe'], 'fr', true),
+('sport', 2, 'Quel club a remporté le plus de Ligues des Champions ?', 'Real Madrid', ARRAY['AC Milan', 'Liverpool', 'Bayern Munich'], 'fr', true),
+('sport', 2, 'Combien de joueurs composent une équipe de rugby ?', '15', ARRAY['11', '13', '18'], 'fr', true),
+('sport', 2, 'Quel pays a inventé le basketball ?', 'États-Unis', ARRAY['Canada', 'Angleterre', 'France'], 'fr', true),
+('sport', 2, 'Quelle est la hauteur d''un panier de basketball ?', '3,05 m', ARRAY['2,50 m', '3,50 m', '2,75 m'], 'fr', true),
+('sport', 2, 'Qui est le meilleur buteur de l''histoire de la Ligue des Champions ?', 'Cristiano Ronaldo', ARRAY['Lionel Messi', 'Robert Lewandowski', 'Raúl'], 'fr', true),
+('sport', 2, 'Quel sport se joue sur un terrain de 100 yards ?', 'Football américain', ARRAY['Rugby', 'Soccer', 'Cricket'], 'fr', true),
+('sport', 2, 'Combien de points vaut un tir à 3 points au basketball ?', '3', ARRAY['2', '4', '5'], 'fr', true),
+('sport', 2, 'Quel est le temps record pour le 100m ?', '9,58 secondes', ARRAY['9,69 secondes', '9,72 secondes', '9,84 secondes'], 'fr', true),
+('sport', 2, 'Quel pays organise le tournoi de Roland-Garros ?', 'France', ARRAY['Espagne', 'Italie', 'Suisse'], 'fr', true),
+
+-- Niveau 3
+('sport', 3, 'Quel joueur a inscrit le "But du Siècle" en 1986 ?', 'Diego Maradona', ARRAY['Pelé', 'Zinédine Zidane', 'Johan Cruyff'], 'fr', true),
+('sport', 3, 'Combien de Grand Chelems Rafael Nadal a-t-il remportés ?', '22', ARRAY['20', '21', '23'], 'fr', true),
+('sport', 3, 'Quel boxeur était surnommé "The Greatest" ?', 'Mohamed Ali', ARRAY['Mike Tyson', 'Floyd Mayweather', 'George Foreman'], 'fr', true),
+('sport', 3, 'En quelle année la France a-t-elle remporté sa première Coupe du monde ?', '1998', ARRAY['1994', '2002', '2006'], 'fr', true),
+('sport', 3, 'Quel pilote F1 détient le record de titres mondiaux ?', 'Michael Schumacher et Lewis Hamilton', ARRAY['Ayrton Senna', 'Sebastian Vettel', 'Alain Prost'], 'fr', true),
+('sport', 3, 'Quelle est la longueur d''un terrain de football ?', '100-110 m', ARRAY['80-90 m', '120-130 m', '90-100 m'], 'fr', true),
+('sport', 3, 'Quel pays a remporté la Coupe du monde 2022 ?', 'Argentine', ARRAY['France', 'Brésil', 'Allemagne'], 'fr', true),
+('sport', 3, 'Combien de périodes y a-t-il dans un match de hockey sur glace ?', '3', ARRAY['2', '4', '5'], 'fr', true),
+('sport', 3, 'Quel est le record du monde du saut en hauteur masculin ?', '2,45 m', ARRAY['2,35 m', '2,50 m', '2,40 m'], 'fr', true),
+('sport', 3, 'Quel joueur de tennis a remporté le plus de Grand Chelems ?', 'Novak Djokovic', ARRAY['Rafael Nadal', 'Roger Federer', 'Pete Sampras'], 'fr', true),
+('sport', 3, 'Quelle équipe de NBA a remporté le plus de titres ?', 'Boston Celtics', ARRAY['Los Angeles Lakers', 'Chicago Bulls', 'Golden State Warriors'], 'fr', true),
+('sport', 3, 'Quel est le poids minimum d''un ballon de football ?', '410 g', ARRAY['350 g', '450 g', '380 g'], 'fr', true),
+('sport', 3, 'Combien de manches maximum y a-t-il dans un match de baseball ?', '9', ARRAY['7', '10', '12'], 'fr', true),
+('sport', 3, 'Quel cycliste a remporté 5 Tours de France consécutifs ?', 'Miguel Indurain', ARRAY['Eddy Merckx', 'Bernard Hinault', 'Lance Armstrong'], 'fr', true),
+('sport', 3, 'Quelle est la distance du 400m haies ?', '400 m', ARRAY['300 m', '500 m', '450 m'], 'fr', true),
+
+-- Niveau 4
+('sport', 4, 'Quel est le record du monde du 200m ?', '19,19 s', ARRAY['19,32 s', '19,26 s', '19,50 s'], 'fr', true),
+('sport', 4, 'Combien de médailles d''or Michael Phelps a-t-il remportées ?', '23', ARRAY['21', '25', '28'], 'fr', true),
+('sport', 4, 'Quel pays a remporté le plus de Coupes du monde de rugby ?', 'Nouvelle-Zélande et Afrique du Sud', ARRAY['Angleterre', 'Australie', 'France'], 'fr', true),
+('sport', 4, 'Quelle est la plus haute montée du Tour de France ?', 'Col du Galibier', ARRAY['Alpe d''Huez', 'Mont Ventoux', 'Col du Tourmalet'], 'fr', true),
+('sport', 4, 'Quel est le record du monde du marathon ?', '2h00min35s', ARRAY['2h01min39s', '2h02min57s', '2h03min23s'], 'fr', true),
+('sport', 4, 'Combien de points vaut un touchdown au football américain ?', '6', ARRAY['7', '5', '3'], 'fr', true),
+('sport', 4, 'Quel joueur de cricket a marqué le plus de centuries ?', 'Sachin Tendulkar', ARRAY['Ricky Ponting', 'Jacques Kallis', 'Brian Lara'], 'fr', true),
+('sport', 4, 'Quelle est la distance du décathlon ?', '10 épreuves', ARRAY['8 épreuves', '12 épreuves', '7 épreuves'], 'fr', true),
+('sport', 4, 'Quel skieur a remporté le plus de victoires en Coupe du monde ?', 'Ingemar Stenmark', ARRAY['Marcel Hirscher', 'Alberto Tomba', 'Hermann Maier'], 'fr', true),
+('sport', 4, 'Combien de sets faut-il gagner en finale de Wimbledon (hommes) ?', '3', ARRAY['2', '4', '5'], 'fr', true),
+('sport', 4, 'Quel est le record du monde de la perche ?', '6,24 m', ARRAY['6,14 m', '6,05 m', '6,18 m'], 'fr', true),
+('sport', 4, 'Quelle équipe a remporté le plus de Super Bowls ?', 'New England Patriots', ARRAY['Dallas Cowboys', 'San Francisco 49ers', 'Pittsburgh Steelers'], 'fr', true),
+('sport', 4, 'Quel est le nombre maximum de joueurs sur le banc au football ?', '7', ARRAY['5', '9', '12'], 'fr', true),
+('sport', 4, 'Combien de rounds y a-t-il dans un combat de boxe professionnel ?', '12', ARRAY['10', '15', '8'], 'fr', true),
+('sport', 4, 'Quel golfeur a remporté le plus de tournois majeurs ?', 'Jack Nicklaus', ARRAY['Tiger Woods', 'Arnold Palmer', 'Gary Player'], 'fr', true),
+
+-- Niveau 5
+('sport', 5, 'Quel est le record du monde du lancer du poids ?', '23,56 m', ARRAY['22,91 m', '23,12 m', '24,01 m'], 'fr', true),
+('sport', 5, 'Combien de points faut-il pour gagner un set au volleyball ?', '25', ARRAY['21', '15', '30'], 'fr', true),
+('sport', 5, 'Quel joueur a inscrit le plus de buts en une seule Coupe du monde ?', 'Just Fontaine', ARRAY['Gerd Müller', 'Ronaldo', 'Miroslav Klose'], 'fr', true),
+('sport', 5, 'Quelle est la distance du 3000m steeple ?', '3000 m avec obstacles', ARRAY['2000 m', '3500 m', '2500 m'], 'fr', true),
+('sport', 5, 'Quel est le record du monde du 1500m ?', '3min26s', ARRAY['3min28s', '3min30s', '3min24s'], 'fr', true),
+('sport', 5, 'Combien de joueurs y a-t-il sur un terrain de water-polo ?', '7', ARRAY['6', '8', '5'], 'fr', true),
+('sport', 5, 'Quel athlète a remporté 9 médailles d''or olympiques en athlétisme ?', 'Carl Lewis', ARRAY['Usain Bolt', 'Jesse Owens', 'Paavo Nurmi'], 'fr', true),
+('sport', 5, 'Quelle est la longueur d''une piste d''athlétisme ?', '400 m', ARRAY['300 m', '500 m', '450 m'], 'fr', true),
+('sport', 5, 'Quel est le record du monde du triple saut ?', '18,29 m', ARRAY['18,09 m', '17,98 m', '18,43 m'], 'fr', true),
+('sport', 5, 'Combien d''épreuves comprend l''heptathlon ?', '7', ARRAY['5', '10', '8'], 'fr', true),
+('sport', 5, 'Quel pays a remporté le plus de médailles aux JO d''été ?', 'États-Unis', ARRAY['Russie', 'Chine', 'Grande-Bretagne'], 'fr', true),
+('sport', 5, 'Quelle est la hauteur du filet au tennis ?', '91,4 cm au centre', ARRAY['100 cm', '85 cm', '95 cm'], 'fr', true),
+('sport', 5, 'Quel est le record du monde du 800m ?', '1min40s91', ARRAY['1min41s73', '1min42s28', '1min43s03'], 'fr', true),
+('sport', 5, 'Combien de catégories de poids y a-t-il en boxe olympique masculine ?', '8', ARRAY['10', '12', '6'], 'fr', true),
+('sport', 5, 'Quel est le record du monde du disque ?', '74,08 m', ARRAY['71,86 m', '73,16 m', '72,34 m'], 'fr', true);
+
+-- =====================================================
+-- POP CULTURE (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('pop_culture', 1, 'Qui chante "Bad Guy" ?', 'Billie Eilish', ARRAY['Ariana Grande', 'Taylor Swift', 'Dua Lipa'], 'fr', true),
+('pop_culture', 1, 'Quel est le nom du héros de Harry Potter ?', 'Harry Potter', ARRAY['Ron Weasley', 'Draco Malfoy', 'Neville Longbottom'], 'fr', true),
+('pop_culture', 1, 'Quel super-héros porte un costume rouge et bleu et lance des toiles ?', 'Spider-Man', ARRAY['Superman', 'Batman', 'Flash'], 'fr', true),
+('pop_culture', 1, 'Comment s''appelle le bonhomme de neige dans La Reine des Neiges ?', 'Olaf', ARRAY['Sven', 'Kristoff', 'Hans'], 'fr', true),
+('pop_culture', 1, 'Quel groupe de K-pop a chanté "Dynamite" ?', 'BTS', ARRAY['Blackpink', 'EXO', 'Twice'], 'fr', true),
+('pop_culture', 1, 'Quel animal est Simba dans Le Roi Lion ?', 'Lion', ARRAY['Tigre', 'Léopard', 'Guépard'], 'fr', true),
+('pop_culture', 1, 'Qui est le meilleur ami de Mickey Mouse ?', 'Donald', ARRAY['Dingo', 'Pluto', 'Minnie'], 'fr', true),
+('pop_culture', 1, 'Quel rappeur américain chante "Lose Yourself" ?', 'Eminem', ARRAY['50 Cent', 'Dr. Dre', 'Snoop Dogg'], 'fr', true),
+('pop_culture', 1, 'Comment s''appelle le robot jaune dans Star Wars ?', 'C-3PO', ARRAY['R2-D2', 'BB-8', 'K-2SO'], 'fr', true),
+('pop_culture', 1, 'Quelle chanteuse est surnommée "Queen B" ?', 'Beyoncé', ARRAY['Rihanna', 'Lady Gaga', 'Britney Spears'], 'fr', true),
+('pop_culture', 1, 'Quel est le nom de la princesse dans Shrek ?', 'Fiona', ARRAY['Aurora', 'Cendrillon', 'Jasmine'], 'fr', true),
+('pop_culture', 1, 'Qui joue le personnage de Jack dans Titanic ?', 'Leonardo DiCaprio', ARRAY['Brad Pitt', 'Tom Cruise', 'Johnny Depp'], 'fr', true),
+('pop_culture', 1, 'Quelle série met en scène des zombies appelés "marcheurs" ?', 'The Walking Dead', ARRAY['Game of Thrones', 'Stranger Things', 'Breaking Bad'], 'fr', true),
+('pop_culture', 1, 'Quel personnage Disney a des cheveux très longs ?', 'Raiponce', ARRAY['Cendrillon', 'Blanche-Neige', 'Belle'], 'fr', true),
+('pop_culture', 1, 'Qui chante "Shape of You" ?', 'Ed Sheeran', ARRAY['Justin Bieber', 'Shawn Mendes', 'Bruno Mars'], 'fr', true),
+
+-- Niveau 2
+('pop_culture', 2, 'Quel groupe a chanté "Bohemian Rhapsody" ?', 'Queen', ARRAY['The Beatles', 'Led Zeppelin', 'Pink Floyd'], 'fr', true),
+('pop_culture', 2, 'Qui interprète Iron Man dans les films Marvel ?', 'Robert Downey Jr.', ARRAY['Chris Evans', 'Chris Hemsworth', 'Mark Ruffalo'], 'fr', true),
+('pop_culture', 2, 'Quelle série met en scène des dragons et le Trône de Fer ?', 'Game of Thrones', ARRAY['The Witcher', 'Vikings', 'The Last Kingdom'], 'fr', true),
+('pop_culture', 2, 'Qui a créé la saga Star Wars ?', 'George Lucas', ARRAY['Steven Spielberg', 'James Cameron', 'Peter Jackson'], 'fr', true),
+('pop_culture', 2, 'Quel acteur joue le Joker dans "The Dark Knight" ?', 'Heath Ledger', ARRAY['Joaquin Phoenix', 'Jack Nicholson', 'Jared Leto'], 'fr', true),
+('pop_culture', 2, 'Quelle série Netflix parle d''un jeu mortel coréen ?', 'Squid Game', ARRAY['Alice in Borderland', 'Sweet Home', 'Kingdom'], 'fr', true),
+('pop_culture', 2, 'Quel super-héros vient de Krypton ?', 'Superman', ARRAY['Batman', 'Spider-Man', 'Flash'], 'fr', true),
+('pop_culture', 2, 'Qui est le Roi de la Pop ?', 'Michael Jackson', ARRAY['Elvis Presley', 'Prince', 'Madonna'], 'fr', true),
+('pop_culture', 2, 'Quelle saga met en scène des sorciers à Poudlard ?', 'Harry Potter', ARRAY['Le Seigneur des Anneaux', 'Narnia', 'Percy Jackson'], 'fr', true),
+('pop_culture', 2, 'Quel rappeur est surnommé "Slim Shady" ?', 'Eminem', ARRAY['50 Cent', 'Dr. Dre', 'Jay-Z'], 'fr', true),
+('pop_culture', 2, 'Quelle chanteuse a interprété "Umbrella" ?', 'Rihanna', ARRAY['Beyoncé', 'Lady Gaga', 'Katy Perry'], 'fr', true),
+('pop_culture', 2, 'Quel personnage dit "Je suis ton père" ?', 'Dark Vador', ARRAY['Obi-Wan', 'Yoda', 'Palpatine'], 'fr', true),
+('pop_culture', 2, 'Quelle série parle de chimie et de drogue ?', 'Breaking Bad', ARRAY['Narcos', 'Ozark', 'Better Call Saul'], 'fr', true),
+('pop_culture', 2, 'Qui joue le personnage de Wolverine ?', 'Hugh Jackman', ARRAY['Chris Hemsworth', 'Ryan Reynolds', 'Liam Hemsworth'], 'fr', true),
+('pop_culture', 2, 'Quel groupe britannique a chanté "Yellow" ?', 'Coldplay', ARRAY['Oasis', 'Radiohead', 'Muse'], 'fr', true),
+
+-- Niveau 3
+('pop_culture', 3, 'Qui a réalisé "Pulp Fiction" ?', 'Quentin Tarantino', ARRAY['Martin Scorsese', 'Francis Ford Coppola', 'Steven Spielberg'], 'fr', true),
+('pop_culture', 3, 'Quel est le vrai nom de Lady Gaga ?', 'Stefani Germanotta', ARRAY['Robyn Fenty', 'Alecia Moore', 'Destiny Hope'], 'fr', true),
+('pop_culture', 3, 'Dans quelle série apparaît le personnage de Walter White ?', 'Breaking Bad', ARRAY['Better Call Saul', 'Ozark', 'Narcos'], 'fr', true),
+('pop_culture', 3, 'Quel réalisateur a créé "Inception" ?', 'Christopher Nolan', ARRAY['Denis Villeneuve', 'Ridley Scott', 'David Fincher'], 'fr', true),
+('pop_culture', 3, 'Qui a chanté "Rolling in the Deep" ?', 'Adele', ARRAY['Amy Winehouse', 'Sam Smith', 'Duffy'], 'fr', true),
+('pop_culture', 3, 'Quel acteur joue James Bond depuis 2006 ?', 'Daniel Craig', ARRAY['Pierce Brosnan', 'Timothy Dalton', 'Sean Connery'], 'fr', true),
+('pop_culture', 3, 'Quelle série Netflix se passe dans les années 80 avec des phénomènes paranormaux ?', 'Stranger Things', ARRAY['Dark', 'The OA', 'Black Mirror'], 'fr', true),
+('pop_culture', 3, 'Qui a composé la musique de "Pirates des Caraïbes" ?', 'Hans Zimmer', ARRAY['John Williams', 'Howard Shore', 'James Horner'], 'fr', true),
+('pop_culture', 3, 'Quel est le film le plus rentable de tous les temps ?', 'Avatar', ARRAY['Avengers: Endgame', 'Titanic', 'Star Wars'], 'fr', true),
+('pop_culture', 3, 'Quelle chanteuse a vendu le plus d''albums dans l''histoire ?', 'Madonna', ARRAY['Céline Dion', 'Whitney Houston', 'Mariah Carey'], 'fr', true),
+('pop_culture', 3, 'Qui joue le rôle principal dans "Joker" (2019) ?', 'Joaquin Phoenix', ARRAY['Heath Ledger', 'Jared Leto', 'Jack Nicholson'], 'fr', true),
+('pop_culture', 3, 'Quelle est la maison de Harry Potter à Poudlard ?', 'Gryffondor', ARRAY['Serpentard', 'Serdaigle', 'Poufsouffle'], 'fr', true),
+('pop_culture', 3, 'Qui est le créateur de Marvel Comics ?', 'Stan Lee', ARRAY['Jack Kirby', 'Steve Ditko', 'Bob Kane'], 'fr', true),
+('pop_culture', 3, 'Quelle série met en scène un tueur en série qui travaille pour la police ?', 'Dexter', ARRAY['Hannibal', 'Mindhunter', 'True Detective'], 'fr', true),
+('pop_culture', 3, 'Qui a interprété "Thriller" ?', 'Michael Jackson', ARRAY['Prince', 'Madonna', 'Whitney Houston'], 'fr', true),
+
+-- Niveau 4
+('pop_culture', 4, 'Quel réalisateur a créé "2001: L''Odyssée de l''espace" ?', 'Stanley Kubrick', ARRAY['Ridley Scott', 'Steven Spielberg', 'George Lucas'], 'fr', true),
+('pop_culture', 4, 'Qui a écrit "1984" ?', 'George Orwell', ARRAY['Aldous Huxley', 'Ray Bradbury', 'Philip K. Dick'], 'fr', true),
+('pop_culture', 4, 'Quel groupe a sorti l''album "The Dark Side of the Moon" ?', 'Pink Floyd', ARRAY['Led Zeppelin', 'The Who', 'Genesis'], 'fr', true),
+('pop_culture', 4, 'Qui a réalisé "Le Parrain" ?', 'Francis Ford Coppola', ARRAY['Martin Scorsese', 'Brian De Palma', 'Sergio Leone'], 'fr', true),
+('pop_culture', 4, 'Quelle chanteuse a interprété "I Will Always Love You" ?', 'Whitney Houston', ARRAY['Céline Dion', 'Mariah Carey', 'Dolly Parton'], 'fr', true),
+('pop_culture', 4, 'Quel film a remporté l''Oscar du meilleur film en 2020 ?', 'Parasite', ARRAY['1917', 'Joker', 'Once Upon a Time'], 'fr', true),
+('pop_culture', 4, 'Qui est l''auteur de "Le Seigneur des Anneaux" ?', 'J.R.R. Tolkien', ARRAY['C.S. Lewis', 'George R.R. Martin', 'Terry Pratchett'], 'fr', true),
+('pop_culture', 4, 'Quel acteur joue le rôle de Forrest Gump ?', 'Tom Hanks', ARRAY['Robin Williams', 'Jim Carrey', 'Kevin Costner'], 'fr', true),
+('pop_culture', 4, 'Quelle série HBO parle de la mafia du New Jersey ?', 'Les Soprano', ARRAY['Boardwalk Empire', 'The Wire', 'Oz'], 'fr', true),
+('pop_culture', 4, 'Qui a composé "Clair de Lune" ?', 'Claude Debussy', ARRAY['Frédéric Chopin', 'Ludwig van Beethoven', 'Erik Satie'], 'fr', true),
+('pop_culture', 4, 'Quel rappeur a sorti "The Marshall Mathers LP" ?', 'Eminem', ARRAY['Jay-Z', 'Nas', '50 Cent'], 'fr', true),
+('pop_culture', 4, 'Qui a réalisé "Schindler''s List" ?', 'Steven Spielberg', ARRAY['Roman Polanski', 'Martin Scorsese', 'Clint Eastwood'], 'fr', true),
+('pop_culture', 4, 'Quelle actrice joue dans "Kill Bill" ?', 'Uma Thurman', ARRAY['Angelina Jolie', 'Milla Jovovich', 'Kate Beckinsale'], 'fr', true),
+('pop_culture', 4, 'Quel artiste est connu pour ses montres molles ?', 'Salvador Dalí', ARRAY['Pablo Picasso', 'René Magritte', 'Joan Miró'], 'fr', true),
+('pop_culture', 4, 'Quelle série raconte l''histoire de la famille Shelby ?', 'Peaky Blinders', ARRAY['Boardwalk Empire', 'Sons of Anarchy', 'Vikings'], 'fr', true),
+
+-- Niveau 5
+('pop_culture', 5, 'Qui a réalisé "Blade Runner" ?', 'Ridley Scott', ARRAY['James Cameron', 'Paul Verhoeven', 'John Carpenter'], 'fr', true),
+('pop_culture', 5, 'Quel album de Radiohead est sorti en 1997 ?', 'OK Computer', ARRAY['Kid A', 'The Bends', 'In Rainbows'], 'fr', true),
+('pop_culture', 5, 'Qui a écrit "Brave New World" ?', 'Aldous Huxley', ARRAY['George Orwell', 'Ray Bradbury', 'H.G. Wells'], 'fr', true),
+('pop_culture', 5, 'Quel compositeur a écrit "Le Sacre du printemps" ?', 'Igor Stravinsky', ARRAY['Sergueï Prokofiev', 'Dmitri Chostakovitch', 'Maurice Ravel'], 'fr', true),
+('pop_culture', 5, 'Qui a réalisé "Mulholland Drive" ?', 'David Lynch', ARRAY['David Cronenberg', 'Darren Aronofsky', 'Lars von Trier'], 'fr', true),
+('pop_culture', 5, 'Quel groupe a sorti "In Utero" en 1993 ?', 'Nirvana', ARRAY['Pearl Jam', 'Soundgarden', 'Alice in Chains'], 'fr', true),
+('pop_culture', 5, 'Qui a peint "Les Demoiselles d''Avignon" ?', 'Pablo Picasso', ARRAY['Georges Braque', 'Henri Matisse', 'Fernand Léger'], 'fr', true),
+('pop_culture', 5, 'Quel film de Kubrick se passe dans un hôtel hanté ?', 'Shining', ARRAY['Eyes Wide Shut', 'Barry Lyndon', 'Lolita'], 'fr', true),
+('pop_culture', 5, 'Qui a composé "Rhapsody in Blue" ?', 'George Gershwin', ARRAY['Cole Porter', 'Irving Berlin', 'Duke Ellington'], 'fr', true),
+('pop_culture', 5, 'Quel auteur a créé le personnage de Sherlock Holmes ?', 'Arthur Conan Doyle', ARRAY['Agatha Christie', 'Edgar Allan Poe', 'G.K. Chesterton'], 'fr', true),
+('pop_culture', 5, 'Qui a réalisé "Apocalypse Now" ?', 'Francis Ford Coppola', ARRAY['Oliver Stone', 'Stanley Kubrick', 'Michael Cimino'], 'fr', true),
+('pop_culture', 5, 'Quel album de The Beatles est sorti en 1967 ?', 'Sgt. Pepper''s Lonely Hearts Club Band', ARRAY['Abbey Road', 'Revolver', 'The White Album'], 'fr', true),
+('pop_culture', 5, 'Qui a écrit "Le Meilleur des mondes" ?', 'Aldous Huxley', ARRAY['George Orwell', 'Isaac Asimov', 'Philip K. Dick'], 'fr', true),
+('pop_culture', 5, 'Quel réalisateur japonais a fait "Les Sept Samouraïs" ?', 'Akira Kurosawa', ARRAY['Hayao Miyazaki', 'Yasujirō Ozu', 'Kenji Mizoguchi'], 'fr', true),
+('pop_culture', 5, 'Quelle chanteuse française a interprété "Non, je ne regrette rien" ?', 'Édith Piaf', ARRAY['Dalida', 'Barbara', 'Juliette Gréco'], 'fr', true);
+
+-- =====================================================
+-- JEUX VIDÉO (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('jeux_video', 1, 'Quel est le personnage principal de la saga Mario ?', 'Mario', ARRAY['Luigi', 'Peach', 'Bowser'], 'fr', true),
+('jeux_video', 1, 'Quel jeu met en scène des blocs qui tombent ?', 'Tetris', ARRAY['Pac-Man', 'Snake', 'Pong'], 'fr', true),
+('jeux_video', 1, 'Quel jeu de battle royale est gratuit et très populaire ?', 'Fortnite', ARRAY['PUBG', 'Apex Legends', 'Call of Duty Warzone'], 'fr', true),
+('jeux_video', 1, 'Dans quel jeu construit-on des maisons avec des blocs ?', 'Minecraft', ARRAY['Roblox', 'Terraria', 'Lego Worlds'], 'fr', true),
+('jeux_video', 1, 'Quelle est la mascotte de Sega ?', 'Sonic', ARRAY['Mario', 'Crash Bandicoot', 'Spyro'], 'fr', true),
+('jeux_video', 1, 'Quel Pokémon est le plus connu ?', 'Pikachu', ARRAY['Évoli', 'Dracaufeu', 'Mewtwo'], 'fr', true),
+('jeux_video', 1, 'Sur quelle console joue-t-on avec des Joy-Con ?', 'Nintendo Switch', ARRAY['PlayStation', 'Xbox', 'Wii'], 'fr', true),
+('jeux_video', 1, 'Quel jeu permet d''attraper des créatures dans des pokéballs ?', 'Pokémon', ARRAY['Digimon', 'Yu-Gi-Oh', 'Monster Hunter'], 'fr', true),
+('jeux_video', 1, 'Comment s''appelle le méchant dans Super Mario ?', 'Bowser', ARRAY['Wario', 'Waluigi', 'Donkey Kong'], 'fr', true),
+('jeux_video', 1, 'Quel jeu permet de créer et gérer des familles virtuelles ?', 'Les Sims', ARRAY['Animal Crossing', 'Stardew Valley', 'Harvest Moon'], 'fr', true),
+('jeux_video', 1, 'Quel petit fantôme jaune mange des points ?', 'Pac-Man', ARRAY['Blinky', 'Inky', 'Clyde'], 'fr', true),
+('jeux_video', 1, 'Quel jeu de foot est développé par EA Sports ?', 'FIFA / EA FC', ARRAY['PES', 'Football Manager', 'Rocket League'], 'fr', true),
+('jeux_video', 1, 'Quelle console a créé Sony ?', 'PlayStation', ARRAY['Xbox', 'Nintendo', 'Sega'], 'fr', true),
+('jeux_video', 1, 'Quel jeu permet de conduire des voitures volées ?', 'GTA', ARRAY['Need for Speed', 'Gran Turismo', 'Forza'], 'fr', true),
+('jeux_video', 1, 'Comment s''appelle le héros vert dans Zelda ?', 'Link', ARRAY['Zelda', 'Ganon', 'Epona'], 'fr', true),
+
+-- Niveau 2
+('jeux_video', 2, 'Quel studio a créé GTA V ?', 'Rockstar Games', ARRAY['Ubisoft', 'EA Games', 'Activision'], 'fr', true),
+('jeux_video', 2, 'Quel est le jeu le plus vendu de tous les temps ?', 'Minecraft', ARRAY['GTA V', 'Tetris', 'Wii Sports'], 'fr', true),
+('jeux_video', 2, 'Quelle console Nintendo est sortie en 2017 ?', 'Switch', ARRAY['Wii U', '3DS', 'GameCube'], 'fr', true),
+('jeux_video', 2, 'Dans quel jeu incarnez-vous un chasseur de monstres ?', 'Monster Hunter', ARRAY['Dark Souls', 'The Witcher', 'Skyrim'], 'fr', true),
+('jeux_video', 2, 'Quel jeu de tir met en scène des agents spéciaux ?', 'Call of Duty', ARRAY['Battlefield', 'Counter-Strike', 'Rainbow Six'], 'fr', true),
+('jeux_video', 2, 'Quelle entreprise a créé la Xbox ?', 'Microsoft', ARRAY['Sony', 'Nintendo', 'Sega'], 'fr', true),
+('jeux_video', 2, 'Quel jeu se passe dans un monde post-apocalyptique avec des robots ?', 'Horizon Zero Dawn', ARRAY['Fallout', 'The Last of Us', 'Metro'], 'fr', true),
+('jeux_video', 2, 'Qui est le protagoniste de God of War (2018) ?', 'Kratos', ARRAY['Zeus', 'Ares', 'Athena'], 'fr', true),
+('jeux_video', 2, 'Quel jeu de course a la mascotte Mario ?', 'Mario Kart', ARRAY['Crash Team Racing', 'Sonic Racing', 'Diddy Kong Racing'], 'fr', true),
+('jeux_video', 2, 'Dans quel jeu explore-t-on des donjons avec des épées ?', 'The Legend of Zelda', ARRAY['Dark Souls', 'Skyrim', 'Diablo'], 'fr', true),
+('jeux_video', 2, 'Quel jeu met en scène des combats de Pokémon ?', 'Pokémon', ARRAY['Digimon', 'Yo-kai Watch', 'Temtem'], 'fr', true),
+('jeux_video', 2, 'Quelle saga met en scène un assassin à travers l''histoire ?', 'Assassin''s Creed', ARRAY['Hitman', 'Metal Gear Solid', 'Splinter Cell'], 'fr', true),
+('jeux_video', 2, 'Quel jeu de survie se passe sur une île avec des dinosaures ?', 'ARK: Survival Evolved', ARRAY['Rust', 'DayZ', 'The Forest'], 'fr', true),
+('jeux_video', 2, 'Qui est le créateur de Mario ?', 'Shigeru Miyamoto', ARRAY['Hideo Kojima', 'Satoshi Tajiri', 'Masahiro Sakurai'], 'fr', true),
+('jeux_video', 2, 'Quel jeu de sport utilise une balle et des voitures ?', 'Rocket League', ARRAY['FIFA', 'NBA 2K', 'Madden'], 'fr', true),
+
+-- Niveau 3
+('jeux_video', 3, 'Quel jeu met en scène un sorceleur nommé Geralt ?', 'The Witcher', ARRAY['Dark Souls', 'Skyrim', 'Dragon Age'], 'fr', true),
+('jeux_video', 3, 'En quelle année est sorti le premier Pokémon ?', '1996', ARRAY['1994', '1998', '2000'], 'fr', true),
+('jeux_video', 3, 'Quel studio a développé The Last of Us ?', 'Naughty Dog', ARRAY['Rockstar', 'CD Projekt', 'BioWare'], 'fr', true),
+('jeux_video', 3, 'Quel jeu met en scène des combats de héros en ligne ?', 'League of Legends', ARRAY['Dota 2', 'Overwatch', 'Valorant'], 'fr', true),
+('jeux_video', 3, 'Quelle saga met en scène Solid Snake ?', 'Metal Gear Solid', ARRAY['Splinter Cell', 'Hitman', 'Resident Evil'], 'fr', true),
+('jeux_video', 3, 'Quel jeu de survie se passe sous l''eau avec des aliens ?', 'Subnautica', ARRAY['No Man''s Sky', 'Stranded Deep', 'Raft'], 'fr', true),
+('jeux_video', 3, 'Combien de générations de Pokémon existent (2024) ?', '9', ARRAY['7', '8', '10'], 'fr', true),
+('jeux_video', 3, 'Quel studio a créé Dark Souls ?', 'FromSoftware', ARRAY['Capcom', 'Square Enix', 'Bandai Namco'], 'fr', true),
+('jeux_video', 3, 'Quel jeu de rythme utilise une guitare en plastique ?', 'Guitar Hero', ARRAY['Rock Band', 'Beat Saber', 'Just Dance'], 'fr', true),
+('jeux_video', 3, 'Quelle saga de RPG japonais a Cloud comme héros ?', 'Final Fantasy', ARRAY['Dragon Quest', 'Tales of', 'Persona'], 'fr', true),
+('jeux_video', 3, 'Quel jeu met en scène des lapins crétins ?', 'Rayman', ARRAY['Mario', 'Sonic', 'Crash Bandicoot'], 'fr', true),
+('jeux_video', 3, 'En quelle année est sorti Fortnite ?', '2017', ARRAY['2015', '2018', '2019'], 'fr', true),
+('jeux_video', 3, 'Quel jeu de tir tactique met en scène des opérateurs ?', 'Rainbow Six Siege', ARRAY['Counter-Strike', 'Valorant', 'Overwatch'], 'fr', true),
+('jeux_video', 3, 'Quel est le nom du vaisseau dans Mass Effect ?', 'Normandy', ARRAY['Enterprise', 'Serenity', 'Millennium Falcon'], 'fr', true),
+('jeux_video', 3, 'Quel studio a créé Cyberpunk 2077 ?', 'CD Projekt Red', ARRAY['Bethesda', 'BioWare', 'Rockstar'], 'fr', true),
+
+-- Niveau 4
+('jeux_video', 4, 'Quel jeu a popularisé le genre "roguelike" en 2020 ?', 'Hades', ARRAY['Dead Cells', 'Enter the Gungeon', 'Slay the Spire'], 'fr', true),
+('jeux_video', 4, 'Combien d''armes légendaires y a-t-il dans Breath of the Wild ?', '4', ARRAY['3', '5', '6'], 'fr', true),
+('jeux_video', 4, 'Quel est le vrai nom de Master Chief ?', 'John-117', ARRAY['John-118', 'Marcus-114', 'James-117'], 'fr', true),
+('jeux_video', 4, 'Quel jeu indépendant met en scène un squelette comédien ?', 'Undertale', ARRAY['Hollow Knight', 'Celeste', 'Shovel Knight'], 'fr', true),
+('jeux_video', 4, 'En quelle année est sorti Dark Souls ?', '2011', ARRAY['2009', '2012', '2013'], 'fr', true),
+('jeux_video', 4, 'Quel est le premier jeu de la saga Zelda ?', 'The Legend of Zelda (NES)', ARRAY['A Link to the Past', 'Ocarina of Time', 'Link''s Awakening'], 'fr', true),
+('jeux_video', 4, 'Combien de colosses y a-t-il dans Shadow of the Colossus ?', '16', ARRAY['12', '18', '20'], 'fr', true),
+('jeux_video', 4, 'Quel studio a créé BioShock ?', 'Irrational Games', ARRAY['2K Games', 'Bethesda', 'Valve'], 'fr', true),
+('jeux_video', 4, 'Quel est le nom du monde de Dark Souls ?', 'Lordran', ARRAY['Lothric', 'Drangleic', 'Boletaria'], 'fr', true),
+('jeux_video', 4, 'Combien de fins différentes a The Witcher 3 ?', '36', ARRAY['12', '24', '48'], 'fr', true),
+('jeux_video', 4, 'Quel jeu met en scène des marchands vénitiens ?', 'Assassin''s Creed II', ARRAY['Assassin''s Creed', 'Assassin''s Creed Brotherhood', 'Assassin''s Creed Revelations'], 'fr', true),
+('jeux_video', 4, 'Qui a composé la musique de Halo ?', 'Martin O''Donnell', ARRAY['Nobuo Uematsu', 'Koji Kondo', 'Jesper Kyd'], 'fr', true),
+('jeux_video', 4, 'Quel est le nom de l''épée de Link ?', 'Master Sword', ARRAY['Excalibur', 'Blade of Evil''s Bane', 'Hylian Sword'], 'fr', true),
+('jeux_video', 4, 'En quelle année est sorti le premier Super Mario Bros ?', '1985', ARRAY['1983', '1986', '1988'], 'fr', true),
+('jeux_video', 4, 'Quel jeu de Valve n''a jamais eu de troisième opus ?', 'Half-Life', ARRAY['Portal', 'Left 4 Dead', 'Team Fortress'], 'fr', true),
+
+-- Niveau 5
+('jeux_video', 5, 'Quel est le nom du protagoniste de Persona 5 ?', 'Joker / Ren Amamiya', ARRAY['Yu Narukami', 'Makoto Yuki', 'Tatsuya Suou'], 'fr', true),
+('jeux_video', 5, 'Combien de shrines y a-t-il dans Breath of the Wild ?', '120', ARRAY['100', '136', '150'], 'fr', true),
+('jeux_video', 5, 'Quel studio a créé Bloodborne ?', 'FromSoftware', ARRAY['Team Ninja', 'PlatinumGames', 'Capcom'], 'fr', true),
+('jeux_video', 5, 'En quelle année est sorti le premier Resident Evil ?', '1996', ARRAY['1994', '1997', '1998'], 'fr', true),
+('jeux_video', 5, 'Quel est le nom complet de la saga SMT ?', 'Shin Megami Tensei', ARRAY['Super Mega Tensei', 'Shin Mega Tensai', 'Shin Megami Tensai'], 'fr', true),
+('jeux_video', 5, 'Combien de classes y a-t-il dans Diablo II ?', '7', ARRAY['5', '6', '8'], 'fr', true),
+('jeux_video', 5, 'Quel jeu a introduit le concept de "Nemesis System" ?', 'Shadow of Mordor', ARRAY['Batman Arkham', 'Assassin''s Creed', 'God of War'], 'fr', true),
+('jeux_video', 5, 'Qui a créé le personnage de Pac-Man ?', 'Toru Iwatani', ARRAY['Shigeru Miyamoto', 'Hideo Kojima', 'Yu Suzuki'], 'fr', true),
+('jeux_video', 5, 'Quel est le nom du démon dans Doom ?', 'Cyberdemon', ARRAY['Cacodemon', 'Baron of Hell', 'Mancubus'], 'fr', true),
+('jeux_video', 5, 'Combien d''endings a NieR: Automata ?', '26', ARRAY['5', '13', '21'], 'fr', true),
+('jeux_video', 5, 'Quel studio a développé Disco Elysium ?', 'ZA/UM', ARRAY['Obsidian', 'Larian', 'InXile'], 'fr', true),
+('jeux_video', 5, 'Quel est le nom du système de combat de Xenoblade ?', 'Arts', ARRAY['Gambits', 'Paradigms', 'Stances'], 'fr', true),
+('jeux_video', 5, 'En quelle année est sorti Chrono Trigger ?', '1995', ARRAY['1993', '1996', '1997'], 'fr', true),
+('jeux_video', 5, 'Quel jeu a popularisé le genre "Metroidvania" ?', 'Symphony of the Night', ARRAY['Super Metroid', 'Hollow Knight', 'Ori'], 'fr', true),
+('jeux_video', 5, 'Combien de boss y a-t-il dans Sekiro ?', '12 principaux', ARRAY['8', '10', '15'], 'fr', true);
+
+-- =====================================================
+-- CINÉMA (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('cinema', 1, 'Quel film raconte l''histoire d''un lion nommé Simba ?', 'Le Roi Lion', ARRAY['Madagascar', 'Kung Fu Panda', 'Zootopia'], 'fr', true),
+('cinema', 1, 'Qui joue Spider-Man dans les films récents du MCU ?', 'Tom Holland', ARRAY['Andrew Garfield', 'Tobey Maguire', 'Timothée Chalamet'], 'fr', true),
+('cinema', 1, 'Quel film met en scène des jouets qui prennent vie ?', 'Toy Story', ARRAY['Cars', 'Monstres et Cie', 'Là-haut'], 'fr', true),
+('cinema', 1, 'Quel héros porte un masque noir et une cape ?', 'Batman', ARRAY['Zorro', 'The Phantom', 'Spawn'], 'fr', true),
+('cinema', 1, 'Quel film de Pixar parle de poissons ?', 'Le Monde de Nemo', ARRAY['Shark Tale', 'La Petite Sirène', 'Ponyo'], 'fr', true),
+('cinema', 1, 'Comment s''appelle le personnage principal de Shrek ?', 'Shrek', ARRAY['Donkey', 'Fiona', 'Lord Farquaad'], 'fr', true),
+('cinema', 1, 'Quel film met en scène une princesse qui a des pouvoirs de glace ?', 'La Reine des Neiges', ARRAY['Raiponce', 'Vaiana', 'Rebelle'], 'fr', true),
+('cinema', 1, 'Qui est le méchant principal de Star Wars ?', 'Dark Vador', ARRAY['Palpatine', 'Kylo Ren', 'Dark Maul'], 'fr', true),
+('cinema', 1, 'Quel film met en scène un super-héros en costume d''araignée ?', 'Spider-Man', ARRAY['Ant-Man', 'Venom', 'Black Panther'], 'fr', true),
+('cinema', 1, 'Comment s''appelle le robot ami de Wall-E ?', 'EVE', ARRAY['M-O', 'AUTO', 'GO-4'], 'fr', true),
+('cinema', 1, 'Quel film d''animation met en scène une famille de super-héros ?', 'Les Indestructibles', ARRAY['Big Hero 6', 'Megamind', 'Monstres et Cie'], 'fr', true),
+('cinema', 1, 'Qui joue le rôle de Harry Potter ?', 'Daniel Radcliffe', ARRAY['Rupert Grint', 'Tom Felton', 'Emma Watson'], 'fr', true),
+('cinema', 1, 'Quel film met en scène des voitures qui parlent ?', 'Cars', ARRAY['Turbo', 'Hot Wheels', 'Speed Racer'], 'fr', true),
+('cinema', 1, 'Comment s''appelle le méchant dans Le Roi Lion ?', 'Scar', ARRAY['Mufasa', 'Simba', 'Timon'], 'fr', true),
+('cinema', 1, 'Quel film met en scène un ogre vert ?', 'Shrek', ARRAY['Hulk', 'Les Trolls', 'Monstres et Cie'], 'fr', true),
+
+-- Niveau 2
+('cinema', 2, 'Qui joue le rôle d''Iron Man ?', 'Robert Downey Jr.', ARRAY['Chris Evans', 'Chris Hemsworth', 'Mark Ruffalo'], 'fr', true),
+('cinema', 2, 'Quel film a remporté 11 Oscars en 2004 ?', 'Le Seigneur des Anneaux: Le Retour du Roi', ARRAY['Titanic', 'Ben-Hur', 'Gladiator'], 'fr', true),
+('cinema', 2, 'Qui réalise les films "Avengers" ?', 'Les frères Russo', ARRAY['Joss Whedon', 'James Gunn', 'Taika Waititi'], 'fr', true),
+('cinema', 2, 'Quel acteur joue James Bond dans "Casino Royale" (2006) ?', 'Daniel Craig', ARRAY['Pierce Brosnan', 'Timothy Dalton', 'Roger Moore'], 'fr', true),
+('cinema', 2, 'Quel film met en scène des dinosaures dans un parc ?', 'Jurassic Park', ARRAY['King Kong', 'Godzilla', 'The Lost World'], 'fr', true),
+('cinema', 2, 'Qui joue le personnage de Jack dans Titanic ?', 'Leonardo DiCaprio', ARRAY['Brad Pitt', 'Tom Cruise', 'Johnny Depp'], 'fr', true),
+('cinema', 2, 'Quel studio a créé les films Pixar ?', 'Pixar Animation Studios', ARRAY['DreamWorks', 'Illumination', 'Blue Sky'], 'fr', true),
+('cinema', 2, 'Quel film met en scène des minions jaunes ?', 'Moi, Moche et Méchant', ARRAY['Les Minions', 'Shrek', 'Madagascar'], 'fr', true),
+('cinema', 2, 'Qui joue le rôle de Wolverine ?', 'Hugh Jackman', ARRAY['Liam Hemsworth', 'Ryan Reynolds', 'Chris Pratt'], 'fr', true),
+('cinema', 2, 'Quel film se passe dans un monde virtuel appelé "Matrix" ?', 'Matrix', ARRAY['Tron', 'Ready Player One', 'Inception'], 'fr', true),
+('cinema', 2, 'Qui a réalisé "Inception" ?', 'Christopher Nolan', ARRAY['Denis Villeneuve', 'David Fincher', 'Ridley Scott'], 'fr', true),
+('cinema', 2, 'Quel film met en scène des pirates des Caraïbes ?', 'Pirates des Caraïbes', ARRAY['Black Sails', 'Master and Commander', 'Moby Dick'], 'fr', true),
+('cinema', 2, 'Qui interprète le Joker dans "The Dark Knight" ?', 'Heath Ledger', ARRAY['Joaquin Phoenix', 'Jack Nicholson', 'Jared Leto'], 'fr', true),
+('cinema', 2, 'Quel film d''animation met en scène un robot qui nettoie la Terre ?', 'Wall-E', ARRAY['Robots', 'Big Hero 6', 'Astro Boy'], 'fr', true),
+('cinema', 2, 'Qui joue Hermione dans Harry Potter ?', 'Emma Watson', ARRAY['Bonnie Wright', 'Evanna Lynch', 'Katie Leung'], 'fr', true),
+
+-- Niveau 3
+('cinema', 3, 'Qui a réalisé "Pulp Fiction" ?', 'Quentin Tarantino', ARRAY['Martin Scorsese', 'Francis Ford Coppola', 'Steven Spielberg'], 'fr', true),
+('cinema', 3, 'Quel film a révélé Natalie Portman enfant ?', 'Léon', ARRAY['Heat', 'The Professional', 'Beautiful Girls'], 'fr', true),
+('cinema', 3, 'Qui joue le rôle de Forrest Gump ?', 'Tom Hanks', ARRAY['Robin Williams', 'Jim Carrey', 'Kevin Costner'], 'fr', true),
+('cinema', 3, 'Quel réalisateur est connu pour ses plans-séquences ?', 'Alfonso Cuarón', ARRAY['Emmanuel Lubezki', 'Alejandro González Iñárritu', 'Denis Villeneuve'], 'fr', true),
+('cinema', 3, 'Quel film a remporté la Palme d''Or en 2019 ?', 'Parasite', ARRAY['Once Upon a Time', 'Joker', 'Marriage Story'], 'fr', true),
+('cinema', 3, 'Qui a réalisé "Le Parrain" ?', 'Francis Ford Coppola', ARRAY['Martin Scorsese', 'Brian De Palma', 'Sergio Leone'], 'fr', true),
+('cinema', 3, 'Quel acteur joue dans "Fight Club" ?', 'Brad Pitt', ARRAY['Edward Norton', 'George Clooney', 'Matt Damon'], 'fr', true),
+('cinema', 3, 'Quel film de Spielberg parle de la Seconde Guerre mondiale ?', 'Il faut sauver le soldat Ryan', ARRAY['Schindler''s List', 'Band of Brothers', 'Dunkirk'], 'fr', true),
+('cinema', 3, 'Qui joue le rôle principal dans "Gladiator" ?', 'Russell Crowe', ARRAY['Joaquin Phoenix', 'Gerard Butler', 'Colin Farrell'], 'fr', true),
+('cinema', 3, 'Quel réalisateur a fait la trilogie du Seigneur des Anneaux ?', 'Peter Jackson', ARRAY['Christopher Nolan', 'Ridley Scott', 'Denis Villeneuve'], 'fr', true),
+('cinema', 3, 'Quel film met en scène un tueur en série qui mange ses victimes ?', 'Le Silence des Agneaux', ARRAY['Seven', 'Zodiac', 'Mindhunter'], 'fr', true),
+('cinema', 3, 'Qui a réalisé "Interstellar" ?', 'Christopher Nolan', ARRAY['Denis Villeneuve', 'Ridley Scott', 'Alfonso Cuarón'], 'fr', true),
+('cinema', 3, 'Quel acteur joue dans "The Revenant" ?', 'Leonardo DiCaprio', ARRAY['Tom Hardy', 'Christian Bale', 'Matt Damon'], 'fr', true),
+('cinema', 3, 'Qui a réalisé "Kill Bill" ?', 'Quentin Tarantino', ARRAY['Robert Rodriguez', 'Zack Snyder', 'John Woo'], 'fr', true),
+('cinema', 3, 'Quel film met en scène un homme coincé sur Mars ?', 'Seul sur Mars', ARRAY['Interstellar', 'Gravity', 'Moon'], 'fr', true),
+
+-- Niveau 4
+('cinema', 4, 'Quel film de Kubrick se passe dans un hôtel hanté ?', 'Shining', ARRAY['Eyes Wide Shut', 'Barry Lyndon', 'Lolita'], 'fr', true),
+('cinema', 4, 'Qui a réalisé "Blade Runner" ?', 'Ridley Scott', ARRAY['James Cameron', 'Paul Verhoeven', 'John Carpenter'], 'fr', true),
+('cinema', 4, 'Quel acteur joue dans "Taxi Driver" ?', 'Robert De Niro', ARRAY['Al Pacino', 'Dustin Hoffman', 'Jack Nicholson'], 'fr', true),
+('cinema', 4, 'Quel réalisateur a fait "Mulholland Drive" ?', 'David Lynch', ARRAY['David Cronenberg', 'Darren Aronofsky', 'Lars von Trier'], 'fr', true),
+('cinema', 4, 'Quel film a révélé le réalisateur coréen Bong Joon-ho ?', 'Memories of Murder', ARRAY['The Host', 'Mother', 'Snowpiercer'], 'fr', true),
+('cinema', 4, 'Qui joue dans "Il était une fois dans l''Ouest" ?', 'Charles Bronson', ARRAY['Clint Eastwood', 'Lee Van Cleef', 'Henry Fonda'], 'fr', true),
+('cinema', 4, 'Quel réalisateur japonais a fait "Les Sept Samouraïs" ?', 'Akira Kurosawa', ARRAY['Hayao Miyazaki', 'Yasujirō Ozu', 'Takeshi Kitano'], 'fr', true),
+('cinema', 4, 'Quel film de Scorsese met en scène la mafia irlandaise ?', 'Les Affranchis', ARRAY['Casino', 'Gangs of New York', 'The Irishman'], 'fr', true),
+('cinema', 4, 'Qui a réalisé "2001: L''Odyssée de l''espace" ?', 'Stanley Kubrick', ARRAY['Ridley Scott', 'Steven Spielberg', 'George Lucas'], 'fr', true),
+('cinema', 4, 'Quel acteur joue dans "A Clockwork Orange" ?', 'Malcolm McDowell', ARRAY['Jack Nicholson', 'Dustin Hoffman', 'Robert De Niro'], 'fr', true),
+('cinema', 4, 'Qui a réalisé "Apocalypse Now" ?', 'Francis Ford Coppola', ARRAY['Oliver Stone', 'Stanley Kubrick', 'Michael Cimino'], 'fr', true),
+('cinema', 4, 'Quel film met en scène des rêves dans des rêves ?', 'Inception', ARRAY['Matrix', 'Shutter Island', 'Memento'], 'fr', true),
+('cinema', 4, 'Qui joue dans "There Will Be Blood" ?', 'Daniel Day-Lewis', ARRAY['Philip Seymour Hoffman', 'Joaquin Phoenix', 'Paul Dano'], 'fr', true),
+('cinema', 4, 'Quel réalisateur a fait "Persona" ?', 'Ingmar Bergman', ARRAY['Federico Fellini', 'Michelangelo Antonioni', 'Luis Buñuel'], 'fr', true),
+('cinema', 4, 'Quel film de Fincher parle d''un tueur basé sur les 7 péchés ?', 'Seven', ARRAY['Zodiac', 'Gone Girl', 'The Game'], 'fr', true),
+
+-- Niveau 5
+('cinema', 5, 'Qui a réalisé "Stalker" (1979) ?', 'Andreï Tarkovski', ARRAY['Ingmar Bergman', 'Akira Kurosawa', 'Federico Fellini'], 'fr', true),
+('cinema', 5, 'Quel film a remporté la Palme d''Or en 1994 ?', 'Pulp Fiction', ARRAY['Forrest Gump', 'The Shawshank Redemption', 'Léon'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "Le Voyage de Chihiro" ?', 'Hayao Miyazaki', ARRAY['Isao Takahata', 'Mamoru Hosoda', 'Makoto Shinkai'], 'fr', true),
+('cinema', 5, 'Quel acteur a joué dans "Raging Bull" ?', 'Robert De Niro', ARRAY['Al Pacino', 'Joe Pesci', 'Harvey Keitel'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "Citizen Kane" ?', 'Orson Welles', ARRAY['Alfred Hitchcock', 'Billy Wilder', 'John Ford'], 'fr', true),
+('cinema', 5, 'Quel film de Wong Kar-wai se passe à Hong Kong ?', 'In the Mood for Love', ARRAY['Chungking Express', '2046', 'Happy Together'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "Vertigo" ?', 'Alfred Hitchcock', ARRAY['Billy Wilder', 'Orson Welles', 'Fritz Lang'], 'fr', true),
+('cinema', 5, 'Quel réalisateur a fait "La Dolce Vita" ?', 'Federico Fellini', ARRAY['Michelangelo Antonioni', 'Luchino Visconti', 'Vittorio De Sica'], 'fr', true),
+('cinema', 5, 'Quel film de Terrence Malick a remporté la Palme d''Or ?', 'The Tree of Life', ARRAY['The Thin Red Line', 'Badlands', 'Days of Heaven'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "Rashomon" ?', 'Akira Kurosawa', ARRAY['Kenji Mizoguchi', 'Yasujirō Ozu', 'Nagisa Ōshima'], 'fr', true),
+('cinema', 5, 'Quel film de Kubrick est basé sur un livre de Nabokov ?', 'Lolita', ARRAY['A Clockwork Orange', 'Eyes Wide Shut', 'Barry Lyndon'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "Solaris" (1972) ?', 'Andreï Tarkovski', ARRAY['Steven Soderbergh', 'Andrzej Żuławski', 'Krzysztof Kieślowski'], 'fr', true),
+('cinema', 5, 'Quel réalisateur a fait "Le Septième Sceau" ?', 'Ingmar Bergman', ARRAY['Carl Theodor Dreyer', 'Robert Bresson', 'Luis Buñuel'], 'fr', true),
+('cinema', 5, 'Quel film de Michael Haneke a choqué Cannes en 1997 ?', 'Funny Games', ARRAY['Caché', 'Amour', 'The Piano Teacher'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "Pierrot le Fou" ?', 'Jean-Luc Godard', ARRAY['François Truffaut', 'Éric Rohmer', 'Claude Chabrol'], 'fr', true);
+
+-- =====================================================
+-- MUSIQUE (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('musique', 1, 'Qui chante "Shape of You" ?', 'Ed Sheeran', ARRAY['Justin Bieber', 'Shawn Mendes', 'Bruno Mars'], 'fr', true),
+('musique', 1, 'Quel instrument a des touches noires et blanches ?', 'Piano', ARRAY['Guitare', 'Violon', 'Flûte'], 'fr', true),
+('musique', 1, 'Qui est le "Roi de la Pop" ?', 'Michael Jackson', ARRAY['Elvis Presley', 'Prince', 'Madonna'], 'fr', true),
+('musique', 1, 'Combien de cordes a une guitare classique ?', '6', ARRAY['4', '5', '8'], 'fr', true),
+('musique', 1, 'Quelle chanteuse a interprété "Umbrella" ?', 'Rihanna', ARRAY['Beyoncé', 'Lady Gaga', 'Katy Perry'], 'fr', true),
+('musique', 1, 'Quel groupe a chanté "We Will Rock You" ?', 'Queen', ARRAY['AC/DC', 'Kiss', 'Guns N'' Roses'], 'fr', true),
+('musique', 1, 'Quel instrument souffle-t-on pour produire du son ?', 'Flûte', ARRAY['Violon', 'Guitare', 'Piano'], 'fr', true),
+('musique', 1, 'Qui chante "Bad Guy" ?', 'Billie Eilish', ARRAY['Ariana Grande', 'Taylor Swift', 'Dua Lipa'], 'fr', true),
+('musique', 1, 'Quel instrument a 4 cordes et se joue avec un archet ?', 'Violon', ARRAY['Guitare', 'Contrebasse', 'Banjo'], 'fr', true),
+('musique', 1, 'Qui a chanté "Thriller" ?', 'Michael Jackson', ARRAY['Prince', 'Madonna', 'Whitney Houston'], 'fr', true),
+('musique', 1, 'Quel groupe de K-pop a chanté "Dynamite" ?', 'BTS', ARRAY['Blackpink', 'EXO', 'Twice'], 'fr', true),
+('musique', 1, 'Quel instrument frappe-t-on avec des baguettes ?', 'Batterie', ARRAY['Piano', 'Guitare', 'Violon'], 'fr', true),
+('musique', 1, 'Qui chante "Despacito" ?', 'Luis Fonsi', ARRAY['Daddy Yankee', 'J Balvin', 'Bad Bunny'], 'fr', true),
+('musique', 1, 'Combien de notes y a-t-il dans une gamme majeure ?', '7', ARRAY['5', '8', '12'], 'fr', true),
+('musique', 1, 'Quelle chanteuse est surnommée "Queen B" ?', 'Beyoncé', ARRAY['Rihanna', 'Lady Gaga', 'Britney Spears'], 'fr', true),
+
+-- Niveau 2
+('musique', 2, 'Quel groupe britannique a chanté "Yellow" ?', 'Coldplay', ARRAY['Oasis', 'Radiohead', 'Muse'], 'fr', true),
+('musique', 2, 'Qui a composé "La Neuvième Symphonie" ?', 'Beethoven', ARRAY['Mozart', 'Bach', 'Chopin'], 'fr', true),
+('musique', 2, 'Quel rappeur américain est surnommé "Slim Shady" ?', 'Eminem', ARRAY['50 Cent', 'Dr. Dre', 'Snoop Dogg'], 'fr', true),
+('musique', 2, 'Quel compositeur était sourd ?', 'Beethoven', ARRAY['Mozart', 'Bach', 'Vivaldi'], 'fr', true),
+('musique', 2, 'Qui est le chanteur principal de Coldplay ?', 'Chris Martin', ARRAY['Bono', 'Thom Yorke', 'Matt Bellamy'], 'fr', true),
+('musique', 2, 'Quel groupe a chanté "Bohemian Rhapsody" ?', 'Queen', ARRAY['The Beatles', 'Led Zeppelin', 'Pink Floyd'], 'fr', true),
+('musique', 2, 'Qui a chanté "Rolling in the Deep" ?', 'Adele', ARRAY['Amy Winehouse', 'Sam Smith', 'Duffy'], 'fr', true),
+('musique', 2, 'Quel est le vrai nom de Lady Gaga ?', 'Stefani Germanotta', ARRAY['Robyn Fenty', 'Alecia Moore', 'Destiny Hope'], 'fr', true),
+('musique', 2, 'Quel groupe a sorti "Abbey Road" ?', 'The Beatles', ARRAY['The Rolling Stones', 'Led Zeppelin', 'Pink Floyd'], 'fr', true),
+('musique', 2, 'Qui a composé "Les Quatre Saisons" ?', 'Vivaldi', ARRAY['Bach', 'Mozart', 'Händel'], 'fr', true),
+('musique', 2, 'Quel chanteur français a interprété "Je t''aime" ?', 'Serge Gainsbourg', ARRAY['Jacques Brel', 'Charles Aznavour', 'Johnny Hallyday'], 'fr', true),
+('musique', 2, 'Qui a chanté "Poker Face" ?', 'Lady Gaga', ARRAY['Katy Perry', 'Rihanna', 'Britney Spears'], 'fr', true),
+('musique', 2, 'Quel est l''instrument principal du jazz ?', 'Saxophone', ARRAY['Violon', 'Piano', 'Guitare'], 'fr', true),
+('musique', 2, 'Qui a chanté "Purple Rain" ?', 'Prince', ARRAY['Michael Jackson', 'Madonna', 'Whitney Houston'], 'fr', true),
+('musique', 2, 'Quel groupe a chanté "Smells Like Teen Spirit" ?', 'Nirvana', ARRAY['Pearl Jam', 'Soundgarden', 'Alice in Chains'], 'fr', true),
+
+-- Niveau 3
+('musique', 3, 'Qui a composé "Le Lac des cygnes" ?', 'Tchaïkovski', ARRAY['Stravinsky', 'Prokofiev', 'Chostakovitch'], 'fr', true),
+('musique', 3, 'Quel album de Pink Floyd est sorti en 1973 ?', 'The Dark Side of the Moon', ARRAY['Wish You Were Here', 'The Wall', 'Animals'], 'fr', true),
+('musique', 3, 'Qui a fondé le groupe The Rolling Stones ?', 'Mick Jagger et Keith Richards', ARRAY['John Lennon', 'Pete Townshend', 'Roger Daltrey'], 'fr', true),
+('musique', 3, 'Quel rappeur a sorti "The Marshall Mathers LP" ?', 'Eminem', ARRAY['Jay-Z', 'Nas', '50 Cent'], 'fr', true),
+('musique', 3, 'Qui a composé "Requiem" ?', 'Mozart', ARRAY['Beethoven', 'Bach', 'Verdi'], 'fr', true),
+('musique', 3, 'Quel groupe a sorti "OK Computer" ?', 'Radiohead', ARRAY['Coldplay', 'Muse', 'Oasis'], 'fr', true),
+('musique', 3, 'Qui a chanté "Like a Prayer" ?', 'Madonna', ARRAY['Whitney Houston', 'Janet Jackson', 'Cyndi Lauper'], 'fr', true),
+('musique', 3, 'Quel compositeur a écrit "Le Sacre du printemps" ?', 'Stravinsky', ARRAY['Prokofiev', 'Chostakovitch', 'Ravel'], 'fr', true),
+('musique', 3, 'Qui est le batteur le plus célèbre des Beatles ?', 'Ringo Starr', ARRAY['John Lennon', 'Paul McCartney', 'George Harrison'], 'fr', true),
+('musique', 3, 'Quel album de Nirvana est sorti en 1991 ?', 'Nevermind', ARRAY['In Utero', 'Bleach', 'MTV Unplugged'], 'fr', true),
+('musique', 3, 'Qui a composé "Gymnopédies" ?', 'Erik Satie', ARRAY['Claude Debussy', 'Maurice Ravel', 'Gabriel Fauré'], 'fr', true),
+('musique', 3, 'Quel groupe a chanté "Stairway to Heaven" ?', 'Led Zeppelin', ARRAY['Pink Floyd', 'Deep Purple', 'Black Sabbath'], 'fr', true),
+('musique', 3, 'Qui a chanté "I Will Always Love You" ?', 'Whitney Houston', ARRAY['Céline Dion', 'Mariah Carey', 'Dolly Parton'], 'fr', true),
+('musique', 3, 'Quel compositeur a écrit "Clair de Lune" ?', 'Claude Debussy', ARRAY['Frédéric Chopin', 'Erik Satie', 'Maurice Ravel'], 'fr', true),
+('musique', 3, 'Qui a fondé le label Def Jam Records ?', 'Russell Simmons', ARRAY['Dr. Dre', 'Jay-Z', 'Sean Combs'], 'fr', true),
+
+-- Niveau 4
+('musique', 4, 'Qui a composé "Rhapsody in Blue" ?', 'George Gershwin', ARRAY['Cole Porter', 'Irving Berlin', 'Duke Ellington'], 'fr', true),
+('musique', 4, 'Quel album de The Beatles est sorti en 1967 ?', 'Sgt. Pepper''s Lonely Hearts Club Band', ARRAY['Abbey Road', 'Revolver', 'The White Album'], 'fr', true),
+('musique', 4, 'Qui a composé l''opéra "Carmen" ?', 'Georges Bizet', ARRAY['Giuseppe Verdi', 'Giacomo Puccini', 'Richard Wagner'], 'fr', true),
+('musique', 4, 'Quel groupe a sorti "In Utero" en 1993 ?', 'Nirvana', ARRAY['Pearl Jam', 'Soundgarden', 'Alice in Chains'], 'fr', true),
+('musique', 4, 'Qui a composé "La Flûte enchantée" ?', 'Mozart', ARRAY['Beethoven', 'Händel', 'Haydn'], 'fr', true),
+('musique', 4, 'Quel rappeur a sorti "Illmatic" ?', 'Nas', ARRAY['Jay-Z', 'Notorious B.I.G.', 'Tupac'], 'fr', true),
+('musique', 4, 'Qui a composé "Boléro" ?', 'Maurice Ravel', ARRAY['Claude Debussy', 'Erik Satie', 'Gabriel Fauré'], 'fr', true),
+('musique', 4, 'Quel groupe a sorti "Is This It" en 2001 ?', 'The Strokes', ARRAY['The White Stripes', 'Interpol', 'Franz Ferdinand'], 'fr', true),
+('musique', 4, 'Qui a composé "Le Messie" ?', 'Händel', ARRAY['Bach', 'Vivaldi', 'Mozart'], 'fr', true),
+('musique', 4, 'Quel album de Kendrick Lamar a remporté le Pulitzer ?', 'DAMN.', ARRAY['To Pimp a Butterfly', 'Good Kid, M.A.A.D City', 'Section.80'], 'fr', true),
+('musique', 4, 'Qui a composé "Peer Gynt" ?', 'Edvard Grieg', ARRAY['Jean Sibelius', 'Antonín Dvořák', 'Bedřich Smetana'], 'fr', true),
+('musique', 4, 'Quel guitariste a fondé les Who ?', 'Pete Townshend', ARRAY['Roger Daltrey', 'John Entwistle', 'Keith Moon'], 'fr', true),
+('musique', 4, 'Qui a composé "L''Oiseau de feu" ?', 'Stravinsky', ARRAY['Prokofiev', 'Tchaïkovski', 'Rimski-Korsakov'], 'fr', true),
+('musique', 4, 'Quel album de Radiohead est sorti en 2000 ?', 'Kid A', ARRAY['Amnesiac', 'Hail to the Thief', 'In Rainbows'], 'fr', true),
+('musique', 4, 'Qui a composé "Tristan et Isolde" ?', 'Richard Wagner', ARRAY['Giuseppe Verdi', 'Giacomo Puccini', 'Richard Strauss'], 'fr', true),
+
+-- Niveau 5
+('musique', 5, 'Qui a composé "Le Clavier bien tempéré" ?', 'Jean-Sébastien Bach', ARRAY['Georg Friedrich Händel', 'Antonio Vivaldi', 'Domenico Scarlatti'], 'fr', true),
+('musique', 5, 'Quel album de Miles Davis a révolutionné le jazz ?', 'Kind of Blue', ARRAY['Bitches Brew', 'Birth of the Cool', 'Sketches of Spain'], 'fr', true),
+('musique', 5, 'Qui a composé "Prélude à l''après-midi d''un faune" ?', 'Claude Debussy', ARRAY['Maurice Ravel', 'Erik Satie', 'Gabriel Fauré'], 'fr', true),
+('musique', 5, 'Quel groupe a sorti "Loveless" en 1991 ?', 'My Bloody Valentine', ARRAY['Slowdive', 'Ride', 'Cocteau Twins'], 'fr', true),
+('musique', 5, 'Qui a composé "La Messe en si mineur" ?', 'Jean-Sébastien Bach', ARRAY['Mozart', 'Händel', 'Haydn'], 'fr', true),
+('musique', 5, 'Quel saxophoniste a révolutionné le bebop ?', 'Charlie Parker', ARRAY['John Coltrane', 'Sonny Rollins', 'Ornette Coleman'], 'fr', true),
+('musique', 5, 'Qui a composé "Shéhérazade" ?', 'Rimski-Korsakov', ARRAY['Moussorgski', 'Borodine', 'Tchaïkovski'], 'fr', true),
+('musique', 5, 'Quel album de Kraftwerk a influencé la musique électronique ?', 'Trans-Europe Express', ARRAY['Autobahn', 'Computer World', 'The Man-Machine'], 'fr', true),
+('musique', 5, 'Qui a composé "Wozzeck" ?', 'Alban Berg', ARRAY['Arnold Schoenberg', 'Anton Webern', 'Paul Hindemith'], 'fr', true),
+('musique', 5, 'Quel pianiste de jazz était aveugle ?', 'Art Tatum', ARRAY['Oscar Peterson', 'Bill Evans', 'Thelonious Monk'], 'fr', true),
+('musique', 5, 'Qui a composé "Le Marteau sans maître" ?', 'Pierre Boulez', ARRAY['Karlheinz Stockhausen', 'Olivier Messiaen', 'Iannis Xenakis'], 'fr', true),
+('musique', 5, 'Quel groupe a sorti "Remain in Light" ?', 'Talking Heads', ARRAY['Television', 'Blondie', 'Devo'], 'fr', true),
+('musique', 5, 'Qui a composé "Gruppen" ?', 'Karlheinz Stockhausen', ARRAY['Pierre Boulez', 'Luigi Nono', 'György Ligeti'], 'fr', true),
+('musique', 5, 'Quel trompettiste a popularisé le jazz fusion ?', 'Miles Davis', ARRAY['Dizzy Gillespie', 'Freddie Hubbard', 'Wynton Marsalis'], 'fr', true),
+('musique', 5, 'Qui a composé "Quatuor pour la fin du temps" ?', 'Olivier Messiaen', ARRAY['Dmitri Chostakovitch', 'Béla Bartók', 'Alban Berg'], 'fr', true);
+
+-- =====================================================
+-- TECHNOLOGIE (90 questions)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 1
+('technologie', 1, 'Quel est le moteur de recherche le plus utilisé ?', 'Google', ARRAY['Bing', 'Yahoo', 'DuckDuckGo'], 'fr', true),
+('technologie', 1, 'Quelle entreprise fabrique l''iPhone ?', 'Apple', ARRAY['Samsung', 'Google', 'Microsoft'], 'fr', true),
+('technologie', 1, 'Qui a fondé Facebook ?', 'Mark Zuckerberg', ARRAY['Elon Musk', 'Jeff Bezos', 'Bill Gates'], 'fr', true),
+('technologie', 1, 'Quelle entreprise a créé Windows ?', 'Microsoft', ARRAY['Apple', 'IBM', 'Intel'], 'fr', true),
+('technologie', 1, 'Comment s''appelle l''assistant vocal d''Apple ?', 'Siri', ARRAY['Alexa', 'Cortana', 'Google Assistant'], 'fr', true),
+('technologie', 1, 'Quel réseau social utilise des photos carrées ?', 'Instagram', ARRAY['Facebook', 'Twitter', 'TikTok'], 'fr', true),
+('technologie', 1, 'Quelle console de jeu a créé Sony ?', 'PlayStation', ARRAY['Xbox', 'Nintendo', 'Sega'], 'fr', true),
+('technologie', 1, 'Comment appelle-t-on un logiciel malveillant ?', 'Virus', ARRAY['Bug', 'Patch', 'Update'], 'fr', true),
+('technologie', 1, 'Quel site permet de regarder des vidéos ?', 'YouTube', ARRAY['Spotify', 'Netflix', 'Amazon'], 'fr', true),
+('technologie', 1, 'Quelle entreprise possède Android ?', 'Google', ARRAY['Apple', 'Samsung', 'Microsoft'], 'fr', true),
+('technologie', 1, 'Comment s''appelle l''écran tactile d''un smartphone ?', 'Écran tactile', ARRAY['Clavier', 'Souris', 'Joystick'], 'fr', true),
+('technologie', 1, 'Quelle application permet d''envoyer des messages qui disparaissent ?', 'Snapchat', ARRAY['WhatsApp', 'Messenger', 'Telegram'], 'fr', true),
+('technologie', 1, 'Quel est le symbole de validation sur un clavier ?', 'Entrée', ARRAY['Échap', 'Suppr', 'Tab'], 'fr', true),
+('technologie', 1, 'Quelle entreprise a créé la Xbox ?', 'Microsoft', ARRAY['Sony', 'Nintendo', 'Sega'], 'fr', true),
+('technologie', 1, 'Comment appelle-t-on une connexion sans fil ?', 'Wi-Fi', ARRAY['Bluetooth', 'USB', 'HDMI'], 'fr', true),
+
+-- Niveau 2
+('technologie', 2, 'Qu''est-ce que l''IA ?', 'Intelligence Artificielle', ARRAY['Internet Avancé', 'Interface Automatique', 'Information Assistée'], 'fr', true),
+('technologie', 2, 'Qui a créé Tesla ?', 'Elon Musk', ARRAY['Jeff Bezos', 'Bill Gates', 'Steve Jobs'], 'fr', true),
+('technologie', 2, 'En quelle année le premier iPhone est-il sorti ?', '2007', ARRAY['2005', '2009', '2010'], 'fr', true),
+('technologie', 2, 'Quelle entreprise possède YouTube ?', 'Google', ARRAY['Facebook', 'Amazon', 'Microsoft'], 'fr', true),
+('technologie', 2, 'Quelle est la monnaie virtuelle la plus connue ?', 'Bitcoin', ARRAY['Ethereum', 'Dogecoin', 'Litecoin'], 'fr', true),
+('technologie', 2, 'Qui a créé Amazon ?', 'Jeff Bezos', ARRAY['Elon Musk', 'Mark Zuckerberg', 'Larry Page'], 'fr', true),
+('technologie', 2, 'Quel langage de programmation utilise des balises HTML ?', 'HTML', ARRAY['Python', 'Java', 'C++'], 'fr', true),
+('technologie', 2, 'Quelle entreprise a créé Gmail ?', 'Google', ARRAY['Microsoft', 'Yahoo', 'Apple'], 'fr', true),
+('technologie', 2, 'Comment s''appelle le système d''exploitation d''Apple pour ordinateurs ?', 'macOS', ARRAY['Windows', 'Linux', 'Chrome OS'], 'fr', true),
+('technologie', 2, 'Quelle application de messagerie appartient à Meta ?', 'WhatsApp', ARRAY['Telegram', 'Signal', 'Discord'], 'fr', true),
+('technologie', 2, 'Qu''est-ce qu''un SSD ?', 'Disque de stockage', ARRAY['Carte graphique', 'Processeur', 'Mémoire RAM'], 'fr', true),
+('technologie', 2, 'Quelle entreprise a créé le Kindle ?', 'Amazon', ARRAY['Apple', 'Google', 'Sony'], 'fr', true),
+('technologie', 2, 'Comment s''appelle le réseau social professionnel ?', 'LinkedIn', ARRAY['Twitter', 'Instagram', 'TikTok'], 'fr', true),
+('technologie', 2, 'Quelle technologie permet de payer sans contact ?', 'NFC', ARRAY['Bluetooth', 'Wi-Fi', 'GPS'], 'fr', true),
+('technologie', 2, 'Qui a fondé SpaceX ?', 'Elon Musk', ARRAY['Jeff Bezos', 'Richard Branson', 'Bill Gates'], 'fr', true),
+
+-- Niveau 3
+('technologie', 3, 'Quel est le langage de programmation créé par Google ?', 'Go', ARRAY['Swift', 'Kotlin', 'Rust'], 'fr', true),
+('technologie', 3, 'En quelle année a été fondé Google ?', '1998', ARRAY['1996', '2000', '2002'], 'fr', true),
+('technologie', 3, 'Quelle entreprise a créé le premier smartphone ?', 'IBM', ARRAY['Nokia', 'Motorola', 'Apple'], 'fr', true),
+('technologie', 3, 'Qu''est-ce que le cloud computing ?', 'Stockage en ligne', ARRAY['Logiciel', 'Matériel', 'Réseau'], 'fr', true),
+('technologie', 3, 'Quel processeur équipe les Mac récents ?', 'Apple Silicon (M1/M2)', ARRAY['Intel', 'AMD', 'Qualcomm'], 'fr', true),
+('technologie', 3, 'Qu''est-ce que l''IoT ?', 'Internet des objets', ARRAY['Intelligence of Things', 'Internet of Time', 'Input/Output Technology'], 'fr', true),
+('technologie', 3, 'Quelle entreprise a créé ChatGPT ?', 'OpenAI', ARRAY['Google', 'Microsoft', 'Meta'], 'fr', true),
+('technologie', 3, 'Quel est le protocole de sécurité pour les sites web ?', 'HTTPS', ARRAY['HTTP', 'FTP', 'SSH'], 'fr', true),
+('technologie', 3, 'En quelle année a été créé Twitter ?', '2006', ARRAY['2004', '2008', '2010'], 'fr', true),
+('technologie', 3, 'Qu''est-ce qu''une API ?', 'Interface de programmation', ARRAY['Application Programming Input', 'Automatic Protocol Interface', 'Application Process Integration'], 'fr', true),
+('technologie', 3, 'Quelle entreprise a racheté LinkedIn ?', 'Microsoft', ARRAY['Google', 'Facebook', 'Amazon'], 'fr', true),
+('technologie', 3, 'Qu''est-ce que le machine learning ?', 'Apprentissage automatique', ARRAY['Programmation machine', 'Intelligence artificielle', 'Automatisation'], 'fr', true),
+('technologie', 3, 'Quel système d''exploitation est open source ?', 'Linux', ARRAY['Windows', 'macOS', 'iOS'], 'fr', true),
+('technologie', 3, 'Quelle technologie permet la réalité virtuelle ?', 'VR', ARRAY['AR', 'MR', 'XR'], 'fr', true),
+('technologie', 3, 'En quelle année Facebook a été renommé Meta ?', '2021', ARRAY['2019', '2020', '2022'], 'fr', true),
+
+-- Niveau 4
+('technologie', 4, 'Quel algorithme de consensus utilise Bitcoin ?', 'Proof of Work', ARRAY['Proof of Stake', 'Delegated Proof', 'Proof of Authority'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que Docker ?', 'Conteneurisation', ARRAY['Virtualisation', 'Cloud', 'Orchestration'], 'fr', true),
+('technologie', 4, 'Quel langage de programmation a créé Apple pour iOS ?', 'Swift', ARRAY['Objective-C', 'Kotlin', 'Dart'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que Kubernetes ?', 'Orchestration de conteneurs', ARRAY['Langage de programmation', 'Base de données', 'Système d''exploitation'], 'fr', true),
+('technologie', 4, 'Quelle entreprise a créé le langage Rust ?', 'Mozilla', ARRAY['Google', 'Microsoft', 'Apple'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que GraphQL ?', 'Langage de requête pour API', ARRAY['Base de données', 'Framework web', 'Langage de programmation'], 'fr', true),
+('technologie', 4, 'En quelle année a été créé Bitcoin ?', '2009', ARRAY['2007', '2011', '2013'], 'fr', true),
+('technologie', 4, 'Quelle est la fréquence de rafraîchissement standard d''un écran gaming ?', '144 Hz', ARRAY['60 Hz', '120 Hz', '240 Hz'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que WebAssembly ?', 'Format binaire pour le web', ARRAY['Framework JavaScript', 'Langage de programmation', 'Protocole réseau'], 'fr', true),
+('technologie', 4, 'Quelle entreprise a créé TypeScript ?', 'Microsoft', ARRAY['Google', 'Facebook', 'Oracle'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que le protocole TCP/IP ?', 'Protocole de communication réseau', ARRAY['Langage de programmation', 'Système d''exploitation', 'Base de données'], 'fr', true),
+('technologie', 4, 'Quelle architecture processeur utilise les smartphones ?', 'ARM', ARRAY['x86', 'RISC-V', 'MIPS'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que Redis ?', 'Base de données en mémoire', ARRAY['Framework web', 'Langage de programmation', 'Outil de déploiement'], 'fr', true),
+('technologie', 4, 'Quel est le framework JavaScript créé par Facebook ?', 'React', ARRAY['Angular', 'Vue', 'Svelte'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que CUDA ?', 'Plateforme de calcul GPU', ARRAY['Langage de programmation', 'Système d''exploitation', 'Base de données'], 'fr', true),
+
+-- Niveau 5
+('technologie', 5, 'Qu''est-ce que le protocole BGP ?', 'Protocole de routage Internet', ARRAY['Protocole de sécurité', 'Protocole de transfert', 'Protocole de messagerie'], 'fr', true),
+('technologie', 5, 'Quelle est la complexité temporelle d''un quicksort moyen ?', 'O(n log n)', ARRAY['O(n)', 'O(n²)', 'O(log n)'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que LLVM ?', 'Infrastructure de compilation', ARRAY['Machine virtuelle', 'Langage de programmation', 'Framework web'], 'fr', true),
+('technologie', 5, 'Quel algorithme est utilisé pour le chiffrement RSA ?', 'Factorisation de nombres premiers', ARRAY['Logarithme discret', 'Courbes elliptiques', 'Hachage'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que gRPC ?', 'Framework RPC de Google', ARRAY['Base de données', 'Langage de programmation', 'Protocole réseau'], 'fr', true),
+('technologie', 5, 'Quelle est la taille d''un hash SHA-256 ?', '256 bits', ARRAY['128 bits', '512 bits', '1024 bits'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que le théorème CAP ?', 'Cohérence, Disponibilité, Tolérance partition', ARRAY['Calcul, Architecture, Performance', 'Cache, API, Protocole', 'Cloud, Automation, Platform'], 'fr', true),
+('technologie', 5, 'Quel est le langage de bas niveau le plus proche du matériel ?', 'Assembleur', ARRAY['C', 'Rust', 'Go'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que QUIC ?', 'Protocole de transport UDP', ARRAY['Langage de requête', 'Framework web', 'Base de données'], 'fr', true),
+('technologie', 5, 'Quelle est la différence entre stack et heap ?', 'Allocation mémoire statique vs dynamique', ARRAY['Vitesse vs taille', 'Local vs global', 'Lecture vs écriture'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que le garbage collection ?', 'Gestion automatique de la mémoire', ARRAY['Nettoyage de fichiers', 'Suppression de logs', 'Optimisation CPU'], 'fr', true),
+('technologie', 5, 'Quel est le principe du "eventual consistency" ?', 'Cohérence à terme', ARRAY['Cohérence immédiate', 'Cohérence forte', 'Cohérence causale'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que WebRTC ?', 'Communication temps réel web', ARRAY['Framework web', 'Base de données', 'Langage de programmation'], 'fr', true),
+('technologie', 5, 'Quelle est la complexité d''une recherche dans un arbre binaire équilibré ?', 'O(log n)', ARRAY['O(n)', 'O(1)', 'O(n log n)'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que le consensus Raft ?', 'Algorithme de consensus distribué', ARRAY['Protocole réseau', 'Base de données', 'Framework'], 'fr', true);
+
+-- =====================================================
+-- LOGO (90 questions avec images)
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active, image_url) VALUES
+-- Niveau 1
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Apple', ARRAY['Samsung', 'Huawei', 'LG'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/200px-Apple_logo_black.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Nike', ARRAY['Adidas', 'Puma', 'Reebok'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/200px-Logo_NIKE.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'McDonald''s', ARRAY['Burger King', 'KFC', 'Subway'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/200px-McDonald%27s_Golden_Arches.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Coca-Cola', ARRAY['Pepsi', 'Fanta', 'Sprite'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/200px-Coca-Cola_logo.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Google', ARRAY['Bing', 'Yahoo', 'DuckDuckGo'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Microsoft', ARRAY['Apple', 'Google', 'IBM'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/200px-Microsoft_logo_%282012%29.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Amazon', ARRAY['eBay', 'Alibaba', 'Walmart'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/200px-Amazon_logo.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Facebook', ARRAY['Twitter', 'Instagram', 'TikTok'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/200px-Facebook_Logo_%282019%29.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'YouTube', ARRAY['Vimeo', 'Dailymotion', 'Twitch'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/200px-YouTube_full-color_icon_%282017%29.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Twitter', ARRAY['Facebook', 'Instagram', 'Snapchat'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/200px-Logo_of_Twitter.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Instagram', ARRAY['Snapchat', 'TikTok', 'Pinterest'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/200px-Instagram_logo_2016.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Pepsi', ARRAY['Coca-Cola', 'Fanta', '7Up'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Pepsi_logo_2014.svg/200px-Pepsi_logo_2014.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Spotify', ARRAY['Apple Music', 'Deezer', 'Tidal'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/200px-Spotify_logo_without_text.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'Netflix', ARRAY['Amazon Prime', 'Disney+', 'HBO'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/200px-Netflix_2015_logo.svg.png'),
+('logo', 1, 'Quelle marque est représentée par ce logo ?', 'WhatsApp', ARRAY['Telegram', 'Signal', 'Messenger'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/200px-WhatsApp.svg.png'),
+
+-- Niveau 2
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Mercedes-Benz', ARRAY['BMW', 'Audi', 'Volkswagen'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/200px-Mercedes-Logo.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Adidas', ARRAY['Nike', 'Puma', 'Under Armour'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Adidas_Logo.svg/200px-Adidas_Logo.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Audi', ARRAY['BMW', 'Mercedes', 'Volkswagen'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/200px-Audi-Logo_2016.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'BMW', ARRAY['Mercedes', 'Audi', 'Porsche'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/200px-BMW.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Volkswagen', ARRAY['Audi', 'Porsche', 'Skoda'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/200px-Volkswagen_logo_2019.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'PlayStation', ARRAY['Xbox', 'Nintendo', 'Sega'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Playstation_logo_colour.svg/200px-Playstation_logo_colour.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Xbox', ARRAY['PlayStation', 'Nintendo', 'Steam'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Xbox_logo_%282019%29.svg/200px-Xbox_logo_%282019%29.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Puma', ARRAY['Nike', 'Adidas', 'Reebok'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/d/da/Puma_complete_logo.svg/200px-Puma_complete_logo.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Toyota', ARRAY['Honda', 'Nissan', 'Mazda'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carance.svg/200px-Toyota_carancee.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Honda', ARRAY['Toyota', 'Nissan', 'Suzuki'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Honda.svg/200px-Honda.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Intel', ARRAY['AMD', 'Nvidia', 'Qualcomm'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/200px-Intel-logo.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Samsung', ARRAY['LG', 'Sony', 'Huawei'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/200px-Samsung_Logo.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'LG', ARRAY['Samsung', 'Sony', 'Panasonic'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/LG_logo_%282015%29.svg/200px-LG_logo_%282015%29.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Red Bull', ARRAY['Monster', 'Rockstar', 'Burn'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Red_Bull.svg/200px-Red_Bull.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Burger King', ARRAY['McDonald''s', 'KFC', 'Wendy''s'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Burger_King_logo_%281999%29.svg/200px-Burger_King_logo_%281999%29.svg.png'),
+
+-- Niveau 3
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Ferrari', ARRAY['Lamborghini', 'Porsche', 'Maserati'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d1/Ferrari-Logo.svg/200px-Ferrari-Logo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Starbucks', ARRAY['Costa Coffee', 'Dunkin', 'Tim Hortons'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/200px-Starbucks_Corporation_Logo_2011.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Porsche', ARRAY['Ferrari', 'Lamborghini', 'Aston Martin'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Porsche_logo.svg/200px-Porsche_logo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Lamborghini', ARRAY['Ferrari', 'Bugatti', 'McLaren'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Lamborghini_Logo.svg/200px-Lamborghini_Logo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Tesla', ARRAY['Rivian', 'Lucid', 'NIO'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/200px-Tesla_Motors.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Airbnb', ARRAY['Booking', 'Expedia', 'TripAdvisor'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/200px-Airbnb_Logo_B%C3%A9lo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Uber', ARRAY['Lyft', 'Bolt', 'DiDi'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/200px-Uber_logo_2018.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Slack', ARRAY['Discord', 'Teams', 'Zoom'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/200px-Slack_icon_2019.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Discord', ARRAY['Slack', 'Teams', 'Skype'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/fr/thumb/4/4f/Discord_Logo_sans_texte.svg/200px-Discord_Logo_sans_texte.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'TikTok', ARRAY['Instagram', 'Snapchat', 'YouTube'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/TikTok_logo.svg/200px-TikTok_logo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'LinkedIn', ARRAY['Indeed', 'Glassdoor', 'Monster'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/200px-LinkedIn_logo_initials.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Pinterest', ARRAY['Instagram', 'Tumblr', 'Flickr'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Pinterest-logo.png/200px-Pinterest-logo.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Nvidia', ARRAY['AMD', 'Intel', 'Qualcomm'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/sco/thumb/2/21/Nvidia_logo.svg/200px-Nvidia_logo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Rolex', ARRAY['Omega', 'Tag Heuer', 'Breitling'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Rolex_logo.svg/200px-Rolex_logo.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Chanel', ARRAY['Dior', 'Louis Vuitton', 'Gucci'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Chanel_logo_interlocking_cs.svg/200px-Chanel_logo_interlocking_cs.svg.png');
+
+-- Niveau 4 et 5 - Logo (questions textuelles car logos moins connus)
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Niveau 4
+('logo', 4, 'Quel logo représente un oiseau bleu ?', 'Twitter', ARRAY['Telegram', 'Discord', 'Signal'], 'fr', true),
+('logo', 4, 'Quelle marque a un logo en forme de pomme croquée ?', 'Apple', ARRAY['Samsung', 'Huawei', 'Oppo'], 'fr', true),
+('logo', 4, 'Quel logo représente quatre anneaux entrelacés ?', 'Audi', ARRAY['Olympics', 'Mastercard', 'Toyota'], 'fr', true),
+('logo', 4, 'Quelle marque utilise un crocodile comme logo ?', 'Lacoste', ARRAY['Ralph Lauren', 'Tommy Hilfiger', 'Hugo Boss'], 'fr', true),
+('logo', 4, 'Quel logo représente une sirène verte ?', 'Starbucks', ARRAY['Costa', 'Dunkin', 'Caffè Nero'], 'fr', true),
+('logo', 4, 'Quelle marque a un logo en forme de coquillage ?', 'Shell', ARRAY['BP', 'Total', 'Chevron'], 'fr', true),
+('logo', 4, 'Quel logo représente trois bandes parallèles ?', 'Adidas', ARRAY['Nike', 'Puma', 'Reebok'], 'fr', true),
+('logo', 4, 'Quelle marque utilise un cheval cabré comme logo ?', 'Ferrari', ARRAY['Porsche', 'Lamborghini', 'Mustang'], 'fr', true),
+('logo', 4, 'Quel logo représente un swoosh ?', 'Nike', ARRAY['Adidas', 'Puma', 'Reebok'], 'fr', true),
+('logo', 4, 'Quelle marque a un logo en forme de flèche de A à Z ?', 'Amazon', ARRAY['eBay', 'Alibaba', 'Walmart'], 'fr', true),
+('logo', 4, 'Quel logo représente une lettre M dorée ?', 'McDonald''s', ARRAY['Morrisons', 'Metro', 'Marriott'], 'fr', true),
+('logo', 4, 'Quelle marque utilise un taureau comme logo ?', 'Red Bull', ARRAY['Monster', 'Lamborghini', 'Fiat'], 'fr', true),
+('logo', 4, 'Quel logo représente quatre carrés colorés ?', 'Microsoft', ARRAY['Google', 'Slack', 'Zoom'], 'fr', true),
+('logo', 4, 'Quelle marque a un logo en forme d''hélice bleu et blanc ?', 'BMW', ARRAY['Mercedes', 'Audi', 'Volkswagen'], 'fr', true),
+('logo', 4, 'Quel logo représente une couronne ?', 'Rolex', ARRAY['Omega', 'Cartier', 'Patek Philippe'], 'fr', true),
+
+-- Niveau 5
+('logo', 5, 'Quelle marque a un logo représentant un trident ?', 'Maserati', ARRAY['Alfa Romeo', 'Lancia', 'Ferrari'], 'fr', true),
+('logo', 5, 'Quel logo représente un lion avec une couronne ?', 'Peugeot', ARRAY['Holden', 'Proton', 'Seat'], 'fr', true),
+('logo', 5, 'Quelle marque utilise deux chevrons comme logo ?', 'Citroën', ARRAY['Renault', 'Peugeot', 'Opel'], 'fr', true),
+('logo', 5, 'Quel logo représente un losange ?', 'Renault', ARRAY['Citroën', 'Peugeot', 'DS'], 'fr', true),
+('logo', 5, 'Quelle marque a un logo en forme de double C entrelacés ?', 'Chanel', ARRAY['Cartier', 'Coach', 'Calvin Klein'], 'fr', true),
+('logo', 5, 'Quel logo représente un griffon ?', 'Vauxhall', ARRAY['Saab', 'Rover', 'MG'], 'fr', true),
+('logo', 5, 'Quelle marque utilise un cygne comme logo ?', 'Swarovski', ARRAY['Lalique', 'Waterford', 'Baccarat'], 'fr', true),
+('logo', 5, 'Quel logo représente trois ellipses ?', 'Toyota', ARRAY['Subaru', 'Mazda', 'Mitsubishi'], 'fr', true),
+('logo', 5, 'Quelle marque a un logo en forme de papillon ?', 'MSN', ARRAY['AOL', 'Yahoo', 'Netscape'], 'fr', true),
+('logo', 5, 'Quel logo représente six étoiles ?', 'Subaru', ARRAY['Mitsubishi', 'Suzuki', 'Daihatsu'], 'fr', true),
+('logo', 5, 'Quelle marque utilise trois diamants comme logo ?', 'Mitsubishi', ARRAY['Infiniti', 'Lexus', 'Acura'], 'fr', true),
+('logo', 5, 'Quel logo représente une étoile à trois branches dans un cercle ?', 'Mercedes-Benz', ARRAY['BMW', 'Chrysler', 'Dodge'], 'fr', true),
+('logo', 5, 'Quelle marque a un logo en forme de cible ?', 'Target', ARRAY['Bullseye', 'Circle K', 'Kmart'], 'fr', true),
+('logo', 5, 'Quel logo représente un cobra ?', 'AC Cobra', ARRAY['Viper', 'Mustang', 'Camaro'], 'fr', true),
+('logo', 5, 'Quelle marque utilise un aigle comme logo ?', 'American Airlines', ARRAY['United Airlines', 'Delta', 'Southwest'], 'fr', true);
+
+-- =====================================================
+-- FIN DU FICHIER - Total: ~1000 questions
+-- =====================================================
+
+-- =====================================================
+-- QUESTIONS SUPPLÉMENTAIRES POUR ATTEINDRE 1000
+-- =====================================================
+
+-- Culture Générale - Supplément
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+('culture_generale', 2, 'Quel est le plus grand pays d''Afrique ?', 'Algérie', ARRAY['Soudan', 'RD Congo', 'Libye'], 'fr', true),
+('culture_generale', 2, 'Combien de pays composent l''Union Européenne en 2024 ?', '27', ARRAY['25', '28', '30'], 'fr', true),
+('culture_generale', 3, 'Quelle est la monnaie du Brésil ?', 'Real', ARRAY['Peso', 'Dollar', 'Euro'], 'fr', true),
+('culture_generale', 3, 'Quel est le plus petit continent ?', 'Océanie', ARRAY['Europe', 'Antarctique', 'Amérique du Sud'], 'fr', true),
+('culture_generale', 4, 'Quel est le plus haut building du monde ?', 'Burj Khalifa', ARRAY['Shanghai Tower', 'One World Trade', 'Taipei 101'], 'fr', true),
+
+-- Histoire - Supplément  
+('histoire', 2, 'En quelle année la Révolution française a-t-elle commencé ?', '1789', ARRAY['1776', '1791', '1793'], 'fr', true),
+('histoire', 2, 'Qui était le premier président de la Ve République française ?', 'Charles de Gaulle', ARRAY['François Mitterrand', 'Georges Pompidou', 'Vincent Auriol'], 'fr', true),
+('histoire', 3, 'En quelle année l''URSS s''est-elle effondrée ?', '1991', ARRAY['1989', '1990', '1992'], 'fr', true),
+('histoire', 3, 'Qui a unifié l''Italie ?', 'Giuseppe Garibaldi', ARRAY['Victor Emmanuel II', 'Cavour', 'Mazzini'], 'fr', true),
+('histoire', 4, 'En quelle année a eu lieu la Bataille de Marignan ?', '1515', ARRAY['1512', '1516', '1520'], 'fr', true),
+
+-- Sciences - Supplément
+('sciences', 2, 'Quel est le symbole chimique de l''argent ?', 'Ag', ARRAY['Ar', 'Au', 'Al'], 'fr', true),
+('sciences', 2, 'Combien de planètes naines officielles y a-t-il dans le système solaire ?', '5', ARRAY['3', '4', '6'], 'fr', true),
+('sciences', 3, 'Quel est le plus grand organe interne ?', 'Foie', ARRAY['Poumons', 'Intestins', 'Estomac'], 'fr', true),
+('sciences', 3, 'Quelle est la vitesse du son dans l''air ?', '340 m/s', ARRAY['300 m/s', '400 m/s', '500 m/s'], 'fr', true),
+('sciences', 4, 'Quel est le nom de la plus grande lune de Saturne ?', 'Titan', ARRAY['Ganymède', 'Callisto', 'Io'], 'fr', true),
+
+-- Sport - Supplément
+('sport', 2, 'Combien de joueurs composent une équipe de volleyball ?', '6', ARRAY['5', '7', '8'], 'fr', true),
+('sport', 2, 'Quel sport se pratique avec une crosse et une balle ?', 'Lacrosse', ARRAY['Hockey', 'Cricket', 'Baseball'], 'fr', true),
+('sport', 3, 'Quelle équipe a remporté le plus de titres en Ligue 1 ?', 'Paris Saint-Germain', ARRAY['Olympique de Marseille', 'AS Saint-Étienne', 'AS Monaco'], 'fr', true),
+('sport', 3, 'Combien de manches y a-t-il dans un set de tennis ?', 'Au moins 6', ARRAY['5', '7', '8'], 'fr', true),
+('sport', 4, 'Quelle est la durée d''un quart-temps en NBA ?', '12 minutes', ARRAY['10 minutes', '15 minutes', '20 minutes'], 'fr', true),
+
+-- Pop Culture - Supplément
+('pop_culture', 2, 'Qui a chanté "Shallow" avec Lady Gaga ?', 'Bradley Cooper', ARRAY['Ryan Gosling', 'Jake Gyllenhaal', 'Chris Pine'], 'fr', true),
+('pop_culture', 2, 'Quel film d''animation met en scène une famille de trolls ?', 'Les Trolls', ARRAY['Shrek', 'Les Croods', 'Monstres et Cie'], 'fr', true),
+('pop_culture', 3, 'Qui a réalisé "E.T. l''extraterrestre" ?', 'Steven Spielberg', ARRAY['George Lucas', 'James Cameron', 'Ridley Scott'], 'fr', true),
+('pop_culture', 3, 'Quel groupe a chanté "Wonderwall" ?', 'Oasis', ARRAY['Blur', 'Radiohead', 'Coldplay'], 'fr', true),
+('pop_culture', 4, 'Qui a réalisé "The Grand Budapest Hotel" ?', 'Wes Anderson', ARRAY['Quentin Tarantino', 'Christopher Nolan', 'Edgar Wright'], 'fr', true),
+
+-- Jeux Vidéo - Supplément
+('jeux_video', 2, 'Quel jeu met en scène un plombier italien ?', 'Super Mario', ARRAY['Sonic', 'Crash Bandicoot', 'Spyro'], 'fr', true),
+('jeux_video', 2, 'Quelle console a popularisé le motion gaming ?', 'Wii', ARRAY['Xbox 360', 'PlayStation 3', 'GameCube'], 'fr', true),
+('jeux_video', 3, 'Quel est le nom du héros de God of War ?', 'Kratos', ARRAY['Zeus', 'Ares', 'Hades'], 'fr', true),
+('jeux_video', 3, 'Quel studio a créé Uncharted ?', 'Naughty Dog', ARRAY['Rockstar', 'Insomniac', 'Santa Monica'], 'fr', true),
+('jeux_video', 4, 'En quelle année est sorti le premier PlayStation ?', '1994', ARRAY['1992', '1995', '1996'], 'fr', true),
+
+-- Cinéma - Supplément
+('cinema', 2, 'Qui joue Batman dans "The Dark Knight" ?', 'Christian Bale', ARRAY['Ben Affleck', 'Michael Keaton', 'Robert Pattinson'], 'fr', true),
+('cinema', 2, 'Quel film raconte l''histoire d''un navire qui coule ?', 'Titanic', ARRAY['Poséidon', 'En pleine tempête', 'L''Odyssée de Pi'], 'fr', true),
+('cinema', 3, 'Qui a réalisé "Le Fabuleux Destin d''Amélie Poulain" ?', 'Jean-Pierre Jeunet', ARRAY['Luc Besson', 'François Ozon', 'Jacques Audiard'], 'fr', true),
+('cinema', 3, 'Quel acteur joue Django dans "Django Unchained" ?', 'Jamie Foxx', ARRAY['Will Smith', 'Denzel Washington', 'Samuel L. Jackson'], 'fr', true),
+('cinema', 4, 'Qui a réalisé "Oldboy" (2003) ?', 'Park Chan-wook', ARRAY['Bong Joon-ho', 'Kim Jee-woon', 'Lee Chang-dong'], 'fr', true),
+
+-- Musique - Supplément
+('musique', 2, 'Quel groupe a chanté "Creep" ?', 'Radiohead', ARRAY['Nirvana', 'Pearl Jam', 'Soundgarden'], 'fr', true),
+('musique', 2, 'Qui a composé "La Lettre à Élise" ?', 'Beethoven', ARRAY['Mozart', 'Chopin', 'Bach'], 'fr', true),
+('musique', 3, 'Quel rappeur français a sorti "Booba" ?', 'Booba', ARRAY['Rohff', 'La Fouine', 'Kaaris'], 'fr', true),
+('musique', 3, 'Qui a chanté "Hallelujah" à l''origine ?', 'Leonard Cohen', ARRAY['Jeff Buckley', 'Rufus Wainwright', 'Bob Dylan'], 'fr', true),
+('musique', 4, 'Quel groupe a sorti "The Number of the Beast" ?', 'Iron Maiden', ARRAY['Metallica', 'Black Sabbath', 'Slayer'], 'fr', true),
+
+-- Technologie - Supplément
+('technologie', 2, 'Quelle entreprise a créé l''Apple Watch ?', 'Apple', ARRAY['Samsung', 'Google', 'Fitbit'], 'fr', true),
+('technologie', 2, 'Quel est le nom du casque VR de Meta ?', 'Quest', ARRAY['Rift', 'Index', 'PSVR'], 'fr', true),
+('technologie', 3, 'Quel langage utilise principalement Android ?', 'Kotlin/Java', ARRAY['Swift', 'C#', 'Python'], 'fr', true),
+('technologie', 3, 'Quelle entreprise a créé le premier moteur de recherche ?', 'Archie', ARRAY['Google', 'Yahoo', 'AltaVista'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que le protocole HTTP ?', 'HyperText Transfer Protocol', ARRAY['High Tech Transfer Protocol', 'Hyper Transfer Text Protocol', 'Host Text Transfer Protocol'], 'fr', true),
+
+-- Géographie - Supplément
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active, image_url) VALUES
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Danemark', ARRAY['Suède', 'Norvège', 'Finlande'], 'fr', true, 'https://flagcdn.com/w320/dk.png'),
+('geographie', 2, 'À quel pays appartient ce drapeau ?', 'Finlande', ARRAY['Suède', 'Estonie', 'Islande'], 'fr', true, 'https://flagcdn.com/w320/fi.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Irlande', ARRAY['Italie', 'Côte d''Ivoire', 'Mexique'], 'fr', true, 'https://flagcdn.com/w320/ie.png'),
+('geographie', 3, 'À quel pays appartient ce drapeau ?', 'Croatie', ARRAY['Serbie', 'Slovénie', 'Bosnie'], 'fr', true, 'https://flagcdn.com/w320/hr.png'),
+('geographie', 4, 'À quel pays appartient ce drapeau ?', 'Serbie', ARRAY['Russie', 'Slovaquie', 'Slovénie'], 'fr', true, 'https://flagcdn.com/w320/rs.png');
+
+-- Logo - Supplément avec images
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active, image_url) VALUES
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Snapchat', ARRAY['Instagram', 'TikTok', 'BeReal'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Snapchat_logo.svg/200px-Snapchat_logo.svg.png'),
+('logo', 2, 'Quelle marque est représentée par ce logo ?', 'Twitter/X', ARRAY['Facebook', 'Threads', 'Mastodon'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/X_logo_2023_%28white%29.png/200px-X_logo_2023_%28white%29.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Zoom', ARRAY['Skype', 'Teams', 'Meet'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Zoom_Logo_2022.svg/200px-Zoom_Logo_2022.svg.png'),
+('logo', 3, 'Quelle marque est représentée par ce logo ?', 'Twitch', ARRAY['YouTube', 'Kick', 'Rumble'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Twitch_Glitch_Logo_Purple.svg/200px-Twitch_Glitch_Logo_Purple.svg.png'),
+('logo', 4, 'Quelle marque est représentée par ce logo ?', 'GitHub', ARRAY['GitLab', 'Bitbucket', 'SourceForge'], 'fr', true, 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/200px-Octicons-mark-github.svg.png');
+
+-- Questions supplémentaires diverses
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+('culture_generale', 1, 'Quel est le plus grand animal marin ?', 'Baleine bleue', ARRAY['Requin baleine', 'Orque', 'Cachalot'], 'fr', true),
+('culture_generale', 1, 'Combien de couleurs a un arc-en-ciel ?', '7', ARRAY['5', '6', '8'], 'fr', true),
+('histoire', 1, 'Qui a construit la Grande Muraille de Chine ?', 'Plusieurs dynasties chinoises', ARRAY['Un seul empereur', 'Les Mongols', 'Les Japonais'], 'fr', true),
+('histoire', 1, 'En quelle année la France est-elle devenue une république ?', '1792', ARRAY['1789', '1848', '1870'], 'fr', true),
+('sciences', 1, 'Quel est l''état de l''eau à température ambiante ?', 'Liquide', ARRAY['Solide', 'Gaz', 'Plasma'], 'fr', true),
+('sciences', 1, 'Quel organe produit l''urine ?', 'Reins', ARRAY['Foie', 'Vessie', 'Pancréas'], 'fr', true),
+('sport', 1, 'Combien de points vaut un but au football ?', '1', ARRAY['2', '3', '6'], 'fr', true),
+('sport', 1, 'Quel sport pratique LeBron James ?', 'Basketball', ARRAY['Football américain', 'Baseball', 'Hockey'], 'fr', true),
+('pop_culture', 1, 'Quel est le nom du dragon de "Dragons" ?', 'Krokmou', ARRAY['Toothless', 'Smaug', 'Drago'], 'fr', true),
+('pop_culture', 1, 'Qui est la voix française de Buzz l''Éclair ?', 'Richard Darbois', ARRAY['Bernard Alane', 'Emmanuel Jacomy', 'Gérard Rinaldi'], 'fr', true),
+('jeux_video', 1, 'De quelle couleur est Pac-Man ?', 'Jaune', ARRAY['Rouge', 'Bleu', 'Vert'], 'fr', true),
+('jeux_video', 1, 'Quel animal est Crash Bandicoot ?', 'Bandicoot', ARRAY['Renard', 'Chien', 'Koala'], 'fr', true),
+('cinema', 1, 'Comment s''appelle le poisson de Nemo ?', 'Nemo', ARRAY['Marin', 'Dory', 'Gill'], 'fr', true),
+('cinema', 1, 'Qui double Woody dans Toy Story en VF ?', 'Jean-Philippe Puymartin', ARRAY['Benoît Magimel', 'Jean Reno', 'Guillaume Canet'], 'fr', true),
+('musique', 1, 'Combien de cordes a un ukulélé ?', '4', ARRAY['5', '6', '3'], 'fr', true),
+('musique', 1, 'Quel instrument joue Mozart principalement ?', 'Piano', ARRAY['Violon', 'Flûte', 'Guitare'], 'fr', true),
+('technologie', 1, 'Comment s''appelle le créateur de l''iPhone ?', 'Steve Jobs', ARRAY['Bill Gates', 'Mark Zuckerberg', 'Jeff Bezos'], 'fr', true),
+('technologie', 1, 'Quelle est la couleur du logo de YouTube ?', 'Rouge', ARRAY['Bleu', 'Vert', 'Orange'], 'fr', true),
+('culture_generale', 5, 'Quelle est la plus longue rivière d''Europe ?', 'Volga', ARRAY['Danube', 'Rhin', 'Elbe'], 'fr', true),
+('culture_generale', 5, 'Quel est le plus ancien empire encore existant ?', 'Japon', ARRAY['Royaume-Uni', 'Thaïlande', 'Éthiopie'], 'fr', true),
+('histoire', 5, 'En quelle année a été signé le traité de Westphalie ?', '1648', ARRAY['1618', '1658', '1678'], 'fr', true),
+('histoire', 5, 'Qui était le premier empereur romain ?', 'Auguste', ARRAY['Jules César', 'Néron', 'Tibère'], 'fr', true),
+('sciences', 5, 'Quelle est la particule messagère de la force électromagnétique ?', 'Photon', ARRAY['Gluon', 'Boson W', 'Graviton'], 'fr', true),
+('sciences', 5, 'Combien de paires de bases possède le génome humain ?', '3 milliards', ARRAY['1 milliard', '6 milliards', '10 milliards'], 'fr', true),
+('sport', 5, 'Quel est le record du monde du saut en longueur ?', '8,95 m', ARRAY['8,90 m', '9,00 m', '8,87 m'], 'fr', true),
+('sport', 5, 'Combien de tours fait-on dans un marathon ?', 'Pas de tours (course de route)', ARRAY['10 tours', '26 tours', '42 tours'], 'fr', true),
+('pop_culture', 5, 'Qui a réalisé "In the Mood for Love" ?', 'Wong Kar-wai', ARRAY['Zhang Yimou', 'Ang Lee', 'Edward Yang'], 'fr', true),
+('pop_culture', 5, 'Quel groupe a sorti "Loveless" ?', 'My Bloody Valentine', ARRAY['Slowdive', 'Ride', 'Cocteau Twins'], 'fr', true),
+('jeux_video', 5, 'Quel studio a développé "Baldur''s Gate 3" ?', 'Larian Studios', ARRAY['BioWare', 'Obsidian', 'InXile'], 'fr', true),
+('jeux_video', 5, 'En quelle année est sorti "Planescape: Torment" ?', '1999', ARRAY['1998', '2000', '2001'], 'fr', true),
+('cinema', 5, 'Qui a réalisé "L''Atalante" ?', 'Jean Vigo', ARRAY['Jean Renoir', 'Marcel Carné', 'René Clair'], 'fr', true),
+('cinema', 5, 'Quel film a remporté l''Oscar du meilleur film en 2023 ?', 'Everything Everywhere All at Once', ARRAY['The Fabelmans', 'Tár', 'Top Gun: Maverick'], 'fr', true),
+('musique', 5, 'Qui a composé "Music for 18 Musicians" ?', 'Steve Reich', ARRAY['Philip Glass', 'Terry Riley', 'John Adams'], 'fr', true),
+('musique', 5, 'Quel album de Björk est sorti en 1997 ?', 'Homogenic', ARRAY['Post', 'Vespertine', 'Debut'], 'fr', true),
+('technologie', 5, 'Qu''est-ce que le protocole QUIC ?', 'Protocole de transport sur UDP', ARRAY['Langage de programmation', 'Base de données', 'Framework'], 'fr', true),
+('technologie', 5, 'Quelle entreprise a créé le langage Haskell ?', 'Comité académique', ARRAY['Microsoft', 'Google', 'Mozilla'], 'fr', true);
+
+-- =====================================================
+-- DERNIÈRES QUESTIONS POUR ATTEINDRE 1000+
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+-- Culture Générale
+('culture_generale', 1, 'Quelle est la couleur du soleil ?', 'Jaune', ARRAY['Orange', 'Rouge', 'Blanc'], 'fr', true),
+('culture_generale', 1, 'Combien de semaines y a-t-il dans un mois ?', '4', ARRAY['3', '5', '6'], 'fr', true),
+('culture_generale', 2, 'Quelle est la capitale du Canada ?', 'Ottawa', ARRAY['Toronto', 'Montréal', 'Vancouver'], 'fr', true),
+('culture_generale', 2, 'Quel est le fleuve qui traverse Londres ?', 'Tamise', ARRAY['Thames', 'Seine', 'Rhin'], 'fr', true),
+('culture_generale', 3, 'Quel pays a inventé le sushi ?', 'Japon', ARRAY['Chine', 'Corée', 'Thaïlande'], 'fr', true),
+('culture_generale', 3, 'Quelle mer borde Monaco ?', 'Méditerranée', ARRAY['Adriatique', 'Tyrrhénienne', 'Égée'], 'fr', true),
+('culture_generale', 4, 'Quel est le plus grand stade du monde ?', 'Rungrado May Day', ARRAY['Camp Nou', 'Maracanã', 'Wembley'], 'fr', true),
+('culture_generale', 4, 'Combien de langues officielles l''ONU a-t-elle ?', '6', ARRAY['4', '5', '7'], 'fr', true),
+
+-- Histoire
+('histoire', 1, 'Quel monument est à Paris ?', 'Tour Eiffel', ARRAY['Big Ben', 'Colisée', 'Statue de la Liberté'], 'fr', true),
+('histoire', 1, 'Qui était Vercingétorix ?', 'Chef gaulois', ARRAY['Empereur romain', 'Roi de France', 'Pharaon'], 'fr', true),
+('histoire', 2, 'En quelle année a eu lieu la Commune de Paris ?', '1871', ARRAY['1848', '1870', '1879'], 'fr', true),
+('histoire', 2, 'Qui a découvert le radium ?', 'Marie Curie', ARRAY['Albert Einstein', 'Louis Pasteur', 'Pierre Curie seul'], 'fr', true),
+('histoire', 3, 'Quelle guerre a fait le plus de morts ?', 'Seconde Guerre mondiale', ARRAY['Première Guerre mondiale', 'Guerre de Corée', 'Guerre du Vietnam'], 'fr', true),
+('histoire', 3, 'En quelle année l''Homme a marché sur la Lune ?', '1969', ARRAY['1967', '1971', '1973'], 'fr', true),
+('histoire', 4, 'Qui a fondé l''Empire perse ?', 'Cyrus le Grand', ARRAY['Darius', 'Xerxès', 'Alexandre'], 'fr', true),
+('histoire', 4, 'En quelle année Rome a-t-elle été fondée (selon la légende) ?', '-753', ARRAY['-509', '-800', '-650'], 'fr', true),
+
+-- Sciences
+('sciences', 1, 'Que mesure un thermomètre ?', 'Température', ARRAY['Poids', 'Vitesse', 'Distance'], 'fr', true),
+('sciences', 1, 'De quoi sont faites les plantes ?', 'Cellules végétales', ARRAY['Cellules animales', 'Pierres', 'Métal'], 'fr', true),
+('sciences', 2, 'Quel est le plus proche voisin du Soleil ?', 'Proxima Centauri', ARRAY['Alpha Centauri A', 'Sirius', 'Barnard'], 'fr', true),
+('sciences', 2, 'Combien de dents de sagesse peut avoir un adulte ?', '4', ARRAY['2', '3', '6'], 'fr', true),
+('sciences', 3, 'Quel est le nom de la galaxie la plus proche de la Voie lactée ?', 'Andromède', ARRAY['Triangulum', 'Grand Nuage de Magellan', 'Sombrero'], 'fr', true),
+('sciences', 3, 'Quelle est la formule du glucose ?', 'C6H12O6', ARRAY['C6H10O5', 'C12H22O11', 'CH4'], 'fr', true),
+('sciences', 4, 'Quel est le nom du plus gros diamant naturel ?', 'Cullinan', ARRAY['Hope', 'Koh-i-Noor', 'Régent'], 'fr', true),
+('sciences', 4, 'Combien de temps dure une éclipse totale de Soleil au maximum ?', '7 minutes 30 secondes', ARRAY['2 minutes', '15 minutes', '1 heure'], 'fr', true),
+
+-- Sport
+('sport', 1, 'De quel pays vient le judo ?', 'Japon', ARRAY['Chine', 'Corée', 'Brésil'], 'fr', true),
+('sport', 1, 'Combien de temps dure une mi-temps au football ?', '45 minutes', ARRAY['30 minutes', '40 minutes', '60 minutes'], 'fr', true),
+('sport', 2, 'Quel sport pratique Serena Williams ?', 'Tennis', ARRAY['Golf', 'Natation', 'Athlétisme'], 'fr', true),
+('sport', 2, 'Combien de joueurs dans une équipe de handball ?', '7', ARRAY['5', '6', '11'], 'fr', true),
+('sport', 3, 'Quel pays a remporté l''Euro 2020 ?', 'Italie', ARRAY['Angleterre', 'Espagne', 'France'], 'fr', true),
+('sport', 3, 'Combien de sets maximum au tennis féminin en Grand Chelem ?', '3', ARRAY['2', '5', '4'], 'fr', true),
+('sport', 4, 'Quel est le record du monde du 110m haies ?', '12,80 secondes', ARRAY['12,91 s', '12,87 s', '12,93 s'], 'fr', true),
+('sport', 4, 'Combien de médailles d''or Usain Bolt a-t-il gagnées aux JO ?', '8', ARRAY['6', '9', '10'], 'fr', true),
+
+-- Pop Culture
+('pop_culture', 1, 'Comment s''appelle le père de Simba ?', 'Mufasa', ARRAY['Scar', 'Rafiki', 'Zazu'], 'fr', true),
+('pop_culture', 1, 'Quelle couleur est Hulk ?', 'Vert', ARRAY['Rouge', 'Bleu', 'Gris'], 'fr', true),
+('pop_culture', 2, 'Qui chante "Waka Waka" ?', 'Shakira', ARRAY['Jennifer Lopez', 'Beyoncé', 'Rihanna'], 'fr', true),
+('pop_culture', 2, 'Quel groupe a chanté "Hey Jude" ?', 'The Beatles', ARRAY['The Rolling Stones', 'The Who', 'Pink Floyd'], 'fr', true),
+('pop_culture', 3, 'Qui a écrit "Harry Potter" ?', 'J.K. Rowling', ARRAY['Stephen King', 'George R.R. Martin', 'Stephenie Meyer'], 'fr', true),
+('pop_culture', 3, 'Quel acteur joue Jack Sparrow ?', 'Johnny Depp', ARRAY['Orlando Bloom', 'Jude Law', 'Colin Farrell'], 'fr', true),
+('pop_culture', 4, 'Qui a réalisé "Blade Runner 2049" ?', 'Denis Villeneuve', ARRAY['Ridley Scott', 'Christopher Nolan', 'James Cameron'], 'fr', true),
+('pop_culture', 4, 'Quel groupe a sorti "Master of Puppets" ?', 'Metallica', ARRAY['Megadeth', 'Slayer', 'Anthrax'], 'fr', true),
+
+-- Jeux Vidéo
+('jeux_video', 1, 'Quel jeu propose des courses de karts ?', 'Mario Kart', ARRAY['Forza', 'Gran Turismo', 'Need for Speed'], 'fr', true),
+('jeux_video', 1, 'Quel personnage saute sur des champignons ?', 'Mario', ARRAY['Sonic', 'Kirby', 'Yoshi'], 'fr', true),
+('jeux_video', 2, 'Quel jeu de simulation de vie propose de construire des maisons ?', 'Les Sims', ARRAY['Minecraft', 'Animal Crossing', 'Stardew Valley'], 'fr', true),
+('jeux_video', 2, 'Quelle est la mascotte de Xbox ?', 'Master Chief', ARRAY['Marcus Fenix', 'Commander Shepard', 'Cortana'], 'fr', true),
+('jeux_video', 3, 'Quel jeu met en scène des agents dans des missions tactiques ?', 'Tom Clancy''s Rainbow Six', ARRAY['Call of Duty', 'Battlefield', 'Counter-Strike'], 'fr', true),
+('jeux_video', 3, 'En quelle année est sorti Skyrim ?', '2011', ARRAY['2010', '2012', '2013'], 'fr', true),
+('jeux_video', 4, 'Quel studio a créé Mass Effect ?', 'BioWare', ARRAY['Bethesda', 'Obsidian', 'CD Projekt'], 'fr', true),
+('jeux_video', 4, 'Combien de donjons y a-t-il dans Ocarina of Time ?', '9', ARRAY['7', '8', '12'], 'fr', true),
+
+-- Cinéma
+('cinema', 1, 'Quel personnage dit "Luke, je suis ton père" ?', 'Dark Vador', ARRAY['Obi-Wan', 'Yoda', 'Palpatine'], 'fr', true),
+('cinema', 1, 'Qui est le méchant principal de Shrek ?', 'Lord Farquaad', ARRAY['Fée Marraine', 'Prince Charmant', 'Rumpelstiltskin'], 'fr', true),
+('cinema', 2, 'Quel film raconte l''histoire d''un requin tueur ?', 'Les Dents de la mer', ARRAY['Meg', 'Deep Blue Sea', 'Sharknado'], 'fr', true),
+('cinema', 2, 'Qui joue le rôle de Gandalf ?', 'Ian McKellen', ARRAY['Michael Gambon', 'Christopher Lee', 'Patrick Stewart'], 'fr', true),
+('cinema', 3, 'Quel réalisateur a fait "La La Land" ?', 'Damien Chazelle', ARRAY['Baz Luhrmann', 'Tom Hooper', 'Rob Marshall'], 'fr', true),
+('cinema', 3, 'Quel film de Nolan parle de rêves partagés ?', 'Inception', ARRAY['Memento', 'Tenet', 'Interstellar'], 'fr', true),
+('cinema', 4, 'Qui a réalisé "Requiem for a Dream" ?', 'Darren Aronofsky', ARRAY['David Lynch', 'David Cronenberg', 'Lars von Trier'], 'fr', true),
+('cinema', 4, 'Quel acteur joue Travis Bickle ?', 'Robert De Niro', ARRAY['Al Pacino', 'Dustin Hoffman', 'Jack Nicholson'], 'fr', true),
+
+-- Musique
+('musique', 1, 'Quel instrument gratte-t-on ?', 'Guitare', ARRAY['Piano', 'Trompette', 'Batterie'], 'fr', true),
+('musique', 1, 'Combien de lignes a une portée musicale ?', '5', ARRAY['4', '6', '7'], 'fr', true),
+('musique', 2, 'Qui a chanté "La Vie en rose" ?', 'Édith Piaf', ARRAY['Dalida', 'Barbara', 'Mireille Mathieu'], 'fr', true),
+('musique', 2, 'Quel groupe a chanté "Back in Black" ?', 'AC/DC', ARRAY['Led Zeppelin', 'Black Sabbath', 'Deep Purple'], 'fr', true),
+('musique', 3, 'Qui a composé "Les Quatre Saisons" ?', 'Vivaldi', ARRAY['Bach', 'Mozart', 'Händel'], 'fr', true),
+('musique', 3, 'Quel groupe britannique a chanté "Paranoid Android" ?', 'Radiohead', ARRAY['Muse', 'Coldplay', 'Blur'], 'fr', true),
+('musique', 4, 'Qui a composé l''opéra "La Traviata" ?', 'Verdi', ARRAY['Puccini', 'Rossini', 'Donizetti'], 'fr', true),
+('musique', 4, 'Quel album de Pink Floyd est un concept sur la guerre ?', 'The Wall', ARRAY['Dark Side of the Moon', 'Wish You Were Here', 'Animals'], 'fr', true),
+
+-- Technologie
+('technologie', 1, 'Qu''est-ce qu''un emoji ?', 'Un petit dessin', ARRAY['Un virus', 'Un logiciel', 'Un réseau'], 'fr', true),
+('technologie', 1, 'Quel appareil permet d''imprimer ?', 'Imprimante', ARRAY['Scanner', 'Écran', 'Clavier'], 'fr', true),
+('technologie', 2, 'Quelle entreprise a créé TikTok ?', 'ByteDance', ARRAY['Facebook', 'Google', 'Tencent'], 'fr', true),
+('technologie', 2, 'Qu''est-ce que le RAM ?', 'Mémoire vive', ARRAY['Disque dur', 'Processeur', 'Carte graphique'], 'fr', true),
+('technologie', 3, 'Quel protocole sécurise les communications web ?', 'TLS/SSL', ARRAY['HTTP', 'FTP', 'DNS'], 'fr', true),
+('technologie', 3, 'Quelle entreprise a créé Flutter ?', 'Google', ARRAY['Facebook', 'Microsoft', 'Apple'], 'fr', true),
+('technologie', 4, 'Qu''est-ce que PostgreSQL ?', 'Base de données', ARRAY['Langage de programmation', 'Système d''exploitation', 'Framework'], 'fr', true),
+('technologie', 4, 'Quelle est la commande pour lister les fichiers sous Linux ?', 'ls', ARRAY['dir', 'list', 'show'], 'fr', true);
+
+-- =====================================================
+-- 10 DERNIÈRES QUESTIONS POUR DÉPASSER 1000
+-- =====================================================
+
+INSERT INTO questions (category, difficulty, question_text, correct_answer, wrong_answers, language, is_active) VALUES
+('culture_generale', 1, 'Quel est le plus gros fruit ?', 'Pastèque', ARRAY['Melon', 'Ananas', 'Papaye'], 'fr', true),
+('histoire', 2, 'Qui a écrit la Déclaration d''indépendance américaine ?', 'Thomas Jefferson', ARRAY['George Washington', 'Benjamin Franklin', 'John Adams'], 'fr', true),
+('sciences', 2, 'Quelle est la planète la plus proche de la Terre ?', 'Vénus', ARRAY['Mars', 'Mercure', 'Jupiter'], 'fr', true),
+('sport', 2, 'Combien de joueurs dans une équipe de baseball ?', '9', ARRAY['8', '10', '11'], 'fr', true),
+('pop_culture', 2, 'Qui a chanté "Hello" en 2015 ?', 'Adele', ARRAY['Taylor Swift', 'Katy Perry', 'Beyoncé'], 'fr', true),
+('jeux_video', 2, 'Quel jeu met en scène des lapins ?', 'Rayman', ARRAY['Crash Bandicoot', 'Spyro', 'Sonic'], 'fr', true),
+('cinema', 2, 'Quel film a pour héros un archéologue avec un fouet ?', 'Indiana Jones', ARRAY['Tomb Raider', 'The Mummy', 'National Treasure'], 'fr', true),
+('musique', 2, 'Qui a composé "Für Elise" ?', 'Beethoven', ARRAY['Mozart', 'Bach', 'Chopin'], 'fr', true),
+('technologie', 2, 'Quelle entreprise a créé Java ?', 'Sun Microsystems', ARRAY['Microsoft', 'IBM', 'Oracle'], 'fr', true),
+('logo', 3, 'Quelle marque a un logo en forme de cible rouge et blanche ?', 'Target', ARRAY['Walmart', 'Kmart', 'Costco'], 'fr', true);

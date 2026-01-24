@@ -123,10 +123,10 @@ export default function DailyChallengeScreen() {
             <Text className="text-5xl">✅</Text>
           </View>
           <Text className="text-white text-2xl font-bold text-center mb-2">
-            Challenge completed!
+            Defi termine !
           </Text>
           <Text className="text-gray-400 text-center mb-8">
-            Come back tomorrow for a new daily challenge
+            Reviens demain pour un nouveau defi quotidien
           </Text>
 
           {/* Streak */}
@@ -134,8 +134,8 @@ export default function DailyChallengeScreen() {
             <View className="flex-row items-center">
               <Text className="text-3xl mr-3">🔥</Text>
               <View>
-                <Text className="text-orange-400 font-bold text-xl">{streak} days</Text>
-                <Text className="text-orange-300/60 text-sm">Current streak</Text>
+                <Text className="text-orange-400 font-bold text-xl">{streak} jours</Text>
+                <Text className="text-orange-300/60 text-sm">Serie en cours</Text>
               </View>
             </View>
           </View>
@@ -157,7 +157,7 @@ export default function DailyChallengeScreen() {
       <SafeAreaView className="flex-1 bg-gray-900">
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#0ea5e9" />
-          <Text className="text-gray-400 mt-4">Loading challenge...</Text>
+          <Text className="text-gray-400 mt-4">Chargement du defi...</Text>
         </View>
       </SafeAreaView>
     );
@@ -170,10 +170,10 @@ export default function DailyChallengeScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-5xl mb-6">🎯</Text>
           <Text className="text-white text-xl font-bold text-center mb-2">
-            No challenge available
+            Pas de defi disponible
           </Text>
           <Text className="text-gray-400 text-center mb-8">
-            Come back soon!
+            Reviens bientot !
           </Text>
           <Pressable
             onPress={() => router.back()}
@@ -196,14 +196,14 @@ export default function DailyChallengeScreen() {
           </Pressable>
           <View className="flex-row items-center bg-orange-500/20 rounded-full px-4 py-2">
             <Text className="text-lg mr-2">🔥</Text>
-            <Text className="text-orange-400 font-bold">{streak} days</Text>
+            <Text className="text-orange-400 font-bold">{streak} j</Text>
           </View>
         </View>
 
         {/* Title */}
         <View className="px-6 mb-8">
-          <Text className="text-primary-400 text-sm font-bold mb-1">DAILY CHALLENGE</Text>
-          <Text className="text-white text-2xl font-bold">Who is this player?</Text>
+          <Text className="text-primary-400 text-sm font-bold mb-1">DEFI DU JOUR</Text>
+          <Text className="text-white text-2xl font-bold">Question du jour</Text>
         </View>
 
         {/* Question */}
@@ -260,11 +260,11 @@ export default function DailyChallengeScreen() {
                     isCorrect ? "text-green-400" : "text-red-400"
                   }`}
                 >
-                  {isCorrect ? "Well done!" : "Too bad!"}
+                  {isCorrect ? "Bravo !" : "Dommage !"}
                 </Text>
               </View>
               <Text className="text-gray-300 text-center mb-4">
-                The answer was {challenge.out_player_name}
+                La reponse etait : {challenge.out_player_name}
               </Text>
               {xpEarned > 0 && (
                 <Text className="text-primary-400 text-center font-bold">
@@ -275,7 +275,7 @@ export default function DailyChallengeScreen() {
                 onPress={() => router.back()}
                 className="bg-primary-500 rounded-xl py-3 mt-4"
               >
-                <Text className="text-white text-center font-bold">Continue</Text>
+                <Text className="text-white text-center font-bold">Continuer</Text>
               </Pressable>
             </View>
           </Animated.View>
@@ -289,7 +289,7 @@ export default function DailyChallengeScreen() {
               className="bg-gray-800 rounded-xl p-4"
             >
               <Text className="text-gray-400 text-center text-sm">
-                Create an account to save your streak 🔥
+                Cree un compte pour sauvegarder ta serie 🔥
               </Text>
             </Pressable>
           </View>
