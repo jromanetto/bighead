@@ -18,7 +18,6 @@
       "bundleIdentifier": "com.jroma51.bighead",
       "infoPlist": {
         "UIBackgroundModes": [
-          "remote-notification",
           "remote-notification"
         ],
         "ITSAppUsesNonExemptEncryption": false

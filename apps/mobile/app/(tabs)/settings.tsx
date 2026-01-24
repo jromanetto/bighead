@@ -4,14 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useLanguage } from "../../src/contexts/LanguageContext";
+import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings, saveSettings, type UserSettings } from "../../src/services/settings";
 import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
-import {
-  registerForPushNotifications,
-  savePushToken,
-  scheduleDailyReminder,
-  cancelAllNotifications,
-} from "../../src/services/notifications";
 
 // New QuizNext design colors
 const COLORS = {
@@ -30,6 +25,13 @@ const COLORS = {
 export default function SettingsScreen() {
   const { user, isAnonymous, signOut } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const {
+    permissionStatus,
+    requestPermission,
+    sendTestNotification,
+    scheduleDailyReminder,
+    cancelAllNotifications,
+  } = useNotificationContext();
   const [settings, setSettings] = useState<UserSettings>({
     sound_enabled: true,
     haptic_enabled: true,
@@ -64,10 +66,13 @@ export default function SettingsScreen() {
 
       if (key === "notifications_enabled") {
         if (value) {
-          const token = await registerForPushNotifications();
-          if (token && user) {
-            await savePushToken(user.id, token);
-            await scheduleDailyReminder();
+          const granted = await requestPermission();
+          if (granted) {
+            await scheduleDailyReminder(19, 0);
+            Alert.alert("Notifications activees", "Tu recevras un rappel tous les jours a 19h !");
+          } else {
+            Alert.alert("Permission refusee", "Active les notifications dans les reglages de ton telephone.");
+            setSettings((prev) => ({ ...prev, notifications_enabled: false }));
           }
         } else {
           await cancelAllNotifications();
@@ -253,6 +258,22 @@ export default function SettingsScreen() {
               subtitle={t("dailyReminders")}
               value={settings.notifications_enabled}
               onToggle={(v) => updateSetting("notifications_enabled", v)}
+            />
+            <MenuRow
+              icon="▶"
+              title="Tester les notifications"
+              subtitle={permissionStatus === "granted" ? "Permission accordee" : "Permission requise"}
+              onPress={async () => {
+                if (permissionStatus !== "granted") {
+                  const granted = await requestPermission();
+                  if (!granted) {
+                    Alert.alert("Permission requise", "Active les notifications dans les reglages.");
+                    return;
+                  }
+                }
+                await sendTestNotification();
+                Alert.alert("Notification envoyee !", "Tu devrais la recevoir dans quelques secondes.");
+              }}
             />
           </View>
 
