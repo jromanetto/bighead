@@ -102,8 +102,49 @@ export interface DailyAttempts {
 
 // Constants
 export const MAX_FREE_ATTEMPTS = 2;
-export const QUESTIONS_PER_CATEGORY = 10;
+export const QUESTIONS_PER_CATEGORY = 10; // Default, use getQuestionsForTier() instead
 export const MAX_ERRORS_ALLOWED = 1; // 2 errors = fail
+
+// Tiered question counts for progressive difficulty
+export type TierDifficulty = 'easy' | 'medium' | 'hard';
+
+export const TIER_DIFFICULTY_MAP: Record<Tier, TierDifficulty> = {
+  coton: 'easy',
+  carton: 'easy',
+  bois: 'easy',
+  bronze: 'easy',
+  argent: 'medium',
+  gold: 'medium',
+  platinium: 'medium',
+  titane: 'medium',
+  diamant: 'hard',
+  mythique: 'hard',
+  legendaire: 'hard',
+};
+
+export const QUESTIONS_BY_DIFFICULTY: Record<TierDifficulty, number> = {
+  easy: 5,
+  medium: 8,
+  hard: 10,
+};
+
+/**
+ * Get the number of questions for a specific tier
+ * Easy tiers (Coton→Bronze): 5 questions
+ * Medium tiers (Argent→Titane): 8 questions
+ * Hard tiers (Diamant→Légendaire): 10 questions
+ */
+export function getQuestionsForTier(tier: Tier): number {
+  const difficulty = TIER_DIFFICULTY_MAP[tier];
+  return QUESTIONS_BY_DIFFICULTY[difficulty];
+}
+
+/**
+ * Get the tier difficulty level
+ */
+export function getTierDifficulty(tier: Tier): TierDifficulty {
+  return TIER_DIFFICULTY_MAP[tier];
+}
 
 // Helper functions
 export function getTierInfo(tier: Tier): TierInfo {

@@ -208,6 +208,7 @@ export function getRandomUncompletedCategory(completedCategories: Category[]): C
 
 /**
  * Get questions for a category and difficulty tier
+ * Uses adaptive difficulty system when available
  */
 export async function getAdventureQuestions(
   userId: string,
@@ -215,7 +216,25 @@ export async function getAdventureQuestions(
   tier: Tier,
   limit: number = 10
 ): Promise<any[]> {
-  // Map tier to difficulty range (11 tiers mapped to difficulty 1-5)
+  // Try adaptive questions first (Elo-based matching)
+  try {
+    const { data: adaptiveData, error: adaptiveError } = await supabase.rpc("get_adaptive_questions", {
+      p_user_id: userId,
+      p_category: category,
+      p_limit: limit,
+      p_language: "fr",
+      p_tier: tier,
+    });
+
+    if (!adaptiveError && adaptiveData && adaptiveData.length > 0) {
+      console.log(`Got ${adaptiveData.length} adaptive questions for ${category}`);
+      return adaptiveData;
+    }
+  } catch (err) {
+    console.log("Adaptive questions not available, using fallback:", err);
+  }
+
+  // Fallback: Map tier to difficulty range (11 tiers mapped to difficulty 1-5)
   const difficultyMap: Record<Tier, { min: number; max: number }> = {
     coton: { min: 1, max: 1 },
     carton: { min: 1, max: 2 },
@@ -232,7 +251,7 @@ export async function getAdventureQuestions(
 
   const { min, max } = difficultyMap[tier];
 
-  // Try to get unseen questions first
+  // Try to get unseen questions
   const { data, error } = await supabase.rpc("get_unseen_questions", {
     p_user_id: userId,
     p_category: category,

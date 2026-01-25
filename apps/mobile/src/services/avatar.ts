@@ -1,23 +1,74 @@
 import { supabase } from "./supabase";
-import { readAsStringAsync } from "expo-file-system";
+import * as FileSystem from "expo-file-system";
 import { decode } from "base64-arraybuffer";
+import { Platform } from "react-native";
 
 const AVATAR_BUCKET = "avatars";
 
 /**
+ * Get file extension from MIME type
+ */
+function getExtensionFromMimeType(mimeType: string): string {
+  const mimeToExt: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/gif": "gif",
+    "image/webp": "webp",
+    "image/heic": "heic",
+    "image/heif": "heif",
+  };
+  return mimeToExt[mimeType.toLowerCase()] || "jpg";
+}
+
+/**
  * Upload avatar image to Supabase Storage
  */
-export async function uploadAvatar(userId: string, imageUri: string): Promise<string | null> {
+export async function uploadAvatar(
+  userId: string,
+  imageUri: string,
+  mimeType?: string
+): Promise<string | null> {
   try {
-    // Read file as base64
-    const base64 = await readAsStringAsync(imageUri, {
-      encoding: "base64",
-    });
+    let base64: string;
+    let fileExt: string;
+    let contentType: string;
+
+    // Determine file extension and content type
+    if (mimeType) {
+      fileExt = getExtensionFromMimeType(mimeType);
+      contentType = mimeType;
+    } else {
+      // Fallback: try to extract from URI
+      const uriParts = imageUri.split(".");
+      const ext = uriParts[uriParts.length - 1]?.toLowerCase();
+      // Only use if it looks like a valid image extension
+      fileExt = ["jpg", "jpeg", "png", "gif", "webp", "heic", "heif"].includes(ext) ? ext : "jpg";
+      contentType = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
+    }
+
+    // Handle different URI types
+    if (Platform.OS === "android" && imageUri.startsWith("content://")) {
+      // For Android content URIs, copy to a local file first
+      const localUri = `${FileSystem.cacheDirectory}avatar_temp.${fileExt}`;
+      await FileSystem.copyAsync({
+        from: imageUri,
+        to: localUri,
+      });
+      base64 = await FileSystem.readAsStringAsync(localUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      // Clean up temp file
+      await FileSystem.deleteAsync(localUri, { idempotent: true });
+    } else {
+      // For file:// URIs (iOS and some Android)
+      base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+    }
 
     // Generate unique filename
-    const fileExt = imageUri.split(".").pop()?.toLowerCase() || "jpg";
     const fileName = `${userId}/${Date.now()}.${fileExt}`;
-    const contentType = `image/${fileExt === "jpg" ? "jpeg" : fileExt}`;
 
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage

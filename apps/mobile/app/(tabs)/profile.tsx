@@ -176,7 +176,7 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleAvatarChange = async (imageUri: string) => {
+  const handleAvatarChange = async (imageUri: string, mimeType?: string) => {
     if (!user) {
       Alert.alert("Error", "Please wait for the app to load.");
       return;
@@ -184,7 +184,7 @@ export default function ProfileScreen() {
 
     setUploadingAvatar(true);
     try {
-      const avatarUrl = await uploadAvatar(user.id, imageUri);
+      const avatarUrl = await uploadAvatar(user.id, imageUri, mimeType);
       if (avatarUrl) {
         await updateAvatar(avatarUrl);
       } else {

@@ -26,7 +26,7 @@ interface ProfileAvatarProps {
   avatarUrl?: string | null;
   size?: number;
   editable?: boolean;
-  onAvatarChange?: (uri: string) => void;
+  onAvatarChange?: (uri: string, mimeType?: string) => void;
   showBorder?: boolean;
   borderColor?: string;
 }
@@ -98,9 +98,9 @@ export function ProfileAvatar({
       });
 
       if (!result.canceled && result.assets[0]) {
-        const uri = result.assets[0].uri;
-        setLocalUri(uri);
-        onAvatarChange(uri);
+        const asset = result.assets[0];
+        setLocalUri(asset.uri);
+        onAvatarChange(asset.uri, asset.mimeType || undefined);
       }
     } catch (error) {
       console.error("Error picking image:", error);
