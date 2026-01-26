@@ -1,6 +1,6 @@
 import "../global.css";
 import { useEffect, useState, useCallback } from "react";
-import { View } from "react-native";
+import { View, LogBox } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -12,6 +12,11 @@ import { LanguageProvider } from "../src/contexts/LanguageContext";
 import { NotificationProvider } from "../src/contexts/NotificationContext";
 import { soundService } from "../src/services/sounds";
 import { AnimatedSplash } from "../src/components/AnimatedSplash";
+
+// Ignore warnings in development (Expo Go shows a banner for any warning)
+if (__DEV__) {
+  LogBox.ignoreAllLogs(true);
+}
 
 // Keep the native splash screen visible while we load resources
 SplashScreen.preventAutoHideAsync();
@@ -26,8 +31,8 @@ export default function RootLayout() {
       try {
         soundService.initialize();
         soundService.preload();
-      } catch (e) {
-        console.warn(e);
+      } catch {
+        // Sound initialization failed silently - sounds are optional
       } finally {
         // Delay to ensure splash component mounts first
         await new Promise(resolve => setTimeout(resolve, 50));

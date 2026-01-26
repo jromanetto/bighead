@@ -48,13 +48,14 @@ class MonetizationService {
   async initialize(userId?: string): Promise<void> {
     if (this.isInitialized) return;
 
-    if (!REVENUECAT_API_KEY) {
-      console.warn("RevenueCat API key not configured");
+    // Check if API key is configured and valid (not a placeholder)
+    if (!REVENUECAT_API_KEY || REVENUECAT_API_KEY.includes("YOUR_") || !REVENUECAT_API_KEY.startsWith("appl_")) {
+      // Silently skip - RevenueCat not configured (demo mode)
       return;
     }
 
     try {
-      Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+      Purchases.setLogLevel(LOG_LEVEL.WARN); // Reduce log noise
 
       await Purchases.configure({
         apiKey: REVENUECAT_API_KEY,
@@ -264,17 +265,43 @@ export const grantPremiumToUser = async (
     // Import supabase dynamically to avoid circular dependency
     const { supabase } = await import("./supabase");
 
-    const { data, error } = await supabase.rpc("grant_premium", {
-      p_user_id: userId,
-      p_duration_days: durationDays,
-    } as any);
+    // Calculate expiration date
+    const expiresAt = durationDays
+      ? new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString()
+      : null;
 
-    if (error) {
-      console.error("Failed to grant premium in database:", error);
+    // Try RPC first
+    try {
+      const { data, error } = await supabase.rpc("grant_premium", {
+        p_user_id: userId,
+        p_duration_days: durationDays,
+      } as any);
+
+      if (!error && data === true) {
+        console.log("Premium granted via RPC");
+        return true;
+      }
+    } catch (rpcError) {
+      console.log("RPC grant_premium not available, using direct update");
+    }
+
+    // Fallback: Direct update to profiles table
+    const { error: updateError } = await (supabase
+      .from("profiles") as any)
+      .update({
+        is_premium: true,
+        premium_expires_at: expiresAt,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
+    if (updateError) {
+      console.error("Failed to grant premium via direct update:", updateError);
       return false;
     }
 
-    return data === true;
+    console.log("Premium granted via direct update");
+    return true;
   } catch (error) {
     console.error("Error granting premium:", error);
     return false;

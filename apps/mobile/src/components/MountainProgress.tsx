@@ -18,6 +18,7 @@ import {
   getCurrentLevelNumber,
   getLevelDifficulty,
   Category,
+  CategoryInfo,
   CATEGORIES,
 } from "../types/adventure";
 
@@ -35,13 +36,17 @@ const COLORS = {
   textMuted: "#9ca3af",
 };
 
-// Category positions on the mountain path (percentage from bottom)
-// 11 categories arranged in a zigzag pattern
-const CATEGORY_POSITIONS = CATEGORIES.map((cat, index) => ({
-  code: cat.code,
+// Mountain step positions (percentage from bottom)
+// 11 steps arranged in a zigzag pattern - steps are filled by completed categories
+const MOUNTAIN_STEPS = CATEGORIES.map((_, index) => ({
   y: 0.08 + (index / (CATEGORIES.length - 1)) * 0.82, // Spread from 8% to 90%
   side: index % 2 === 0 ? "left" : "right", // Alternate sides
 }));
+
+// Helper to get category info by code
+const getCategoryByCode = (code: Category): CategoryInfo | undefined => {
+  return CATEGORIES.find(cat => cat.code === code);
+};
 
 interface MountainProgressProps {
   tier: Tier;
@@ -49,6 +54,62 @@ interface MountainProgressProps {
   completedCategories: Category[];
   totalCategories: number;
   avatarUrl?: string | null;
+  username?: string | null;
+  justCompletedCategory?: Category | null;
+}
+
+// Generate a consistent color from username
+const getAvatarColor = (username: string): string => {
+  const colors = [
+    "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7",
+    "#DDA0DD", "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E9",
+    "#F8B500", "#00CED1", "#FF7F50", "#9370DB", "#20B2AA",
+  ];
+  let hash = 0;
+  for (let i = 0; i < username.length; i++) {
+    hash = username.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+};
+
+// Default avatar component with first letter
+function DefaultAvatar({
+  username,
+  size = 44,
+  tierColor,
+}: {
+  username: string;
+  size?: number;
+  tierColor: string;
+}) {
+  const letter = username.charAt(0).toUpperCase();
+  const bgColor = getAvatarColor(username);
+
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: bgColor,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text
+        style={{
+          color: "#FFFFFF",
+          fontSize: size * 0.5,
+          fontWeight: "800",
+          textShadowColor: "rgba(0,0,0,0.3)",
+          textShadowOffset: { width: 0, height: 1 },
+          textShadowRadius: 2,
+        }}
+      >
+        {letter}
+      </Text>
+    </View>
+  );
 }
 
 // Simple fallback component for web (no Skia)
@@ -58,11 +119,34 @@ function MountainProgressFallback({
   completedCategories,
   totalCategories,
   avatarUrl,
+  username,
+  justCompletedCategory,
 }: MountainProgressProps) {
   const currentLevel = getCurrentLevelNumber(tier, level);
   const totalLevels = 24; // 8 tiers × 3 levels
   const tierInfo = getTierInfo(tier);
   const difficulty = getLevelDifficulty(level);
+
+  // Animation for just completed category
+  const celebrationScale = useSharedValue(1);
+
+  useEffect(() => {
+    if (justCompletedCategory) {
+      // Pulse animation for the completed category
+      celebrationScale.value = withRepeat(
+        withSequence(
+          withTiming(1.3, { duration: 300 }),
+          withTiming(1, { duration: 300 })
+        ),
+        4,
+        false
+      );
+    }
+  }, [justCompletedCategory]);
+
+  const celebrationAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: celebrationScale.value }],
+  }));
 
   // Progress based on completed categories in current level
   const progressPercent = useMemo(() => {
@@ -188,16 +272,72 @@ function MountainProgressFallback({
           <Text style={{ fontSize: 28 }}>🏁</Text>
         </View>
 
-        {/* Category icons on the path */}
-        {CATEGORIES.map((cat, index) => {
-          const position = CATEGORY_POSITIONS[index];
-          const isCompleted = completedCategories.includes(cat.code);
-          const yPos = CANVAS_HEIGHT * (1 - position.y) - 20;
-          const xOffset = position.side === "left" ? "30%" : "55%";
+        {/* Category icons on the path - displayed by completion order */}
+        {MOUNTAIN_STEPS.map((step, stepIndex) => {
+          const yPos = CANVAS_HEIGHT * (1 - step.y) - 20;
+          const xOffset = step.side === "left" ? "30%" : "55%";
+
+          // Check if this step has a completed category
+          const completedCategoryCode = completedCategories[stepIndex];
+          const categoryInfo = completedCategoryCode ? getCategoryByCode(completedCategoryCode) : null;
+          const isCompleted = !!categoryInfo;
+          const isJustCompleted = justCompletedCategory === completedCategoryCode;
+          const isNextStep = stepIndex === completedCategories.length; // Next position for avatar
+          const isFuture = stepIndex > completedCategories.length;
+
+          // Determine what to display
+          let displayContent: string;
+          let stepColor = "rgba(255,255,255,0.2)";
+
+          if (isCompleted && categoryInfo) {
+            displayContent = categoryInfo.icon;
+            stepColor = categoryInfo.color;
+          } else if (isNextStep) {
+            displayContent = "📍"; // Current position marker
+            stepColor = "#FFD700";
+          } else {
+            displayContent = "❓"; // Mystery for future steps
+          }
+
+          if (isJustCompleted) {
+            return (
+              <Animated.View
+                key={`step-${stepIndex}`}
+                style={[
+                  {
+                    position: "absolute",
+                    top: yPos,
+                    left: xOffset,
+                    alignItems: "center",
+                  },
+                  celebrationAnimatedStyle,
+                ]}
+              >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: `${stepColor}80`,
+                    borderWidth: 3,
+                    borderColor: COLORS.gold,
+                    shadowColor: COLORS.gold,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 1,
+                    shadowRadius: 15,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>{displayContent}</Text>
+                </View>
+              </Animated.View>
+            );
+          }
 
           return (
             <View
-              key={cat.code}
+              key={`step-${stepIndex}`}
               style={{
                 position: "absolute",
                 top: yPos,
@@ -212,16 +352,36 @@ function MountainProgressFallback({
                   borderRadius: 20,
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: isCompleted ? `${cat.color}40` : "rgba(255,255,255,0.1)",
+                  backgroundColor: isCompleted ? `${stepColor}40` : isNextStep ? "rgba(255,200,0,0.2)" : "rgba(255,255,255,0.1)",
                   borderWidth: 2,
-                  borderColor: isCompleted ? cat.color : "rgba(255,255,255,0.2)",
-                  shadowColor: isCompleted ? cat.color : "transparent",
+                  borderColor: isCompleted ? stepColor : isNextStep ? "#FFD700" : "rgba(255,255,255,0.2)",
+                  shadowColor: isCompleted ? stepColor : isNextStep ? "#FFD700" : "transparent",
                   shadowOffset: { width: 0, height: 0 },
                   shadowOpacity: 0.6,
                   shadowRadius: 8,
                 }}
               >
-                <Text style={{ fontSize: 18 }}>{isCompleted ? "✓" : cat.icon}</Text>
+                <Text style={{ fontSize: 18 }}>{displayContent}</Text>
+                {/* Checkmark badge for completed categories */}
+                {isCompleted && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      bottom: -2,
+                      right: -2,
+                      width: 16,
+                      height: 16,
+                      borderRadius: 8,
+                      backgroundColor: "#22c55e",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: 2,
+                      borderColor: COLORS.bg,
+                    }}
+                  >
+                    <Text style={{ fontSize: 10, color: "#fff" }}>✓</Text>
+                  </View>
+                )}
               </View>
             </View>
           );
@@ -233,7 +393,7 @@ function MountainProgressFallback({
             position: "absolute",
             top: avatarPositionIndex === 0
               ? CANVAS_HEIGHT - 60
-              : CANVAS_HEIGHT * (1 - CATEGORY_POSITIONS[Math.min(avatarPositionIndex - 1, CATEGORIES.length - 1)].y) - 45,
+              : CANVAS_HEIGHT * (1 - MOUNTAIN_STEPS[Math.min(avatarPositionIndex - 1, MOUNTAIN_STEPS.length - 1)].y) - 45,
             left: "50%",
             marginLeft: -25,
             width: 50,
@@ -257,8 +417,10 @@ function MountainProgressFallback({
               source={{ uri: avatarUrl }}
               style={{ width: 44, height: 44, borderRadius: 22 }}
             />
+          ) : username ? (
+            <DefaultAvatar username={username} size={44} tierColor={tierInfo.color} />
           ) : (
-            <Text style={{ fontSize: 24 }}>🧗</Text>
+            <DefaultAvatar username="?" size={44} tierColor={tierInfo.color} />
           )}
         </View>
 
@@ -275,47 +437,38 @@ function MountainProgressFallback({
         </Animated.View>
       </View>
 
-      {/* Difficulty Progress Bar */}
+      {/* Category Progress Bar */}
       <View className="w-full px-4 mt-4">
-        <View className="flex-row justify-between mb-2">
-          {(["easy", "medium", "hard"] as const).map((diff) => {
-            const isActive = difficulty === diff;
-            const isPast =
-              (diff === "easy" && (difficulty === "medium" || difficulty === "hard")) ||
-              (diff === "medium" && difficulty === "hard");
-
-            return (
-              <View
-                key={diff}
-                className="flex-1 mx-1"
-                style={{
-                  opacity: isActive || isPast ? 1 : 0.4,
-                }}
-              >
-                <View
-                  style={{
-                    height: 6,
-                    backgroundColor: isPast
-                      ? "#22c55e"
-                      : isActive
-                      ? COLORS.primary
-                      : "rgba(255,255,255,0.2)",
-                    borderRadius: 3,
-                  }}
-                />
-                <Text
-                  style={{
-                    color: isActive ? COLORS.primary : isPast ? "#22c55e" : COLORS.textMuted,
-                    fontSize: 10,
-                    textAlign: "center",
-                    marginTop: 4,
-                  }}
-                >
-                  {diff === "easy" ? "Facile" : diff === "medium" ? "Moyen" : "Difficile"}
-                </Text>
-              </View>
-            );
-          })}
+        {/* Progress bar background */}
+        <View
+          style={{
+            height: 8,
+            backgroundColor: "rgba(255,255,255,0.15)",
+            borderRadius: 4,
+            overflow: "hidden",
+          }}
+        >
+          {/* Progress fill */}
+          <View
+            style={{
+              height: "100%",
+              width: `${(completedCategories.length / totalCategories) * 100}%`,
+              backgroundColor: COLORS.primary,
+              borderRadius: 4,
+            }}
+          />
+        </View>
+        {/* Labels */}
+        <View className="flex-row justify-between mt-2">
+          <Text style={{ color: COLORS.textMuted, fontSize: 10 }}>
+            Facile
+          </Text>
+          <Text style={{ color: COLORS.primary, fontSize: 10, fontWeight: "600" }}>
+            {completedCategories.length}/{totalCategories} catégories
+          </Text>
+          <Text style={{ color: COLORS.textMuted, fontSize: 10 }}>
+            Difficile
+          </Text>
         </View>
       </View>
 
@@ -365,20 +518,23 @@ if (Platform.OS !== "web") {
     const path = Skia.Path.Make();
     const centerX = CANVAS_WIDTH / 2;
     const baseY = CANVAS_HEIGHT - 15;
-    const peakY = 25;
-    const baseWidth = CANVAS_WIDTH * 0.75;
+    const peakY = 35;
+    const baseWidth = CANVAS_WIDTH * 0.95; // Wider base
 
-    // Main mountain shape with more realistic curves
+    // Mountain shape - wide base, narrow peak
     path.moveTo(centerX - baseWidth / 2, baseY);
+    // Left side - gentle curve outward then inward to peak
     path.cubicTo(
-      centerX - baseWidth / 3, baseY - 80,
-      centerX - baseWidth / 4, baseY - 200,
-      centerX - 40, peakY + 60
+      centerX - baseWidth / 2.2, baseY - 100,  // Control point 1 - keeps width
+      centerX - baseWidth / 3, baseY - 250,     // Control point 2 - starts narrowing
+      centerX - 25, peakY + 40                   // End near peak
     );
-    path.quadTo(centerX, peakY, centerX + 40, peakY + 60);
+    // Peak - narrow point
+    path.quadTo(centerX, peakY, centerX + 25, peakY + 40);
+    // Right side - mirror of left
     path.cubicTo(
-      centerX + baseWidth / 4, baseY - 200,
-      centerX + baseWidth / 3, baseY - 80,
+      centerX + baseWidth / 3, baseY - 250,
+      centerX + baseWidth / 2.2, baseY - 100,
       centerX + baseWidth / 2, baseY
     );
     path.close();
@@ -389,14 +545,15 @@ if (Platform.OS !== "web") {
   const createSnowCapPath = () => {
     const path = Skia.Path.Make();
     const centerX = CANVAS_WIDTH / 2;
-    const peakY = 25;
-    const snowHeight = 90;
+    const peakY = 35;
+    const snowHeight = 70; // Smaller snow cap
 
-    path.moveTo(centerX - 70, peakY + snowHeight);
-    path.quadTo(centerX - 50, peakY + snowHeight - 25, centerX - 30, peakY + 35);
-    path.quadTo(centerX - 12, peakY + 8, centerX, peakY);
-    path.quadTo(centerX + 12, peakY + 8, centerX + 30, peakY + 35);
-    path.quadTo(centerX + 50, peakY + snowHeight - 25, centerX + 70, peakY + snowHeight);
+    // Narrower snow cap to match the narrow peak
+    path.moveTo(centerX - 55, peakY + snowHeight);
+    path.quadTo(centerX - 40, peakY + snowHeight - 20, centerX - 22, peakY + 30);
+    path.quadTo(centerX - 10, peakY + 8, centerX, peakY);
+    path.quadTo(centerX + 10, peakY + 8, centerX + 22, peakY + 30);
+    path.quadTo(centerX + 40, peakY + snowHeight - 20, centerX + 55, peakY + snowHeight);
     path.close();
 
     return path;
@@ -458,6 +615,8 @@ if (Platform.OS !== "web") {
     completedCategories,
     totalCategories,
     avatarUrl,
+    username,
+    justCompletedCategory,
   }: MountainProgressProps) {
     const currentLevel = getCurrentLevelNumber(tier, level);
     const totalLevels = 24; // 8 tiers × 3 levels
@@ -467,6 +626,25 @@ if (Platform.OS !== "web") {
     const progressAnim = useSharedValue(0);
     const glowAnim = useSharedValue(0);
     const cloudAnim = useSharedValue(0);
+    const celebrationScale = useSharedValue(1);
+
+    // Animation for just completed category
+    useEffect(() => {
+      if (justCompletedCategory) {
+        celebrationScale.value = withRepeat(
+          withSequence(
+            withTiming(1.4, { duration: 300 }),
+            withTiming(1, { duration: 300 })
+          ),
+          5,
+          false
+        );
+      }
+    }, [justCompletedCategory]);
+
+    const celebrationAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: celebrationScale.value }],
+    }));
 
     // Progress based on completed categories
     const targetProgress = useMemo(() => {
@@ -505,11 +683,11 @@ if (Platform.OS !== "web") {
       const baseY = CANVAS_HEIGHT - 55;
       const peakY = 45;
       const totalHeight = baseY - peakY;
-      // Position based on completed categories
-      const categoryProgress = avatarPositionIndex === 0
+      // Position based on completed categories (in completion order)
+      const stepProgress = avatarPositionIndex === 0
         ? 0
-        : CATEGORY_POSITIONS[Math.min(avatarPositionIndex - 1, CATEGORIES.length - 1)].y;
-      const currentY = baseY - totalHeight * categoryProgress;
+        : MOUNTAIN_STEPS[Math.min(avatarPositionIndex - 1, MOUNTAIN_STEPS.length - 1)].y;
+      const currentY = baseY - totalHeight * stepProgress;
 
       return {
         transform: [{ translateY: currentY }],
@@ -646,21 +824,26 @@ if (Platform.OS !== "web") {
               />
             </Path>
 
-            {/* Category markers on the path */}
-            {CATEGORIES.map((cat, index) => {
-              const position = CATEGORY_POSITIONS[index];
+            {/* Category markers on the path - by completion order */}
+            {MOUNTAIN_STEPS.map((step, stepIndex) => {
               const baseY = CANVAS_HEIGHT - 35;
               const peakY = 45;
               const totalHeight = baseY - peakY;
-              const yPos = baseY - totalHeight * position.y;
-              const xOffset = position.side === "left" ? -50 : 50;
-              const isCompleted = completedCategories.includes(cat.code);
+              const yPos = baseY - totalHeight * step.y;
+              const xOffset = step.side === "left" ? -50 : 50;
+
+              // Check if this step has a completed category
+              const completedCategoryCode = completedCategories[stepIndex];
+              const categoryInfo = completedCategoryCode ? getCategoryByCode(completedCategoryCode) : null;
+              const isCompleted = !!categoryInfo;
+              const isNextStep = stepIndex === completedCategories.length;
+              const stepColor = categoryInfo?.color || "#FFD700";
 
               return (
-                <Group key={cat.code}>
-                  {/* Category glow when completed */}
-                  {isCompleted && (
-                    <Circle cx={CANVAS_WIDTH / 2 + xOffset} cy={yPos} r={22} color={cat.color}>
+                <Group key={`step-${stepIndex}`}>
+                  {/* Category glow when completed or next step */}
+                  {(isCompleted || isNextStep) && (
+                    <Circle cx={CANVAS_WIDTH / 2 + xOffset} cy={yPos} r={22} color={isCompleted ? stepColor : "#FFD700"}>
                       <Blur blur={8} />
                     </Circle>
                   )}
@@ -669,7 +852,7 @@ if (Platform.OS !== "web") {
                     cx={CANVAS_WIDTH / 2 + xOffset}
                     cy={yPos}
                     r={18}
-                    color={isCompleted ? `${cat.color}60` : "rgba(255,255,255,0.1)"}
+                    color={isCompleted ? `${stepColor}60` : isNextStep ? "rgba(255,200,0,0.3)" : "rgba(255,255,255,0.1)"}
                   />
                   {/* Category border */}
                   <Circle
@@ -678,7 +861,7 @@ if (Platform.OS !== "web") {
                     r={18}
                     style="stroke"
                     strokeWidth={2}
-                    color={isCompleted ? cat.color : "rgba(255,255,255,0.3)"}
+                    color={isCompleted ? stepColor : isNextStep ? "#FFD700" : "rgba(255,255,255,0.3)"}
                   />
                 </Group>
               );
@@ -736,8 +919,10 @@ if (Platform.OS !== "web") {
                   source={{ uri: avatarUrl }}
                   style={{ width: 44, height: 44, borderRadius: 22 }}
                 />
+              ) : username ? (
+                <DefaultAvatar username={username} size={44} tierColor={tierInfo.color} />
               ) : (
-                <Text style={{ fontSize: 24 }}>🧗</Text>
+                <DefaultAvatar username="?" size={44} tierColor={tierInfo.color} />
               )}
             </View>
           </Animated.View>
@@ -753,19 +938,56 @@ if (Platform.OS !== "web") {
             <Text style={{ fontSize: 36 }}>🏁</Text>
           </View>
 
-          {/* Category icons (React Native for emoji support) */}
-          {CATEGORIES.map((cat, index) => {
-            const position = CATEGORY_POSITIONS[index];
+          {/* Category icons (React Native for emoji support) - by completion order */}
+          {MOUNTAIN_STEPS.map((step, stepIndex) => {
             const baseY = CANVAS_HEIGHT - 35;
             const peakY = 45;
             const totalHeight = baseY - peakY;
-            const yPos = baseY - totalHeight * position.y;
-            const isRight = position.side === "right";
-            const isCompleted = completedCategories.includes(cat.code);
+            const yPos = baseY - totalHeight * step.y;
+            const isRight = step.side === "right";
+
+            // Check if this step has a completed category
+            const completedCategoryCode = completedCategories[stepIndex];
+            const categoryInfo = completedCategoryCode ? getCategoryByCode(completedCategoryCode) : null;
+            const isCompleted = !!categoryInfo;
+            const isJustCompleted = justCompletedCategory === completedCategoryCode;
+            const isNextStep = stepIndex === completedCategories.length;
+
+            // Determine what to display
+            let displayContent: string;
+            if (isCompleted && categoryInfo) {
+              displayContent = categoryInfo.icon;
+            } else if (isNextStep) {
+              displayContent = "📍";
+            } else {
+              displayContent = "❓";
+            }
+
+            if (isJustCompleted) {
+              return (
+                <Animated.View
+                  key={`icon-step-${stepIndex}`}
+                  style={[
+                    {
+                      position: "absolute",
+                      top: yPos - 18,
+                      [isRight ? "right" : "left"]: isRight ? CANVAS_WIDTH / 2 - 68 : CANVAS_WIDTH / 2 - 68,
+                      width: 36,
+                      height: 36,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+                    celebrationAnimatedStyle,
+                  ]}
+                >
+                  <Text style={{ fontSize: 18 }}>{displayContent}</Text>
+                </Animated.View>
+              );
+            }
 
             return (
               <View
-                key={`icon-${cat.code}`}
+                key={`icon-step-${stepIndex}`}
                 style={{
                   position: "absolute",
                   top: yPos - 18,
@@ -776,7 +998,27 @@ if (Platform.OS !== "web") {
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ fontSize: 18 }}>{isCompleted ? "✓" : cat.icon}</Text>
+                <Text style={{ fontSize: 18 }}>{displayContent}</Text>
+                {/* Checkmark badge for completed categories */}
+                {isCompleted && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      bottom: -4,
+                      right: -4,
+                      width: 14,
+                      height: 14,
+                      borderRadius: 7,
+                      backgroundColor: "#22c55e",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: 2,
+                      borderColor: COLORS.bg,
+                    }}
+                  >
+                    <Text style={{ fontSize: 8, color: "#fff" }}>✓</Text>
+                  </View>
+                )}
               </View>
             );
           })}

@@ -376,7 +376,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!state.user) return;
 
     const profile = await fetchProfile(state.user.id);
-    setState(prev => ({ ...prev, profile }));
+    setState(prev => ({
+      ...prev,
+      profile,
+      isPremium: checkPremiumStatus(profile),
+    }));
   }, [state.user, fetchProfile]);
 
   // Update avatar URL

@@ -1,8 +1,9 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ConfettiEffect } from "../../../src/components/effects/ConfettiEffect";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { MountainProgress } from "../../../src/components/MountainProgress";
 import { CategoryWheel } from "../../../src/components/CategoryWheel";
@@ -38,11 +39,28 @@ type ViewMode = "mountain" | "wheel";
 
 export default function AdventureScreen() {
   const { user, isPremium, isAnonymous, refreshProfile, profile } = useAuth();
+  const { completedCategory } = useLocalSearchParams<{ completedCategory?: Category }>();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<AdventureProgress | null>(null);
   const [attemptsRemaining, setAttemptsRemaining] = useState(MAX_FREE_ATTEMPTS);
   const [canPlayGame, setCanPlayGame] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("mountain");
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [justCompletedCategory, setJustCompletedCategory] = useState<Category | null>(null);
+
+  // Handle celebration when returning from successful game
+  useEffect(() => {
+    if (completedCategory) {
+      setJustCompletedCategory(completedCategory);
+      setShowCelebration(true);
+      // Clear celebration after animation
+      const timer = setTimeout(() => {
+        setShowCelebration(false);
+        setJustCompletedCategory(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [completedCategory]);
 
   // Refresh profile when screen gains focus (to get latest premium status)
   useFocusEffect(
@@ -155,6 +173,9 @@ export default function AdventureScreen() {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      {/* Celebration confetti when returning from successful game */}
+      <ConfettiEffect trigger={showCelebration} particleCount={100} />
+
       {/* Header */}
       <View className="flex-row items-center justify-between px-5 pt-4 mb-2">
         <View className="flex-row items-center">
@@ -220,51 +241,36 @@ export default function AdventureScreen() {
               completedCategories={progress.completed_categories as Category[]}
               totalCategories={CATEGORIES.length}
               avatarUrl={profile?.avatar_url}
+              username={profile?.username}
+              justCompletedCategory={justCompletedCategory}
             />
-
-            {/* Categories Progress */}
-            <View className="px-5 mt-6">
-              <Text className="text-white font-bold mb-3">
-                Catégories complétées ({progress.completed_categories.length}/{CATEGORIES.length})
-              </Text>
-              <View className="flex-row flex-wrap">
-                {CATEGORIES.map((cat) => {
-                  const isCompleted = progress.completed_categories.includes(cat.code);
-                  return (
-                    <View
-                      key={cat.code}
-                      className="w-10 h-10 rounded-full items-center justify-center m-1"
-                      style={{
-                        backgroundColor: isCompleted ? `${cat.color}30` : COLORS.surfaceLight,
-                        borderWidth: 2,
-                        borderColor: isCompleted ? cat.color : "rgba(255,255,255,0.1)",
-                      }}
-                    >
-                      <Text className="text-lg">{isCompleted ? "✓" : cat.icon}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
 
             {/* Start Button */}
             <View className="px-5 mt-8">
               <Pressable
-                onPress={handleStartWheel}
+                onPress={() => {
+                  if (canPlayGame || isPremium) {
+                    handleStartWheel();
+                  } else {
+                    // Navigate to premium when out of attempts
+                    buttonPressFeedback();
+                    router.push("/premium");
+                  }
+                }}
                 className="py-5 rounded-2xl items-center active:opacity-80"
                 style={{
-                  backgroundColor: canPlayGame || isPremium ? COLORS.primary : COLORS.surfaceLight,
+                  backgroundColor: canPlayGame || isPremium ? COLORS.primary : COLORS.gold,
                 }}
               >
                 <Text
                   className="text-xl font-black"
-                  style={{ color: canPlayGame || isPremium ? COLORS.bg : COLORS.textMuted }}
+                  style={{ color: COLORS.bg }}
                 >
-                  {canPlayGame || isPremium ? "🎡 LANCER LA ROUE" : "⏰ REVIENS DEMAIN"}
+                  {canPlayGame || isPremium ? "🎡 LANCER LA ROUE" : "👑 PASSER PREMIUM"}
                 </Text>
                 {!canPlayGame && !isPremium && (
-                  <Text style={{ color: COLORS.textMuted }} className="text-sm mt-1">
-                    ou passe en Premium pour jouer illimité
+                  <Text style={{ color: COLORS.bg, opacity: 0.8 }} className="text-sm mt-1">
+                    Pour jouer en illimité
                   </Text>
                 )}
               </Pressable>

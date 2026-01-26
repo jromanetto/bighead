@@ -158,7 +158,7 @@ export function getLevelDifficulty(level: 1 | 2 | 3): TierDifficulty {
  * Get the tier difficulty level (legacy - returns based on tier position)
  */
 export function getTierDifficulty(tier: Tier): TierDifficulty {
-  return TIER_DIFFICULTY_MAP[tier];
+  return TIER_DIFFICULTY_MAP[tier] || 'easy';
 }
 
 // Helper functions
@@ -172,8 +172,10 @@ export function getCategoryInfo(category: Category): CategoryInfo {
 
 export function getNextTier(tier: Tier): Tier | null {
   const index = TIERS.findIndex(t => t.code === tier);
-  if (index < TIERS.length - 1) {
-    return TIERS[index + 1].code;
+  // Handle unknown tier by defaulting to first tier
+  const safeIndex = index >= 0 ? index : 0;
+  if (safeIndex < TIERS.length - 1) {
+    return TIERS[safeIndex + 1].code;
   }
   return null;
 }
@@ -195,7 +197,9 @@ export function getTotalLevels(): number {
 
 export function getCurrentLevelNumber(tier: Tier, level: 1 | 2 | 3): number {
   const tierIndex = TIERS.findIndex(t => t.code === tier);
-  return tierIndex * 3 + level;
+  // Default to first tier if not found (handles old data)
+  const safeTierIndex = tierIndex >= 0 ? tierIndex : 0;
+  return safeTierIndex * 3 + level;
 }
 
 // Family mode types

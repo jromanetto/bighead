@@ -64,12 +64,10 @@ function ImageWithFallback({
   const alternativeUrls = getAlternativeUrls(uri);
 
   const handleError = () => {
-    console.warn("Image failed to load:", currentUri);
-
-    // Try next alternative URL
+    // Silent retry - no warning needed
     const nextIndex = attemptIndex + 1;
     if (nextIndex < alternativeUrls.length) {
-      console.log("Trying alternative:", alternativeUrls[nextIndex]);
+      // Try next alternative URL silently
       setAttemptIndex(nextIndex);
       setCurrentUri(alternativeUrls[nextIndex]);
       setLoading(true);
@@ -158,6 +156,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
+import { ConfettiEffect } from "../../../src/components/effects/ConfettiEffect";
 
 const COLORS = {
   bg: "#161a1d",
@@ -889,8 +888,15 @@ export default function AdventurePlayScreen() {
 
   const handleNext = () => {
     if (gameOver) {
-      // If lost, go to home. If won, go back to mountain
-      router.replace(success ? "/game/adventure" : "/");
+      // If lost, go to home. If won, go back to mountain with completed category
+      if (success) {
+        router.replace({
+          pathname: "/game/adventure",
+          params: { completedCategory: category },
+        });
+      } else {
+        router.replace("/");
+      }
       return;
     }
 
@@ -907,6 +913,12 @@ export default function AdventurePlayScreen() {
     // If game is over and lost, go to home
     if (gameOver && !success) {
       router.replace("/");
+    } else if (success) {
+      // Go back to mountain with completed category for animation
+      router.replace({
+        pathname: "/game/adventure",
+        params: { completedCategory: category },
+      });
     } else {
       router.replace("/game/adventure");
     }
@@ -951,6 +963,9 @@ export default function AdventurePlayScreen() {
   if (gameOver) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: COLORS.bg }}>
+        {/* Confetti on success */}
+        {success && <ConfettiEffect trigger={true} particleCount={80} />}
+
         <Text className="text-6xl mb-4">{success ? "🎉" : "😔"}</Text>
         <Text className="text-white text-2xl font-black text-center mb-2">
           {success ? "CATÉGORIE VALIDÉE !" : "PERDU !"}
