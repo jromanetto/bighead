@@ -12,6 +12,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -30,8 +32,8 @@ export function useNotifications(): UseNotificationsReturn {
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<Notifications.PermissionStatus | null>(null);
 
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
   const { user } = useAuth();
 
   // Register for push notifications
@@ -219,10 +221,10 @@ export function useNotifications(): UseNotificationsReturn {
 
     return () => {
       if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
+        notificationListener.current.remove();
       }
       if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+        responseListener.current.remove();
       }
     };
   }, []);

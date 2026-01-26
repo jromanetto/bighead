@@ -48,6 +48,11 @@ export default function DuelLobbyScreen() {
       return;
     }
 
+    if (!user) {
+      setError("You must be logged in");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -64,6 +69,11 @@ export default function DuelLobbyScreen() {
     buttonPressFeedback();
     if (!isPremium) {
       router.push("/premium");
+      return;
+    }
+
+    if (!user) {
+      setError("You must be logged in");
       return;
     }
 

@@ -91,25 +91,25 @@ export async function completeCategory(
       levelUp = true;
     }
     // Reset completed categories for the new level
-    const { error } = await supabase
-      .from("adventure_progress")
+    const { error } = await (supabase
+      .from("adventure_progress") as any)
       .update({
         tier: newTier,
         level: newLevel,
         completed_categories: [],
         updated_at: new Date().toISOString(),
-      } as any)
+      })
       .eq("user_id", userId);
 
     if (error) throw error;
   } else {
     // Just update completed categories
-    const { error } = await supabase
-      .from("adventure_progress")
+    const { error } = await (supabase
+      .from("adventure_progress") as any)
       .update({
         completed_categories: newCompletedCategories,
         updated_at: new Date().toISOString(),
-      } as any)
+      })
       .eq("user_id", userId);
 
     if (error) throw error;
@@ -150,9 +150,9 @@ export async function useAttempt(userId: string): Promise<{ attemptsRemaining: n
 
   if (existing) {
     const newAttemptsUsed = existing.attempts_used + 1;
-    const { error } = await supabase
-      .from("daily_attempts")
-      .update({ attempts_used: newAttemptsUsed } as any)
+    const { error } = await (supabase
+      .from("daily_attempts") as any)
+      .update({ attempts_used: newAttemptsUsed })
       .eq("user_id", userId)
       .eq("date", today);
 
@@ -218,6 +218,7 @@ export async function getAdventureQuestions(
 ): Promise<any[]> {
   // Try adaptive questions first (Elo-based matching)
   try {
+    // @ts-ignore - RPC function types not in generated types
     const { data: adaptiveData, error: adaptiveError } = await supabase.rpc("get_adaptive_questions", {
       p_user_id: userId,
       p_category: category,
@@ -226,9 +227,9 @@ export async function getAdventureQuestions(
       p_tier: tier,
     });
 
-    if (!adaptiveError && adaptiveData && adaptiveData.length > 0) {
-      console.log(`Got ${adaptiveData.length} adaptive questions for ${category}`);
-      return adaptiveData;
+    if (!adaptiveError && adaptiveData && (adaptiveData as any[]).length > 0) {
+      console.log(`Got ${(adaptiveData as any[]).length} adaptive questions for ${category}`);
+      return adaptiveData as any[];
     }
   } catch (err) {
     console.log("Adaptive questions not available, using fallback:", err);
@@ -252,12 +253,13 @@ export async function getAdventureQuestions(
   const { min, max } = difficultyMap[tier];
 
   // Try to get unseen questions
+  // @ts-ignore - RPC function types not in generated types
   const { data, error } = await supabase.rpc("get_unseen_questions", {
     p_user_id: userId,
     p_category: category,
     p_limit: limit,
     p_language: "fr",
-  } as any);
+  });
 
   if (error) {
     console.error("Error getting unseen questions:", error);
@@ -305,15 +307,16 @@ export async function getFamilyQuestions(
   const effectiveLimit = limit === Infinity ? 100 : limit;
 
   // Try using the RPC function first (more efficient)
+  // @ts-ignore - RPC function types not in generated types
   const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
     p_min_age: effectiveMinAge,
     p_category: category === "mix" ? null : category,
     p_limit: effectiveLimit,
     p_language: "fr",
-  } as any);
+  });
 
-  if (!rpcError && rpcData && rpcData.length > 0) {
-    return rpcData;
+  if (!rpcError && rpcData && (rpcData as any[]).length > 0) {
+    return rpcData as any[];
   }
 
   // Fallback to direct query if RPC fails

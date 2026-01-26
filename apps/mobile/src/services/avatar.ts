@@ -50,20 +50,21 @@ export async function uploadAvatar(
     // Handle different URI types
     if (Platform.OS === "android" && imageUri.startsWith("content://")) {
       // For Android content URIs, copy to a local file first
+      // @ts-ignore - cacheDirectory exists at runtime
       const localUri = `${FileSystem.cacheDirectory}avatar_temp.${fileExt}`;
       await FileSystem.copyAsync({
         from: imageUri,
         to: localUri,
       });
       base64 = await FileSystem.readAsStringAsync(localUri, {
-        encoding: FileSystem.EncodingType.Base64,
+        encoding: "base64" as any,
       });
       // Clean up temp file
       await FileSystem.deleteAsync(localUri, { idempotent: true });
     } else {
       // For file:// URIs (iOS and some Android)
       base64 = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: FileSystem.EncodingType.Base64,
+        encoding: "base64" as any,
       });
     }
 

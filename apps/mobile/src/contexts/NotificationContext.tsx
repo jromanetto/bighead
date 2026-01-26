@@ -12,6 +12,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -42,8 +44,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [lastNotification, setLastNotification] = useState<Notifications.Notification | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
   const { user, isInitialized: authInitialized } = useAuth();
 
   // Register for push notifications

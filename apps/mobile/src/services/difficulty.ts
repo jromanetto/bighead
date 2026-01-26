@@ -77,6 +77,7 @@ export async function recordAnswer(
   tier?: string
 ): Promise<AnswerResult | null> {
   try {
+    // @ts-ignore - RPC function types not in generated types
     const { data, error } = await supabase.rpc("record_answer_and_update_ratings", {
       p_user_id: userId,
       p_question_id: questionId,
@@ -91,8 +92,8 @@ export async function recordAnswer(
     }
 
     // The RPC returns a table, get first row
-    if (data && data.length > 0) {
-      return data[0] as AnswerResult;
+    if (data && (data as any[]).length > 0) {
+      return (data as any[])[0] as AnswerResult;
     }
 
     return null;
@@ -114,6 +115,7 @@ export async function getAdaptiveQuestions(
   tier?: string
 ): Promise<AdaptiveQuestion[]> {
   try {
+    // @ts-ignore - RPC function types not in generated types
     const { data, error } = await supabase.rpc("get_adaptive_questions", {
       p_user_id: userId,
       p_category: category,
@@ -139,6 +141,7 @@ export async function getAdaptiveQuestions(
  */
 export async function getPlayerSkillSummary(userId: string): Promise<PlayerSkill[]> {
   try {
+    // @ts-ignore - RPC function types not in generated types
     const { data, error } = await supabase.rpc("get_player_skill_summary", {
       p_user_id: userId,
     });
@@ -163,7 +166,8 @@ export async function getPlayerCategorySkill(
   category: Category
 ): Promise<PlayerSkill | null> {
   try {
-    const { data, error } = await supabase
+    // @ts-ignore - player_skill table not in generated types
+    const { data, error }: { data: any; error: any } = await supabase
       .from("player_skill")
       .select("*")
       .eq("user_id", userId)
@@ -299,6 +303,7 @@ export function calculateMatchQuality(
  */
 export async function recalculateAllDifficulties(): Promise<number> {
   try {
+    // @ts-ignore - RPC function types not in generated types
     const { data, error } = await supabase.rpc("recalculate_all_question_difficulties");
 
     if (error) {
