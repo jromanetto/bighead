@@ -3,19 +3,16 @@
  * Montagne de la Connaissance
  */
 
-// Difficulty tiers (11 tiers × 3 levels = 33 total levels)
+// Character-based tiers (8 tiers × 3 levels = 24 total levels)
 export type Tier =
-  | 'coton'
-  | 'carton'
-  | 'bois'
-  | 'bronze'
-  | 'argent'
-  | 'gold'
-  | 'platinium'
-  | 'titane'
-  | 'diamant'
-  | 'mythique'
-  | 'legendaire';
+  | 'homer'
+  | 'mario'
+  | 'sherlock'
+  | 'tony'
+  | 'gandalf'
+  | 'yoda'
+  | 'leonardo'
+  | 'einstein';
 
 // All categories
 export type Category =
@@ -67,17 +64,14 @@ export interface TierInfo {
 }
 
 export const TIERS: TierInfo[] = [
-  { code: 'coton', name: 'Cotton', nameFr: 'Coton', color: '#f0f0f0', bgColor: '#e8f4f8', description: 'Débutant', icon: '🌱' },
-  { code: 'carton', name: 'Cardboard', nameFr: 'Carton', color: '#c4a35a', bgColor: '#f5f0e1', description: 'Novice', icon: '📦' },
-  { code: 'bois', name: 'Wood', nameFr: 'Bois', color: '#8B4513', bgColor: '#f5e6d3', description: 'Amateur', icon: '🪵' },
-  { code: 'bronze', name: 'Bronze', nameFr: 'Bronze', color: '#CD7F32', bgColor: '#f5ebe0', description: 'Confirmé', icon: '🥉' },
-  { code: 'argent', name: 'Silver', nameFr: 'Argent', color: '#C0C0C0', bgColor: '#f0f0f0', description: 'Expérimenté', icon: '🥈' },
-  { code: 'gold', name: 'Gold', nameFr: 'Gold', color: '#FFD700', bgColor: '#fff8dc', description: 'Avancé', icon: '🥇' },
-  { code: 'platinium', name: 'Platinum', nameFr: 'Platinium', color: '#E5E4E2', bgColor: '#f8f8f8', description: 'Expert', icon: '💎' },
-  { code: 'titane', name: 'Titanium', nameFr: 'Titane', color: '#878681', bgColor: '#e8e8e6', description: 'Maître', icon: '⚙️' },
-  { code: 'diamant', name: 'Diamond', nameFr: 'Diamant', color: '#b9f2ff', bgColor: '#e6faff', description: 'Champion', icon: '💠' },
-  { code: 'mythique', name: 'Mythic', nameFr: 'Mythique', color: '#9b59b6', bgColor: '#f3e5f5', description: 'Héros', icon: '🔮' },
-  { code: 'legendaire', name: 'Legendary', nameFr: 'Légendaire', color: '#ff6b35', bgColor: '#fff0eb', description: 'Légende', icon: '🏆' },
+  { code: 'homer', name: 'Homer Simpson', nameFr: 'Homer Simpson', color: '#FFD93D', bgColor: '#FFF8DC', description: 'Débutant', icon: '🥨' },
+  { code: 'mario', name: 'Mario', nameFr: 'Mario', color: '#E52521', bgColor: '#FFE4E1', description: 'Novice', icon: '🍄' },
+  { code: 'sherlock', name: 'Sherlock Holmes', nameFr: 'Sherlock Holmes', color: '#8B4513', bgColor: '#F5E6D3', description: 'Amateur', icon: '🔍' },
+  { code: 'tony', name: 'Tony Stark', nameFr: 'Tony Stark', color: '#8B0000', bgColor: '#FFE4E1', description: 'Confirmé', icon: '🤖' },
+  { code: 'gandalf', name: 'Gandalf', nameFr: 'Gandalf', color: '#808080', bgColor: '#F0F0F0', description: 'Expérimenté', icon: '🧙‍♂️' },
+  { code: 'yoda', name: 'Yoda', nameFr: 'Yoda', color: '#228B22', bgColor: '#E8F5E9', description: 'Expert', icon: '🌌' },
+  { code: 'leonardo', name: 'Leonardo da Vinci', nameFr: 'Leonardo da Vinci', color: '#FFD700', bgColor: '#FFF8DC', description: 'Maître', icon: '🎨' },
+  { code: 'einstein', name: 'Albert Einstein', nameFr: 'Albert Einstein', color: '#4169E1', bgColor: '#E6E6FA', description: 'Légende', icon: '🧠' },
 ];
 
 // User progress
@@ -108,18 +102,24 @@ export const MAX_ERRORS_ALLOWED = 1; // 2 errors = fail
 // Tiered question counts for progressive difficulty
 export type TierDifficulty = 'easy' | 'medium' | 'hard';
 
+// In the new system, difficulty is determined by the level (1=easy, 2=medium, 3=hard), not the tier
+// This map is kept for backward compatibility
 export const TIER_DIFFICULTY_MAP: Record<Tier, TierDifficulty> = {
-  coton: 'easy',
-  carton: 'easy',
-  bois: 'easy',
-  bronze: 'easy',
-  argent: 'medium',
-  gold: 'medium',
-  platinium: 'medium',
-  titane: 'medium',
-  diamant: 'hard',
-  mythique: 'hard',
-  legendaire: 'hard',
+  homer: 'easy',
+  mario: 'easy',
+  sherlock: 'easy',
+  tony: 'medium',
+  gandalf: 'medium',
+  yoda: 'medium',
+  leonardo: 'hard',
+  einstein: 'hard',
+};
+
+// Level to difficulty mapping (new system)
+export const LEVEL_DIFFICULTY_MAP: Record<1 | 2 | 3, TierDifficulty> = {
+  1: 'easy',
+  2: 'medium',
+  3: 'hard',
 };
 
 export const QUESTIONS_BY_DIFFICULTY: Record<TierDifficulty, number> = {
@@ -129,18 +129,33 @@ export const QUESTIONS_BY_DIFFICULTY: Record<TierDifficulty, number> = {
 };
 
 /**
- * Get the number of questions for a specific tier
- * Easy tiers (Coton→Bronze): 5 questions
- * Medium tiers (Argent→Titane): 8 questions
- * Hard tiers (Diamant→Légendaire): 10 questions
+ * Get the number of questions based on level
+ * Level 1 (Easy): 5 questions
+ * Level 2 (Medium): 8 questions
+ * Level 3 (Hard): 10 questions
  */
-export function getQuestionsForTier(tier: Tier): number {
-  const difficulty = TIER_DIFFICULTY_MAP[tier];
+export function getQuestionsForLevel(level: 1 | 2 | 3): number {
+  const difficulty = LEVEL_DIFFICULTY_MAP[level];
   return QUESTIONS_BY_DIFFICULTY[difficulty];
 }
 
 /**
- * Get the tier difficulty level
+ * Get the number of questions for a specific tier (legacy support)
+ * Now uses level-based difficulty
+ */
+export function getQuestionsForTier(tier: Tier, level: 1 | 2 | 3 = 1): number {
+  return getQuestionsForLevel(level);
+}
+
+/**
+ * Get the difficulty based on level
+ */
+export function getLevelDifficulty(level: 1 | 2 | 3): TierDifficulty {
+  return LEVEL_DIFFICULTY_MAP[level];
+}
+
+/**
+ * Get the tier difficulty level (legacy - returns based on tier position)
  */
 export function getTierDifficulty(tier: Tier): TierDifficulty {
   return TIER_DIFFICULTY_MAP[tier];
@@ -175,7 +190,7 @@ export function getNextLevel(tier: Tier, level: 1 | 2 | 3): { tier: Tier; level:
 }
 
 export function getTotalLevels(): number {
-  return TIERS.length * 3; // 11 tiers * 3 levels = 33
+  return TIERS.length * 3; // 8 tiers * 3 levels = 24
 }
 
 export function getCurrentLevelNumber(tier: Tier, level: 1 | 2 | 3): number {

@@ -64,7 +64,7 @@ export default function AdventureScreen() {
         // Initialize default progress
         const defaultProgress: AdventureProgress = {
           user_id: user?.id || "guest",
-          tier: "coton",
+          tier: "homer",
           level: 1,
           completed_categories: [],
         };
@@ -96,7 +96,7 @@ export default function AdventureScreen() {
       // Fallback to default
       setProgress({
         user_id: user?.id || "guest",
-        tier: "coton",
+        tier: "homer",
         level: 1,
         completed_categories: [],
       });
@@ -120,12 +120,13 @@ export default function AdventureScreen() {
   const handleCategorySelected = (category: Category) => {
     if (!progress) return;
 
-    // Navigate to play screen with category and tier
+    // Navigate to play screen with category, tier and level
     router.push({
       pathname: "/game/adventure/play",
       params: {
         category,
         tier: progress.tier,
+        level: progress.level.toString(),
       },
     });
   };
@@ -216,7 +217,7 @@ export default function AdventureScreen() {
             <MountainProgress
               tier={progress.tier}
               level={progress.level}
-              completedCategories={progress.completed_categories.length}
+              completedCategories={progress.completed_categories as Category[]}
               totalCategories={CATEGORIES.length}
               avatarUrl={profile?.avatar_url}
             />
@@ -305,6 +306,7 @@ export default function AdventureScreen() {
               onCategorySelected={handleCategorySelected}
               disabled={!canPlayGame && !isPremium}
               tier={progress.tier}
+              level={progress.level}
             />
           </View>
         )}

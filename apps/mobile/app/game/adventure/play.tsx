@@ -141,7 +141,7 @@ import {
   getCategoryInfo,
   getTierInfo,
   getNextLevel,
-  getQuestionsForTier,
+  getQuestionsForLevel,
   CATEGORIES,
   QUESTIONS_PER_CATEGORY,
   MAX_ERRORS_ALLOWED,
@@ -594,8 +594,9 @@ function AnswerOption({
 }
 
 export default function AdventurePlayScreen() {
-  const { category, tier } = useLocalSearchParams<{ category: Category; tier: Tier }>();
+  const { category, tier, level: levelParam } = useLocalSearchParams<{ category: Category; tier: Tier; level: string }>();
   const { user, isPremium } = useAuth();
+  const level = (parseInt(levelParam || "1", 10) as 1 | 2 | 3) || 1;
 
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<FormattedQuestion[]>([]);
@@ -674,7 +675,7 @@ export default function AdventurePlayScreen() {
         // Try to fetch from database if user exists
         if (user?.id) {
           console.log("Trying database for user:", user.id);
-          const questionsNeeded = getQuestionsForTier(tier as Tier);
+          const questionsNeeded = getQuestionsForLevel(level);
           const fetchedQuestions = await getAdventureQuestions(
             user.id,
             category as Category,
@@ -697,7 +698,7 @@ export default function AdventurePlayScreen() {
         const categoryQuestions = MOCK_QUESTIONS[category as string];
         console.log("Found mock questions:", categoryQuestions?.length || 0);
 
-        const questionsNeeded = getQuestionsForTier(tier as Tier);
+        const questionsNeeded = getQuestionsForLevel(level);
 
         if (categoryQuestions && categoryQuestions.length > 0) {
           // Shuffle and limit to questions needed for this tier
@@ -718,7 +719,7 @@ export default function AdventurePlayScreen() {
       } catch (error) {
         console.error("Error loading questions:", error);
         // Use mock questions as fallback
-        const questionsNeeded = getQuestionsForTier(tier as Tier);
+        const questionsNeeded = getQuestionsForLevel(level);
         const categoryQuestions = MOCK_QUESTIONS[category as string] || MOCK_QUESTIONS.culture_generale;
         const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
         const limited = shuffled.slice(0, questionsNeeded);
@@ -1044,7 +1045,7 @@ export default function AdventurePlayScreen() {
           timeRemaining={timeRemaining}
           totalTime={TIME_PER_QUESTION}
           questionNumber={currentIndex + 1}
-          totalQuestions={getQuestionsForTier(tier as Tier)}
+          totalQuestions={getQuestionsForLevel(level)}
         />
       </View>
 

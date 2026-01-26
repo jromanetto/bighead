@@ -37,7 +37,7 @@ export async function getAdventureProgress(userId: string): Promise<AdventurePro
 export async function initializeAdventureProgress(userId: string): Promise<AdventureProgress> {
   const initialProgress: Omit<AdventureProgress, "id" | "created_at" | "updated_at"> = {
     user_id: userId,
-    tier: "coton",
+    tier: "homer",
     level: 1,
     completed_categories: [],
   };
@@ -235,19 +235,16 @@ export async function getAdventureQuestions(
     console.log("Adaptive questions not available, using fallback:", err);
   }
 
-  // Fallback: Map tier to difficulty range (11 tiers mapped to difficulty 1-5)
+  // Fallback: Map tier to difficulty range (8 character-based tiers mapped to difficulty 1-5)
   const difficultyMap: Record<Tier, { min: number; max: number }> = {
-    coton: { min: 1, max: 1 },
-    carton: { min: 1, max: 2 },
-    bois: { min: 1, max: 2 },
-    bronze: { min: 2, max: 2 },
-    argent: { min: 2, max: 3 },
-    gold: { min: 2, max: 3 },
-    platinium: { min: 3, max: 3 },
-    titane: { min: 3, max: 4 },
-    diamant: { min: 3, max: 4 },
-    mythique: { min: 4, max: 5 },
-    legendaire: { min: 4, max: 5 },
+    homer: { min: 1, max: 1 },
+    mario: { min: 1, max: 2 },
+    sherlock: { min: 2, max: 2 },
+    tony: { min: 2, max: 3 },
+    gandalf: { min: 3, max: 3 },
+    yoda: { min: 3, max: 4 },
+    leonardo: { min: 4, max: 4 },
+    einstein: { min: 4, max: 5 },
   };
 
   const { min, max } = difficultyMap[tier];
@@ -363,7 +360,7 @@ function shuffleArray<T>(array: T[]): T[] {
  */
 export function calculateMountainProgress(tier: Tier, level: 1 | 2 | 3, completedCategories: number): number {
   const currentLevelNum = getCurrentLevelNumber(tier, level);
-  const totalLevels = 33; // 11 tiers × 3 levels
+  const totalLevels = 24; // 8 tiers × 3 levels
   const categoryProgress = completedCategories / CATEGORIES.length;
 
   // Each level is worth 1/33 of total progress

@@ -16,7 +16,9 @@ import {
   TIERS,
   getTierInfo,
   getCurrentLevelNumber,
-  getTierDifficulty,
+  getLevelDifficulty,
+  Category,
+  CATEGORIES,
 } from "../types/adventure";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -33,19 +35,18 @@ const COLORS = {
   textMuted: "#9ca3af",
 };
 
-// Camp positions on the mountain (percentage from bottom)
-const CAMPS = [
-  { id: "base", y: 0.05, label: "Base", tiers: [] as string[] },
-  { id: "camp1", y: 0.22, label: "Camp 1", tiers: ["coton", "carton", "bois", "bronze"] },
-  { id: "camp2", y: 0.45, label: "Camp 2", tiers: ["argent", "gold", "platinium", "titane"] },
-  { id: "camp3", y: 0.68, label: "Camp 3", tiers: ["diamant", "mythique", "legendaire"] },
-  { id: "summit", y: 0.95, label: "Sommet", tiers: [] as string[] },
-];
+// Category positions on the mountain path (percentage from bottom)
+// 11 categories arranged in a zigzag pattern
+const CATEGORY_POSITIONS = CATEGORIES.map((cat, index) => ({
+  code: cat.code,
+  y: 0.08 + (index / (CATEGORIES.length - 1)) * 0.82, // Spread from 8% to 90%
+  side: index % 2 === 0 ? "left" : "right", // Alternate sides
+}));
 
 interface MountainProgressProps {
   tier: Tier;
   level: 1 | 2 | 3;
-  completedCategories: number;
+  completedCategories: Category[];
   totalCategories: number;
   avatarUrl?: string | null;
 }
@@ -59,18 +60,17 @@ function MountainProgressFallback({
   avatarUrl,
 }: MountainProgressProps) {
   const currentLevel = getCurrentLevelNumber(tier, level);
-  const totalLevels = 33;
+  const totalLevels = 24; // 8 tiers × 3 levels
   const tierInfo = getTierInfo(tier);
-  const difficulty = getTierDifficulty(tier);
+  const difficulty = getLevelDifficulty(level);
 
+  // Progress based on completed categories in current level
   const progressPercent = useMemo(() => {
-    const levelProgress = (currentLevel - 1) / totalLevels;
-    const withinLevelProgress = completedCategories / totalCategories / totalLevels;
-    return Math.min((levelProgress + withinLevelProgress) * 100, 100);
-  }, [currentLevel, completedCategories, totalCategories]);
+    return (completedCategories.length / totalCategories) * 100;
+  }, [completedCategories.length, totalCategories]);
 
-  // Find current camp
-  const currentCamp = CAMPS.find(camp => camp.tiers.includes(tier)) || CAMPS[1];
+  // Find the position of the avatar (at the last completed category)
+  const avatarPositionIndex = completedCategories.length;
 
   return (
     <View className="items-center">
@@ -84,7 +84,18 @@ function MountainProgressFallback({
           position: "relative",
         }}
       >
-        {/* Sky gradient */}
+        {/* Sky gradient with tier color tint */}
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: tierInfo.bgColor,
+            opacity: 0.15,
+          }}
+        />
         <View
           style={{
             position: "absolute",
@@ -129,23 +140,6 @@ function MountainProgressFallback({
           }}
         />
 
-        {/* Mountain silhouette - back layer */}
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: -20,
-            width: 0,
-            height: 0,
-            borderLeftWidth: CANVAS_WIDTH * 0.4,
-            borderRightWidth: CANVAS_WIDTH * 0.4,
-            borderBottomWidth: CANVAS_HEIGHT * 0.6,
-            borderLeftColor: "transparent",
-            borderRightColor: "transparent",
-            borderBottomColor: "rgba(30, 40, 50, 0.5)",
-          }}
-        />
-
         {/* Main mountain */}
         <View
           style={{
@@ -181,109 +175,65 @@ function MountainProgressFallback({
           }}
         />
 
-        {/* Zigzag trail */}
+        {/* Summit flag */}
         <View
           style={{
             position: "absolute",
-            bottom: 30,
+            top: 15,
             left: "50%",
-            marginLeft: -2,
-            width: 4,
-            height: CANVAS_HEIGHT * 0.85,
-            backgroundColor: "rgba(255,255,255,0.1)",
-            borderRadius: 2,
+            marginLeft: -15,
+            alignItems: "center",
           }}
         >
-          {/* Progress fill */}
-          <View
-            style={{
-              position: "absolute",
-              bottom: 0,
-              width: "100%",
-              height: `${progressPercent}%`,
-              backgroundColor: COLORS.primary,
-              borderRadius: 2,
-              shadowColor: COLORS.primary,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.8,
-              shadowRadius: 8,
-            }}
-          />
+          <Text style={{ fontSize: 28 }}>🏁</Text>
         </View>
 
-        {/* Camps */}
-        {CAMPS.map((camp, index) => {
-          const isCurrentCamp = camp.id === currentCamp.id;
-          const isPastCamp = CAMPS.indexOf(currentCamp) > index;
-          const yPos = CANVAS_HEIGHT * (1 - camp.y) - 15;
-
-          if (camp.id === "base" || camp.id === "summit") {
-            return (
-              <View
-                key={camp.id}
-                style={{
-                  position: "absolute",
-                  top: yPos,
-                  left: "50%",
-                  marginLeft: -15,
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: camp.id === "summit" ? 28 : 20 }}>
-                  {camp.id === "summit" ? "⭐" : "🏕️"}
-                </Text>
-              </View>
-            );
-          }
+        {/* Category icons on the path */}
+        {CATEGORIES.map((cat, index) => {
+          const position = CATEGORY_POSITIONS[index];
+          const isCompleted = completedCategories.includes(cat.code);
+          const yPos = CANVAS_HEIGHT * (1 - position.y) - 20;
+          const xOffset = position.side === "left" ? "30%" : "55%";
 
           return (
             <View
-              key={camp.id}
+              key={cat.code}
               style={{
                 position: "absolute",
                 top: yPos,
-                left: index % 2 === 0 ? "35%" : "55%",
+                left: xOffset,
                 alignItems: "center",
               }}
             >
               <View
                 style={{
-                  backgroundColor: isCurrentCamp
-                    ? "rgba(0, 194, 204, 0.3)"
-                    : isPastCamp
-                    ? "rgba(34, 197, 94, 0.3)"
-                    : "rgba(255,255,255,0.1)",
-                  borderRadius: 12,
-                  padding: 8,
-                  borderWidth: isCurrentCamp ? 2 : 1,
-                  borderColor: isCurrentCamp
-                    ? COLORS.primary
-                    : isPastCamp
-                    ? "#22c55e"
-                    : "rgba(255,255,255,0.2)",
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: isCompleted ? `${cat.color}40` : "rgba(255,255,255,0.1)",
+                  borderWidth: 2,
+                  borderColor: isCompleted ? cat.color : "rgba(255,255,255,0.2)",
+                  shadowColor: isCompleted ? cat.color : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
                 }}
               >
-                <Text style={{ fontSize: 16 }}>⛺</Text>
+                <Text style={{ fontSize: 18 }}>{isCompleted ? "✓" : cat.icon}</Text>
               </View>
-              <Text
-                style={{
-                  color: isCurrentCamp ? COLORS.primary : isPastCamp ? "#22c55e" : COLORS.textMuted,
-                  fontSize: 10,
-                  marginTop: 4,
-                  fontWeight: isCurrentCamp ? "bold" : "normal",
-                }}
-              >
-                {camp.label}
-              </Text>
             </View>
           );
         })}
 
-        {/* Character */}
+        {/* Character - positioned at the last completed category or start */}
         <View
           style={{
             position: "absolute",
-            bottom: 30 + (CANVAS_HEIGHT * 0.85 * progressPercent) / 100 - 25,
+            top: avatarPositionIndex === 0
+              ? CANVAS_HEIGHT - 60
+              : CANVAS_HEIGHT * (1 - CATEGORY_POSITIONS[Math.min(avatarPositionIndex - 1, CATEGORIES.length - 1)].y) - 45,
             left: "50%",
             marginLeft: -25,
             width: 50,
@@ -291,14 +241,15 @@ function MountainProgressFallback({
             borderRadius: 25,
             backgroundColor: "#1E2529",
             borderWidth: 3,
-            borderColor: COLORS.primary,
+            borderColor: tierInfo.color,
             alignItems: "center",
             justifyContent: "center",
-            shadowColor: COLORS.primary,
+            shadowColor: tierInfo.color,
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.8,
             shadowRadius: 12,
             overflow: "hidden",
+            zIndex: 10,
           }}
         >
           {avatarUrl ? (
@@ -322,22 +273,12 @@ function MountainProgressFallback({
         >
           <Text style={{ fontSize: 30 }}>☁️</Text>
         </Animated.View>
-        <Animated.View
-          style={{
-            position: "absolute",
-            top: 150,
-            right: 30,
-            opacity: 0.3,
-          }}
-        >
-          <Text style={{ fontSize: 24 }}>☁️</Text>
-        </Animated.View>
       </View>
 
-      {/* Tier Progress Bar */}
+      {/* Difficulty Progress Bar */}
       <View className="w-full px-4 mt-4">
         <View className="flex-row justify-between mb-2">
-          {["easy", "medium", "hard"].map((diff, index) => {
+          {(["easy", "medium", "hard"] as const).map((diff) => {
             const isActive = difficulty === diff;
             const isPast =
               (diff === "easy" && (difficulty === "medium" || difficulty === "hard")) ||
@@ -389,15 +330,10 @@ function MountainProgressFallback({
           }}
         >
           <Text className="text-2xl mr-2">{tierInfo.icon}</Text>
-          <Text className="text-white text-lg font-black">{tierInfo.nameFr.toUpperCase()}</Text>
-          <View className="ml-3 px-2 py-0.5 rounded-full" style={{ backgroundColor: tierInfo.color }}>
-            <Text className="text-xs font-bold" style={{ color: "#161a1d" }}>
-              Niv. {level}
-            </Text>
-          </View>
+          <Text className="text-white text-lg font-black">{tierInfo.nameFr}</Text>
         </View>
         <Text style={{ color: COLORS.textMuted }} className="mt-2 text-sm">
-          {completedCategories}/{totalCategories} catégories • Niveau {currentLevel}/33
+          {completedCategories.length}/{totalCategories} catégories • Niveau {currentLevel}/24
         </Text>
       </View>
     </View>
@@ -524,28 +460,27 @@ if (Platform.OS !== "web") {
     avatarUrl,
   }: MountainProgressProps) {
     const currentLevel = getCurrentLevelNumber(tier, level);
-    const totalLevels = 33;
+    const totalLevels = 24; // 8 tiers × 3 levels
     const tierInfo = getTierInfo(tier);
-    const difficulty = getTierDifficulty(tier);
+    const difficulty = getLevelDifficulty(level);
 
     const progressAnim = useSharedValue(0);
     const glowAnim = useSharedValue(0);
     const cloudAnim = useSharedValue(0);
 
+    // Progress based on completed categories
     const targetProgress = useMemo(() => {
-      const levelProgress = (currentLevel - 1) / totalLevels;
-      const withinLevelProgress = completedCategories / totalCategories / totalLevels;
-      return Math.min(levelProgress + withinLevelProgress, 1);
-    }, [currentLevel, completedCategories, totalCategories]);
+      return completedCategories.length / totalCategories;
+    }, [completedCategories.length, totalCategories]);
+
+    // Avatar position index
+    const avatarPositionIndex = completedCategories.length;
 
     const mountainPath = useMemo(() => createMountainPath(), []);
     const snowCapPath = useMemo(() => createSnowCapPath(), []);
     const trailPath = useMemo(() => createTrailPath(1), []);
     const stars = useMemo(() => generateStars(35), []);
     const clouds = useMemo(() => generateClouds(), []);
-
-    // Find current camp
-    const currentCamp = CAMPS.find((camp) => camp.tiers.includes(tier)) || CAMPS[1];
 
     useEffect(() => {
       progressAnim.value = withDelay(300, withSpring(targetProgress, { damping: 15, stiffness: 80 }));
@@ -568,9 +503,13 @@ if (Platform.OS !== "web") {
 
     const characterStyle = useAnimatedStyle(() => {
       const baseY = CANVAS_HEIGHT - 55;
-      const peakY = 35;
+      const peakY = 45;
       const totalHeight = baseY - peakY;
-      const currentY = baseY - totalHeight * progressAnim.value;
+      // Position based on completed categories
+      const categoryProgress = avatarPositionIndex === 0
+        ? 0
+        : CATEGORY_POSITIONS[Math.min(avatarPositionIndex - 1, CATEGORIES.length - 1)].y;
+      const currentY = baseY - totalHeight * categoryProgress;
 
       return {
         transform: [{ translateY: currentY }],
@@ -707,32 +646,39 @@ if (Platform.OS !== "web") {
               />
             </Path>
 
-            {/* Camp markers */}
-            {CAMPS.map((camp, index) => {
-              if (camp.id === "base" || camp.id === "summit") return null;
-
+            {/* Category markers on the path */}
+            {CATEGORIES.map((cat, index) => {
+              const position = CATEGORY_POSITIONS[index];
               const baseY = CANVAS_HEIGHT - 35;
               const peakY = 45;
               const totalHeight = baseY - peakY;
-              const yPos = baseY - totalHeight * camp.y;
-              const xOffset = index % 2 === 0 ? -45 : 45;
-              const isCurrentCamp = camp.id === currentCamp.id;
-              const isPastCamp = CAMPS.indexOf(currentCamp) > index;
+              const yPos = baseY - totalHeight * position.y;
+              const xOffset = position.side === "left" ? -50 : 50;
+              const isCompleted = completedCategories.includes(cat.code);
 
               return (
-                <Group key={camp.id}>
-                  {/* Camp glow */}
-                  {isCurrentCamp && (
-                    <Circle cx={CANVAS_WIDTH / 2 + xOffset} cy={yPos} r={18} color={COLORS.primary}>
-                      <Blur blur={10} />
+                <Group key={cat.code}>
+                  {/* Category glow when completed */}
+                  {isCompleted && (
+                    <Circle cx={CANVAS_WIDTH / 2 + xOffset} cy={yPos} r={22} color={cat.color}>
+                      <Blur blur={8} />
                     </Circle>
                   )}
-                  {/* Camp dot */}
+                  {/* Category circle background */}
                   <Circle
                     cx={CANVAS_WIDTH / 2 + xOffset}
                     cy={yPos}
-                    r={isCurrentCamp ? 10 : isPastCamp ? 8 : 6}
-                    color={isCurrentCamp ? COLORS.primary : isPastCamp ? "#22c55e" : "rgba(255,255,255,0.3)"}
+                    r={18}
+                    color={isCompleted ? `${cat.color}60` : "rgba(255,255,255,0.1)"}
+                  />
+                  {/* Category border */}
+                  <Circle
+                    cx={CANVAS_WIDTH / 2 + xOffset}
+                    cy={yPos}
+                    r={18}
+                    style="stroke"
+                    strokeWidth={2}
+                    color={isCompleted ? cat.color : "rgba(255,255,255,0.3)"}
                   />
                 </Group>
               );
@@ -751,6 +697,7 @@ if (Platform.OS !== "web") {
                 position: "absolute",
                 left: CANVAS_WIDTH / 2 - 25,
                 top: 0,
+                zIndex: 10,
               },
               characterStyle,
             ]}
@@ -762,7 +709,7 @@ if (Platform.OS !== "web") {
                   width: 50,
                   height: 50,
                   borderRadius: 25,
-                  backgroundColor: COLORS.primary,
+                  backgroundColor: tierInfo.color,
                 },
                 characterGlowStyle,
               ]}
@@ -774,10 +721,10 @@ if (Platform.OS !== "web") {
                 borderRadius: 25,
                 backgroundColor: "#1E2529",
                 borderWidth: 3,
-                borderColor: COLORS.primary,
+                borderColor: tierInfo.color,
                 alignItems: "center",
                 justifyContent: "center",
-                shadowColor: COLORS.primary,
+                shadowColor: tierInfo.color,
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.9,
                 shadowRadius: 12,
@@ -795,7 +742,7 @@ if (Platform.OS !== "web") {
             </View>
           </Animated.View>
 
-          {/* Summit star */}
+          {/* Summit flag */}
           <View
             style={{
               position: "absolute",
@@ -803,42 +750,33 @@ if (Platform.OS !== "web") {
               top: 5,
             }}
           >
-            <Text style={{ fontSize: 36 }}>⭐</Text>
+            <Text style={{ fontSize: 36 }}>🏁</Text>
           </View>
 
-          {/* Camp labels */}
-          {CAMPS.map((camp, index) => {
-            if (camp.id === "base" || camp.id === "summit") return null;
-
+          {/* Category icons (React Native for emoji support) */}
+          {CATEGORIES.map((cat, index) => {
+            const position = CATEGORY_POSITIONS[index];
             const baseY = CANVAS_HEIGHT - 35;
             const peakY = 45;
             const totalHeight = baseY - peakY;
-            const yPos = baseY - totalHeight * camp.y;
-            const isRight = index % 2 !== 0;
-            const isCurrentCamp = camp.id === currentCamp.id;
-            const isPastCamp = CAMPS.indexOf(currentCamp) > index;
+            const yPos = baseY - totalHeight * position.y;
+            const isRight = position.side === "right";
+            const isCompleted = completedCategories.includes(cat.code);
 
             return (
               <View
-                key={`label-${camp.id}`}
+                key={`icon-${cat.code}`}
                 style={{
                   position: "absolute",
-                  top: yPos - 12,
-                  [isRight ? "right" : "left"]: 25,
-                  flexDirection: "row",
+                  top: yPos - 18,
+                  [isRight ? "right" : "left"]: isRight ? CANVAS_WIDTH / 2 - 68 : CANVAS_WIDTH / 2 - 68,
+                  width: 36,
+                  height: 36,
                   alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Text style={{ fontSize: 16, marginRight: isRight ? 0 : 4 }}>⛺</Text>
-                <Text
-                  style={{
-                    color: isCurrentCamp ? COLORS.primary : isPastCamp ? "#22c55e" : "rgba(255,255,255,0.5)",
-                    fontSize: 11,
-                    fontWeight: isCurrentCamp ? "bold" : "normal",
-                  }}
-                >
-                  {camp.label}
-                </Text>
+                <Text style={{ fontSize: 18 }}>{isCompleted ? "✓" : cat.icon}</Text>
               </View>
             );
           })}
@@ -895,15 +833,10 @@ if (Platform.OS !== "web") {
             }}
           >
             <Text className="text-2xl mr-2">{tierInfo.icon}</Text>
-            <Text className="text-white text-lg font-black">{tierInfo.nameFr.toUpperCase()}</Text>
-            <View className="ml-3 px-2 py-0.5 rounded-full" style={{ backgroundColor: tierInfo.color }}>
-              <Text className="text-xs font-bold" style={{ color: "#161a1d" }}>
-                Niv. {level}
-              </Text>
-            </View>
+            <Text className="text-white text-lg font-black">{tierInfo.nameFr}</Text>
           </View>
           <Text style={{ color: COLORS.textMuted }} className="mt-2 text-sm">
-            {completedCategories}/{totalCategories} catégories • Niveau {currentLevel}/33
+            {completedCategories.length}/{totalCategories} catégories • Niveau {currentLevel}/24
           </Text>
         </View>
       </View>

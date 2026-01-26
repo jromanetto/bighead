@@ -12,7 +12,7 @@ import Animated, {
   interpolate,
   withRepeat,
 } from "react-native-reanimated";
-import { Category, CategoryInfo, CATEGORIES, Tier, getQuestionsForTier } from "../types/adventure";
+import { Category, CategoryInfo, CATEGORIES, Tier, getQuestionsForLevel } from "../types/adventure";
 import { buttonPressFeedback } from "../utils/feedback";
 import { soundService } from "../services/sounds";
 import * as Haptics from "expo-haptics";
@@ -39,6 +39,7 @@ interface CategoryWheelProps {
   onCategorySelected: (category: Category) => void;
   disabled?: boolean;
   tier: Tier;
+  level: 1 | 2 | 3;
 }
 
 // Fallback wheel for web (no Skia)
@@ -47,6 +48,7 @@ function CategoryWheelFallback({
   onCategorySelected,
   disabled = false,
   tier,
+  level,
 }: CategoryWheelProps) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryInfo | null>(null);
@@ -54,7 +56,7 @@ function CategoryWheelFallback({
   const rotation = useSharedValue(0);
   const scale = useSharedValue(1);
   const resultOpacity = useSharedValue(0);
-  const questionsCount = getQuestionsForTier(tier);
+  const questionsCount = getQuestionsForLevel(level);
 
   const uncompletedCategories = CATEGORIES.filter(
     (cat) => !completedCategories.includes(cat.code)
@@ -338,6 +340,7 @@ if (Platform.OS !== "web") {
     onCategorySelected,
     disabled = false,
     tier,
+    level,
   }: CategoryWheelProps) {
     const [isSpinning, setIsSpinning] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<CategoryInfo | null>(null);
@@ -346,7 +349,7 @@ if (Platform.OS !== "web") {
     const scale = useSharedValue(1);
     const resultOpacity = useSharedValue(0);
     const glowPulse = useSharedValue(0);
-    const questionsCount = getQuestionsForTier(tier);
+    const questionsCount = getQuestionsForLevel(level);
 
     const uncompletedCategories = CATEGORIES.filter(
       (cat) => !completedCategories.includes(cat.code)
