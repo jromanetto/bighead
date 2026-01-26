@@ -109,8 +109,10 @@ class SoundService {
   /**
    * Play a sound effect
    * Fails silently if sound can't be played
+   * @param effect - The sound effect to play
+   * @param maxDurationMs - Optional max duration in milliseconds (sound will stop after this time)
    */
-  async play(effect: SoundEffect): Promise<void> {
+  async play(effect: SoundEffect, maxDurationMs?: number): Promise<void> {
     if (!this.soundEnabled) return;
 
     try {
@@ -132,6 +134,20 @@ class SoundService {
       await sound.setVolumeAsync(this.soundVolume);
       await sound.setIsLoopingAsync(false);
       await sound.playAsync();
+
+      // If maxDuration is specified, stop the sound after that time
+      if (maxDurationMs && maxDurationMs > 0) {
+        setTimeout(async () => {
+          try {
+            const status = await sound?.getStatusAsync();
+            if (status?.isLoaded && status.isPlaying) {
+              await sound?.stopAsync();
+            }
+          } catch {
+            // Ignore errors during cleanup
+          }
+        }, maxDurationMs);
+      }
     } catch {
       // Silently fail - sounds are optional
     }
@@ -306,7 +322,7 @@ class SoundService {
 export const soundService = new SoundService();
 
 // Convenience functions
-export const playSound = (effect: SoundEffect) => soundService.play(effect);
+export const playSound = (effect: SoundEffect, maxDurationMs?: number) => soundService.play(effect, maxDurationMs);
 export const playMusic = (track: keyof typeof MUSIC_URLS) => soundService.playMusic(track);
 export const stopMusic = () => soundService.stopMusic();
 export const pauseMusic = () => soundService.pauseMusic();

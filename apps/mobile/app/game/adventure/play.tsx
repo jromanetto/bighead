@@ -850,7 +850,7 @@ export default function AdventurePlayScreen() {
     if (currentIndex + 1 >= questions.length && currentErrors <= MAX_ERRORS_ALLOWED) {
       setGameOver(true);
       setSuccess(true);
-      playSound("levelUp");
+      playSound("levelUp", 1500); // Limit to 1.5 seconds
       // Mark category as completed (local storage)
       try {
         const storedProgress = await AsyncStorage.getItem(STORAGE_KEY);
