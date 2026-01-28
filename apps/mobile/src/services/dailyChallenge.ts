@@ -334,3 +334,50 @@ export const getNextSurvivalQuestion = async (
     difficulty: q.difficulty,
   };
 };
+
+interface DailyQuestionRPC {
+  id: string;
+  date: string;
+  question_id: string;
+  question_text: string;
+  category: string;
+  difficulty: number;
+  correct_answer: string;
+  options: string[];
+}
+
+/**
+ * Get today's daily question (the one sent in the notification)
+ */
+export const getTodaysDailyQuestion = async (): Promise<DailyQuestion | null> => {
+  const today = new Date().toISOString().split("T")[0];
+
+  // @ts-ignore - RPC function not in generated types
+  const { data, error } = await supabase.rpc("get_or_create_daily_question", {
+    target_date: today,
+  });
+
+  if (error) {
+    console.error("Error fetching daily question:", error);
+    return null;
+  }
+
+  const results = data as DailyQuestionRPC[] | null;
+  if (!results || results.length === 0) return null;
+
+  const q = results[0];
+
+  // Options is a JSONB array with correct answer first, then wrong answers
+  const options = q.options as string[];
+  const shuffledAnswers = [...options].sort(() => Math.random() - 0.5);
+  const correctIndex = shuffledAnswers.indexOf(q.correct_answer);
+
+  return {
+    id: q.question_id,
+    question: q.question_text,
+    answers: shuffledAnswers,
+    correctIndex,
+    category: q.category,
+    difficulty: q.difficulty,
+  };
+};

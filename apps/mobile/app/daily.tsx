@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Animated, {
@@ -17,6 +17,7 @@ import {
   hasPlayedDailySurvivalToday,
   submitDailySurvival,
   getDailyStreak,
+  getTodaysDailyQuestion,
   type DailyQuestion,
 } from "../src/services/dailyChallenge";
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedback";
@@ -24,9 +25,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
-export default function DailySurvivalScreen() {
+export default function DailyBrainScreen() {
   const { user, isAnonymous } = useAuth();
+  const params = useLocalSearchParams<{ fromNotification?: string }>();
   const [loading, setLoading] = useState(true);
+  const [isDailyQuestion, setIsDailyQuestion] = useState(false);
   const [alreadyPlayed, setAlreadyPlayed] = useState(false);
   const [previousScore, setPreviousScore] = useState<number | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<DailyQuestion | null>(null);
@@ -82,6 +85,22 @@ export default function DailySurvivalScreen() {
 
       // Start the game
       startTime.current = Date.now();
+
+      // If coming from notification, load today's daily question first
+      if (params.fromNotification === "true") {
+        const dailyQ = await getTodaysDailyQuestion();
+        if (dailyQ) {
+          setCurrentQuestion(dailyQ);
+          setQuestionNumber(1);
+          setIsDailyQuestion(true);
+          questionStartTime.current = Date.now();
+          answeredQuestionIds.current.push(dailyQ.id);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Otherwise load a random question
       await loadNextQuestion();
     } catch (error) {
       console.error("Error loading daily survival:", error);
@@ -119,6 +138,11 @@ export default function DailySurvivalScreen() {
       await correctAnswerFeedback();
       scale.value = withSequence(withSpring(1.1), withSpring(1));
       setScore((prev) => prev + 1);
+
+      // After the daily question, continue with random questions
+      if (isDailyQuestion) {
+        setIsDailyQuestion(false);
+      }
 
       // Load next question after delay
       setTimeout(() => {
@@ -185,7 +209,7 @@ export default function DailySurvivalScreen() {
             Ton score : {previousScore} points
           </Text>
           <Text className="text-gray-500 text-center mb-8">
-            Reviens demain pour un nouveau defi
+            Reviens demain pour un nouveau Daily Brain
           </Text>
 
           {/* Streak */}
@@ -364,10 +388,10 @@ export default function DailySurvivalScreen() {
         {/* Title */}
         <View className="px-6 mb-6">
           <Text className="text-primary-400 text-sm font-bold mb-1">
-            DEFI QUOTIDIEN
+            DAILY BRAIN
           </Text>
           <Text className="text-white text-xl font-bold">
-            Mode Survie - 1 erreur = fin
+            {isDailyQuestion ? "Question du jour" : "Mode Survie"} - 1 erreur = fin
           </Text>
         </View>
 
