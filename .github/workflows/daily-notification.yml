@@ -1,0 +1,31 @@
+name: Daily Notification
+
+on:
+  schedule:
+    # Run every day at 18:00 UTC (19:00 Paris time)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Daily Notification
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/send-daily-notification" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Response: $body"
+          echo "HTTP Code: $http_code"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "Failed to send notifications"
+            exit 1
+          fi
+
+          echo "Notifications sent successfully!"

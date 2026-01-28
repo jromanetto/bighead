@@ -3,6 +3,7 @@ import { Platform, AppState } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
+import { router } from "expo-router";
 import { useAuth } from "./AuthContext";
 import { supabase } from "../services/supabase";
 
@@ -238,9 +239,15 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         console.log("User tapped notification:", data);
 
         // Handle deep linking based on notification type
-        // This could use expo-router's router.push()
-        if (data?.screen) {
-          // router.push(data.screen as any);
+        if (data?.type === "daily_question" || data?.type === "daily_reminder") {
+          // Navigate to daily challenge/survival screen
+          setTimeout(() => {
+            router.push("/daily" as any);
+          }, 100);
+        } else if (data?.screen) {
+          setTimeout(() => {
+            router.push(data.screen as any);
+          }, 100);
         }
       }
     );
