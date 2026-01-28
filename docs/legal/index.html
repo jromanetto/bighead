@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIGHEAD - Informations légales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            border-radius: 28px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            box-shadow: 0 0 60px rgba(14, 165, 233, 0.4);
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            margin-bottom: 50px;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .link-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 20px 30px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .link-card:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: #0ea5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .link-icon {
+            font-size: 1.5rem;
+        }
+
+        .link-text {
+            text-align: left;
+        }
+
+        .link-title {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .link-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .footer {
+            margin-top: 60px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .app-badges {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            height: 50px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🧠</div>
+        <h1>BIGHEAD</h1>
+        <p class="tagline">Le quiz qui challenge ton cerveau !</p>
+
+        <div class="links">
+            <a href="privacy.html" class="link-card">
+                <span class="link-icon">🔒</span>
+                <div class="link-text">
+                    <div class="link-title">Politique de Confidentialité</div>
+                    <div class="link-desc">Comment nous protégeons vos données</div>
+                </div>
+            </a>
+
+            <a href="terms.html" class="link-card">
+                <span class="link-icon">📜</span>
+                <div class="link-text">
+                    <div class="link-title">Conditions d'Utilisation</div>
+                    <div class="link-desc">Règles d'utilisation de l'app</div>
+                </div>
+            </a>
+
+            <a href="mailto:support@bighead-app.com" class="link-card">
+                <span class="link-icon">✉️</span>
+                <div class="link-text">
+                    <div class="link-title">Contact Support</div>
+                    <div class="link-desc">support@bighead-app.com</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 BIGHEAD. Tous droits réservés.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politique de Confidentialité - BIGHEAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: #0ea5e9;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            border-radius: 2px;
+        }
+
+        p {
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            color: #cbd5e1;
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            color: #64748b;
+        }
+
+        a {
+            color: #0ea5e9;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Retour</a>
+
+        <div class="header">
+            <div class="logo">🧠</div>
+            <h1>Politique de Confidentialité</h1>
+            <p class="subtitle">Dernière mise à jour : 28 janvier 2026</p>
+        </div>
+
+        <div class="card">
+            <h2>Introduction</h2>
+            <p>BIGHEAD ("nous", "notre", "l'application") s'engage à protéger votre vie privée. Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous utilisez notre application de quiz.</p>
+        </div>
+
+        <div class="card">
+            <h2>Données collectées</h2>
+            <p>Nous collectons les données suivantes :</p>
+            <ul>
+                <li><span class="highlight">Identifiants de compte</span> : adresse email (si vous créez un compte)</li>
+                <li><span class="highlight">Données de jeu</span> : scores, statistiques, achievements, progression</li>
+                <li><span class="highlight">Données techniques</span> : type d'appareil, système d'exploitation, identifiant anonyme</li>
+                <li><span class="highlight">Token de notification</span> : pour envoyer des notifications push (si activées)</li>
+            </ul>
+            <p>Vous pouvez utiliser l'application en mode anonyme sans fournir d'informations personnelles.</p>
+        </div>
+
+        <div class="card">
+            <h2>Utilisation des données</h2>
+            <p>Vos données sont utilisées pour :</p>
+            <ul>
+                <li>Sauvegarder votre progression et vos scores</li>
+                <li>Afficher les classements et comparer vos performances</li>
+                <li>Envoyer des notifications de rappel quotidien (si activées)</li>
+                <li>Améliorer l'expérience utilisateur et corriger les bugs</li>
+                <li>Gérer les abonnements premium via RevenueCat</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Partage des données</h2>
+            <p>Nous ne vendons jamais vos données personnelles. Vos données peuvent être partagées avec :</p>
+            <ul>
+                <li><span class="highlight">Supabase</span> : hébergement de la base de données (serveurs en Europe)</li>
+                <li><span class="highlight">RevenueCat</span> : gestion des abonnements in-app</li>
+                <li><span class="highlight">Expo</span> : service de notifications push</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Conservation des données</h2>
+            <p>Vos données sont conservées tant que votre compte est actif. Les données des comptes anonymes peuvent être supprimées après 12 mois d'inactivité.</p>
+            <p>Vous pouvez demander la suppression de vos données à tout moment en nous contactant.</p>
+        </div>
+
+        <div class="card">
+            <h2>Vos droits (RGPD)</h2>
+            <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+            <ul>
+                <li><span class="highlight">Droit d'accès</span> : obtenir une copie de vos données</li>
+                <li><span class="highlight">Droit de rectification</span> : corriger vos informations</li>
+                <li><span class="highlight">Droit à l'effacement</span> : supprimer votre compte et vos données</li>
+                <li><span class="highlight">Droit à la portabilité</span> : recevoir vos données dans un format standard</li>
+                <li><span class="highlight">Droit d'opposition</span> : refuser certains traitements</li>
+            </ul>
+            <p>Pour exercer ces droits, contactez-nous à : <a href="mailto:privacy@bighead-app.com">privacy@bighead-app.com</a></p>
+        </div>
+
+        <div class="card">
+            <h2>Sécurité</h2>
+            <p>Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles pour protéger vos données :</p>
+            <ul>
+                <li>Chiffrement des données en transit (HTTPS/TLS)</li>
+                <li>Authentification sécurisée</li>
+                <li>Accès restreint aux données personnelles</li>
+                <li>Hébergement sur des serveurs sécurisés en Europe</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Mineurs</h2>
+            <p>BIGHEAD est destiné à un public général. Nous ne collectons pas sciemment d'informations personnelles auprès d'enfants de moins de 13 ans sans le consentement parental.</p>
+        </div>
+
+        <div class="card">
+            <h2>Modifications</h2>
+            <p>Nous pouvons mettre à jour cette politique de confidentialité. Les modifications importantes seront notifiées dans l'application. Nous vous encourageons à consulter régulièrement cette page.</p>
+        </div>
+
+        <div class="card">
+            <h2>Contact</h2>
+            <p>Pour toute question concernant cette politique de confidentialité :</p>
+            <p>Email : <a href="mailto:privacy@bighead-app.com">privacy@bighead-app.com</a></p>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 BIGHEAD. Tous droits réservés.</p>
+            <p style="margin-top: 10px;">
+                <a href="privacy.html">Confidentialité</a> ·
+                <a href="terms.html">Conditions d'utilisation</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
