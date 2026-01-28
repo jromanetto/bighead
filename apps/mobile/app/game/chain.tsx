@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, Image } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Image, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -589,100 +589,107 @@ export default function ChainGameScreen() {
           />
         </View>
 
-        {/* Question Card */}
-        <View className="px-6 mb-6">
-          <View
-            className="rounded-2xl relative overflow-hidden"
-            style={{
-              backgroundColor: COLORS.surface,
-              borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.05)',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3,
-              shadowRadius: 16,
-            }}
-          >
-            {/* Question Image (if available) */}
-            {currentQuestion.imageUrl && (
-              <View style={{ position: 'relative' }}>
-                <Image
-                  source={{ uri: currentQuestion.imageUrl }}
-                  style={{ width: '100%', height: 160 }}
-                  resizeMode="cover"
-                  onLoad={() => setImageLoaded(true)}
-                  onError={() => setImageLoaded(false)}
+        {/* Scrollable Question & Answers */}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Question Card */}
+          <View className="px-6 mb-6">
+            <View
+              className="rounded-2xl relative overflow-hidden"
+              style={{
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.05)',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.3,
+                shadowRadius: 16,
+              }}
+            >
+              {/* Question Image (if available) */}
+              {currentQuestion.imageUrl && (
+                <View style={{ position: 'relative' }}>
+                  <Image
+                    source={{ uri: currentQuestion.imageUrl }}
+                    style={{ width: '100%', height: 160 }}
+                    resizeMode="cover"
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(false)}
+                  />
+                  {/* Image credit overlay */}
+                  {currentQuestion.imageCredit && (
+                    <View style={{ position: 'absolute', bottom: 0, right: 0, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                      <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)' }}>{currentQuestion.imageCredit}</Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              <View className="p-6">
+                {/* Cyan Left Border */}
+                <View
+                  className="absolute top-0 left-0 w-1 h-full"
+                  style={{ backgroundColor: COLORS.primary }}
                 />
-                {/* Image credit overlay */}
-                {currentQuestion.imageCredit && (
-                  <View style={{ position: 'absolute', bottom: 0, right: 0, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: 'rgba(0,0,0,0.6)' }}>
-                    <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)' }}>{currentQuestion.imageCredit}</Text>
-                  </View>
-                )}
+
+                <Text className="text-2xl font-bold leading-tight text-white">
+                  {currentQuestion.question}
+                </Text>
+
+                <View
+                  className="h-1 w-12 rounded-full mt-4"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                />
               </View>
-            )}
-
-            <View className="p-6">
-              {/* Cyan Left Border */}
-              <View
-                className="absolute top-0 left-0 w-1 h-full"
-                style={{ backgroundColor: COLORS.primary }}
-              />
-
-              <Text className="text-2xl font-bold leading-tight text-white">
-                {currentQuestion.question}
-              </Text>
-
-              <View
-                className="h-1 w-12 rounded-full mt-4"
-                style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
-              />
             </View>
           </View>
-        </View>
 
-        {/* Answer Options */}
-        <View className="px-6 flex-col gap-3">
-          {currentQuestion.answers.map((answer, index) => {
-            // Hide answers if 50/50 was used
-            if (hiddenAnswers.includes(index)) {
-              return null;
-            }
-            return (
-              <AnswerOption
-                key={index}
-                answer={answer}
-                index={index}
-                onPress={() => handleAnswer(index)}
-                disabled={hasAnswered}
-                isSelected={selectedIndex === index || lastAnswer?.selectedAnswer === answer}
-                isCorrect={index === currentQuestion.correctIndex}
-                showResult={hasAnswered}
-              />
-            );
-          })}
-        </View>
-
-        {/* Result Feedback & Next Button */}
-        {hasAnswered && lastAnswer && (
-          <View className="px-6 mt-6">
-            <Pressable
-              onPress={handleNextQuestion}
-              className="rounded-2xl py-4 px-6 active:opacity-80 flex-row items-center justify-center"
-              style={{ backgroundColor: COLORS.primary }}
-            >
-              <Text className="text-lg font-bold mr-2" style={{ color: COLORS.bg }}>
-                {currentQuestionIndex + 1 >= totalQuestions ? "View results" : "Next question"}
-              </Text>
-              <Text style={{ color: COLORS.bg }}>→</Text>
-            </Pressable>
-            {autoAdvanceEnabled && currentQuestionIndex + 1 < totalQuestions && (
-              <Text className="text-center text-xs text-gray-500 mt-2">
-                Auto-advancing in 2s...
-              </Text>
-            )}
+          {/* Answer Options */}
+          <View className="px-6 flex-col gap-3">
+            {currentQuestion.answers.map((answer, index) => {
+              // Hide answers if 50/50 was used
+              if (hiddenAnswers.includes(index)) {
+                return null;
+              }
+              return (
+                <AnswerOption
+                  key={index}
+                  answer={answer}
+                  index={index}
+                  onPress={() => handleAnswer(index)}
+                  disabled={hasAnswered}
+                  isSelected={selectedIndex === index || lastAnswer?.selectedAnswer === answer}
+                  isCorrect={index === currentQuestion.correctIndex}
+                  showResult={hasAnswered}
+                />
+              );
+            })}
           </View>
-        )}
+
+          {/* Result Feedback & Next Button */}
+          {hasAnswered && lastAnswer && (
+            <View className="px-6 mt-6">
+              <Pressable
+                onPress={handleNextQuestion}
+                className="rounded-2xl py-4 px-6 active:opacity-80 flex-row items-center justify-center"
+                style={{ backgroundColor: COLORS.primary }}
+              >
+                <Text className="text-lg font-bold mr-2" style={{ color: COLORS.bg }}>
+                  {currentQuestionIndex + 1 >= totalQuestions ? "View results" : "Next question"}
+                </Text>
+                <Text style={{ color: COLORS.bg }}>→</Text>
+              </Pressable>
+              {autoAdvanceEnabled && currentQuestionIndex + 1 < totalQuestions && (
+                <Text className="text-center text-xs text-gray-500 mt-2">
+                  Auto-advancing in 2s...
+                </Text>
+              )}
+            </View>
+          )}
+        </ScrollView>
 
         {/* Lifeline Dock */}
         {!hasAnswered && (

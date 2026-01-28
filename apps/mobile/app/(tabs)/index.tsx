@@ -129,7 +129,7 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Featured Card - Daily Brain Teaser */}
+            {/* Featured Card - Daily Brain */}
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
@@ -185,7 +185,7 @@ export default function HomeScreen() {
                       </Text>
                     </View>
                     <Text className="text-3xl font-extrabold text-white leading-tight drop-shadow-lg">
-                      Daily{'\n'}Brain Teaser
+                      Daily{'\n'}Brain
                     </Text>
                   </View>
 

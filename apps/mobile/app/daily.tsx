@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -7,7 +7,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withSequence,
-  withTiming,
   FadeIn,
   SlideInRight,
 } from "react-native-reanimated";
@@ -24,6 +23,115 @@ import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedbac
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
+
+// Design system colors (same as chain.tsx)
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceActive: "#252e33",
+  primary: "#00c2cc",
+  primaryDim: "rgba(0, 194, 204, 0.15)",
+  success: "#22c55e",
+  successDim: "rgba(34, 197, 94, 0.2)",
+  error: "#ef4444",
+  errorDim: "rgba(239, 68, 68, 0.2)",
+  yellow: "#FFD100",
+  purple: "#A16EFF",
+  orange: "#f97316",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
+
+const LETTER_OPTIONS = ['A', 'B', 'C', 'D'];
+
+// Answer Option Component (same style as chain.tsx)
+function AnswerOption({
+  answer,
+  index,
+  onPress,
+  disabled,
+  isSelected,
+  isCorrect,
+  showResult
+}: {
+  answer: string;
+  index: number;
+  onPress: () => void;
+  disabled: boolean;
+  isSelected: boolean;
+  isCorrect: boolean;
+  showResult: boolean;
+}) {
+  let bgColor = COLORS.surface;
+  let borderColor = 'rgba(255,255,255,0.05)';
+  let letterBgColor = 'rgba(255,255,255,0.05)';
+  let letterBorderColor = 'rgba(255,255,255,0.1)';
+  let letterTextColor = COLORS.text;
+
+  if (showResult) {
+    if (isCorrect) {
+      bgColor = COLORS.successDim;
+      borderColor = COLORS.success;
+      letterBgColor = COLORS.success;
+      letterTextColor = COLORS.bg;
+    } else if (isSelected && !isCorrect) {
+      bgColor = COLORS.errorDim;
+      borderColor = COLORS.error;
+      letterBgColor = COLORS.error;
+      letterTextColor = COLORS.bg;
+    }
+  } else if (isSelected) {
+    bgColor = COLORS.surfaceActive;
+    borderColor = `${COLORS.primary}50`;
+    letterBgColor = COLORS.primary;
+    letterBorderColor = COLORS.primary;
+    letterTextColor = COLORS.bg;
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      className="rounded-xl p-4 flex-row items-center gap-4 active:opacity-90"
+      style={{
+        backgroundColor: bgColor,
+        borderWidth: 1,
+        borderColor: borderColor,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      }}
+    >
+      {/* Letter Badge */}
+      <View
+        className="w-10 h-10 rounded-lg items-center justify-center"
+        style={{
+          backgroundColor: letterBgColor,
+          borderWidth: 1,
+          borderColor: letterBorderColor,
+        }}
+      >
+        <Text className="font-bold text-lg" style={{ color: letterTextColor }}>
+          {LETTER_OPTIONS[index]}
+        </Text>
+      </View>
+
+      {/* Answer Text */}
+      <Text className="text-lg font-medium text-white/90 flex-1 text-left">
+        {answer}
+      </Text>
+
+      {/* Check Icon */}
+      {showResult && isCorrect && (
+        <Text className="text-xl" style={{ color: COLORS.success }}>✓</Text>
+      )}
+      {showResult && isSelected && !isCorrect && (
+        <Text className="text-xl" style={{ color: COLORS.error }}>✗</Text>
+      )}
+    </Pressable>
+  );
+}
 
 export default function DailyBrainScreen() {
   const { user, isAnonymous } = useAuth();
@@ -48,7 +156,6 @@ export default function DailyBrainScreen() {
 
   // Animation values
   const scale = useSharedValue(1);
-  const progressWidth = useSharedValue(0);
 
   useEffect(() => {
     checkAndLoad();
@@ -116,9 +223,6 @@ export default function DailyBrainScreen() {
       setSelectedAnswer(null);
       setIsCorrect(null);
       questionStartTime.current = Date.now();
-
-      // Reset progress bar animation
-      progressWidth.value = 0;
     } else {
       // No more questions available - end game
       await endGame(score);
@@ -147,7 +251,7 @@ export default function DailyBrainScreen() {
       // Load next question after delay
       setTimeout(() => {
         loadNextQuestion();
-      }, 1000);
+      }, 1500);
     } else {
       await wrongAnswerFeedback();
       // Game over on wrong answer
@@ -185,43 +289,54 @@ export default function DailyBrainScreen() {
     transform: [{ scale: scale.value }],
   }));
 
-  const getButtonStyle = (index: number) => {
-    if (selectedAnswer === null) return "bg-gray-800 border-gray-700";
-    if (index === currentQuestion?.correctIndex)
-      return "bg-green-500/30 border-green-500";
-    if (index === selectedAnswer && !isCorrect)
-      return "bg-red-500/30 border-red-500";
-    return "bg-gray-800 opacity-50 border-gray-700";
-  };
-
   // Already played today
   if (alreadyPlayed) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        {/* Background Elements */}
+        <View className="absolute inset-0 pointer-events-none">
+          <View
+            className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
+            style={{ backgroundColor: COLORS.primary }}
+          />
+          <View
+            className="absolute -bottom-10 -right-10 w-[400px] h-[400px] rounded-full blur-3xl opacity-20"
+            style={{ backgroundColor: COLORS.purple }}
+          />
+        </View>
+
         <View className="flex-1 items-center justify-center px-6">
-          <View className="bg-primary-500/20 w-24 h-24 rounded-full items-center justify-center mb-6">
+          <View
+            className="w-24 h-24 rounded-full items-center justify-center mb-6"
+            style={{ backgroundColor: COLORS.primaryDim }}
+          >
             <Text className="text-5xl">🎯</Text>
           </View>
           <Text className="text-white text-2xl font-bold text-center mb-2">
             Deja joue aujourd'hui !
           </Text>
-          <Text className="text-gray-400 text-center mb-4">
+          <Text style={{ color: COLORS.textMuted }} className="text-center mb-4">
             Ton score : {previousScore} points
           </Text>
-          <Text className="text-gray-500 text-center mb-8">
+          <Text style={{ color: COLORS.textMuted }} className="text-center mb-8 opacity-60">
             Reviens demain pour un nouveau Daily Brain
           </Text>
 
           {/* Streak */}
           {streak > 0 && (
-            <View className="bg-orange-500/20 rounded-xl px-6 py-4 mb-8">
+            <View
+              className="rounded-xl px-6 py-4 mb-8"
+              style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)' }}
+            >
               <View className="flex-row items-center">
                 <Text className="text-3xl mr-3">🔥</Text>
                 <View>
-                  <Text className="text-orange-400 font-bold text-xl">
+                  <Text style={{ color: COLORS.orange }} className="font-bold text-xl">
                     {streak} jours
                   </Text>
-                  <Text className="text-orange-300/60 text-sm">Serie en cours</Text>
+                  <Text style={{ color: COLORS.orange, opacity: 0.6 }} className="text-sm">
+                    Serie en cours
+                  </Text>
                 </View>
               </View>
             </View>
@@ -229,9 +344,12 @@ export default function DailyBrainScreen() {
 
           <Pressable
             onPress={() => router.back()}
-            className="bg-primary-500 rounded-xl py-4 px-8"
+            className="rounded-xl py-4 px-8"
+            style={{ backgroundColor: COLORS.primary }}
           >
-            <Text className="text-white font-bold text-lg">Retour</Text>
+            <Text className="font-bold text-lg" style={{ color: COLORS.bg }}>
+              Retour
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -241,16 +359,29 @@ export default function DailyBrainScreen() {
   // Game Over screen
   if (gameOver) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        {/* Background Elements */}
+        <View className="absolute inset-0 pointer-events-none">
+          <View
+            className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
+            style={{ backgroundColor: COLORS.primary }}
+          />
+          <View
+            className="absolute -bottom-10 -right-10 w-[400px] h-[400px] rounded-full blur-3xl opacity-20"
+            style={{ backgroundColor: COLORS.purple }}
+          />
+        </View>
+
         <View className="flex-1 items-center justify-center px-6">
           <Animated.View
             entering={FadeIn.duration(500)}
             className="items-center"
           >
             <View
-              className={`w-28 h-28 rounded-full items-center justify-center mb-6 ${
-                score >= 10 ? "bg-yellow-500/20" : "bg-primary-500/20"
-              }`}
+              className="w-28 h-28 rounded-full items-center justify-center mb-6"
+              style={{
+                backgroundColor: score >= 10 ? 'rgba(255, 209, 0, 0.2)' : COLORS.primaryDim,
+              }}
             >
               <Text className="text-6xl">{score >= 10 ? "🏆" : "💪"}</Text>
             </View>
@@ -259,7 +390,7 @@ export default function DailyBrainScreen() {
               {score >= 20 ? "Incroyable !" : score >= 10 ? "Bien joue !" : "Fin de partie"}
             </Text>
 
-            <Text className="text-gray-400 text-center mb-6">
+            <Text style={{ color: COLORS.textMuted }} className="text-center mb-6">
               {score === 0
                 ? "Pas facile... Reviens demain !"
                 : score === 1
@@ -268,12 +399,18 @@ export default function DailyBrainScreen() {
             </Text>
 
             {/* Score display */}
-            <View className="bg-gray-800 rounded-2xl px-8 py-6 mb-6 items-center">
-              <Text className="text-gray-400 text-sm mb-1">SCORE</Text>
+            <View
+              className="rounded-2xl px-8 py-6 mb-6 items-center"
+              style={{ backgroundColor: COLORS.surface }}
+            >
+              <Text style={{ color: COLORS.textMuted }} className="text-sm mb-1">SCORE</Text>
               <Text className="text-white text-5xl font-bold">{score}</Text>
               {isNewRecord && (
-                <View className="bg-yellow-500/20 rounded-full px-4 py-1 mt-2">
-                  <Text className="text-yellow-400 font-bold">
+                <View
+                  className="rounded-full px-4 py-1 mt-2"
+                  style={{ backgroundColor: 'rgba(255, 209, 0, 0.2)' }}
+                >
+                  <Text style={{ color: COLORS.yellow }} className="font-bold">
                     Nouveau record !
                   </Text>
                 </View>
@@ -282,8 +419,11 @@ export default function DailyBrainScreen() {
 
             {/* XP earned */}
             {xpEarned > 0 && (
-              <View className="bg-primary-500/20 rounded-xl px-6 py-3 mb-4">
-                <Text className="text-primary-400 font-bold text-lg">
+              <View
+                className="rounded-xl px-6 py-3 mb-4"
+                style={{ backgroundColor: COLORS.primaryDim }}
+              >
+                <Text style={{ color: COLORS.primary }} className="font-bold text-lg">
                   +{xpEarned} XP
                 </Text>
               </View>
@@ -291,14 +431,17 @@ export default function DailyBrainScreen() {
 
             {/* Streak */}
             {streak > 0 && (
-              <View className="bg-orange-500/20 rounded-xl px-6 py-4 mb-8">
+              <View
+                className="rounded-xl px-6 py-4 mb-8"
+                style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)' }}
+              >
                 <View className="flex-row items-center">
                   <Text className="text-3xl mr-3">🔥</Text>
                   <View>
-                    <Text className="text-orange-400 font-bold text-xl">
+                    <Text style={{ color: COLORS.orange }} className="font-bold text-xl">
                       {streak} jours
                     </Text>
-                    <Text className="text-orange-300/60 text-sm">
+                    <Text style={{ color: COLORS.orange, opacity: 0.6 }} className="text-sm">
                       Serie en cours
                     </Text>
                   </View>
@@ -310,9 +453,10 @@ export default function DailyBrainScreen() {
             {isAnonymous && (
               <Pressable
                 onPress={() => router.push("/profile")}
-                className="bg-gray-800 rounded-xl p-4 mb-6"
+                className="rounded-xl p-4 mb-6"
+                style={{ backgroundColor: COLORS.surface }}
               >
-                <Text className="text-gray-400 text-center text-sm">
+                <Text style={{ color: COLORS.textMuted }} className="text-center text-sm">
                   Cree un compte pour sauvegarder ton score et ta serie 🔥
                 </Text>
               </Pressable>
@@ -320,9 +464,12 @@ export default function DailyBrainScreen() {
 
             <Pressable
               onPress={() => router.back()}
-              className="bg-primary-500 rounded-xl py-4 px-8"
+              className="rounded-xl py-4 px-8"
+              style={{ backgroundColor: COLORS.primary }}
             >
-              <Text className="text-white font-bold text-lg">Retour</Text>
+              <Text className="font-bold text-lg" style={{ color: COLORS.bg }}>
+                Retour
+              </Text>
             </Pressable>
           </Animated.View>
         </View>
@@ -333,11 +480,9 @@ export default function DailyBrainScreen() {
   // Loading
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0ea5e9" />
-          <Text className="text-gray-400 mt-4">Chargement...</Text>
-        </View>
+      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ color: COLORS.textMuted }} className="mt-4">Chargement...</Text>
       </SafeAreaView>
     );
   }
@@ -345,20 +490,21 @@ export default function DailyBrainScreen() {
   // No question available
   if (!currentQuestion) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-5xl mb-6">🎯</Text>
           <Text className="text-white text-xl font-bold text-center mb-2">
             Aucune question disponible
           </Text>
-          <Text className="text-gray-400 text-center mb-8">
+          <Text style={{ color: COLORS.textMuted }} className="text-center mb-8">
             Reviens plus tard !
           </Text>
           <Pressable
             onPress={() => router.back()}
-            className="bg-primary-500 rounded-xl py-4 px-8"
+            className="rounded-xl py-4 px-8"
+            style={{ backgroundColor: COLORS.primary }}
           >
-            <Text className="text-white font-bold">Retour</Text>
+            <Text className="font-bold" style={{ color: COLORS.bg }}>Retour</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -367,112 +513,182 @@ export default function DailyBrainScreen() {
 
   // Game in progress
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <View className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-6 pt-4 mb-4">
-          <Pressable onPress={() => router.back()} className="p-2">
-            <Text className="text-white text-2xl">←</Text>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      {/* Background Elements */}
+      <View className="absolute inset-0 pointer-events-none">
+        <View
+          className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
+          style={{ backgroundColor: COLORS.primary }}
+        />
+        <View
+          className="absolute -bottom-10 -right-10 w-[400px] h-[400px] rounded-full blur-3xl opacity-20"
+          style={{ backgroundColor: COLORS.purple }}
+        />
+      </View>
+
+      <View className="flex-1 relative">
+        {/* Top HUD */}
+        <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
+          {/* Exit Button */}
+          <Pressable
+            onPress={() => router.back()}
+            className="w-10 h-10 rounded-full items-center justify-center"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-white text-xl">←</Text>
           </Pressable>
 
-          <View className="flex-row items-center">
-            <View className="bg-gray-800 rounded-full px-4 py-2 mr-3">
-              <Text className="text-white font-bold">Q{questionNumber}</Text>
-            </View>
-            <View className="bg-primary-500/20 rounded-full px-4 py-2">
-              <Text className="text-primary-400 font-bold">{score} pts</Text>
-            </View>
+          {/* Mode Badge */}
+          <View
+            className="px-4 py-2 rounded-full flex-row items-center gap-2"
+            style={{
+              backgroundColor: 'rgba(30, 37, 41, 0.7)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.08)',
+            }}
+          >
+            <Text className="text-xl">🧠</Text>
+            <Text className="text-sm font-bold tracking-wide text-white">DAILY BRAIN</Text>
+          </View>
+
+          {/* Score Badge */}
+          <View
+            className="px-4 py-2 rounded-full flex-row items-center gap-2"
+            style={{
+              backgroundColor: 'rgba(30, 37, 41, 0.7)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.08)',
+            }}
+          >
+            <Text className="text-xl" style={{ color: COLORS.primary }}>🏆</Text>
+            <Text className="text-sm font-bold tracking-wide text-white">{score} PTS</Text>
           </View>
         </View>
 
-        {/* Title */}
-        <View className="px-6 mb-6">
-          <Text className="text-primary-400 text-sm font-bold mb-1">
-            DAILY BRAIN
-          </Text>
-          <Text className="text-white text-xl font-bold">
-            {isDailyQuestion ? "Question du jour" : "Mode Survie"} - 1 erreur = fin
-          </Text>
-        </View>
-
-        {/* Question */}
-        <Animated.View
-          key={currentQuestion.id}
-          entering={SlideInRight.duration(300)}
-          className="px-6 mb-6"
-        >
-          <View className="bg-gray-800 rounded-2xl p-6">
-            <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-primary-400 text-sm font-bold uppercase">
-                {currentQuestion.category}
-              </Text>
-              <Text className="text-gray-500 text-sm">
-                Diff. {currentQuestion.difficulty}
-              </Text>
-            </View>
-            <Text className="text-white text-lg text-center leading-7">
-              {currentQuestion.question}
-            </Text>
+        {/* Question Counter */}
+        <View className="items-center py-4">
+          <View
+            className="w-16 h-16 rounded-full items-center justify-center"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 2,
+              borderColor: COLORS.primary,
+              shadowColor: COLORS.primary,
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.5,
+              shadowRadius: 12,
+            }}
+          >
+            <Text className="text-2xl font-black text-white">Q{questionNumber}</Text>
           </View>
-        </Animated.View>
-
-        {/* Options */}
-        <View className="px-6 flex-1">
-          {currentQuestion.answers.map((answer, index) => (
-            <Animated.View
-              key={`${currentQuestion.id}-${index}`}
-              entering={SlideInRight.duration(300).delay(index * 50)}
-            >
-              <Pressable
-                onPress={() => handleAnswer(index)}
-                disabled={selectedAnswer !== null}
-                className={`rounded-xl p-4 mb-3 border-2 ${getButtonStyle(index)}`}
-              >
-                <Animated.View
-                  style={
-                    selectedAnswer === index && isCorrect
-                      ? animatedScaleStyle
-                      : undefined
-                  }
-                  className="flex-row items-center"
-                >
-                  <View className="w-8 h-8 rounded-full bg-gray-700 items-center justify-center mr-3">
-                    <Text className="text-white font-bold">
-                      {String.fromCharCode(65 + index)}
-                    </Text>
-                  </View>
-                  <Text className="text-white flex-1 text-base">{answer}</Text>
-                  {selectedAnswer !== null &&
-                    index === currentQuestion.correctIndex && (
-                      <Text className="text-green-400 text-xl">✓</Text>
-                    )}
-                  {selectedAnswer === index && !isCorrect && (
-                    <Text className="text-red-400 text-xl">✗</Text>
-                  )}
-                </Animated.View>
-              </Pressable>
-            </Animated.View>
-          ))}
-        </View>
-
-        {/* Feedback message */}
-        {selectedAnswer !== null && (
-          <View className="px-6 pb-6">
+          {isDailyQuestion && (
             <View
-              className={`rounded-xl p-4 ${
-                isCorrect ? "bg-green-500/20" : "bg-red-500/20"
-              }`}
+              className="mt-2 px-3 py-1 rounded-full"
+              style={{ backgroundColor: COLORS.purple }}
             >
-              <Text
-                className={`text-center font-bold text-lg ${
-                  isCorrect ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                {isCorrect ? "Correct ! Question suivante..." : "Perdu !"}
-              </Text>
+              <Text className="text-xs font-bold text-white">QUESTION DU JOUR</Text>
             </View>
+          )}
+          <Text style={{ color: COLORS.error }} className="text-xs font-bold mt-2">
+            1 erreur = fin de partie
+          </Text>
+        </View>
+
+        {/* Scrollable Question & Answers */}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Question Card */}
+          <Animated.View
+            key={currentQuestion.id}
+            entering={SlideInRight.duration(300)}
+            className="px-6 mb-6"
+          >
+            <View
+              className="rounded-2xl relative overflow-hidden"
+              style={{
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.05)',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.3,
+                shadowRadius: 16,
+              }}
+            >
+              <View className="p-6">
+                {/* Cyan Left Border */}
+                <View
+                  className="absolute top-0 left-0 w-1 h-full"
+                  style={{ backgroundColor: COLORS.primary }}
+                />
+
+                {/* Category Badge */}
+                <View className="flex-row items-center justify-between mb-3">
+                  <Text
+                    className="text-sm font-bold uppercase"
+                    style={{ color: COLORS.primary }}
+                  >
+                    {currentQuestion.category}
+                  </Text>
+                  <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                    Diff. {currentQuestion.difficulty}
+                  </Text>
+                </View>
+
+                <Text className="text-xl font-bold leading-relaxed text-white">
+                  {currentQuestion.question}
+                </Text>
+
+                <View
+                  className="h-1 w-12 rounded-full mt-4"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                />
+              </View>
+            </View>
+          </Animated.View>
+
+          {/* Answer Options */}
+          <View className="px-6 flex-col gap-3">
+            {currentQuestion.answers.map((answer, index) => (
+              <Animated.View
+                key={`${currentQuestion.id}-${index}`}
+                entering={SlideInRight.duration(300).delay(index * 50)}
+              >
+                <AnswerOption
+                  answer={answer}
+                  index={index}
+                  onPress={() => handleAnswer(index)}
+                  disabled={selectedAnswer !== null}
+                  isSelected={selectedAnswer === index}
+                  isCorrect={index === currentQuestion.correctIndex}
+                  showResult={selectedAnswer !== null}
+                />
+              </Animated.View>
+            ))}
           </View>
-        )}
+
+          {/* Feedback message */}
+          {selectedAnswer !== null && (
+            <View className="px-6 mt-6">
+              <View
+                className="rounded-xl p-4"
+                style={{
+                  backgroundColor: isCorrect ? COLORS.successDim : COLORS.errorDim,
+                }}
+              >
+                <Text
+                  className="text-center font-bold text-lg"
+                  style={{ color: isCorrect ? COLORS.success : COLORS.error }}
+                >
+                  {isCorrect ? "Correct ! Question suivante..." : "Perdu !"}
+                </Text>
+              </View>
+            </View>
+          )}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
