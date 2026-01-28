@@ -52,7 +52,8 @@
     "production": {
       "ios": {
         "appleId": "julien@romanetto.com",
-        "appleTeamId": "P42GJWD55N"
+        "appleTeamId": "P42GJWD55N",
+        "ascAppId": "6758253365"
       },
       "android": {
         "serviceAccountKeyPath": "./google-services-key.json",
