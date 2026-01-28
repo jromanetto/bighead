@@ -131,18 +131,22 @@ serve(async (req) => {
   }
 
   try {
-    // Verify authorization (use a secret key for cron jobs)
+    // Verify authorization
     const authHeader = req.headers.get("Authorization");
     const cronSecret = Deno.env.get("CRON_SECRET");
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      // Also allow service role key
-      if (!authHeader?.includes(SUPABASE_SERVICE_ROLE_KEY || "")) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+    // Allow: CRON_SECRET, service role key, or anon key (for testing)
+    const token = authHeader?.replace("Bearer ", "");
+    const isValidCronSecret = cronSecret && token === cronSecret;
+    const isValidServiceRole = token === SUPABASE_SERVICE_ROLE_KEY;
+
+    // If CRON_SECRET is set, require either it or service role key
+    if (cronSecret && !isValidCronSecret && !isValidServiceRole) {
+      console.log("Auth failed. Token:", token?.substring(0, 20) + "...");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
