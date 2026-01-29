@@ -5,11 +5,15 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedProps,
   withSpring,
   withSequence,
+  withTiming,
+  Easing,
   FadeIn,
   SlideInRight,
 } from "react-native-reanimated";
+import Svg, { Circle } from "react-native-svg";
 import { useAuth } from "../src/contexts/AuthContext";
 import {
   getNextSurvivalQuestion,
@@ -43,6 +47,100 @@ const COLORS = {
 };
 
 const LETTER_OPTIONS = ['A', 'B', 'C', 'D'];
+const TOTAL_TIME = 15; // 15 seconds per question
+
+// Create animated circle component
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+// Circular Timer Component - uses SVG with Reanimated for smooth countdown
+function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
+  timeRemaining: number;
+  totalTime: number;
+  questionNumber: number;
+}) {
+  const isLow = timeRemaining <= 5;
+  const color = isLow ? COLORS.error : COLORS.primary;
+
+  const SIZE = 120;
+  const STROKE_WIDTH = 8;
+  const RADIUS = (SIZE - STROKE_WIDTH) / 2;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+  // Animated progress value
+  const progress = useSharedValue(timeRemaining / totalTime);
+
+  // Update progress when timeRemaining changes
+  useEffect(() => {
+    progress.value = withTiming(timeRemaining / totalTime, {
+      duration: 300,
+      easing: Easing.linear,
+    });
+  }, [timeRemaining, totalTime]);
+
+  // Animated props for the progress circle
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: CIRCUMFERENCE * (1 - progress.value),
+  }));
+
+  return (
+    <View className="relative items-center justify-center" style={{ width: SIZE + 20, height: SIZE + 20 }}>
+      {/* Glow effect */}
+      <View
+        className="absolute rounded-full"
+        style={{
+          width: SIZE,
+          height: SIZE,
+          shadowColor: color,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6,
+          shadowRadius: 20,
+        }}
+      />
+
+      {/* SVG Timer */}
+      <Svg width={SIZE} height={SIZE} style={{ transform: [{ rotate: '-90deg' }] }}>
+        {/* Background Circle */}
+        <Circle
+          cx={SIZE / 2}
+          cy={SIZE / 2}
+          r={RADIUS}
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth={STROKE_WIDTH}
+          fill="transparent"
+        />
+        {/* Progress Circle */}
+        <AnimatedCircle
+          cx={SIZE / 2}
+          cy={SIZE / 2}
+          r={RADIUS}
+          stroke={color}
+          strokeWidth={STROKE_WIDTH}
+          fill="transparent"
+          strokeDasharray={CIRCUMFERENCE}
+          animatedProps={animatedProps}
+          strokeLinecap="round"
+        />
+      </Svg>
+
+      {/* Timer Content - centered absolutely */}
+      <View className="absolute items-center justify-center" style={{ width: SIZE, height: SIZE }}>
+        <Text
+          className="text-4xl font-black leading-none"
+          style={{ color: isLow ? COLORS.error : COLORS.text }}
+        >
+          {timeRemaining}
+          <Text className="text-lg text-gray-400 font-medium">s</Text>
+        </Text>
+        <Text
+          className="text-xs font-bold tracking-widest uppercase mt-1"
+          style={{ color: isLow ? COLORS.error : COLORS.primary }}
+        >
+          Q{questionNumber}
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 // Answer Option Component (same style as chain.tsx)
 function AnswerOption({
@@ -149,8 +247,10 @@ export default function DailyBrainScreen() {
   const [streak, setStreak] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
   const [isNewRecord, setIsNewRecord] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME);
 
   const answeredQuestionIds = useRef<string[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTime = useRef<number>(Date.now());
   const questionStartTime = useRef<number>(Date.now());
 
@@ -160,6 +260,45 @@ export default function DailyBrainScreen() {
   useEffect(() => {
     checkAndLoad();
   }, [user]);
+
+  // Timer effect - countdown when playing
+  useEffect(() => {
+    // Only run timer when we have a question and haven't answered yet
+    if (currentQuestion && !gameOver && !alreadyPlayed && selectedAnswer === null) {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            // Time's up - end game
+            if (timerRef.current) {
+              clearInterval(timerRef.current);
+              timerRef.current = null;
+            }
+            // Trigger game over
+            wrongAnswerFeedback();
+            setTimeout(() => {
+              endGame(score);
+            }, 500);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [currentQuestion?.id, gameOver, alreadyPlayed, selectedAnswer]);
+
+  // Reset timer when question changes
+  useEffect(() => {
+    if (currentQuestion && !gameOver && !alreadyPlayed) {
+      setTimeRemaining(TOTAL_TIME);
+    }
+  }, [currentQuestion?.id]);
 
   const checkAndLoad = async () => {
     setLoading(true);
@@ -231,6 +370,12 @@ export default function DailyBrainScreen() {
 
   const handleAnswer = async (answerIndex: number) => {
     if (selectedAnswer !== null || !currentQuestion) return;
+
+    // Stop the timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
 
     setSelectedAnswer(answerIndex);
     const correct = answerIndex === currentQuestion.correctIndex;
@@ -565,22 +710,13 @@ export default function DailyBrainScreen() {
           </View>
         </View>
 
-        {/* Question Counter */}
+        {/* Timer Section */}
         <View className="items-center py-4">
-          <View
-            className="w-16 h-16 rounded-full items-center justify-center"
-            style={{
-              backgroundColor: COLORS.surface,
-              borderWidth: 2,
-              borderColor: COLORS.primary,
-              shadowColor: COLORS.primary,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.5,
-              shadowRadius: 12,
-            }}
-          >
-            <Text className="text-2xl font-black text-white">Q{questionNumber}</Text>
-          </View>
+          <CircularTimer
+            timeRemaining={timeRemaining}
+            totalTime={TOTAL_TIME}
+            questionNumber={questionNumber}
+          />
           {isDailyQuestion && (
             <View
               className="mt-2 px-3 py-1 rounded-full"

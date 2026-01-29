@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - BIGHEAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 0 40px rgba(14, 165, 233, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: #0ea5e9;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            border-radius: 2px;
+        }
+
+        p {
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+            text-decoration: none;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+        }
+
+        .faq-question {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .faq-answer {
+            color: #94a3b8;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            color: #64748b;
+        }
+
+        a {
+            color: #0ea5e9;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back</a>
+
+        <div class="header">
+            <div class="logo">🧠</div>
+            <h1>Support</h1>
+            <p class="subtitle">We're here to help!</p>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h2 style="justify-content: center;">Contact Us</h2>
+            <p>Have a question, found a bug, or want to give feedback?<br>We'd love to hear from you!</p>
+            <a href="mailto:support@bighead-app.com" class="contact-btn">Email Support</a>
+            <p style="margin-top: 20px; color: #64748b; font-size: 0.9rem;">support@bighead-app.com</p>
+        </div>
+
+        <div class="card">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <p class="faq-question">How do I restore my purchases?</p>
+                <p class="faq-answer">Go to Profile > Settings > Restore Purchases. Your premium subscription will be restored automatically.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">How do I cancel my subscription?</p>
+                <p class="faq-answer">Subscriptions are managed through the App Store. Go to Settings > Apple ID > Subscriptions on your iPhone to manage or cancel.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">I found an incorrect question. How can I report it?</p>
+                <p class="faq-answer">Send us an email at support@bighead-app.com with the question details and we'll fix it as soon as possible.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">How do I delete my account?</p>
+                <p class="faq-answer">Send a request to privacy@bighead-app.com and we will delete your account and all associated data within 30 days.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">The app is not working properly. What should I do?</p>
+                <p class="faq-answer">Try closing and reopening the app, or reinstalling it. If the problem persists, contact us with details about the issue.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Response Time</h2>
+            <p>We typically respond to support requests within 24-48 hours during business days.</p>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 BIGHEAD. All rights reserved.</p>
+            <p style="margin-top: 10px;">
+                <a href="privacy-en.html">Privacy</a> ·
+                <a href="terms-en.html">Terms of Use</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
