@@ -342,17 +342,17 @@ export default function HomeScreen() {
                 </LinearGradient>
               </Pressable>
 
-              {/* Themes Card */}
+              {/* Party Card */}
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.push("/themes");
+                  router.push("/party/setup");
                 }}
                 className="flex-1 rounded-xl overflow-hidden active:opacity-95"
                 style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
               >
                 <LinearGradient
-                  colors={['#3b0764', '#6b21a8']}
+                  colors={['#3b0764', '#7c3aed']}
                   start={{ x: 0, y: 1 }}
                   end={{ x: 0, y: 0 }}
                   style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
@@ -361,11 +361,11 @@ export default function HomeScreen() {
                     className="w-10 h-10 rounded-lg items-center justify-center"
                     style={{ backgroundColor: `${COLORS.purple}20` }}
                   >
-                    <Text className="text-xl font-black" style={{ color: COLORS.purple }}>🎨</Text>
+                    <Text className="text-xl">🎉</Text>
                   </View>
                   <View>
-                    <Text className="text-xl font-bold tracking-tight text-white">THEMES</Text>
-                    <Text className="text-purple-200 text-xs mt-0.5">Customize</Text>
+                    <Text className="text-xl font-bold tracking-tight text-white">PARTY</Text>
+                    <Text className="text-purple-200 text-xs mt-0.5">Local multiplayer</Text>
                   </View>
                 </LinearGradient>
               </Pressable>
@@ -403,26 +403,6 @@ export default function HomeScreen() {
 
           {/* Quick Actions Row */}
           <View className="flex-row gap-3">
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/party/setup");
-              }}
-              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
-              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-            >
-              <View
-                className="w-9 h-9 rounded-lg items-center justify-center"
-                style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)' }}
-              >
-                <Text className="text-base font-bold" style={{ color: '#60a5fa' }}>⊕⊕</Text>
-              </View>
-              <View>
-                <Text className="font-bold text-sm text-white">Party</Text>
-                <Text className="text-[10px] text-gray-400">Local multiplayer</Text>
-              </View>
-            </Pressable>
-
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
