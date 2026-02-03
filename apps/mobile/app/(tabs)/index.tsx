@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/dailyChallenge";
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
@@ -21,10 +22,33 @@ const COLORS = {
   purpleDim: "rgba(161, 110, 255, 0.15)",
   yellow: "#FFD100",
   yellowDim: "rgba(255, 209, 0, 0.15)",
+  gold: "#fbbf24",
+  goldDim: "rgba(251, 191, 36, 0.15)",
   teal: "#134e4a",
   red: "#450a0a",
   text: "#ffffff",
   textMuted: "#9ca3af",
+};
+
+// XP required for each level (exponential growth)
+const getXPForLevel = (level: number): number => {
+  return Math.floor(100 * Math.pow(1.5, level - 1));
+};
+
+// Calculate level from total XP
+const calculateLevel = (totalXP: number): { level: number; currentXP: number; nextLevelXP: number; progress: number } => {
+  let level = 1;
+  let xpRemaining = totalXP;
+
+  while (xpRemaining >= getXPForLevel(level)) {
+    xpRemaining -= getXPForLevel(level);
+    level++;
+  }
+
+  const nextLevelXP = getXPForLevel(level);
+  const progress = (xpRemaining / nextLevelXP) * 100;
+
+  return { level, currentXP: xpRemaining, nextLevelXP, progress };
 };
 
 // Stats Pill component
@@ -42,6 +66,7 @@ function StatsPill({ icon, value, color }: { icon: string; value: string | numbe
 
 export default function HomeScreen() {
   const { user, profile, isAnonymous } = useAuth();
+  const { t } = useTranslation();
   const [dailyStreak, setDailyStreak] = useState(0);
   const [dailyCompleted, setDailyCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState("12m");
@@ -66,7 +91,8 @@ export default function HomeScreen() {
     }
   };
 
-  const coins = profile?.total_xp || 1250;
+  const totalXP = profile?.total_xp || 0;
+  const levelData = calculateLevel(totalXP);
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
@@ -106,8 +132,24 @@ export default function HomeScreen() {
 
           {/* Stats Pills */}
           <View className="flex-row items-center gap-2">
-            <StatsPill icon="🔥" value={dailyStreak || 12} color="#f97316" />
-            <StatsPill icon="💰" value={coins.toLocaleString()} color={COLORS.yellow} />
+            <StatsPill icon="🔥" value={dailyStreak || 0} color="#f97316" />
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/achievements");
+              }}
+              className="active:opacity-80"
+            >
+              <LinearGradient
+                colors={['#fbbf24', '#f59e0b']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                className="flex-row items-center px-3 py-1.5 rounded-full"
+              >
+                <Text className="text-xs font-bold mr-1" style={{ color: '#451a03' }}>LVL</Text>
+                <Text className="text-sm font-black" style={{ color: '#451a03' }}>{levelData.level}</Text>
+              </LinearGradient>
+            </Pressable>
           </View>
         </View>
 
@@ -117,14 +159,14 @@ export default function HomeScreen() {
           <View className="flex-col gap-3">
             <View className="flex-row items-baseline justify-between px-1">
               <Text className="text-base font-bold text-gray-100 tracking-wide uppercase">
-                Featured
+                {t("featured")}
               </Text>
               <View
                 className="px-2 py-0.5 rounded-full"
                 style={{ backgroundColor: `${COLORS.primary}15`, borderWidth: 1, borderColor: `${COLORS.primary}30` }}
               >
                 <Text className="text-xs font-medium" style={{ color: COLORS.primary }}>
-                  New
+                  {t("new")}
                 </Text>
               </View>
             </View>
@@ -177,15 +219,15 @@ export default function HomeScreen() {
                         style={{ backgroundColor: COLORS.purple }}
                       >
                         <Text className="text-white text-[10px] font-bold tracking-wider uppercase">
-                          {dailyCompleted ? "Done" : "Hard"}
+                          {dailyCompleted ? t("done") : t("hard")}
                         </Text>
                       </View>
                       <Text className="text-gray-400 text-xs font-medium">
-                        ⏱ {timeLeft} left
+                        ⏱ {timeLeft} {t("left")}
                       </Text>
                     </View>
                     <Text className="text-3xl font-extrabold text-white leading-tight drop-shadow-lg">
-                      Daily{'\n'}Brain
+                      {t("dailyBrain").split(' ').join('\n')}
                     </Text>
                   </View>
 
@@ -211,7 +253,7 @@ export default function HomeScreen() {
           {/* Game Modes Section */}
           <View className="flex-col gap-3">
             <Text className="text-base font-bold text-gray-100 tracking-wide uppercase px-1">
-              Game Modes
+              {t("gameModes")}
             </Text>
 
             {/* Adventure Mode - Main Feature Card */}
@@ -236,15 +278,15 @@ export default function HomeScreen() {
                       style={{ backgroundColor: '#FFD700' }}
                     >
                       <Text className="text-[10px] font-bold tracking-wider uppercase" style={{ color: '#1e3a5f' }}>
-                        NEW
+                        {t("new").toUpperCase()}
                       </Text>
                     </View>
                   </View>
                   <Text className="text-2xl font-black tracking-tight text-white">
-                    🏔️ AVENTURE
+                    🏔️ {t("adventure").toUpperCase()}
                   </Text>
                   <Text className="text-blue-200 text-sm font-medium mt-1">
-                    Gravis la Montagne de la Connaissance
+                    {t("climbMountain")}
                   </Text>
                 </View>
                 <View className="w-16 h-16 rounded-2xl items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
@@ -277,8 +319,8 @@ export default function HomeScreen() {
                     <Text className="text-xl font-black" style={{ color: '#5eead4' }}>⚡</Text>
                   </View>
                   <View>
-                    <Text className="text-lg font-bold tracking-tight text-white">SOLO RUN</Text>
-                    <Text className="text-teal-200 text-xs mt-0.5">Mode infini</Text>
+                    <Text className="text-lg font-bold tracking-tight text-white">{t("soloRun").toUpperCase()}</Text>
+                    <Text className="text-teal-200 text-xs mt-0.5">{t("infiniteMode")}</Text>
                   </View>
                 </LinearGradient>
               </Pressable>
@@ -305,8 +347,8 @@ export default function HomeScreen() {
                     <Text className="text-xl">👨‍👩‍👧‍👦</Text>
                   </View>
                   <View>
-                    <Text className="text-lg font-bold tracking-tight text-white">FAMILLE</Text>
-                    <Text className="text-orange-200 text-xs mt-0.5">Quiz en groupe</Text>
+                    <Text className="text-lg font-bold tracking-tight text-white">{t("family").toUpperCase()}</Text>
+                    <Text className="text-orange-200 text-xs mt-0.5">{t("familyQuiz")}</Text>
                   </View>
                 </LinearGradient>
               </Pressable>
@@ -336,8 +378,8 @@ export default function HomeScreen() {
                     <Text className="text-xl font-black" style={{ color: COLORS.coral }}>×</Text>
                   </View>
                   <View>
-                    <Text className="text-xl font-bold tracking-tight text-white">VERSUS</Text>
-                    <Text className="text-red-200 text-xs mt-0.5">PvP Live</Text>
+                    <Text className="text-xl font-bold tracking-tight text-white">{t("versus").toUpperCase()}</Text>
+                    <Text className="text-red-200 text-xs mt-0.5">{t("pvpLive")}</Text>
                   </View>
                 </LinearGradient>
               </Pressable>
@@ -364,39 +406,83 @@ export default function HomeScreen() {
                     <Text className="text-xl">🎉</Text>
                   </View>
                   <View>
-                    <Text className="text-xl font-bold tracking-tight text-white">PARTY</Text>
-                    <Text className="text-purple-200 text-xs mt-0.5">Local multiplayer</Text>
+                    <Text className="text-xl font-bold tracking-tight text-white">{t("party").toUpperCase()}</Text>
+                    <Text className="text-purple-200 text-xs mt-0.5">{t("localMultiplayer")}</Text>
                   </View>
                 </LinearGradient>
               </Pressable>
             </View>
 
-            {/* Trophies Row */}
+            {/* Level & Achievements Card */}
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
                 router.push("/achievements");
               }}
-              className="rounded-xl overflow-hidden active:opacity-95"
-              style={{ height: 80, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              className="rounded-2xl overflow-hidden active:opacity-95"
+              style={{ borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.2)' }}
             >
               <LinearGradient
-                colors={['#134e4a', '#0d9488']}
+                colors={['#451a03', '#78350f', '#92400e']}
                 start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{ flex: 1, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center' }}
+                end={{ x: 1, y: 1 }}
+                style={{ padding: 20 }}
               >
-                <View
-                  className="w-12 h-12 rounded-xl items-center justify-center mr-4"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-                >
-                  <Text className="text-2xl">🏆</Text>
+                <View className="flex-row items-center justify-between mb-4">
+                  {/* Level Badge */}
+                  <View className="flex-row items-center gap-3">
+                    <LinearGradient
+                      colors={['#fbbf24', '#f59e0b', '#d97706']}
+                      className="w-14 h-14 rounded-xl items-center justify-center"
+                      style={{
+                        shadowColor: '#fbbf24',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.4,
+                        shadowRadius: 8,
+                      }}
+                    >
+                      <Text className="text-[10px] font-bold text-amber-900 opacity-80">LVL</Text>
+                      <Text className="text-2xl font-black text-amber-900">{levelData.level}</Text>
+                    </LinearGradient>
+                    <View>
+                      <Text className="text-white font-bold text-lg">{t("level")} {levelData.level}</Text>
+                      <Text className="text-amber-200/80 text-sm">{totalXP.toLocaleString()} XP {t("totalXP")}</Text>
+                    </View>
+                  </View>
+
+                  {/* Trophy icon */}
+                  <View
+                    className="w-12 h-12 rounded-xl items-center justify-center"
+                    style={{ backgroundColor: 'rgba(251, 191, 36, 0.2)' }}
+                  >
+                    <Text className="text-2xl">🏆</Text>
+                  </View>
                 </View>
-                <View className="flex-1">
-                  <Text className="text-xl font-bold text-white">ACHIEVEMENTS</Text>
-                  <Text className="text-teal-200 text-xs">Unlock badges & rewards</Text>
+
+                {/* XP Progress Bar */}
+                <View>
+                  <View className="flex-row justify-between mb-2">
+                    <Text className="text-amber-200/70 text-xs">{t("progressToLevel")} {levelData.level + 1}</Text>
+                    <Text className="text-amber-200 text-xs font-bold">{levelData.currentXP} / {levelData.nextLevelXP} XP</Text>
+                  </View>
+                  <View
+                    className="h-2 rounded-full overflow-hidden"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+                  >
+                    <LinearGradient
+                      colors={['#fbbf24', '#f59e0b']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{ width: `${levelData.progress}%`, height: '100%', borderRadius: 999 }}
+                    />
+                  </View>
                 </View>
-                <Text className="text-white text-2xl">→</Text>
+
+                {/* View Achievements link */}
+                <View className="flex-row items-center justify-center mt-4 pt-3" style={{ borderTopWidth: 1, borderTopColor: 'rgba(251, 191, 36, 0.2)' }}>
+                  <Text className="text-amber-200 font-semibold text-sm mr-2">{t("viewAchievementsBadges")}</Text>
+                  <Text className="text-amber-200">→</Text>
+                </View>
               </LinearGradient>
             </Pressable>
           </View>
@@ -418,8 +504,8 @@ export default function HomeScreen() {
                 <Text className="text-lg font-bold" style={{ color: COLORS.primary }}>▮▮▯</Text>
               </View>
               <View>
-                <Text className="font-bold text-sm text-white">Stats</Text>
-                <Text className="text-[10px] text-gray-400">Your progress</Text>
+                <Text className="font-bold text-sm text-white">{t("stats")}</Text>
+                <Text className="text-[10px] text-gray-400">{t("yourProgress")}</Text>
               </View>
             </Pressable>
 
@@ -438,8 +524,8 @@ export default function HomeScreen() {
                 <Text className="text-lg font-bold" style={{ color: COLORS.yellow }}>♛</Text>
               </View>
               <View>
-                <Text className="font-bold text-sm text-white">Ranking</Text>
-                <Text className="text-[10px] text-gray-400">Top players</Text>
+                <Text className="font-bold text-sm text-white">{t("ranking")}</Text>
+                <Text className="text-[10px] text-gray-400">{t("topPlayers")}</Text>
               </View>
             </Pressable>
           </View>
@@ -462,15 +548,15 @@ export default function HomeScreen() {
               <View className="flex-row items-center gap-3">
                 <Text className="text-2xl">👑</Text>
                 <View>
-                  <Text className="text-white font-bold text-base">Get Premium Access</Text>
-                  <Text className="text-white/70 text-xs">Unlock all features & remove ads</Text>
+                  <Text className="text-white font-bold text-base">{t("getPremiumAccess")}</Text>
+                  <Text className="text-white/70 text-xs">{t("unlockFeaturesRemoveAds")}</Text>
                 </View>
               </View>
               <View
                 className="px-4 py-2 rounded-full"
                 style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
               >
-                <Text className="text-white font-bold text-sm">Upgrade</Text>
+                <Text className="text-white font-bold text-sm">{t("upgrade")}</Text>
               </View>
             </LinearGradient>
           </Pressable>

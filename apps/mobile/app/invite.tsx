@@ -2,6 +2,7 @@ import { View, Text, Pressable, Share } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
+import { useTranslation } from "../src/contexts/LanguageContext";
 
 // Design colors
 const COLORS = {
@@ -17,11 +18,13 @@ const COLORS = {
 const APP_STORE_URL = "https://apps.apple.com/app/bighead-quiz/id123456789";
 
 export default function InviteScreen() {
+  const { t } = useTranslation();
+
   const handleShare = async () => {
     playHaptic("medium");
     try {
       await Share.share({
-        message: `🧠 Challenge me on BigHead Quiz!\n\nTest your knowledge against friends with fun trivia questions.\n\nDownload free: ${APP_STORE_URL}`,
+        message: `🧠 ${t("inviteDescription")}\n\n${APP_STORE_URL}`,
         url: APP_STORE_URL,
       });
     } catch (error) {
@@ -43,7 +46,7 @@ export default function InviteScreen() {
         >
           <Text className="text-white text-lg">←</Text>
         </Pressable>
-        <Text className="text-white text-2xl font-black">INVITE FRIENDS</Text>
+        <Text className="text-white text-2xl font-black">{t("inviteFriends").toUpperCase()}</Text>
       </View>
 
       <View className="flex-1 px-5 items-center justify-center">
@@ -57,7 +60,7 @@ export default function InviteScreen() {
 
         {/* Title */}
         <Text className="text-white text-2xl font-bold text-center mb-3">
-          Play with Friends!
+          {t("playWithFriends")}
         </Text>
 
         {/* Description */}
@@ -65,7 +68,7 @@ export default function InviteScreen() {
           className="text-center text-base mb-8 px-4"
           style={{ color: COLORS.textMuted }}
         >
-          Invite your friends to BigHead Quiz and challenge them to beat your score!
+          {t("inviteDescription")}
         </Text>
 
         {/* Share Button */}
@@ -81,7 +84,7 @@ export default function InviteScreen() {
           }}
         >
           <Text className="text-2xl mr-3">📤</Text>
-          <Text className="text-white font-bold text-lg">Share App</Text>
+          <Text className="text-white font-bold text-lg">{t("shareApp")}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 
 // Design colors
 const COLORS = {
@@ -19,15 +20,16 @@ const COLORS = {
 const QUESTION_COUNTS = [5, 10, 15, 20];
 
 export default function PartySetupScreen() {
+  const { t } = useTranslation();
   const [playerCount, setPlayerCount] = useState(2);
-  const [players, setPlayers] = useState<string[]>(["Player 1", "Player 2"]);
+  const [players, setPlayers] = useState<string[]>([`${t("player")} 1`, `${t("player")} 2`]);
   const [questionCount, setQuestionCount] = useState(10);
 
   const updatePlayerCount = (count: number) => {
     setPlayerCount(count);
     const newPlayers = Array(count)
       .fill(null)
-      .map((_, i) => players[i] || `Player ${i + 1}`);
+      .map((_, i) => players[i] || `${t("player")} ${i + 1}`);
     setPlayers(newPlayers);
   };
 
@@ -40,7 +42,7 @@ export default function PartySetupScreen() {
   const startGame = () => {
     buttonPressFeedback();
     const validPlayers = players.map(
-      (p, i) => p.trim() || `Player ${i + 1}`
+      (p, i) => p.trim() || `${t("player")} ${i + 1}`
     );
     router.push({
       pathname: "/party/game",
@@ -75,9 +77,9 @@ export default function PartySetupScreen() {
             <Text className="text-white text-lg">←</Text>
           </Pressable>
           <View className="flex-1">
-            <Text className="text-white text-2xl font-black">Party Mode</Text>
+            <Text className="text-white text-2xl font-black">{t("partyMode")}</Text>
             <Text style={{ color: COLORS.textMuted }} className="text-sm">
-              One phone, multiple players
+              {t("onePhoneMultiplePlayers")}
             </Text>
           </View>
           <Text className="text-4xl">🎉</Text>
@@ -90,7 +92,7 @@ export default function PartySetupScreen() {
             style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
           >
             <Text className="text-white font-bold text-base mb-4">
-              Number of players
+              {t("numberOfPlayers")}
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {[2, 3, 4, 5, 6, 7, 8].map((num) => (
@@ -124,7 +126,7 @@ export default function PartySetupScreen() {
             style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
           >
             <Text className="text-white font-bold text-base mb-4">
-              Player names
+              {t("playerNames")}
             </Text>
             <View className="gap-3">
               {players.map((player, index) => (
@@ -138,7 +140,7 @@ export default function PartySetupScreen() {
                   <TextInput
                     value={player}
                     onChangeText={(text) => updatePlayerName(index, text)}
-                    placeholder={`Player ${index + 1}`}
+                    placeholder={`${t("player")} ${index + 1}`}
                     placeholderTextColor={COLORS.textMuted}
                     className="flex-1 rounded-xl py-3 px-4 text-white font-medium"
                     style={{ backgroundColor: COLORS.surfaceLight }}
@@ -155,7 +157,7 @@ export default function PartySetupScreen() {
             style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
           >
             <Text className="text-white font-bold text-base mb-4">
-              Number of questions
+              {t("numberOfQuestions")}
             </Text>
             <View className="flex-row gap-3">
               {QUESTION_COUNTS.map((count) => (
@@ -180,7 +182,7 @@ export default function PartySetupScreen() {
               ))}
             </View>
             <Text style={{ color: COLORS.textMuted }} className="text-sm mt-3 text-center">
-              {Math.ceil(questionCount / playerCount)} questions per player
+              {Math.ceil(questionCount / playerCount)} {t("questionsPerPlayer")}
             </Text>
           </View>
 
@@ -191,12 +193,10 @@ export default function PartySetupScreen() {
           >
             <View className="flex-row items-center gap-2 mb-3">
               <Text className="text-lg">💡</Text>
-              <Text className="text-white font-bold">How to play</Text>
+              <Text className="text-white font-bold">{t("howToPlay")}</Text>
             </View>
             <Text style={{ color: COLORS.textMuted }} className="text-sm leading-5">
-              Each player answers in turn. The phone shows who should answer.
-              Pass the phone to the next player after each question.
-              The player with the most points wins!
+              {t("howToPlayDescription")}
             </Text>
           </View>
 
@@ -216,7 +216,7 @@ export default function PartySetupScreen() {
               className="py-4 items-center"
             >
               <Text className="text-white text-xl font-bold">
-                Start Game 🎮
+                {t("startGame")} 🎮
               </Text>
             </LinearGradient>
           </Pressable>
