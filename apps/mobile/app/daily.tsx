@@ -600,19 +600,6 @@ export default function DailyBrainScreen() {
               </View>
             )}
 
-            {/* Anonymous prompt */}
-            {isAnonymous && (
-              <Pressable
-                onPress={() => router.push("/profile")}
-                className="rounded-xl p-4 mb-6"
-                style={{ backgroundColor: COLORS.surface }}
-              >
-                <Text style={{ color: COLORS.textMuted }} className="text-center text-sm">
-                  Cree un compte pour sauvegarder ton score et ta serie 🔥
-                </Text>
-              </Pressable>
-            )}
-
             <Pressable
               onPress={() => router.back()}
               className="rounded-xl py-4 px-8"

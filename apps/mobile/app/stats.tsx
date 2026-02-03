@@ -197,28 +197,6 @@ export default function StatsScreen() {
     }
   };
 
-  if (!user) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
-        <Text className="text-6xl mb-4">🔒</Text>
-        <Text className="text-white text-xl font-bold mb-2">Sign in to view stats</Text>
-        <Text style={{ color: COLORS.textMuted }} className="text-center px-8 mb-6">
-          Create an account to track your progress and compete on the leaderboard.
-        </Text>
-        <Pressable
-          onPress={() => {
-            buttonPressFeedback();
-            router.back();
-          }}
-          className="rounded-xl px-8 py-3"
-          style={{ backgroundColor: COLORS.primary }}
-        >
-          <Text className="font-bold" style={{ color: COLORS.bg }}>Go Back</Text>
-        </Pressable>
-      </SafeAreaView>
-    );
-  }
-
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>

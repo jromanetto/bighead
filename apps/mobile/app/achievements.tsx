@@ -291,32 +291,6 @@ export default function AchievementsScreen() {
               />
             ))}
 
-            {/* Anonymous prompt */}
-            {isAnonymous && (
-              <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push("/profile");
-                }}
-                className="rounded-2xl p-4 mt-2 mb-4"
-                style={{
-                  backgroundColor: COLORS.primaryDim,
-                  borderWidth: 1,
-                  borderColor: `${COLORS.primary}30`,
-                }}
-              >
-                <View className="flex-row items-center">
-                  <Text className="text-2xl mr-3">🎮</Text>
-                  <View className="flex-1">
-                    <Text className="text-white font-bold">Create an account</Text>
-                    <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                      To unlock and save your achievements
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
-            )}
-
             <View className="h-6" />
           </ScrollView>
         )}

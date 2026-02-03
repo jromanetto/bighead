@@ -38,8 +38,7 @@ export default function TournamentScreen() {
   };
 
   const handleJoin = async () => {
-    if (!tournament || !user || isAnonymous) {
-      router.push("/profile");
+    if (!tournament || !user) {
       return;
     }
 
@@ -259,17 +258,6 @@ export default function TournamentScreen() {
           </View>
         )}
 
-        {/* Anonymous Prompt */}
-        {isAnonymous && (
-          <Pressable
-            onPress={() => router.push("/profile")}
-            className="bg-orange-500/20 rounded-xl p-4 mt-4"
-          >
-            <Text className="text-orange-400 text-center">
-              Create an account to join tournaments! 🏆
-            </Text>
-          </Pressable>
-        )}
       </ScrollView>
     </SafeAreaView>
   );

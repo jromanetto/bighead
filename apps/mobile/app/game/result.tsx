@@ -4,8 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { UpgradePrompt } from "../../src/components/UpgradePrompt";
-import { AuthModal, AuthModalRef } from "../../src/components/AuthModal";
 import { saveGameResult } from "../../src/services/gameResults";
 import { ConfettiEffect } from "../../src/components/effects";
 import { buttonPressFeedback } from "../../src/utils/feedback";
@@ -138,8 +136,7 @@ export default function ResultScreen() {
     ? JSON.parse(questionSummary)
     : [];
 
-  const { isAnonymous, user, refreshProfile } = useAuth();
-  const authModalRef = useRef<AuthModalRef>(null);
+  const { user, refreshProfile } = useAuth();
   const [saved, setSaved] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -201,13 +198,6 @@ export default function ResultScreen() {
     }
   };
 
-  const handleOpenAuth = () => {
-    authModalRef.current?.open("signup");
-  };
-
-  const handleAuthSuccess = () => {
-    refreshProfile();
-  };
 
   // Find a "Did You Know" fact from a correct answer with explanation
   const didYouKnowFact = parsedQuestionSummary.find(
@@ -349,15 +339,6 @@ export default function ResultScreen() {
           </View>
         )}
 
-        {/* Upgrade Prompt for anonymous users */}
-        {isAnonymous && (
-          <View className="mx-6 mb-4">
-            <UpgradePrompt
-              onPress={handleOpenAuth}
-              message="Create an account to save your score"
-            />
-          </View>
-        )}
       </ScrollView>
 
       {/* Fixed Bottom Actions */}
@@ -405,9 +386,6 @@ export default function ResultScreen() {
           <Text className="text-2xl">↗</Text>
         </Pressable>
       </View>
-
-      {/* Auth Modal */}
-      <AuthModal ref={authModalRef} onSuccess={handleAuthSuccess} />
     </SafeAreaView>
   );
 }
