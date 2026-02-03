@@ -21,10 +21,10 @@ export const ENTITLEMENTS = {
   UNLIMITED_HINTS: "unlimited_hints",
 } as const;
 
-// Product identifiers
+// Product identifiers (must match App Store Connect exactly)
 export const PRODUCTS = {
-  PREMIUM_MONTHLY: "bighead_premium_monthly",
-  PREMIUM_YEARLY: "bighead_premium_yearly",
+  PREMIUM_MONTHLY: "bighead_premium_month",    // Monthly subscription
+  PREMIUM_YEARLY: "bighead_premium_yearly",    // Annual subscription
   HINT_PACK_5: "bighead_hints_5",
   HINT_PACK_20: "bighead_hints_20",
   REMOVE_ADS: "bighead_remove_ads",
