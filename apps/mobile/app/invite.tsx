@@ -7,11 +7,8 @@ import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
 const COLORS = {
   bg: "#161a1d",
   surface: "#1E2529",
-  surfaceLight: "#252e33",
   primary: "#00c2cc",
   primaryDim: "rgba(0, 194, 204, 0.15)",
-  success: "#22c55e",
-  successDim: "rgba(34, 197, 94, 0.15)",
   text: "#ffffff",
   textMuted: "#9ca3af",
 };
@@ -86,39 +83,6 @@ export default function InviteScreen() {
           <Text className="text-2xl mr-3">📤</Text>
           <Text className="text-white font-bold text-lg">Share App</Text>
         </Pressable>
-
-        {/* Features list */}
-        <View className="mt-12 px-4">
-          <View className="flex-row items-center mb-4">
-            <View
-              className="w-10 h-10 rounded-full items-center justify-center mr-4"
-              style={{ backgroundColor: COLORS.successDim }}
-            >
-              <Text>✓</Text>
-            </View>
-            <Text className="text-white flex-1">Challenge friends to quiz battles</Text>
-          </View>
-
-          <View className="flex-row items-center mb-4">
-            <View
-              className="w-10 h-10 rounded-full items-center justify-center mr-4"
-              style={{ backgroundColor: COLORS.successDim }}
-            >
-              <Text>✓</Text>
-            </View>
-            <Text className="text-white flex-1">Compare scores on the leaderboard</Text>
-          </View>
-
-          <View className="flex-row items-center">
-            <View
-              className="w-10 h-10 rounded-full items-center justify-center mr-4"
-              style={{ backgroundColor: COLORS.successDim }}
-            >
-              <Text>✓</Text>
-            </View>
-            <Text className="text-white flex-1">Free to play, no account required</Text>
-          </View>
-        </View>
       </View>
     </SafeAreaView>
   );
