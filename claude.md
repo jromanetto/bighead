@@ -82,7 +82,7 @@ cd apps/mobile && eas build --profile production --platform ios
 cd apps/mobile && eas submit --platform ios --latest
 ```
 
-## VPS - Site Marketing & Cron
+## VPS - Site Marketing & Notifications
 
 **Connexion:**
 ```bash
@@ -91,21 +91,72 @@ ssh cursor@77.87.110.100
 
 **Répertoire de travail:** `/home/script/bighead/`
 
-**Structure:**
-- Site marketing (landing page, CGU, privacy, etc.)
-- Cron pour les notifications push quotidiennes
+### Site Marketing
 
-**Commandes utiles:**
+**URL:** https://bighead.jrmanagement.org
+
+| Page | URL |
+|------|-----|
+| Landing | https://bighead.jrmanagement.org/ |
+| Privacy Policy | https://bighead.jrmanagement.org/privacy.html |
+| Terms of Service | https://bighead.jrmanagement.org/terms.html |
+
+**Fichiers sur le VPS:**
+```
+/home/script/bighead/
+├── index.html                    # Landing page
+├── privacy.html                  # Politique de confidentialité
+├── terms.html                    # Conditions d'utilisation
+└── send-daily-notification.sh    # Script cron notifications
+```
+
+**Config Nginx:** `/etc/nginx/sites-enabled/bighead.jrmanagement.org`
+
+### Notifications Push (Cron)
+
+**Cron configuré:** `0 19 * * *` (tous les jours à 19h Paris)
+
+**Script:** `/home/script/bighead/send-daily-notification.sh`
+
+**Prérequis:**
+1. Déployer l'Edge Function:
+   ```bash
+   supabase functions deploy send-daily-notification
+   ```
+
+2. Configurer le secret sur le VPS:
+   ```bash
+   ssh cursor@77.87.110.100
+   echo 'export BIGHEAD_CRON_SECRET="<secret>"' >> ~/.bashrc
+   source ~/.bashrc
+   ```
+
+3. Ajouter `CRON_SECRET` dans Supabase Dashboard → Edge Functions → Secrets
+
+### Edge Functions disponibles
+
+| Fonction | Description |
+|----------|-------------|
+| `send-daily-notification` | Envoie la question du jour à tous les users avec push token |
+| `send-push` | Fonction générique pour envoyer des push (duels, tournois, etc.) |
+
+**Templates send-push:** `duel_invite`, `duel_accepted`, `tournament_start`, `achievement`, `level_up`, `streak_reminder`
+
+### Commandes VPS utiles
+
 ```bash
-# Se connecter au VPS
+# Se connecter
 ssh cursor@77.87.110.100
 
-# Aller au répertoire bighead
-cd /home/script/bighead/
-
-# Voir les crons configurés
+# Voir les crons
 crontab -l
 
-# Éditer les crons
-crontab -e
+# Voir les logs notifications
+tail -f /home/script/bighead/notifications.log
+
+# Tester le script manuellement
+BIGHEAD_CRON_SECRET="xxx" /home/script/bighead/send-daily-notification.sh
+
+# Recharger nginx après modif
+sudo nginx -t && sudo systemctl reload nginx
 ```
