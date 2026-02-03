@@ -15,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { recordPlay } from "../../src/services/dailyLimits";
 import {
   getDuel,
   getDuelQuestions,
@@ -604,9 +605,15 @@ export default function DuelPlayScreen() {
     };
     loadGame();
 
-    const channel = subscribeToDuel(id, (updatedDuel) => {
+    const channel = subscribeToDuel(id, async (updatedDuel) => {
       setDuel(updatedDuel);
       if (updatedDuel.status === "finished") {
+        // Record the play using daily limits service
+        try {
+          await recordPlay("versus");
+        } catch (e) {
+          console.error("Error recording play:", e);
+        }
         router.replace(`/duel/result?id=${id}`);
       }
     });

@@ -3,6 +3,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { useGameStore } from "../../src/stores/gameStore";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { recordPlay } from "../../src/services/dailyLimits";
 import {
   getQuestions,
   formatQuestionsForGame,
@@ -16,6 +18,7 @@ export default function PartyGameScreen() {
       players: string;
       questionCount: string;
     }>();
+  const { isPremium } = useAuth();
 
   const players: string[] = playersParam
     ? JSON.parse(playersParam)
@@ -152,6 +155,18 @@ export default function PartyGameScreen() {
   // Navigate to results when game ends
   useEffect(() => {
     if (status === "finished") {
+      // Record the play using daily limits service
+      const doRecordPlay = async () => {
+        if (!isPremium) {
+          try {
+            await recordPlay("party");
+          } catch (e) {
+            console.error("Error recording play:", e);
+          }
+        }
+      };
+      doRecordPlay();
+
       const state = useGameStore.getState();
       router.replace({
         pathname: "/party/result",
@@ -160,7 +175,7 @@ export default function PartyGameScreen() {
         },
       });
     }
-  }, [status]);
+  }, [status, isPremium]);
 
   const handleReady = () => {
     setWaitingForPlayer(false);

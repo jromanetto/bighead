@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useGameStore } from "../../src/stores/gameStore";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { LimitReachedModal, LimitReachedModalRef } from "../../src/components/LimitReachedModal";
+import { canPlay, recordPlay } from "../../src/services/dailyLimits";
 import {
   getQuestions,
   getUnseenQuestions,
@@ -248,7 +250,7 @@ function LifelineButton({
 }
 
 export default function ChainGameScreen() {
-  const { user } = useAuth();
+  const { user, isPremium } = useAuth();
   const status = useGameStore((state) => state.status);
   const score = useGameStore((state) => state.score);
   const chain = useGameStore((state) => state.chain);
@@ -265,6 +267,8 @@ export default function ChainGameScreen() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
+  const limitModalRef = useRef<LimitReachedModalRef>(null);
+  const [limitChecked, setLimitChecked] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [level, setLevel] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -277,6 +281,21 @@ export default function ChainGameScreen() {
   // Auto-advance setting (can be toggled in settings later)
   const [autoAdvanceEnabled] = useState(true);
   const AUTO_ADVANCE_DELAY = 2000; // 2 seconds
+
+  // Check daily limits on mount
+  useEffect(() => {
+    const checkLimits = async () => {
+      if (!isPremium) {
+        const canPlayNow = await canPlay("solo_run");
+        if (!canPlayNow) {
+          // Show modal and redirect on close
+          limitModalRef.current?.open("solo_run");
+        }
+      }
+      setLimitChecked(true);
+    };
+    checkLimits();
+  }, [isPremium]);
 
   // Calculate level based on score
   useEffect(() => {
@@ -424,6 +443,19 @@ export default function ChainGameScreen() {
   useEffect(() => {
     if (status === "finished") {
       playSound("gameOver");
+
+      // Record the play using daily limits service
+      const doRecordPlay = async () => {
+        if (!isPremium) {
+          try {
+            await recordPlay("solo_run");
+          } catch (e) {
+            console.error("Error recording play:", e);
+          }
+        }
+      };
+      doRecordPlay();
+
       const state = useGameStore.getState();
 
       // Build question summary data for results page
@@ -450,7 +482,7 @@ export default function ChainGameScreen() {
         },
       });
     }
-  }, [status]);
+  }, [status, isPremium]);
 
   const handleAnswer = (index: number) => {
     if (status !== "playing" || hasAnswered) return;
@@ -723,6 +755,12 @@ export default function ChainGameScreen() {
           </View>
         )}
       </View>
+
+      {/* Limit Reached Modal */}
+      <LimitReachedModal
+        ref={limitModalRef}
+        onClose={() => router.replace("/")}
+      />
     </SafeAreaView>
   );
 }

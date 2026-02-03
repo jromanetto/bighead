@@ -1,10 +1,13 @@
 import { View, Text, Pressable, TextInput, ScrollView } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { useTranslation } from "../../src/contexts/LanguageContext";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { LimitReachedModal, LimitReachedModalRef } from "../../src/components/LimitReachedModal";
+import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../src/services/dailyLimits";
 
 // Design colors
 const COLORS = {
@@ -21,9 +24,26 @@ const QUESTION_COUNTS = [5, 10, 15, 20];
 
 export default function PartySetupScreen() {
   const { t } = useTranslation();
+  const { isPremium } = useAuth();
   const [playerCount, setPlayerCount] = useState(2);
   const [players, setPlayers] = useState<string[]>([`${t("player")} 1`, `${t("player")} 2`]);
   const [questionCount, setQuestionCount] = useState(10);
+  const [canPlayGame, setCanPlayGame] = useState(true);
+  const [remaining, setRemaining] = useState<number>(DAILY_LIMITS.party);
+  const limitModalRef = useRef<LimitReachedModalRef>(null);
+
+  // Load daily limits when screen focuses
+  useFocusEffect(
+    useCallback(() => {
+      const loadLimits = async () => {
+        const canPlayNow = await canPlay("party");
+        const remainingPlays = await getRemainingPlays("party");
+        setCanPlayGame(isPremium || canPlayNow);
+        setRemaining(remainingPlays);
+      };
+      loadLimits();
+    }, [isPremium])
+  );
 
   const updatePlayerCount = (count: number) => {
     setPlayerCount(count);
@@ -41,6 +61,11 @@ export default function PartySetupScreen() {
 
   const startGame = () => {
     buttonPressFeedback();
+    // Check limits before starting
+    if (!canPlayGame && !isPremium) {
+      limitModalRef.current?.open("party");
+      return;
+    }
     const validPlayers = players.map(
       (p, i) => p.trim() || `${t("player")} ${i + 1}`
     );
@@ -82,7 +107,26 @@ export default function PartySetupScreen() {
               {t("onePhoneMultiplePlayers")}
             </Text>
           </View>
-          <Text className="text-4xl">🎉</Text>
+          {/* Plays Counter */}
+          {!isPremium ? (
+            <View
+              className="flex-row items-center px-3 py-2 rounded-xl"
+              style={{ backgroundColor: COLORS.surface }}
+            >
+              <Text className="text-lg mr-2">🎯</Text>
+              <Text style={{ color: canPlayGame ? COLORS.purple : "#ef4444" }}>
+                {remaining}/{DAILY_LIMITS.party}
+              </Text>
+            </View>
+          ) : (
+            <View
+              className="flex-row items-center px-3 py-2 rounded-xl"
+              style={{ backgroundColor: "rgba(255, 209, 0, 0.15)" }}
+            >
+              <Text className="text-lg mr-2">👑</Text>
+              <Text style={{ color: "#FFD700" }}>∞</Text>
+            </View>
+          )}
         </View>
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -210,18 +254,21 @@ export default function PartySetupScreen() {
             className="rounded-2xl overflow-hidden active:opacity-90"
           >
             <LinearGradient
-              colors={['#7c3aed', '#a855f7']}
+              colors={canPlayGame || isPremium ? ['#7c3aed', '#a855f7'] : ['#fbbf24', '#f59e0b']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               className="py-4 items-center"
             >
               <Text className="text-white text-xl font-bold">
-                {t("startGame")} 🎮
+                {canPlayGame || isPremium ? `${t("startGame")} 🎮` : "👑 Premium"}
               </Text>
             </LinearGradient>
           </Pressable>
         </View>
       </View>
+
+      {/* Limit Reached Modal */}
+      <LimitReachedModal ref={limitModalRef} />
     </SafeAreaView>
   );
 }

@@ -175,7 +175,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   };
 
   // Public: Schedule daily reminder
-  const scheduleDailyReminder = async (hour: number = 19, minute: number = 0) => {
+  const scheduleDailyReminder = async (hour: number = 9, minute: number = 0) => {
     // Cancel existing daily reminders
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
     for (const notif of scheduled) {
@@ -187,10 +187,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Schedule new one
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "C'est l'heure du quiz !",
-        body: "Ton defi quotidien t'attend +100 XP bonus !",
+        title: "🧠 Daily Brain",
+        body: "Ta question du jour t'attend ! Viens tester tes connaissances.",
         sound: true,
-        data: { type: "daily_reminder", screen: "/game/daily" },
+        data: { type: "daily_reminder", screen: "/daily" },
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -199,6 +199,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         channelId: Platform.OS === "android" ? "reminders" : undefined,
       },
     });
+    console.log(`Daily reminder scheduled for ${hour}:${minute.toString().padStart(2, "0")}`);
   };
 
   // Public: Cancel all notifications
@@ -218,6 +219,35 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       const token = await registerForPushNotifications();
       if (token) {
         setExpoPushToken(token);
+
+        // Auto-schedule daily reminder if permissions are granted
+        // This ensures the notification is always programmed even after app updates
+        try {
+          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+          const hasDailyReminder = scheduled.some(
+            (n) => n.content.data?.type === "daily_reminder"
+          );
+          if (!hasDailyReminder) {
+            console.log("Auto-scheduling daily reminder notification...");
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: "🧠 Daily Brain",
+                body: "Ta question du jour t'attend ! Viens tester tes connaissances.",
+                sound: true,
+                data: { type: "daily_reminder", screen: "/daily" },
+              },
+              trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: 9,
+                minute: 0,
+                channelId: Platform.OS === "android" ? "reminders" : undefined,
+              },
+            });
+            console.log("Daily reminder scheduled for 9:00 AM");
+          }
+        } catch (e) {
+          console.error("Error auto-scheduling daily reminder:", e);
+        }
       }
       setIsInitialized(true);
     };

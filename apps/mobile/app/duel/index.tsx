@@ -1,11 +1,13 @@
 import { View, Text, Pressable, TextInput, ActivityIndicator, ScrollView, Modal } from "react-native";
-import { router, Link } from "expo-router";
+import { router, Link, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { createDuel, joinDuel } from "../../src/services/duel";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { BottomNavigation } from "../../src/components/BottomNavigation";
+import { LimitReachedModal, LimitReachedModalRef } from "../../src/components/LimitReachedModal";
+import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../src/services/dailyLimits";
 
 // New QuizNext design colors
 const COLORS = {
@@ -40,11 +42,28 @@ export default function DuelLobbyScreen() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState(DUEL_CATEGORIES[0]);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [canPlayGame, setCanPlayGame] = useState(true);
+  const [remaining, setRemaining] = useState<number>(DAILY_LIMITS.versus);
+  const limitModalRef = useRef<LimitReachedModalRef>(null);
+
+  // Load daily limits when screen focuses
+  useFocusEffect(
+    useCallback(() => {
+      const loadLimits = async () => {
+        const canPlayNow = await canPlay("versus");
+        const remainingPlays = await getRemainingPlays("versus");
+        setCanPlayGame(isPremium || canPlayNow);
+        setRemaining(remainingPlays);
+      };
+      loadLimits();
+    }, [isPremium])
+  );
 
   const handleCreateDuel = async () => {
     buttonPressFeedback();
-    if (!isPremium) {
-      router.push("/premium");
+    // Check limits before creating
+    if (!canPlayGame && !isPremium) {
+      limitModalRef.current?.open("versus");
       return;
     }
 
@@ -67,8 +86,9 @@ export default function DuelLobbyScreen() {
 
   const handleJoinDuel = async () => {
     buttonPressFeedback();
-    if (!isPremium) {
-      router.push("/premium");
+    // Check limits before joining
+    if (!canPlayGame && !isPremium) {
+      limitModalRef.current?.open("versus");
       return;
     }
 
@@ -233,7 +253,40 @@ export default function DuelLobbyScreen() {
           </View>
         )}
 
-        {/* Premium Prompt */}
+        {/* Daily Plays Counter */}
+        <View
+          className="rounded-2xl p-4 mt-4"
+          style={{
+            backgroundColor: COLORS.surface,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.05)',
+          }}
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <Text className="text-2xl mr-3">🎯</Text>
+              <View>
+                <Text className="text-white font-bold">Parties restantes</Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                  {isPremium ? "Illimité" : `Renouvellement demain`}
+                </Text>
+              </View>
+            </View>
+            {isPremium ? (
+              <View className="flex-row items-center px-3 py-2 rounded-xl" style={{ backgroundColor: "rgba(255, 209, 0, 0.15)" }}>
+                <Text style={{ color: "#FFD700", fontWeight: "bold" }}>👑 ∞</Text>
+              </View>
+            ) : (
+              <View className="flex-row items-center px-3 py-2 rounded-xl" style={{ backgroundColor: canPlayGame ? COLORS.primaryDim : COLORS.errorDim }}>
+                <Text style={{ color: canPlayGame ? COLORS.primary : COLORS.error, fontWeight: "bold" }}>
+                  {remaining}/{DAILY_LIMITS.versus}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Premium Upsell */}
         {!isPremium && (
           <Pressable
             onPress={() => {
@@ -251,10 +304,10 @@ export default function DuelLobbyScreen() {
               <Text className="text-2xl mr-3">👑</Text>
               <View className="flex-1">
                 <Text style={{ color: '#FFD100' }} className="font-bold">
-                  Premium Required
+                  Passer Premium
                 </Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  Unlock duels and challenge your friends!
+                  Duels illimités + toutes les fonctionnalités
                 </Text>
               </View>
               <Text style={{ color: '#FFD100' }}>→</Text>
@@ -335,6 +388,9 @@ export default function DuelLobbyScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Limit Reached Modal */}
+      <LimitReachedModal ref={limitModalRef} />
     </SafeAreaView>
   );
 }

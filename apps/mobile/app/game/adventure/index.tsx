@@ -1,26 +1,30 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ConfettiEffect } from "../../../src/components/effects/ConfettiEffect";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { MountainProgress } from "../../../src/components/MountainProgress";
 import { CategoryWheel } from "../../../src/components/CategoryWheel";
+import { LimitReachedModal, LimitReachedModalRef } from "../../../src/components/LimitReachedModal";
 import {
   getOrCreateProgress,
   canPlay,
 } from "../../../src/services/adventure";
 import {
+  canPlay as canPlayDaily,
+  getRemainingPlays,
+  DAILY_LIMITS,
+} from "../../../src/services/dailyLimits";
+import {
   AdventureProgress,
   Category,
   CATEGORIES,
-  MAX_FREE_ATTEMPTS,
 } from "../../../src/types/adventure";
 import { buttonPressFeedback } from "../../../src/utils/feedback";
 
 const STORAGE_KEY = "adventure_progress";
-const ATTEMPTS_KEY = "adventure_attempts";
 
 const COLORS = {
   bg: "#161a1d",
@@ -42,11 +46,12 @@ export default function AdventureScreen() {
   const { completedCategory } = useLocalSearchParams<{ completedCategory?: Category }>();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<AdventureProgress | null>(null);
-  const [attemptsRemaining, setAttemptsRemaining] = useState(MAX_FREE_ATTEMPTS);
+  const [attemptsRemaining, setAttemptsRemaining] = useState<number>(DAILY_LIMITS.adventure);
   const [canPlayGame, setCanPlayGame] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("mountain");
   const [showCelebration, setShowCelebration] = useState(false);
   const [justCompletedCategory, setJustCompletedCategory] = useState<Category | null>(null);
+  const limitModalRef = useRef<LimitReachedModalRef>(null);
 
   // Handle celebration when returning from successful game
   useEffect(() => {
@@ -74,7 +79,6 @@ export default function AdventureScreen() {
     try {
       // Try to load from local storage first (works for all users)
       const storedProgress = await AsyncStorage.getItem(STORAGE_KEY);
-      const storedAttempts = await AsyncStorage.getItem(ATTEMPTS_KEY);
 
       if (storedProgress) {
         setProgress(JSON.parse(storedProgress));
@@ -90,25 +94,11 @@ export default function AdventureScreen() {
         setProgress(defaultProgress);
       }
 
-      // Check daily attempts from local storage
-      const today = new Date().toISOString().split("T")[0];
-      if (storedAttempts) {
-        const attempts = JSON.parse(storedAttempts);
-        if (attempts.date === today) {
-          const remaining = Math.max(0, MAX_FREE_ATTEMPTS - attempts.used);
-          setAttemptsRemaining(remaining);
-          setCanPlayGame(isPremium || remaining > 0);
-        } else {
-          // New day, reset attempts
-          await AsyncStorage.setItem(ATTEMPTS_KEY, JSON.stringify({ date: today, used: 0 }));
-          setAttemptsRemaining(MAX_FREE_ATTEMPTS);
-          setCanPlayGame(true);
-        }
-      } else {
-        await AsyncStorage.setItem(ATTEMPTS_KEY, JSON.stringify({ date: today, used: 0 }));
-        setAttemptsRemaining(MAX_FREE_ATTEMPTS);
-        setCanPlayGame(true);
-      }
+      // Check daily limits using the unified service
+      const remaining = await getRemainingPlays("adventure");
+      const canPlayNow = await canPlayDaily("adventure");
+      setAttemptsRemaining(remaining);
+      setCanPlayGame(isPremium || canPlayNow);
     } catch (error) {
       console.error("Error loading progress:", error);
       // Fallback to default
@@ -151,8 +141,8 @@ export default function AdventureScreen() {
 
   const handleStartWheel = () => {
     if (!canPlayGame && !isPremium) {
-      // Show upgrade prompt
-      router.push("/premium");
+      // Show limit reached modal
+      limitModalRef.current?.open("adventure");
       return;
     }
     buttonPressFeedback();
@@ -211,7 +201,7 @@ export default function AdventureScreen() {
           >
             <Text className="text-lg mr-2">🎯</Text>
             <Text style={{ color: canPlayGame ? COLORS.primary : COLORS.error }}>
-              {attemptsRemaining}/{MAX_FREE_ATTEMPTS}
+              {attemptsRemaining}/{DAILY_LIMITS.adventure}
             </Text>
           </View>
         )}
@@ -249,13 +239,8 @@ export default function AdventureScreen() {
             <View className="px-5 mt-8">
               <Pressable
                 onPress={() => {
-                  if (canPlayGame || isPremium) {
-                    handleStartWheel();
-                  } else {
-                    // Navigate to premium when out of attempts
-                    buttonPressFeedback();
-                    router.push("/premium");
-                  }
+                  buttonPressFeedback();
+                  handleStartWheel();
                 }}
                 className="py-5 rounded-2xl items-center active:opacity-80"
                 style={{
@@ -317,6 +302,9 @@ export default function AdventureScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Limit Reached Modal */}
+      <LimitReachedModal ref={limitModalRef} />
     </SafeAreaView>
   );
 }

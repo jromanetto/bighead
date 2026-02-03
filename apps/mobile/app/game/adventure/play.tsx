@@ -143,12 +143,11 @@ import {
   CATEGORIES,
   QUESTIONS_PER_CATEGORY,
   MAX_ERRORS_ALLOWED,
-  MAX_FREE_ATTEMPTS,
   AdventureProgress,
 } from "../../../src/types/adventure";
+import { recordPlay } from "../../../src/services/dailyLimits";
 
 const STORAGE_KEY = "adventure_progress";
-const ATTEMPTS_KEY = "adventure_attempts";
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -649,21 +648,18 @@ export default function AdventurePlayScreen() {
         return;
       }
 
-      // Security check: verify attempts before allowing play
+      // Security check: verify daily limits before allowing play
       if (!isPremium) {
         try {
-          const today = new Date().toISOString().split("T")[0];
-          const storedAttempts = await AsyncStorage.getItem(ATTEMPTS_KEY);
-          if (storedAttempts) {
-            const attempts = JSON.parse(storedAttempts);
-            if (attempts.date === today && attempts.used >= MAX_FREE_ATTEMPTS) {
-              console.log("No attempts remaining, redirecting to home");
-              router.replace("/");
-              return;
-            }
+          const { canPlay } = await import("../../../src/services/dailyLimits");
+          const canPlayNow = await canPlay("adventure");
+          if (!canPlayNow) {
+            console.log("No plays remaining, redirecting to home");
+            router.replace("/");
+            return;
           }
         } catch (e) {
-          console.error("Error checking attempts:", e);
+          console.error("Error checking daily limits:", e);
         }
       }
 
@@ -826,21 +822,12 @@ export default function AdventurePlayScreen() {
       setGameOver(true);
       setSuccess(false);
       playSound("gameOver");
-      // Use an attempt (local storage)
+      // Record the play using daily limits service
       if (!isPremium) {
         try {
-          const today = new Date().toISOString().split("T")[0];
-          const storedAttempts = await AsyncStorage.getItem(ATTEMPTS_KEY);
-          const attempts = storedAttempts ? JSON.parse(storedAttempts) : { date: today, used: 0 };
-          if (attempts.date === today) {
-            attempts.used += 1;
-          } else {
-            attempts.date = today;
-            attempts.used = 1;
-          }
-          await AsyncStorage.setItem(ATTEMPTS_KEY, JSON.stringify(attempts));
+          await recordPlay("adventure");
         } catch (e) {
-          console.error("Error saving attempt:", e);
+          console.error("Error recording play:", e);
         }
       }
       return;
@@ -851,6 +838,14 @@ export default function AdventurePlayScreen() {
       setGameOver(true);
       setSuccess(true);
       playSound("levelUp", 1500); // Limit to 1.5 seconds
+      // Record the play using daily limits service
+      if (!isPremium) {
+        try {
+          await recordPlay("adventure");
+        } catch (e) {
+          console.error("Error recording play:", e);
+        }
+      }
       // Mark category as completed (local storage)
       try {
         const storedProgress = await AsyncStorage.getItem(STORAGE_KEY);

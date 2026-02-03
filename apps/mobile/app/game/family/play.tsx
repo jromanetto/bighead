@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { getFamilyQuestions } from "../../../src/services/adventure";
 import { buttonPressFeedback, playHaptic } from "../../../src/utils/feedback";
 import { playSound } from "../../../src/services/sounds";
+import { useAuth } from "../../../src/contexts/AuthContext";
+import { recordPlay } from "../../../src/services/dailyLimits";
 import {
   Category,
   AgeGroup,
@@ -180,6 +182,7 @@ export default function FamilyPlayScreen() {
     questionCount: string;
     category: string;
   }>();
+  const { isPremium } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -238,12 +241,20 @@ export default function FamilyPlayScreen() {
     goToNext();
   };
 
-  const goToNext = () => {
+  const goToNext = async () => {
     setIsAnswerRevealed(false);
 
     if (currentIndex + 1 >= questions.length) {
       setGameOver(true);
       playSound("levelUp");
+      // Record the play using daily limits service
+      if (!isPremium) {
+        try {
+          await recordPlay("family");
+        } catch (e) {
+          console.error("Error recording play:", e);
+        }
+      }
     } else {
       setCurrentIndex((prev) => prev + 1);
     }

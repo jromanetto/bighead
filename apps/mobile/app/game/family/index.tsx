@@ -1,8 +1,11 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { buttonPressFeedback } from "../../../src/utils/feedback";
+import { useAuth } from "../../../src/contexts/AuthContext";
+import { LimitReachedModal, LimitReachedModalRef } from "../../../src/components/LimitReachedModal";
+import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../../src/services/dailyLimits";
 import {
   Category,
   AgeGroup,
@@ -23,12 +26,34 @@ const COLORS = {
 };
 
 export default function FamilyConfigScreen() {
+  const { isPremium } = useAuth();
   const [selectedAge, setSelectedAge] = useState<AgeGroup>(12);
   const [selectedCount, setSelectedCount] = useState<QuestionCount>(20);
   const [selectedCategory, setSelectedCategory] = useState<Category | "mix">("mix");
+  const [canPlayGame, setCanPlayGame] = useState(true);
+  const [remaining, setRemaining] = useState<number>(DAILY_LIMITS.family);
+  const limitModalRef = useRef<LimitReachedModalRef>(null);
+
+  // Load daily limits when screen focuses
+  useFocusEffect(
+    useCallback(() => {
+      const loadLimits = async () => {
+        const canPlayNow = await canPlay("family");
+        const remainingPlays = await getRemainingPlays("family");
+        setCanPlayGame(isPremium || canPlayNow);
+        setRemaining(remainingPlays);
+      };
+      loadLimits();
+    }, [isPremium])
+  );
 
   const handleStart = () => {
     buttonPressFeedback();
+    // Check limits before starting
+    if (!canPlayGame && !isPremium) {
+      limitModalRef.current?.open("family");
+      return;
+    }
     router.push({
       pathname: "/game/family/play",
       params: {
@@ -42,23 +67,46 @@ export default function FamilyConfigScreen() {
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       {/* Header */}
-      <View className="flex-row items-center px-5 pt-4 mb-6">
-        <Pressable
-          onPress={() => {
-            buttonPressFeedback();
-            router.back();
-          }}
-          className="w-10 h-10 rounded-full items-center justify-center mr-3"
-          style={{ backgroundColor: COLORS.surface }}
-        >
-          <Text className="text-white text-lg">←</Text>
-        </Pressable>
-        <View>
-          <Text className="text-white text-2xl font-black">👨‍👩‍👧‍👦 MODE FAMILLE</Text>
-          <Text style={{ color: COLORS.textMuted }} className="text-xs">
-            Quiz à voix haute en groupe
-          </Text>
+      <View className="flex-row items-center justify-between px-5 pt-4 mb-6">
+        <View className="flex-row items-center">
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.back();
+            }}
+            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-white text-lg">←</Text>
+          </Pressable>
+          <View>
+            <Text className="text-white text-2xl font-black">👨‍👩‍👧‍👦 MODE FAMILLE</Text>
+            <Text style={{ color: COLORS.textMuted }} className="text-xs">
+              Quiz à voix haute en groupe
+            </Text>
+          </View>
         </View>
+        {/* Plays Counter */}
+        {!isPremium && (
+          <View
+            className="flex-row items-center px-3 py-2 rounded-xl"
+            style={{ backgroundColor: COLORS.surface }}
+          >
+            <Text className="text-lg mr-2">🎯</Text>
+            <Text style={{ color: canPlayGame ? COLORS.primary : "#ef4444" }}>
+              {remaining}/{DAILY_LIMITS.family}
+            </Text>
+          </View>
+        )}
+        {isPremium && (
+          <View
+            className="flex-row items-center px-3 py-2 rounded-xl"
+            style={{ backgroundColor: "rgba(255, 209, 0, 0.15)" }}
+          >
+            <Text className="text-lg mr-2">👑</Text>
+            <Text style={{ color: "#FFD700" }}>Illimité</Text>
+          </View>
+        )}
       </View>
 
       <ScrollView
@@ -275,13 +323,16 @@ export default function FamilyConfigScreen() {
         <Pressable
           onPress={handleStart}
           className="py-5 rounded-2xl items-center active:opacity-80"
-          style={{ backgroundColor: COLORS.primary }}
+          style={{ backgroundColor: canPlayGame || isPremium ? COLORS.primary : "#FFD700" }}
         >
           <Text className="text-xl font-black" style={{ color: COLORS.bg }}>
-            🎉 C'EST PARTI !
+            {canPlayGame || isPremium ? "🎉 C'EST PARTI !" : "👑 PASSER PREMIUM"}
           </Text>
         </Pressable>
       </View>
+
+      {/* Limit Reached Modal */}
+      <LimitReachedModal ref={limitModalRef} />
     </SafeAreaView>
   );
 }

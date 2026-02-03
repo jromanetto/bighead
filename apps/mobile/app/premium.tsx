@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../src/contexts/AuthContext";
+import { useTranslation } from "../src/contexts/LanguageContext";
 import {
   monetizationService,
   getOfferings,
@@ -12,6 +13,7 @@ import {
   isPremium,
   grantPremiumToUser,
 } from "../src/services/monetization";
+import { getAllLimits, DAILY_LIMITS, GameMode } from "../src/services/dailyLimits";
 import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
 import { ConfettiEffect } from "../src/components/effects/ConfettiEffect";
 
@@ -30,42 +32,31 @@ const COLORS = {
   textMuted: "#9ca3af",
 };
 
+// New Premium features for freemium model
 const PREMIUM_FEATURES = [
   {
-    icon: "⚔️",
-    title: "Duel 1v1",
-    description: "Challenge friends in real-time battles",
-    color: COLORS.coral,
-  },
-  {
-    icon: "⊘",
-    title: "No Ads",
-    description: "Pure quiz experience without interruptions",
-    color: COLORS.primary,
-  },
-  {
-    icon: "∞",
-    title: "Unlimited Lives",
-    description: "Play as much as you want, no limits",
+    icon: "♾️",
+    titleKey: "unlimitedGames",
+    descKey: "unlimitedGamesDesc",
     color: COLORS.purple,
   },
   {
-    icon: "🎨",
-    title: "Exclusive Themes",
-    description: "Unlock all visual themes",
-    color: COLORS.yellow,
-  },
-  {
     icon: "📊",
-    title: "Advanced Stats",
-    description: "Track your progress with detailed analytics",
+    titleKey: "advancedStats",
+    descKey: "advancedStatsDesc",
     color: COLORS.green,
   },
   {
     icon: "⚡",
-    title: "Early Access",
-    description: "Get new features before anyone else",
+    titleKey: "earlyAccess",
+    descKey: "earlyAccessDesc",
     color: COLORS.gold,
+  },
+  {
+    icon: "🏆",
+    titleKey: "premiumBadge",
+    descKey: "premiumBadgeDesc",
+    color: COLORS.primary,
   },
 ];
 
@@ -108,8 +99,18 @@ function BrainLogo({ size = 80 }: { size?: number }) {
   );
 }
 
+// Mode display names for limits section
+const MODE_NAMES: Record<GameMode, { en: string; fr: string }> = {
+  adventure: { en: "Adventure", fr: "Aventure" },
+  solo_run: { en: "Solo Run", fr: "Solo Run" },
+  family: { en: "Family", fr: "Famille" },
+  party: { en: "Party", fr: "Party" },
+  versus: { en: "Versus", fr: "Versus" },
+};
+
 export default function PremiumScreen() {
   const { user, refreshProfile, isPremium: isProfilePremium } = useAuth();
+  const { t, language } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [packages, setPackages] = useState<Package[]>([]);
@@ -119,10 +120,21 @@ export default function PremiumScreen() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [justPurchased, setJustPurchased] = useState(false);
   const hasShownConfetti = useRef(false);
+  const [dailyLimits, setDailyLimits] = useState<Record<GameMode, { used: number; max: number; remaining: number }> | null>(null);
 
   useEffect(() => {
     loadOfferings();
+    loadDailyLimits();
   }, [isProfilePremium]);
+
+  const loadDailyLimits = async () => {
+    try {
+      const limits = await getAllLimits();
+      setDailyLimits(limits);
+    } catch (err) {
+      console.error("Error loading daily limits:", err);
+    }
+  };
 
   const setDemoPackages = () => {
     setPackages([
@@ -356,7 +368,7 @@ export default function PremiumScreen() {
                     {feature.icon}
                   </Text>
                 </View>
-                <Text className="text-white font-medium flex-1">{feature.title}</Text>
+                <Text className="text-white font-medium flex-1">{t(feature.titleKey as any)}</Text>
                 <Text style={{ color: COLORS.green, fontSize: 18 }}>✓</Text>
               </View>
             ))}
@@ -451,7 +463,7 @@ export default function PremiumScreen() {
         {/* Features */}
         <View className="px-5 mb-8">
           <Text className="text-white font-bold text-lg mb-4 uppercase tracking-wide">
-            What you get
+            {language === "fr" ? "Ce que tu obtiens" : "What you get"}
           </Text>
           <View style={{ gap: 12 }}>
             {PREMIUM_FEATURES.map((feature, index) => (
@@ -480,15 +492,75 @@ export default function PremiumScreen() {
                   </Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-white font-bold mb-1">{feature.title}</Text>
+                  <Text className="text-white font-bold mb-1">{t(feature.titleKey as any)}</Text>
                   <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                    {feature.description}
+                    {t(feature.descKey as any)}
                   </Text>
                 </View>
               </View>
             ))}
           </View>
         </View>
+
+        {/* Daily Limits Section */}
+        {dailyLimits && (
+          <View className="px-5 mb-8">
+            <Text className="text-white font-bold text-lg mb-4 uppercase tracking-wide">
+              {t("yourLimitsToday")}
+            </Text>
+            <View
+              className="rounded-2xl p-4"
+              style={{ backgroundColor: COLORS.surface }}
+            >
+              {(Object.keys(DAILY_LIMITS) as GameMode[]).map((mode, index) => {
+                const limit = dailyLimits[mode];
+                const progress = limit.max > 0 ? (limit.used / limit.max) * 100 : 0;
+                const modeName = MODE_NAMES[mode]?.[language] || mode;
+                const isExhausted = limit.remaining === 0;
+
+                return (
+                  <View key={mode} style={{ marginBottom: index < 4 ? 16 : 0 }}>
+                    <View className="flex-row justify-between mb-2">
+                      <Text className="text-white font-medium">{modeName}</Text>
+                      <Text style={{ color: isExhausted ? COLORS.coral : COLORS.textMuted }}>
+                        {limit.used}/{limit.max} {t("perDay")}
+                      </Text>
+                    </View>
+                    {/* Progress bar */}
+                    <View
+                      style={{
+                        height: 8,
+                        backgroundColor: COLORS.surfaceLight,
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: `${Math.min(progress, 100)}%`,
+                          height: '100%',
+                          backgroundColor: isExhausted ? COLORS.coral : COLORS.primary,
+                          borderRadius: 4,
+                        }}
+                      />
+                    </View>
+                  </View>
+                );
+              })}
+
+              {/* Premium unlimited message */}
+              <View
+                className="flex-row items-center justify-center mt-4 pt-4"
+                style={{ borderTopWidth: 1, borderTopColor: COLORS.surfaceLight }}
+              >
+                <Text style={{ color: COLORS.gold, fontSize: 16 }}>👑 </Text>
+                <Text style={{ color: COLORS.gold, fontWeight: '600' }}>
+                  Premium = {t("unlimited")}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Plans */}
         <View className="px-5 mb-6">

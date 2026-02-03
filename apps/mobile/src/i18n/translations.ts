@@ -155,6 +155,25 @@ export const translations = {
     howToPlayDescription: "Each player answers in turn. The phone shows who should answer. Pass the phone to the next player after each question. The player with the most points wins!",
     startGame: "Start Game",
 
+    // Daily Limits & Premium
+    limitReached: "Limit Reached!",
+    limitReachedMessage: "You've used all your free plays for {{mode}} today.",
+    comeBackTomorrow: "Come back tomorrow",
+    goPremiumNow: "Go Premium",
+    playsRemaining: "plays remaining",
+    playsUsed: "plays used",
+    unlimited: "Unlimited",
+    yourLimitsToday: "Your limits today",
+    unlimitedGames: "Unlimited games",
+    unlimitedGamesDesc: "Play without limits, all modes",
+    advancedStats: "Advanced stats",
+    advancedStatsDesc: "Detailed analysis of your progress",
+    earlyAccess: "Early access",
+    earlyAccessDesc: "New modes before everyone",
+    premiumBadge: "Premium badge",
+    premiumBadgeDesc: "Visible in leaderboards",
+    perDay: "/day",
+
     // Misc
     loading: "Loading...",
     error: "Error",
@@ -318,6 +337,25 @@ export const translations = {
     howToPlay: "Comment jouer",
     howToPlayDescription: "Chaque joueur répond à tour de rôle. Le téléphone indique qui doit répondre. Passez le téléphone au joueur suivant après chaque question. Le joueur avec le plus de points gagne !",
     startGame: "Commencer",
+
+    // Daily Limits & Premium
+    limitReached: "Limite atteinte !",
+    limitReachedMessage: "Tu as utilisé toutes tes parties gratuites en {{mode}} aujourd'hui.",
+    comeBackTomorrow: "Reviens demain",
+    goPremiumNow: "Passer Premium",
+    playsRemaining: "parties restantes",
+    playsUsed: "parties jouées",
+    unlimited: "Illimité",
+    yourLimitsToday: "Tes limites aujourd'hui",
+    unlimitedGames: "Parties illimitées",
+    unlimitedGamesDesc: "Joue sans limite, tous les modes",
+    advancedStats: "Stats avancées",
+    advancedStatsDesc: "Analyse détaillée de ta progression",
+    earlyAccess: "Accès anticipé",
+    earlyAccessDesc: "Nouveaux modes en avant-première",
+    premiumBadge: "Badge Premium",
+    premiumBadgeDesc: "Visible dans les classements",
+    perDay: "/jour",
 
     // Misc
     loading: "Chargement...",
