@@ -81,3 +81,31 @@ cd apps/mobile && eas build --profile production --platform ios
 # Soumettre à TestFlight
 cd apps/mobile && eas submit --platform ios --latest
 ```
+
+## VPS - Site Marketing & Cron
+
+**Connexion:**
+```bash
+ssh cursor@77.87.110.100
+```
+
+**Répertoire de travail:** `/home/script/bighead/`
+
+**Structure:**
+- Site marketing (landing page, CGU, privacy, etc.)
+- Cron pour les notifications push quotidiennes
+
+**Commandes utiles:**
+```bash
+# Se connecter au VPS
+ssh cursor@77.87.110.100
+
+# Aller au répertoire bighead
+cd /home/script/bighead/
+
+# Voir les crons configurés
+crontab -l
+
+# Éditer les crons
+crontab -e
+```
