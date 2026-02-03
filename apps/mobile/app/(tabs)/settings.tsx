@@ -7,6 +7,7 @@ import { useLanguage } from "../../src/contexts/LanguageContext";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings, saveSettings, type UserSettings } from "../../src/services/settings";
 import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
+import { IconButton, Icon } from "../../src/components/ui";
 
 // New QuizNext design colors
 const COLORS = {
@@ -184,7 +185,7 @@ export default function SettingsScreen() {
         </Text>
         {subtitle && <Text style={{ color: COLORS.textMuted }} className="text-sm">{subtitle}</Text>}
       </View>
-      <Text style={{ color: COLORS.textMuted }}>→</Text>
+      <Icon name="ChevronRight" size={16} color={COLORS.textMuted} />
     </Pressable>
   );
 
@@ -192,16 +193,13 @@ export default function SettingsScreen() {
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-4 mb-4">
-        <Pressable
-          onPress={() => {
-            buttonPressFeedback();
-            router.back();
-          }}
-          className="w-10 h-10 rounded-full items-center justify-center mr-3"
-          style={{ backgroundColor: COLORS.surface }}
-        >
-          <Text className="text-white text-lg">←</Text>
-        </Pressable>
+        <IconButton
+          name="ArrowLeft"
+          onPress={() => router.back()}
+          variant="glass"
+          size={40}
+          style={{ marginRight: 12 }}
+        />
         <Text className="text-white text-2xl font-black">{t("settings")}</Text>
       </View>
 

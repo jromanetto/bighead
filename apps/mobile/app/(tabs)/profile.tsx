@@ -8,6 +8,7 @@ import { ProfileAvatar } from "../../src/components/ProfileAvatar";
 import { getUserStats } from "../../src/services/gameResults";
 import { uploadAvatar } from "../../src/services/avatar";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { Icon } from "../../src/components/ui";
 
 // New QuizNext design colors
 const COLORS = {
@@ -426,7 +427,7 @@ export default function ProfileScreen() {
                   Unlock duels, themes & more!
                 </Text>
               </View>
-              <Text style={{ color: '#FFD100' }} className="text-xl">→</Text>
+              <Icon name="ChevronRight" size={20} color="#FFD100" />
             </View>
           </Pressable>
         )}

@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { buttonPressFeedback, playHaptic } from "../../src/utils/feedback";
+import { IconButton } from "../../src/components/ui";
 
 // QuizNext design colors
 const COLORS = {
@@ -58,15 +59,13 @@ export default function TraitorSetupScreen() {
       <ScrollView className="flex-1" contentContainerClassName="px-6 pb-6">
         {/* Header */}
         <View className="flex-row items-center pt-4 mb-6">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="p-2 mr-4"
-          >
-            <Text className="text-white text-2xl">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={() => router.back()}
+            variant="glass"
+            size={40}
+            style={{ marginRight: 16 }}
+          />
           <View>
             <Text className="text-white text-2xl font-black">Traitor Mode</Text>
             <Text style={{ color: COLORS.textMuted }} className="text-sm">

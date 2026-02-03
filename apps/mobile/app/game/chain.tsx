@@ -23,6 +23,7 @@ import Animated, {
   runOnJS
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
+import { Icon } from "../../src/components/ui";
 
 // New QuizNext design colors
 const COLORS = {
@@ -712,7 +713,7 @@ export default function ChainGameScreen() {
                 <Text className="text-lg font-bold mr-2" style={{ color: COLORS.bg }}>
                   {currentQuestionIndex + 1 >= totalQuestions ? "View results" : "Next question"}
                 </Text>
-                <Text style={{ color: COLORS.bg }}>→</Text>
+                <Icon name="ChevronRight" size={16} color={COLORS.bg} />
               </Pressable>
               {autoAdvanceEnabled && currentQuestionIndex + 1 < totalQuestions && (
                 <Text className="text-center text-xs text-gray-500 mt-2">

@@ -14,6 +14,7 @@ import {
   AGE_GROUPS,
   QUESTION_COUNTS,
 } from "../../../src/types/adventure";
+import { IconButton } from "../../../src/components/ui";
 
 const COLORS = {
   bg: "#161a1d",
@@ -69,16 +70,13 @@ export default function FamilyConfigScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-5 pt-4 mb-6">
         <View className="flex-row items-center">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={() => router.back()}
+            variant="glass"
+            size={40}
+            style={{ marginRight: 12 }}
+          />
           <View>
             <Text className="text-white text-2xl font-black">👨‍👩‍👧‍👦 MODE FAMILLE</Text>
             <Text style={{ color: COLORS.textMuted }} className="text-xs">

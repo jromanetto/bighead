@@ -8,6 +8,7 @@ import { buttonPressFeedback } from "../../src/utils/feedback";
 import { BottomNavigation } from "../../src/components/BottomNavigation";
 import { LimitReachedModal, LimitReachedModalRef } from "../../src/components/LimitReachedModal";
 import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../src/services/dailyLimits";
+import { IconButton, Icon } from "../../src/components/ui";
 
 // New QuizNext design colors
 const COLORS = {
@@ -123,16 +124,13 @@ export default function DuelLobbyScreen() {
       <View className="flex-1 px-5">
         {/* Header */}
         <View className="flex-row items-center pt-4 mb-6">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={() => router.back()}
+            variant="glass"
+            size={40}
+            style={{ marginRight: 12 }}
+          />
           <Text className="text-white text-2xl font-black">Duel 1v1</Text>
         </View>
 
@@ -310,7 +308,7 @@ export default function DuelLobbyScreen() {
                   Duels illimités + toutes les fonctionnalités
                 </Text>
               </View>
-              <Text style={{ color: '#FFD100' }}>→</Text>
+              <Icon name="ChevronRight" size={16} color="#FFD100" />
             </View>
           </Pressable>
         )}

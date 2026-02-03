@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { getDuel, subscribeToDuel, cancelDuel, type Duel } from "../../src/services/duel";
+import { IconButton } from "../../src/components/ui";
 
 export default function DuelWaitingScreen() {
   const { id, code } = useLocalSearchParams<{ id: string; code: string }>();
@@ -96,9 +97,12 @@ export default function DuelWaitingScreen() {
       <View className="flex-1 px-6">
         {/* Header */}
         <View className="flex-row items-center justify-between pt-4 mb-8">
-          <Pressable onPress={handleCancel} className="p-2">
-            <Text className="text-white text-2xl">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={handleCancel}
+            variant="glass"
+            size={40}
+          />
           <Text className="text-white text-xl font-bold">Waiting...</Text>
           <View className="w-10" />
         </View>

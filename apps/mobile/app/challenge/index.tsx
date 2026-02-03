@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { createFriendChallenge, getFriendChallenge } from "../../src/services/friendChallenge";
 import { buttonPressFeedback, playHaptic } from "../../src/utils/feedback";
+import { IconButton, Icon } from "../../src/components/ui";
 
 const COLORS = {
   bg: "#161a1d",
@@ -135,15 +136,13 @@ export default function FriendChallengeScreen() {
         <View className="flex-1 px-6 pt-4">
           {/* Header */}
           <View className="flex-row items-center mb-8">
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.back();
-              }}
-              className="mr-4"
-            >
-              <Text className="text-white text-2xl">←</Text>
-            </Pressable>
+            <IconButton
+              name="ArrowLeft"
+              onPress={() => router.back()}
+              variant="glass"
+              size={40}
+              style={{ marginRight: 16 }}
+            />
             <Text className="text-white text-2xl font-black">Friend Challenge</Text>
           </View>
 
@@ -188,7 +187,7 @@ export default function FriendChallengeScreen() {
                     className="w-12 h-12 rounded-full items-center justify-center"
                     style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
                   >
-                    <Text className="text-white text-xl">→</Text>
+                    <Icon name="ChevronRight" size={24} color="#ffffff" />
                   </View>
                 </View>
               </LinearGradient>
@@ -222,7 +221,7 @@ export default function FriendChallengeScreen() {
                     className="w-12 h-12 rounded-full items-center justify-center"
                     style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
                   >
-                    <Text className="text-white text-xl">→</Text>
+                    <Icon name="ChevronRight" size={24} color="#ffffff" />
                   </View>
                 </View>
               </LinearGradient>
@@ -342,16 +341,16 @@ export default function FriendChallengeScreen() {
         <ScrollView className="flex-1" contentContainerClassName="px-6 pt-4 pb-8">
           {/* Header */}
           <View className="flex-row items-center mb-6">
-            <Pressable
+            <IconButton
+              name="ArrowLeft"
               onPress={() => {
-                buttonPressFeedback();
                 setMode("menu");
                 setError(null);
               }}
-              className="mr-4"
-            >
-              <Text className="text-white text-2xl">←</Text>
-            </Pressable>
+              variant="glass"
+              size={40}
+              style={{ marginRight: 16 }}
+            />
             <Text className="text-white text-2xl font-black">Create Challenge</Text>
           </View>
 
@@ -478,17 +477,17 @@ export default function FriendChallengeScreen() {
       <View className="flex-1 px-6 pt-4">
         {/* Header */}
         <View className="flex-row items-center mb-8">
-          <Pressable
+          <IconButton
+            name="ArrowLeft"
             onPress={() => {
-              buttonPressFeedback();
               setMode("menu");
               setError(null);
               setJoinCode("");
             }}
-            className="mr-4"
-          >
-            <Text className="text-white text-2xl">←</Text>
-          </Pressable>
+            variant="glass"
+            size={40}
+            style={{ marginRight: 16 }}
+          />
           <Text className="text-white text-2xl font-black">Join Challenge</Text>
         </View>
 

@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { getFriendChallenge, getChallengeLeaderboard, FriendChallenge, ChallengeAttempt } from "../../src/services/friendChallenge";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { IconButton } from "../../src/components/ui";
 
 const COLORS = {
   bg: "#161a1d",
@@ -91,15 +92,13 @@ export default function ChallengeLeaderboardScreen() {
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <View className="flex-row items-center">
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.back();
-              }}
-              className="mr-4"
-            >
-              <Text className="text-white text-2xl">←</Text>
-            </Pressable>
+            <IconButton
+              name="ArrowLeft"
+              onPress={() => router.back()}
+              variant="glass"
+              size={40}
+              style={{ marginRight: 16 }}
+            />
             <Text className="text-white text-2xl font-black">Leaderboard</Text>
           </View>
           <Pressable

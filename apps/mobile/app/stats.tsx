@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../src/contexts/AuthContext";
 import { supabase } from "../src/services/supabase";
 import { buttonPressFeedback } from "../src/utils/feedback";
+import { IconButton } from "../src/components/ui";
 
 // QuizNext design colors
 const COLORS = {
@@ -210,15 +211,13 @@ export default function StatsScreen() {
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-4">
         {/* Header */}
         <View className="flex-row items-center mb-6">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="mr-4"
-          >
-            <Text className="text-white text-2xl">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={() => router.back()}
+            variant="glass"
+            size={40}
+            style={{ marginRight: 16 }}
+          />
           <Text className="text-white text-2xl font-black">Your Stats</Text>
         </View>
 

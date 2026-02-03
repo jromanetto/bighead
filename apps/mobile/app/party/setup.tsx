@@ -8,6 +8,7 @@ import { useTranslation } from "../../src/contexts/LanguageContext";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { LimitReachedModal, LimitReachedModalRef } from "../../src/components/LimitReachedModal";
 import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../src/services/dailyLimits";
+import { IconButton } from "../../src/components/ui";
 
 // Design colors
 const COLORS = {
@@ -91,16 +92,13 @@ export default function PartySetupScreen() {
       <View className="flex-1 px-5 pt-4">
         {/* Header */}
         <View className="flex-row items-center mb-6">
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.back();
-            }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={() => router.back()}
+            variant="glass"
+            size={40}
+            style={{ marginRight: 12 }}
+          />
           <View className="flex-1">
             <Text className="text-white text-2xl font-black">{t("partyMode")}</Text>
             <Text style={{ color: COLORS.textMuted }} className="text-sm">

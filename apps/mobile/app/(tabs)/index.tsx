@@ -8,6 +8,7 @@ import { useTranslation } from "../../src/contexts/LanguageContext";
 import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/dailyChallenge";
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
+import { Icon } from "../../src/components/ui";
 
 // New QuizNext design colors
 const COLORS = {
@@ -481,7 +482,7 @@ export default function HomeScreen() {
                 {/* View Achievements link */}
                 <View className="flex-row items-center justify-center mt-4 pt-3" style={{ borderTopWidth: 1, borderTopColor: 'rgba(251, 191, 36, 0.2)' }}>
                   <Text className="text-amber-200 font-semibold text-sm mr-2">{t("viewAchievementsBadges")}</Text>
-                  <Text className="text-amber-200">→</Text>
+                  <Icon name="ChevronRight" size={16} color="#fde68a" />
                 </View>
               </LinearGradient>
             </Pressable>

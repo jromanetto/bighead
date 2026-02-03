@@ -23,6 +23,7 @@ import {
   CATEGORIES,
 } from "../../../src/types/adventure";
 import { buttonPressFeedback } from "../../../src/utils/feedback";
+import { IconButton, Icon } from "../../../src/components/ui";
 
 const STORAGE_KEY = "adventure_progress";
 
@@ -169,20 +170,19 @@ export default function AdventureScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-5 pt-4 mb-2">
         <View className="flex-row items-center">
-          <Pressable
+          <IconButton
+            name="ArrowLeft"
             onPress={() => {
-              buttonPressFeedback();
               if (viewMode === "wheel") {
                 setViewMode("mountain");
               } else {
                 router.back();
               }
             }}
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-lg">←</Text>
-          </Pressable>
+            variant="glass"
+            size={40}
+            style={{ marginRight: 12 }}
+          />
           <View>
             <Text className="text-white text-xl font-black">
               {viewMode === "mountain" ? "🏔️ MONTAGNE" : "🎡 TIRAGE"}
@@ -283,7 +283,7 @@ export default function AdventureScreen() {
                       Tentatives illimitées chaque jour
                     </Text>
                   </View>
-                  <Text style={{ color: COLORS.gold }}>→</Text>
+                  <Icon name="ChevronRight" size={16} color={COLORS.gold} />
                 </Pressable>
               )}
             </View>

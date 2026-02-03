@@ -26,6 +26,7 @@ import {
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedback";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getSettings } from "../src/services/settings";
+import { IconButton } from "../src/components/ui";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -668,13 +669,12 @@ export default function DailyBrainScreen() {
         {/* Top HUD */}
         <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
           {/* Exit Button */}
-          <Pressable
+          <IconButton
+            name="ArrowLeft"
             onPress={() => router.back()}
-            className="w-10 h-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: COLORS.surface }}
-          >
-            <Text className="text-white text-xl">←</Text>
-          </Pressable>
+            variant="glass"
+            size={40}
+          />
 
           {/* Mode Badge */}
           <View

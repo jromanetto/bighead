@@ -10,6 +10,7 @@ import {
   type Tournament,
   type TournamentLeaderboardEntry,
 } from "../../src/services/tournament";
+import { IconButton } from "../../src/components/ui";
 
 export default function TournamentScreen() {
   const { user, isAnonymous } = useAuth();
@@ -105,9 +106,13 @@ export default function TournamentScreen() {
       <ScrollView className="flex-1" contentContainerClassName="px-6 pb-6">
         {/* Header */}
         <View className="flex-row items-center pt-4 mb-6">
-          <Pressable onPress={() => router.back()} className="p-2 mr-4">
-            <Text className="text-white text-2xl">←</Text>
-          </Pressable>
+          <IconButton
+            name="ArrowLeft"
+            onPress={() => router.back()}
+            variant="glass"
+            size={40}
+            style={{ marginRight: 16 }}
+          />
           <Text className="text-white text-2xl font-bold">Tournoi</Text>
         </View>
 
