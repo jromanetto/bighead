@@ -487,28 +487,8 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Quick Actions Row 3 - Invite & Shop */}
+          {/* Quick Actions Row 3 - Shop */}
           <View className="flex-row gap-3">
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/invite" as any);
-              }}
-              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
-              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-            >
-              <View
-                className="w-9 h-9 rounded-lg items-center justify-center"
-                style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}
-              >
-                <Text className="text-lg font-bold" style={{ color: '#22c55e' }}>+◯</Text>
-              </View>
-              <View>
-                <Text className="font-bold text-sm text-white">Invite</Text>
-                <Text className="text-[10px] text-gray-400">Get +500 coins</Text>
-              </View>
-            </Pressable>
-
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
