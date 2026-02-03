@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -25,6 +25,7 @@ import {
 } from "../src/services/dailyChallenge";
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedback";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getSettings } from "../src/services/settings";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -253,6 +254,7 @@ export default function DailyBrainScreen() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTime = useRef<number>(Date.now());
   const questionStartTime = useRef<number>(Date.now());
+  const userLanguage = useRef<string>("en");
 
   // Animation values
   const scale = useSharedValue(1);
@@ -303,6 +305,10 @@ export default function DailyBrainScreen() {
   const checkAndLoad = async () => {
     setLoading(true);
     try {
+      // Load user's language preference
+      const settings = await getSettings(user?.id);
+      userLanguage.current = settings.language || "en";
+
       // Check if already played today
       if (user && !isAnonymous) {
         const { played, score: todayScore } = await hasPlayedDailySurvivalToday(user.id);
@@ -334,7 +340,7 @@ export default function DailyBrainScreen() {
 
       // If coming from notification, load today's daily question first
       if (params.fromNotification === "true") {
-        const dailyQ = await getTodaysDailyQuestion();
+        const dailyQ = await getTodaysDailyQuestion(userLanguage.current);
         if (dailyQ) {
           setCurrentQuestion(dailyQ);
           setQuestionNumber(1);
@@ -355,7 +361,7 @@ export default function DailyBrainScreen() {
   };
 
   const loadNextQuestion = useCallback(async () => {
-    const question = await getNextSurvivalQuestion(answeredQuestionIds.current);
+    const question = await getNextSurvivalQuestion(answeredQuestionIds.current, userLanguage.current);
     if (question) {
       setCurrentQuestion(question);
       setQuestionNumber((prev) => prev + 1);
@@ -777,6 +783,18 @@ export default function DailyBrainScreen() {
                 <Text className="text-xl font-bold leading-relaxed text-white">
                   {currentQuestion.question}
                 </Text>
+
+                {/* Question Image (for logo questions) */}
+                {currentQuestion.image_url && (
+                  <View className="mt-4 items-center">
+                    <Image
+                      source={{ uri: currentQuestion.image_url }}
+                      className="rounded-xl"
+                      style={{ width: 200, height: 150 }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                )}
 
                 <View
                   className="h-1 w-12 rounded-full mt-4"

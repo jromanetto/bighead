@@ -34,6 +34,7 @@ export interface DailyQuestion {
   correctIndex: number;
   category: string;
   difficulty: number;
+  image_url?: string;
 }
 
 /**
@@ -83,6 +84,7 @@ export const getDailySurvivalQuestions = async (
       correctIndex,
       category: q.category,
       difficulty: q.difficulty,
+      image_url: q.image_url || undefined,
     };
   });
 };
@@ -332,6 +334,7 @@ export const getNextSurvivalQuestion = async (
     correctIndex,
     category: q.category,
     difficulty: q.difficulty,
+    image_url: q.image_url || undefined,
   };
 };
 
@@ -344,17 +347,19 @@ interface DailyQuestionRPC {
   difficulty: number;
   correct_answer: string;
   options: string[];
+  image_url?: string;
 }
 
 /**
  * Get today's daily question (the one sent in the notification)
  */
-export const getTodaysDailyQuestion = async (): Promise<DailyQuestion | null> => {
+export const getTodaysDailyQuestion = async (language: string = "en"): Promise<DailyQuestion | null> => {
   const today = new Date().toISOString().split("T")[0];
 
   // @ts-ignore - RPC function not in generated types
   const { data, error } = await supabase.rpc("get_or_create_daily_question", {
     target_date: today,
+    p_language: language,
   });
 
   if (error) {
@@ -379,5 +384,6 @@ export const getTodaysDailyQuestion = async (): Promise<DailyQuestion | null> =>
     correctIndex,
     category: q.category,
     difficulty: q.difficulty,
+    image_url: q.image_url || undefined,
   };
 };

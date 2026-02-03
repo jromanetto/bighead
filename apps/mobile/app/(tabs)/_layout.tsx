@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Tabs } from "expo-router";
 import { View, Text, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -29,11 +30,9 @@ function TabBarIcon({ icon, focused }: { icon: string; focused: boolean }) {
     transform: [{ scale: scale.value }],
   }));
 
-  if (focused) {
-    scale.value = withSpring(1.1, { damping: 15, stiffness: 150 });
-  } else {
-    scale.value = withSpring(1, { damping: 15, stiffness: 150 });
-  }
+  useEffect(() => {
+    scale.value = withSpring(focused ? 1.1 : 1, { damping: 15, stiffness: 150 });
+  }, [focused]);
 
   return (
     <View
@@ -41,9 +40,11 @@ function TabBarIcon({ icon, focused }: { icon: string; focused: boolean }) {
       style={focused ? { backgroundColor: `${COLORS.primary}25` } : undefined}
     >
       <Animated.Text
-        className="text-2xl"
         style={[
-          { color: focused ? COLORS.primary : COLORS.textMuted },
+          {
+            fontSize: 24,
+            color: focused ? COLORS.primary : COLORS.textMuted
+          },
           animatedStyle,
         ]}
       >
