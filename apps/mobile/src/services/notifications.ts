@@ -40,7 +40,7 @@ export const registerForPushNotifications = async (): Promise<string | null> => 
 
   // Get Expo push token
   const token = await Notifications.getExpoPushTokenAsync({
-    projectId: process.env.EXPO_PROJECT_ID,
+    projectId: "327940cd-9b96-4c8d-962e-f707e5b0a000",
   });
 
   // Configure Android channel
@@ -65,7 +65,10 @@ export const savePushToken = async (
 ): Promise<void> => {
   const { error } = await (supabase
     .from("users") as any)
-    .update({ push_token: token })
+    .update({
+      push_token: token,
+      push_token_updated_at: new Date().toISOString(),
+    })
     .eq("id", userId);
 
   if (error) {

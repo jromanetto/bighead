@@ -145,10 +145,11 @@ export default function HomeScreen() {
                 colors={['#fbbf24', '#f59e0b']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                className="flex-row items-center px-3 py-1.5 rounded-full"
+                className="flex-row items-center justify-center rounded-lg"
+                style={{ paddingHorizontal: 10, paddingVertical: 6, minWidth: 56 }}
               >
-                <Text className="text-xs font-bold mr-1" style={{ color: '#451a03' }}>LVL</Text>
-                <Text className="text-sm font-black" style={{ color: '#451a03' }}>{levelData.level}</Text>
+                <Text className="text-[10px] font-bold mr-1.5" style={{ color: '#451a03' }}>LVL</Text>
+                <Text className="text-base font-black" style={{ color: '#451a03' }}>{levelData.level}</Text>
               </LinearGradient>
             </Pressable>
           </View>
@@ -431,7 +432,7 @@ export default function HomeScreen() {
               >
                 <View className="flex-row items-center justify-between mb-4">
                   {/* Level Badge */}
-                  <View className="flex-row items-center gap-3">
+                  <View className="flex-row items-center gap-4">
                     <LinearGradient
                       colors={['#fbbf24', '#f59e0b', '#d97706']}
                       className="w-14 h-14 rounded-xl items-center justify-center"
@@ -442,8 +443,8 @@ export default function HomeScreen() {
                         shadowRadius: 8,
                       }}
                     >
-                      <Text className="text-[10px] font-bold text-amber-900 opacity-80">LVL</Text>
-                      <Text className="text-2xl font-black text-amber-900">{levelData.level}</Text>
+                      <Text className="text-[9px] font-bold text-amber-900 opacity-80">LVL</Text>
+                      <Text className="text-xl font-black text-amber-900">{levelData.level}</Text>
                     </LinearGradient>
                     <View>
                       <Text className="text-white font-bold text-lg">{t("level")} {levelData.level}</Text>

@@ -279,61 +279,64 @@ export default function AchievementsScreen() {
 
         {/* Level & XP Hero Card */}
         <View className="mx-5 mb-5">
-          <LinearGradient
-            colors={['#7c3aed', '#a855f7', '#c084fc']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            className="rounded-3xl p-1"
+          <View
+            className="rounded-3xl p-5"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1.5,
+              borderColor: 'rgba(168, 85, 247, 0.3)',
+            }}
           >
-            <View
-              className="rounded-[22px] p-5"
-              style={{ backgroundColor: COLORS.bg }}
-            >
-              <View className="flex-row items-center mb-4">
-                {/* Level Badge */}
-                <LinearGradient
-                  colors={['#fbbf24', '#f59e0b', '#d97706']}
-                  className="w-20 h-20 rounded-2xl items-center justify-center mr-4"
-                >
-                  <Text className="text-white text-xs font-bold opacity-80">{t("level").toUpperCase()}</Text>
-                  <Text className="text-white text-3xl font-black">{levelData.level}</Text>
-                </LinearGradient>
+            <View className="flex-row items-center mb-5">
+              {/* Level Badge */}
+              <LinearGradient
+                colors={['#fbbf24', '#f59e0b', '#d97706']}
+                className="w-16 h-16 rounded-xl items-center justify-center"
+                style={{
+                  shadowColor: '#fbbf24',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                }}
+              >
+                <Text className="text-amber-900 text-[10px] font-bold opacity-80">{t("level").toUpperCase()}</Text>
+                <Text className="text-amber-900 text-2xl font-black">{levelData.level}</Text>
+              </LinearGradient>
 
-                {/* XP Info */}
-                <View className="flex-1">
-                  <Text className="text-white text-2xl font-black">
-                    {totalXP.toLocaleString()} XP
-                  </Text>
-                  <Text style={{ color: COLORS.textMuted }} className="text-sm mt-1">
-                    {t("totalExperienceEarned")}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Progress to next level */}
-              <View>
-                <View className="flex-row justify-between mb-2">
-                  <Text style={{ color: COLORS.textMuted }} className="text-xs">
-                    {t("progressToLevel")} {levelData.level + 1}
-                  </Text>
-                  <Text style={{ color: COLORS.gold }} className="text-xs font-bold">
-                    {levelData.currentXP} / {levelData.nextLevelXP} XP
-                  </Text>
-                </View>
-                <View
-                  className="h-3 rounded-full overflow-hidden"
-                  style={{ backgroundColor: COLORS.surfaceLight }}
-                >
-                  <LinearGradient
-                    colors={['#fbbf24', '#f59e0b']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{ width: `${levelData.progress}%`, height: '100%', borderRadius: 999 }}
-                  />
-                </View>
+              {/* XP Info */}
+              <View className="flex-1 ml-5">
+                <Text className="text-white text-2xl font-black">
+                  {totalXP.toLocaleString()} XP
+                </Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-sm mt-1">
+                  {t("totalExperienceEarned")}
+                </Text>
               </View>
             </View>
-          </LinearGradient>
+
+            {/* Progress to next level */}
+            <View>
+              <View className="flex-row justify-between mb-2">
+                <Text style={{ color: COLORS.textMuted }} className="text-xs">
+                  {t("progressToLevel")} {levelData.level + 1}
+                </Text>
+                <Text style={{ color: COLORS.gold }} className="text-xs font-bold">
+                  {levelData.currentXP} / {levelData.nextLevelXP} XP
+                </Text>
+              </View>
+              <View
+                className="h-2.5 rounded-full overflow-hidden"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+              >
+                <LinearGradient
+                  colors={['#fbbf24', '#f59e0b']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ width: `${levelData.progress}%`, height: '100%', borderRadius: 999 }}
+                />
+              </View>
+            </View>
+          </View>
         </View>
 
         {/* Stats Row */}
