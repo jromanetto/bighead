@@ -401,7 +401,7 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Quick Actions Row 1 */}
+          {/* Quick Actions Row */}
           <View className="flex-row gap-3">
             <Pressable
               onPress={() => {
@@ -426,49 +426,6 @@ export default function HomeScreen() {
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
-                router.push("/challenge");
-              }}
-              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
-              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-            >
-              <View
-                className="w-9 h-9 rounded-lg items-center justify-center"
-                style={{ backgroundColor: `${COLORS.coral}15` }}
-              >
-                <Text className="text-lg font-bold" style={{ color: COLORS.coral }}>⇆</Text>
-              </View>
-              <View>
-                <Text className="font-bold text-sm text-white">Challenge</Text>
-                <Text className="text-[10px] text-gray-400">Friends battle</Text>
-              </View>
-            </Pressable>
-          </View>
-
-          {/* Quick Actions Row 2 */}
-          <View className="flex-row gap-3">
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/leaderboard");
-              }}
-              className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
-              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-            >
-              <View
-                className="w-9 h-9 rounded-lg items-center justify-center"
-                style={{ backgroundColor: `${COLORS.yellow}15` }}
-              >
-                <Text className="text-lg font-bold" style={{ color: COLORS.yellow }}>♛</Text>
-              </View>
-              <View>
-                <Text className="font-bold text-sm text-white">Leaderboard</Text>
-                <Text className="text-[10px] text-gray-400">Top players</Text>
-              </View>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
                 router.push("/stats");
               }}
               className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
@@ -485,14 +442,11 @@ export default function HomeScreen() {
                 <Text className="text-[10px] text-gray-400">Your progress</Text>
               </View>
             </Pressable>
-          </View>
 
-          {/* Quick Actions Row 3 - Shop */}
-          <View className="flex-row gap-3">
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
-                router.push("/premium");
+                router.push("/leaderboard");
               }}
               className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
@@ -501,14 +455,45 @@ export default function HomeScreen() {
                 className="w-9 h-9 rounded-lg items-center justify-center"
                 style={{ backgroundColor: `${COLORS.yellow}15` }}
               >
-                <Text className="text-lg font-bold" style={{ color: COLORS.yellow }}>◇</Text>
+                <Text className="text-lg font-bold" style={{ color: COLORS.yellow }}>♛</Text>
               </View>
               <View>
-                <Text className="font-bold text-sm text-white">Shop</Text>
-                <Text className="text-[10px] text-gray-400">Premium & More</Text>
+                <Text className="font-bold text-sm text-white">Ranking</Text>
+                <Text className="text-[10px] text-gray-400">Top players</Text>
               </View>
             </Pressable>
           </View>
+
+          {/* Premium Banner */}
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              router.push("/premium");
+            }}
+            className="rounded-xl overflow-hidden active:opacity-95"
+            style={{ borderWidth: 1, borderColor: 'rgba(255, 209, 0, 0.3)' }}
+          >
+            <LinearGradient
+              colors={['#7c3aed', '#c026d3', '#f59e0b']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ paddingVertical: 16, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+            >
+              <View className="flex-row items-center gap-3">
+                <Text className="text-2xl">👑</Text>
+                <View>
+                  <Text className="text-white font-bold text-base">Get Premium Access</Text>
+                  <Text className="text-white/70 text-xs">Unlock all features & remove ads</Text>
+                </View>
+              </View>
+              <View
+                className="px-4 py-2 rounded-full"
+                style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+              >
+                <Text className="text-white font-bold text-sm">Upgrade</Text>
+              </View>
+            </LinearGradient>
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
