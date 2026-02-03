@@ -1,204 +1,538 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIGHEAD - Le quiz qui challenge ton cerveau</title>
-    <meta name="description" content="BIGHEAD est un jeu de quiz addictif avec des milliers de questions. Défie ton cerveau chaque jour avec le Daily Brain !">
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+    <title>BIGHEAD - The Quiz That Challenges Your Brain</title>
+    <meta name="description" content="BIGHEAD is an addictive trivia game with thousands of questions. Challenge your brain daily with Daily Brain mode!">
+    <meta name="keywords" content="quiz app, trivia game, brain training, daily challenge, mobile game">
+    <meta property="og:title" content="BIGHEAD - The Quiz That Challenges Your Brain">
+    <meta property="og:description" content="Test your knowledge with thousands of questions across 11 categories.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+
+    <!-- Google Fonts - Inter (similar to Geist) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg: #0a0a0b;
+            --bg-secondary: #111113;
+            --surface: #18181b;
+            --surface-hover: #1f1f23;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --text: #fafafa;
+            --text-muted: #a1a1aa;
+            --text-dim: #71717a;
+            --primary: #00c2cc;
+            --primary-dim: rgba(0, 194, 204, 0.15);
+            --accent: #a855f7;
+            --accent-dim: rgba(168, 85, 247, 0.15);
+            --success: #22c55e;
+            --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #0f172a;
-            min-height: 100vh;
-            color: #e2e8f0;
-            overflow-x: hidden;
+        html {
+            scroll-behavior: smooth;
         }
 
-        /* Animated background */
-        .bg-animation {
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-gradient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse 600px 600px at 20% 30%, rgba(0, 194, 204, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse 500px 500px at 80% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(1deg); }
+            66% { transform: translate(-20px, 20px) rotate(-1deg); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background:
-                radial-gradient(ellipse at 20% 20%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(217, 70, 239, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(30, 27, 75, 0.8) 0%, #0f172a 100%);
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 11, 0.8);
+            border-bottom: 1px solid var(--border);
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            position: relative;
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-cta {
+            background: var(--text);
+            color: var(--bg);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         /* Hero Section */
         .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            padding: 60px 0 80px;
+            padding: 120px 24px 80px;
         }
 
-        .app-icon {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 30px;
-            border-radius: 32px;
-            box-shadow:
-                0 0 80px rgba(14, 165, 233, 0.3),
-                0 0 120px rgba(217, 70, 239, 0.2),
-                0 25px 50px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease;
         }
 
-        .app-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
 
-        h1 {
-            font-size: 4rem;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 800;
-            background: linear-gradient(135deg, #0ea5e9 0%, #d946ef 100%);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease 0.1s backwards;
+        }
+
+        .hero-title-gradient {
+            background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 16px;
-            letter-spacing: -2px;
         }
 
-        .tagline {
-            font-size: 1.5rem;
-            color: #94a3b8;
-            margin-bottom: 40px;
-            font-weight: 300;
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 48px;
+            font-weight: 400;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
         }
 
-        /* Features */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 60px;
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
         }
 
-        .feature {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 20px;
-            padding: 28px;
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
         }
 
-        .feature:hover {
-            transform: translateY(-4px);
-            border-color: rgba(14, 165, 233, 0.3);
+        .btn-primary {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .feature-icon {
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-hover);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            margin-top: 80px;
+            animation: fadeInUp 0.6s ease 0.4s backwards;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
             font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 120px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: var(--primary-dim);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             margin-bottom: 16px;
         }
 
-        .feature h3 {
-            font-size: 1.2rem;
-            color: #fff;
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-dim);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card:nth-child(2) .feature-icon {
+            background: var(--accent-dim);
+        }
+
+        .feature-card:nth-child(3) .feature-icon {
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .feature-card:nth-child(4) .feature-icon {
+            background: rgba(251, 191, 36, 0.15);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0 auto 20px;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
-        .feature p {
-            color: #94a3b8;
-            font-size: 0.95rem;
-            line-height: 1.6;
+        .step-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
-        /* App Store Badges */
-        .badges {
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 0;
+        }
+
+        .cta-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 80px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--primary-dim) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-icon {
+            font-size: 4rem;
+            margin-bottom: 24px;
+        }
+
+        .cta-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 32px;
+        }
+
+        .store-badges {
             display: flex;
             gap: 16px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 60px;
         }
 
-        .badge {
-            height: 54px;
-            border-radius: 12px;
-            transition: transform 0.3s ease;
-        }
-
-        .badge:hover {
-            transform: scale(1.05);
-        }
-
-        .badge-placeholder {
-            background: rgba(30, 41, 59, 0.7);
-            border: 2px dashed rgba(148, 163, 184, 0.3);
+        .store-badge {
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 14px 24px;
-            color: #64748b;
-            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s;
         }
 
-        /* Stats */
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            margin-bottom: 60px;
-            flex-wrap: wrap;
+        .store-badge:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
         }
 
-        .stat {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0ea5e9, #d946ef);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        /* Legal Links */
-        .legal-section {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 24px;
-            padding: 40px;
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            text-align: center;
-        }
-
-        .legal-section h2 {
-            color: #fff;
+        .store-badge-icon {
             font-size: 1.5rem;
-            margin-bottom: 24px;
         }
 
-        .legal-links {
+        .store-badge-text {
+            text-align: left;
+        }
+
+        .store-badge-small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .store-badge-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Legal Section */
+        .legal-section {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .legal-grid {
             display: flex;
             gap: 16px;
             justify-content: center;
@@ -206,186 +540,308 @@
         }
 
         .legal-link {
-            background: rgba(14, 165, 233, 0.1);
-            border: 1px solid rgba(14, 165, 233, 0.3);
-            border-radius: 12px;
-            padding: 16px 28px;
-            color: #0ea5e9;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         .legal-link:hover {
-            background: rgba(14, 165, 233, 0.2);
-            border-color: #0ea5e9;
-            transform: translateY(-2px);
+            border-color: var(--primary);
+            background: var(--primary-dim);
         }
 
         .legal-link-icon {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
         }
 
         /* Footer */
-        .footer {
+        footer {
+            padding: 40px 0;
             text-align: center;
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
-            color: #64748b;
+            color: var(--text-dim);
+            font-size: 0.9rem;
         }
 
-        .footer a {
-            color: #0ea5e9;
+        footer a {
+            color: var(--primary);
             text-decoration: none;
         }
 
-        .footer a:hover {
+        footer a:hover {
             text-decoration: underline;
         }
 
-        .social-links {
+        .footer-social {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             justify-content: center;
             margin-top: 20px;
         }
 
         .social-link {
-            width: 44px;
-            height: 44px;
-            background: rgba(30, 41, 59, 0.7);
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            transition: all 0.2s;
             text-decoration: none;
         }
 
         .social-link:hover {
-            background: rgba(14, 165, 233, 0.2);
+            background: var(--surface-hover);
+            border-color: var(--border-hover);
             transform: translateY(-2px);
         }
 
         /* Responsive */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2.5rem;
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
             }
 
-            .tagline {
-                font-size: 1.1rem;
+            .hero-stats {
+                gap: 24px;
             }
 
-            .stats {
-                gap: 30px;
-            }
-
-            .stat-value {
+            .hero-stat-value {
                 font-size: 2rem;
             }
 
-            .app-icon {
-                width: 120px;
-                height: 120px;
+            .cta-card {
+                padding: 60px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-cta {
+                flex-direction: column;
+                width: 100%;
             }
 
-            .brain-icon {
-                font-size: 60px;
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
+    <div class="bg-gradient"></div>
 
-    <div class="container">
-        <div class="hero">
-            <div class="app-icon">
-                <img src="icon.png" alt="BIGHEAD App Icon">
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-content">
+            <a href="#" class="nav-logo">
+                <span class="nav-logo-icon">🧠</span>
+                <span>BIGHEAD</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="#download">Download</a>
             </div>
-            <h1>BIGHEAD</h1>
-            <p class="tagline">Le quiz qui challenge ton cerveau !</p>
+            <a href="#download" class="nav-cta">Get the App</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            <span>Now available on iOS</span>
         </div>
 
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">🎯</div>
-                <h3>Daily Brain</h3>
-                <p>Un défi quotidien avec une question mystère. Une seule chance, un seul essai. Reviens chaque jour !</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">⚔️</div>
-                <h3>Duels 1v1</h3>
-                <p>Affronte tes amis ou des joueurs du monde entier en temps réel.</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🏆</div>
-                <h3>Tournois</h3>
-                <p>Participe aux tournois hebdomadaires et grimpe dans le classement mondial.</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🎮</div>
-                <h3>Modes multiples</h3>
-                <p>Solo, Party, Famille, Aventure... Il y en a pour tous les goûts !</p>
-            </div>
-        </div>
+        <h1 class="hero-title">
+            The Quiz That<br>
+            <span class="hero-title-gradient">Challenges Your Brain</span>
+        </h1>
 
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-value">2200+</div>
-                <div class="stat-label">Questions</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">11</div>
-                <div class="stat-label">Catégories</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">∞</div>
-                <div class="stat-label">Fun</div>
-            </div>
-        </div>
+        <p class="hero-subtitle">
+            Test your knowledge with thousands of questions across 11 categories.
+            Challenge friends, climb leaderboards, and become the ultimate trivia champion.
+        </p>
 
-        <div class="badges">
-            <div class="badge-placeholder">
+        <div class="hero-cta">
+            <a href="#download" class="btn btn-primary">
                 <span>📱</span>
-                Bientôt sur App Store
-            </div>
-            <div class="badge-placeholder">
-                <span>🤖</span>
-                Bientôt sur Play Store
-            </div>
+                Download Free
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                <span>✨</span>
+                Discover Features
+            </a>
         </div>
 
-        <div class="legal-section">
-            <h2>Informations légales</h2>
-            <div class="legal-links">
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">2,200+</div>
+                <div class="hero-stat-label">Questions</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">11</div>
+                <div class="hero-stat-label">Categories</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">∞</div>
+                <div class="hero-stat-label">Fun</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Features</span>
+                <h2 class="section-title">Everything you need to train your brain</h2>
+                <p class="section-subtitle">Multiple game modes to keep you engaged and learning every day.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Daily Brain</h3>
+                    <p class="feature-desc">A daily challenge with mystery questions. One chance, one try. Come back every day to maintain your streak!</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚔️</div>
+                    <h3 class="feature-title">1v1 Duels</h3>
+                    <p class="feature-desc">Challenge your friends or players worldwide in real-time battles. Prove you're the smartest!</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Tournaments</h3>
+                    <p class="feature-desc">Join weekly tournaments and climb the global rankings. Win exclusive rewards and bragging rights.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3 class="feature-title">Multiple Modes</h3>
+                    <p class="feature-desc">Solo, Party, Family, Adventure... Something for everyone, whether alone or with friends.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">How it Works</span>
+                <h2 class="section-title">Start playing in seconds</h2>
+                <p class="section-subtitle">No complicated setup. Just download and start challenging yourself.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Download</h3>
+                    <p class="step-desc">Get BIGHEAD free from the App Store or Play Store.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Choose a Mode</h3>
+                    <p class="step-desc">Pick from Daily Brain, Duels, Tournaments, or free play.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Answer Questions</h3>
+                    <p class="step-desc">Test your knowledge across 11 diverse categories.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Climb the Ranks</h3>
+                    <p class="step-desc">Earn XP, unlock achievements, and dominate leaderboards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="download">
+        <div class="container">
+            <div class="cta-card">
+                <div class="cta-content">
+                    <div class="cta-icon">🧠</div>
+                    <h2 class="cta-title">Ready to Challenge Your Brain?</h2>
+                    <p class="cta-subtitle">Join thousands of players testing their knowledge every day. Free to download, free to play.</p>
+
+                    <div class="store-badges">
+                        <a href="#" class="store-badge">
+                            <span class="store-badge-icon">🍎</span>
+                            <div class="store-badge-text">
+                                <div class="store-badge-small">Download on the</div>
+                                <div class="store-badge-name">App Store</div>
+                            </div>
+                        </a>
+                        <a href="#" class="store-badge">
+                            <span class="store-badge-icon">🤖</span>
+                            <div class="store-badge-text">
+                                <div class="store-badge-small">Get it on</div>
+                                <div class="store-badge-name">Google Play</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Legal Section -->
+    <section class="legal-section">
+        <div class="container">
+            <div class="legal-grid">
                 <a href="privacy.html" class="legal-link">
                     <span class="legal-link-icon">🔒</span>
-                    Politique de confidentialité
+                    Privacy Policy
                 </a>
                 <a href="terms.html" class="legal-link">
                     <span class="legal-link-icon">📜</span>
-                    Conditions d'utilisation
+                    Terms of Service
                 </a>
                 <a href="mailto:support@bighead-app.com" class="legal-link">
                     <span class="legal-link-icon">✉️</span>
-                    Contact
+                    Contact Us
                 </a>
             </div>
         </div>
+    </section>
 
-        <div class="footer">
-            <p>© 2026 BIGHEAD. Tous droits réservés.</p>
-            <p style="margin-top: 8px; font-size: 0.85rem;">
-                Made with 🧠 in France
-            </p>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 BIGHEAD. All rights reserved.</p>
+            <p style="margin-top: 8px;">Made with 🧠 in France</p>
+
+            <div class="footer-social">
+                <a href="#" class="social-link" title="Twitter">𝕏</a>
+                <a href="#" class="social-link" title="Instagram">📸</a>
+                <a href="#" class="social-link" title="Discord">💬</a>
+            </div>
         </div>
-    </div>
+    </footer>
 </body>
 </html>
