@@ -124,20 +124,24 @@ export function RatingModal({ visible, onClose }: RatingModalProps) {
     onClose();
   };
 
+  // Animated styles for each star (must be at top level, not in loop)
+  const starStyle0 = useAnimatedStyle(() => ({ transform: [{ scale: starScales[0].value }] }));
+  const starStyle1 = useAnimatedStyle(() => ({ transform: [{ scale: starScales[1].value }] }));
+  const starStyle2 = useAnimatedStyle(() => ({ transform: [{ scale: starScales[2].value }] }));
+  const starStyle3 = useAnimatedStyle(() => ({ transform: [{ scale: starScales[3].value }] }));
+  const starStyle4 = useAnimatedStyle(() => ({ transform: [{ scale: starScales[4].value }] }));
+  const starStyles = [starStyle0, starStyle1, starStyle2, starStyle3, starStyle4];
+
   const renderStars = () => {
     return (
       <View className="flex-row justify-center gap-2 my-6">
         {[0, 1, 2, 3, 4].map((index) => {
           const isFilled = index < rating;
 
-          const animatedStyle = useAnimatedStyle(() => ({
-            transform: [{ scale: starScales[index].value }],
-          }));
-
           return (
             <Pressable key={index} onPress={() => handleStarPress(index)}>
               <Animated.View
-                style={animatedStyle}
+                style={starStyles[index]}
                 className="w-12 h-12 items-center justify-center"
               >
                 <Text
