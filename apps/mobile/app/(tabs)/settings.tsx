@@ -9,6 +9,7 @@ import { getSettings, saveSettings, type UserSettings } from "../../src/services
 import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
 import { IconButton, Icon } from "../../src/components/ui";
 import { RatingModal } from "../../src/components/RatingModal";
+import { ContactModal } from "../../src/components/ContactModal";
 import { useRatingPrompt } from "../../src/hooks/useRatingPrompt";
 
 // New QuizNext design colors
@@ -34,6 +35,7 @@ export default function SettingsScreen() {
     cancelAllNotifications,
   } = useNotificationContext();
   const { showRatingModal, openRatingModal, closeRatingModal } = useRatingPrompt();
+  const [showContactModal, setShowContactModal] = useState(false);
   const [settings, setSettings] = useState<UserSettings>({
     sound_enabled: true,
     haptic_enabled: true,
@@ -375,9 +377,7 @@ export default function SettingsScreen() {
               icon="@"
               title={t("contact")}
               subtitle={t("reportProblem")}
-              onPress={() => {
-                Alert.alert(t("contact"), "contact@jrmanagement.org");
-              }}
+              onPress={() => setShowContactModal(true)}
             />
           </View>
 
@@ -394,6 +394,9 @@ export default function SettingsScreen() {
 
       {/* Rating Modal */}
       <RatingModal visible={showRatingModal} onClose={closeRatingModal} />
+
+      {/* Contact Modal */}
+      <ContactModal visible={showContactModal} onClose={() => setShowContactModal(false)} />
     </SafeAreaView>
   );
 }
