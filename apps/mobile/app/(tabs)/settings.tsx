@@ -8,6 +8,8 @@ import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings, saveSettings, type UserSettings } from "../../src/services/settings";
 import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
 import { IconButton, Icon } from "../../src/components/ui";
+import { RatingModal } from "../../src/components/RatingModal";
+import { useRatingPrompt } from "../../src/hooks/useRatingPrompt";
 
 // New QuizNext design colors
 const COLORS = {
@@ -31,6 +33,7 @@ export default function SettingsScreen() {
     scheduleDailyReminder,
     cancelAllNotifications,
   } = useNotificationContext();
+  const { showRatingModal, openRatingModal, closeRatingModal } = useRatingPrompt();
   const [settings, setSettings] = useState<UserSettings>({
     sound_enabled: true,
     haptic_enabled: true,
@@ -366,9 +369,7 @@ export default function SettingsScreen() {
               icon="☆"
               title={t("rateApp")}
               subtitle={t("leaveReview")}
-              onPress={() => {
-                Alert.alert(t("thanks"), t("comingSoon"));
-              }}
+              onPress={openRatingModal}
             />
             <MenuRow
               icon="@"
@@ -390,6 +391,9 @@ export default function SettingsScreen() {
             </Text>
           </View>
         </ScrollView>
+
+      {/* Rating Modal */}
+      <RatingModal visible={showRatingModal} onClose={closeRatingModal} />
     </SafeAreaView>
   );
 }

@@ -27,6 +27,8 @@ import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedbac
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getSettings } from "../src/services/settings";
 import { IconButton } from "../src/components/ui";
+import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
+import { RatingModal } from "../src/components/RatingModal";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -250,6 +252,7 @@ export default function DailyBrainScreen() {
   const [xpEarned, setXpEarned] = useState(0);
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME);
+  const { showRatingModal, closeRatingModal, checkAndShowRating } = useRatingPrompt();
 
   const answeredQuestionIds = useRef<string[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -435,6 +438,9 @@ export default function DailyBrainScreen() {
         JSON.stringify({ date: today, score: finalScore })
       );
     }
+
+    // Check if we should show rating prompt
+    await checkAndShowRating();
   };
 
   const animatedScaleStyle = useAnimatedStyle(() => ({
@@ -831,6 +837,9 @@ export default function DailyBrainScreen() {
           )}
         </ScrollView>
       </View>
+
+      {/* Rating Modal */}
+      <RatingModal visible={showRatingModal} onClose={closeRatingModal} />
     </SafeAreaView>
   );
 }

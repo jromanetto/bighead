@@ -7,6 +7,8 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { saveGameResult } from "../../src/services/gameResults";
 import { ConfettiEffect } from "../../src/components/effects";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { useRatingPrompt } from "../../src/hooks/useRatingPrompt";
+import { RatingModal } from "../../src/components/RatingModal";
 
 // New QuizNext design colors
 const COLORS = {
@@ -139,6 +141,7 @@ export default function ResultScreen() {
   const { user, refreshProfile } = useAuth();
   const [saved, setSaved] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const { showRatingModal, closeRatingModal, checkAndShowRating } = useRatingPrompt();
 
   const scoreNum = Number(score || 0);
   const correctNum = Number(correct || 0);
@@ -172,6 +175,9 @@ export default function ResultScreen() {
         });
         setSaved(true);
         await refreshProfile();
+
+        // Check if we should show rating prompt
+        await checkAndShowRating();
       } catch (error) {
         console.error("Error saving game result:", error);
       }
@@ -386,6 +392,9 @@ export default function ResultScreen() {
           <Text className="text-2xl">↗</Text>
         </Pressable>
       </View>
+
+      {/* Rating Modal */}
+      <RatingModal visible={showRatingModal} onClose={closeRatingModal} />
     </SafeAreaView>
   );
 }
