@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Switch, ScrollView, Alert } from "react-native";
-import { router, Link } from "expo-router";
+import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
@@ -27,9 +27,7 @@ export default function SettingsScreen() {
   const { user, isAnonymous, signOut } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const {
-    permissionStatus,
     requestPermission,
-    sendTestNotification,
     scheduleDailyReminder,
     cancelAllNotifications,
   } = useNotificationContext();
@@ -257,22 +255,6 @@ export default function SettingsScreen() {
               value={settings.notifications_enabled}
               onToggle={(v) => updateSetting("notifications_enabled", v)}
             />
-            <MenuRow
-              icon="▶"
-              title="Tester les notifications"
-              subtitle={permissionStatus === "granted" ? "Permission accordee" : "Permission requise"}
-              onPress={async () => {
-                if (permissionStatus !== "granted") {
-                  const granted = await requestPermission();
-                  if (!granted) {
-                    Alert.alert("Permission requise", "Active les notifications dans les reglages.");
-                    return;
-                  }
-                }
-                await sendTestNotification();
-                Alert.alert("Notification envoyee !", "Tu devrais la recevoir dans quelques secondes.");
-              }}
-            />
           </View>
 
           {/* Language */}
@@ -325,18 +307,6 @@ export default function SettingsScreen() {
               subtitle={t("unlockAllFeatures")}
               onPress={() => router.push("/premium")}
             />
-            <MenuRow
-              icon="▮▯"
-              title={t("yourStats")}
-              subtitle={t("viewDetailedStats")}
-              onPress={() => router.push("/stats")}
-            />
-            <MenuRow
-              icon="⇆"
-              title={t("friendChallenges")}
-              subtitle={t("challengeYourFriends")}
-              onPress={() => router.push("/challenge")}
-            />
           </View>
 
           {/* Account */}
@@ -354,29 +324,20 @@ export default function SettingsScreen() {
               borderColor: 'rgba(255,255,255,0.05)',
             }}
           >
-            {isAnonymous ? (
+            <MenuRow
+              icon="◉"
+              title={t("myProfile")}
+              subtitle={t("managePersonalInfo")}
+              onPress={() => router.push("/profile")}
+            />
+            {!isAnonymous && (
               <MenuRow
-                icon="◉"
-                title={t("createAccount")}
-                subtitle={t("saveYourProgress")}
-                onPress={() => router.push("/profile")}
+                icon="→"
+                title={t("signOut")}
+                subtitle={t("leaveSession")}
+                onPress={handleSignOut}
+                danger
               />
-            ) : (
-              <>
-                <MenuRow
-                  icon="◉"
-                  title={t("myProfile")}
-                  subtitle={t("managePersonalInfo")}
-                  onPress={() => router.push("/profile")}
-                />
-                <MenuRow
-                  icon="→"
-                  title={t("signOut")}
-                  subtitle={t("leaveSession")}
-                  onPress={handleSignOut}
-                  danger
-                />
-              </>
             )}
           </View>
 
@@ -414,7 +375,7 @@ export default function SettingsScreen() {
               title={t("contact")}
               subtitle={t("reportProblem")}
               onPress={() => {
-                Alert.alert(t("contact"), "support@bighead.app");
+                Alert.alert(t("contact"), "contact@jrmanagement.org");
               }}
             />
           </View>
@@ -422,7 +383,7 @@ export default function SettingsScreen() {
           {/* Version */}
           <View className="items-center py-8">
             <Text style={{ color: COLORS.textMuted }} className="text-sm font-bold">
-              BIGHEAD V1.0.0
+              BIGHEAD V1.1.0
             </Text>
             <Text className="text-gray-600 text-xs mt-1">
               {t("madeByTeam")}
