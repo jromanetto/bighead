@@ -151,10 +151,11 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    // 1. Get or create today's question
+    // 1. Get or create today's question (French)
     console.log("Getting today's question...");
     const { data: dailyQuestion, error: questionError } = await supabase.rpc(
-      "get_or_create_daily_question"
+      "get_or_create_daily_question",
+      { target_date: new Date().toISOString().split('T')[0], p_language: 'fr' }
     );
 
     if (questionError || !dailyQuestion || dailyQuestion.length === 0) {
