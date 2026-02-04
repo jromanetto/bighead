@@ -269,18 +269,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         console.log("User tapped notification:", data);
 
         // Handle deep linking based on notification type
-        if (data?.type === "daily_question") {
-          // Navigate to daily brain with the question from notification
+        if (data?.type === "daily_question" || data?.type === "daily_reminder") {
+          // Navigate to daily brain with the daily question first
           setTimeout(() => {
             router.push({
               pathname: "/daily",
               params: { fromNotification: "true" },
             } as any);
-          }, 100);
-        } else if (data?.type === "daily_reminder") {
-          // Navigate to daily brain without specific question
-          setTimeout(() => {
-            router.push("/daily" as any);
           }, 100);
         } else if (data?.screen) {
           setTimeout(() => {

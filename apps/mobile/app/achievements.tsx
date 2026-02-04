@@ -289,19 +289,20 @@ export default function AchievementsScreen() {
           >
             <View className="flex-row items-center mb-5">
               {/* Level Badge */}
-              <LinearGradient
-                colors={['#fbbf24', '#f59e0b', '#d97706']}
-                className="w-16 h-16 rounded-xl items-center justify-center"
+              <View
+                className="w-16 h-16 rounded-2xl items-center justify-center"
                 style={{
+                  backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                  borderWidth: 2,
+                  borderColor: '#fbbf24',
                   shadowColor: '#fbbf24',
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
                 }}
               >
-                <Text className="text-amber-900 text-[10px] font-bold opacity-80">{t("level").toUpperCase()}</Text>
-                <Text className="text-amber-900 text-2xl font-black">{levelData.level}</Text>
-              </LinearGradient>
+                <Text className="text-3xl font-black" style={{ color: '#fbbf24' }}>{levelData.level}</Text>
+              </View>
 
               {/* XP Info */}
               <View className="flex-1 ml-5">

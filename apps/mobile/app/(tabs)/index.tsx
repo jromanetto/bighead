@@ -141,16 +141,19 @@ export default function HomeScreen() {
               }}
               className="active:opacity-80"
             >
-              <LinearGradient
-                colors={['#fbbf24', '#f59e0b']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                className="flex-row items-center justify-center rounded-lg"
-                style={{ paddingHorizontal: 10, paddingVertical: 6, minWidth: 56 }}
+              <View
+                className="flex-row items-center justify-center rounded-xl"
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  minWidth: 48,
+                  backgroundColor: 'rgba(251, 191, 36, 0.15)',
+                  borderWidth: 1.5,
+                  borderColor: '#fbbf24',
+                }}
               >
-                <Text className="text-[10px] font-bold mr-1.5" style={{ color: '#451a03' }}>LVL</Text>
-                <Text className="text-base font-black" style={{ color: '#451a03' }}>{levelData.level}</Text>
-              </LinearGradient>
+                <Text className="text-base font-black" style={{ color: '#fbbf24' }}>{levelData.level}</Text>
+              </View>
             </Pressable>
           </View>
         </View>
@@ -433,19 +436,20 @@ export default function HomeScreen() {
                 <View className="flex-row items-center justify-between mb-4">
                   {/* Level Badge */}
                   <View className="flex-row items-center gap-4">
-                    <LinearGradient
-                      colors={['#fbbf24', '#f59e0b', '#d97706']}
-                      className="w-14 h-14 rounded-xl items-center justify-center"
+                    <View
+                      className="w-14 h-14 rounded-2xl items-center justify-center"
                       style={{
+                        backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                        borderWidth: 2,
+                        borderColor: '#fbbf24',
                         shadowColor: '#fbbf24',
                         shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.4,
+                        shadowOpacity: 0.3,
                         shadowRadius: 8,
                       }}
                     >
-                      <Text className="text-[9px] font-bold text-amber-900 opacity-80">LVL</Text>
-                      <Text className="text-xl font-black text-amber-900">{levelData.level}</Text>
-                    </LinearGradient>
+                      <Text className="text-3xl font-black" style={{ color: '#fbbf24' }}>{levelData.level}</Text>
+                    </View>
                     <View>
                       <Text className="text-white font-bold text-lg">{t("level")} {levelData.level}</Text>
                       <Text className="text-amber-200/80 text-sm">{totalXP.toLocaleString()} XP {t("totalXP")}</Text>
