@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ConfettiEffect } from "../../../src/components/effects/ConfettiEffect";
 import { useAuth } from "../../../src/contexts/AuthContext";
+import { useTranslation } from "../../../src/contexts/LanguageContext";
 import { MountainProgress } from "../../../src/components/MountainProgress";
 import { CategoryWheel } from "../../../src/components/CategoryWheel";
 import { LimitReachedModal, LimitReachedModalRef } from "../../../src/components/LimitReachedModal";
@@ -44,6 +45,7 @@ type ViewMode = "mountain" | "wheel";
 
 export default function AdventureScreen() {
   const { user, isPremium, isAnonymous, refreshProfile, profile } = useAuth();
+  const { t } = useTranslation();
   const { completedCategory } = useLocalSearchParams<{ completedCategory?: Category }>();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<AdventureProgress | null>(null);
@@ -155,7 +157,7 @@ export default function AdventureScreen() {
       <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
         <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={{ color: COLORS.textMuted }} className="mt-4">
-          Chargement...
+          {t("loading" as any)}
         </Text>
       </SafeAreaView>
     );
@@ -185,10 +187,10 @@ export default function AdventureScreen() {
           />
           <View>
             <Text className="text-white text-xl font-black">
-              {viewMode === "mountain" ? "🏔️ MONTAGNE" : "🎡 TIRAGE"}
+              {viewMode === "mountain" ? t("mountainTitle" as any) : t("wheelTitle" as any)}
             </Text>
             <Text style={{ color: COLORS.textMuted }} className="text-xs">
-              de la Connaissance
+              {t("mountainSubtitle" as any)}
             </Text>
           </View>
         </View>
@@ -211,7 +213,7 @@ export default function AdventureScreen() {
             style={{ backgroundColor: COLORS.goldDim }}
           >
             <Text className="text-lg mr-2">👑</Text>
-            <Text style={{ color: COLORS.gold }}>Illimité</Text>
+            <Text style={{ color: COLORS.gold }}>{t("unlimitedLabel" as any)}</Text>
           </View>
         )}
       </View>
@@ -251,11 +253,11 @@ export default function AdventureScreen() {
                   className="text-xl font-black"
                   style={{ color: COLORS.bg }}
                 >
-                  {canPlayGame || isPremium ? "🎡 LANCER LA ROUE" : "👑 PASSER PREMIUM"}
+                  {canPlayGame || isPremium ? t("spinTheWheel" as any) : t("goPremiumButton" as any)}
                 </Text>
                 {!canPlayGame && !isPremium && (
                   <Text style={{ color: COLORS.bg, opacity: 0.8 }} className="text-sm mt-1">
-                    Pour jouer en illimité
+                    {t("toPlayUnlimited" as any)}
                   </Text>
                 )}
               </Pressable>
@@ -277,10 +279,10 @@ export default function AdventureScreen() {
                   <Text className="text-3xl mr-3">👑</Text>
                   <View className="flex-1">
                     <Text style={{ color: COLORS.gold }} className="font-bold">
-                      Passe Premium
+                      {t("goPremiumCta" as any)}
                     </Text>
                     <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                      Tentatives illimitées chaque jour
+                      {t("unlimitedAttemptsDaily" as any)}
                     </Text>
                   </View>
                   <Icon name="ChevronRight" size={16} color={COLORS.gold} />

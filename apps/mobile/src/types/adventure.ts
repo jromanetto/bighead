@@ -219,20 +219,18 @@ export interface FamilyGameState {
   is_answer_revealed: boolean;
 }
 
-export const AGE_GROUPS: { value: AgeGroup; label: string }[] = [
-  { value: 6, label: '6 ans' },
-  { value: 8, label: '8 ans' },
-  { value: 10, label: '10 ans' },
-  { value: 12, label: '12 ans' },
-  { value: 14, label: '14 ans' },
-  { value: 16, label: '16 ans' },
-  { value: 18, label: '18 ans' },
-  { value: 99, label: 'Adulte' },
+export const AGE_GROUPS: { value: AgeGroup; label: string; labelEn: string }[] = [
+  { value: 8, label: '8 ans', labelEn: '8 years' },
+  { value: 10, label: '10 ans', labelEn: '10 years' },
+  { value: 12, label: '12 ans', labelEn: '12 years' },
+  { value: 14, label: '14 ans', labelEn: '14 years' },
+  { value: 16, label: '16 ans', labelEn: '16 years' },
+  { value: 99, label: 'Adulte', labelEn: 'Adult' },
 ];
 
-export const QUESTION_COUNTS: { value: QuestionCount; label: string }[] = [
-  { value: 10, label: '10' },
-  { value: 20, label: '20' },
-  { value: 30, label: '30' },
-  { value: 'unlimited', label: 'Illimité' },
+export const QUESTION_COUNTS: { value: QuestionCount; label: string; labelEn: string }[] = [
+  { value: 10, label: '10', labelEn: '10' },
+  { value: 20, label: '20', labelEn: '20' },
+  { value: 30, label: '30', labelEn: '30' },
+  { value: 'unlimited', label: 'Illimité', labelEn: 'Unlimited' },
 ];

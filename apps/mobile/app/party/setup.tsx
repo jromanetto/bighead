@@ -255,9 +255,9 @@ export default function PartySetupScreen() {
               colors={canPlayGame || isPremium ? ['#7c3aed', '#a855f7'] : ['#fbbf24', '#f59e0b']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="py-4 items-center"
+              style={{ paddingVertical: 18, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Text className="text-white text-xl font-bold">
+              <Text className="text-white text-xl font-bold text-center">
                 {canPlayGame || isPremium ? `${t("startGame")} 🎮` : "👑 Premium"}
               </Text>
             </LinearGradient>

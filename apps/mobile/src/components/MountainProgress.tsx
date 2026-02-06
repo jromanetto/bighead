@@ -1,5 +1,6 @@
 import { View, Text, Dimensions, Platform, Image } from "react-native";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "../contexts/LanguageContext";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -220,6 +221,7 @@ function MountainProgressFallback({
   username,
   justCompletedCategory,
 }: MountainProgressProps) {
+  const { t, language } = useTranslation();
   const currentLevel = getCurrentLevelNumber(tier, level);
   const tierInfo = getTierInfo(tier);
   const difficulty = getLevelDifficulty(level);
@@ -476,13 +478,13 @@ function MountainProgressFallback({
         </View>
         <View className="flex-row justify-between mt-2">
           <Text style={{ color: COLORS.textMuted, fontSize: 10 }}>
-            Facile
+            {t("difficultyEasy" as any)}
           </Text>
           <Text style={{ color: COLORS.primary, fontSize: 10, fontWeight: "600" }}>
-            {completedCategories.length}/{totalCategories} catégories
+            {completedCategories.length}/{totalCategories} {t("categories" as any)}
           </Text>
           <Text style={{ color: COLORS.textMuted, fontSize: 10 }}>
-            Difficile
+            {t("difficultyHard" as any)}
           </Text>
         </View>
       </View>
@@ -508,11 +510,11 @@ function MountainProgressFallback({
         >
           <Text style={{ fontSize: 24, marginRight: 8 }}>{tierInfo.icon}</Text>
           <Text style={{ color: COLORS.text, fontSize: 18, fontWeight: "800" }}>
-            {tierInfo.nameFr}
+            {language === "fr" ? tierInfo.nameFr : tierInfo.name}
           </Text>
         </View>
         <Text style={{ color: COLORS.textMuted, marginTop: 8, fontSize: 12 }}>
-          {completedCategories.length}/{totalCategories} catégories • Niveau {currentLevel}/24
+          {completedCategories.length}/{totalCategories} {t("categories" as any)} • {t("levelLabel" as any)} {currentLevel}/24
         </Text>
       </View>
     </View>
@@ -622,6 +624,7 @@ if (Platform.OS !== "web") {
     username,
     justCompletedCategory,
   }: MountainProgressProps) {
+    const { t, language } = useTranslation();
     const currentLevel = getCurrentLevelNumber(tier, level);
     const tierInfo = getTierInfo(tier);
     const difficulty = getLevelDifficulty(level);
@@ -1054,7 +1057,7 @@ if (Platform.OS !== "web") {
                       marginTop: 4,
                     }}
                   >
-                    {diff === "easy" ? "Facile" : diff === "medium" ? "Moyen" : "Difficile"}
+                    {diff === "easy" ? t("difficultyEasy" as any) : diff === "medium" ? t("difficultyMedium" as any) : t("difficultyHard" as any)}
                   </Text>
                 </View>
               );
@@ -1077,10 +1080,10 @@ if (Platform.OS !== "web") {
             }}
           >
             <Text className="text-2xl mr-2">{tierInfo.icon}</Text>
-            <Text className="text-white text-lg font-black">{tierInfo.nameFr}</Text>
+            <Text className="text-white text-lg font-black">{language === "fr" ? tierInfo.nameFr : tierInfo.name}</Text>
           </View>
           <Text style={{ color: COLORS.textMuted }} className="mt-2 text-sm">
-            {completedCategories.length}/{totalCategories} catégories • Niveau {currentLevel}/24
+            {completedCategories.length}/{totalCategories} {t("categories" as any)} • {t("levelLabel" as any)} {currentLevel}/24
           </Text>
         </View>
       </View>

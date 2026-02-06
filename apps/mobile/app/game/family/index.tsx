@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef, useCallback } from "react";
 import { buttonPressFeedback } from "../../../src/utils/feedback";
 import { useAuth } from "../../../src/contexts/AuthContext";
+import { useTranslation } from "../../../src/contexts/LanguageContext";
 import { LimitReachedModal, LimitReachedModalRef } from "../../../src/components/LimitReachedModal";
 import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../../src/services/dailyLimits";
 import {
@@ -28,6 +29,7 @@ const COLORS = {
 
 export default function FamilyConfigScreen() {
   const { isPremium } = useAuth();
+  const { t, language } = useTranslation();
   const [selectedAge, setSelectedAge] = useState<AgeGroup>(12);
   const [selectedCount, setSelectedCount] = useState<QuestionCount>(20);
   const [selectedCategory, setSelectedCategory] = useState<Category | "mix">("mix");
@@ -78,9 +80,9 @@ export default function FamilyConfigScreen() {
             style={{ marginRight: 12 }}
           />
           <View>
-            <Text className="text-white text-2xl font-black">👨‍👩‍👧‍👦 MODE FAMILLE</Text>
+            <Text className="text-white text-2xl font-black">👨‍👩‍👧‍👦 {t("familyMode" as any)}</Text>
             <Text style={{ color: COLORS.textMuted }} className="text-xs">
-              Quiz à voix haute en groupe
+              {t("familyModeSubtitle" as any)}
             </Text>
           </View>
         </View>
@@ -102,7 +104,7 @@ export default function FamilyConfigScreen() {
             style={{ backgroundColor: "rgba(255, 209, 0, 0.15)" }}
           >
             <Text className="text-lg mr-2">👑</Text>
-            <Text style={{ color: "#FFD700" }}>Illimité</Text>
+            <Text style={{ color: "#FFD700" }}>{t("unlimitedLabel" as any)}</Text>
           </View>
         )}
       </View>
@@ -114,9 +116,9 @@ export default function FamilyConfigScreen() {
       >
         {/* Age Selection */}
         <View className="mb-8">
-          <Text className="text-white font-bold mb-3">Âge minimum des joueurs</Text>
+          <Text className="text-white font-bold mb-3">{t("minAgeLabel" as any)}</Text>
           <Text style={{ color: COLORS.textMuted }} className="text-sm mb-4">
-            Les questions seront adaptées à cet âge
+            {t("ageAdapted" as any)}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             {AGE_GROUPS.map((age) => (
@@ -143,7 +145,7 @@ export default function FamilyConfigScreen() {
                     color: selectedAge === age.value ? COLORS.bg : COLORS.text,
                   }}
                 >
-                  {age.label}
+                  {language === "fr" ? age.label : age.labelEn}
                 </Text>
               </Pressable>
             ))}
@@ -152,7 +154,7 @@ export default function FamilyConfigScreen() {
 
         {/* Question Count */}
         <View className="mb-8">
-          <Text className="text-white font-bold mb-3">Nombre de questions</Text>
+          <Text className="text-white font-bold mb-3">{t("questionCountLabel" as any)}</Text>
           <View className="flex-row gap-2">
             {QUESTION_COUNTS.map((count) => (
               <Pressable
@@ -178,7 +180,7 @@ export default function FamilyConfigScreen() {
                     color: selectedCount === count.value ? COLORS.bg : COLORS.text,
                   }}
                 >
-                  {count.label}
+                  {language === "fr" ? count.label : count.labelEn}
                 </Text>
               </Pressable>
             ))}
@@ -187,7 +189,7 @@ export default function FamilyConfigScreen() {
 
         {/* Category Selection */}
         <View className="mb-8">
-          <Text className="text-white font-bold mb-3">Catégorie</Text>
+          <Text className="text-white font-bold mb-3">{t("categoryLabel" as any)}</Text>
 
           {/* Mix Option - Featured */}
           <Pressable
@@ -213,9 +215,9 @@ export default function FamilyConfigScreen() {
               <Text className="text-3xl">🎲</Text>
             </View>
             <View className="flex-1">
-              <Text className="text-white font-bold text-lg">Mix de tout</Text>
+              <Text className="text-white font-bold text-lg">{t("mixAll" as any)}</Text>
               <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                Recommandé - Questions variées
+                {t("mixRecommended" as any)}
               </Text>
             </View>
             {selectedCategory === "mix" && (
@@ -270,7 +272,7 @@ export default function FamilyConfigScreen() {
                     color: selectedCategory === cat.code ? cat.color : COLORS.text,
                   }}
                 >
-                  {cat.nameFr}
+                  {language === "fr" ? cat.nameFr : cat.name}
                 </Text>
               </Pressable>
             ))}
@@ -286,30 +288,30 @@ export default function FamilyConfigScreen() {
             borderColor: "rgba(255,255,255,0.05)",
           }}
         >
-          <Text className="text-white font-bold mb-2">Comment jouer ?</Text>
+          <Text className="text-white font-bold mb-2">{t("howToPlayFamily" as any)}</Text>
           <View className="gap-2">
             <View className="flex-row items-start">
               <Text style={{ color: COLORS.primary }} className="mr-2">1.</Text>
               <Text style={{ color: COLORS.textMuted }}>
-                Le narrateur lit la question à voix haute
+                {t("familyStep1" as any)}
               </Text>
             </View>
             <View className="flex-row items-start">
               <Text style={{ color: COLORS.primary }} className="mr-2">2.</Text>
               <Text style={{ color: COLORS.textMuted }}>
-                Les autres joueurs répondent oralement
+                {t("familyStep2" as any)}
               </Text>
             </View>
             <View className="flex-row items-start">
               <Text style={{ color: COLORS.primary }} className="mr-2">3.</Text>
               <Text style={{ color: COLORS.textMuted }}>
-                Tap pour révéler la réponse
+                {t("familyStep3" as any)}
               </Text>
             </View>
             <View className="flex-row items-start">
               <Text style={{ color: COLORS.primary }} className="mr-2">4.</Text>
               <Text style={{ color: COLORS.textMuted }}>
-                Comptez les bonnes réponses du groupe !
+                {t("familyStep4" as any)}
               </Text>
             </View>
           </View>
@@ -324,7 +326,7 @@ export default function FamilyConfigScreen() {
           style={{ backgroundColor: canPlayGame || isPremium ? COLORS.primary : "#FFD700" }}
         >
           <Text className="text-xl font-black" style={{ color: COLORS.bg }}>
-            {canPlayGame || isPremium ? "🎉 C'EST PARTI !" : "👑 PASSER PREMIUM"}
+            {canPlayGame || isPremium ? t("letsGo" as any) : t("goPremiumButton" as any)}
           </Text>
         </Pressable>
       </View>

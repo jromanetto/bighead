@@ -1,9 +1,10 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Alert } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { useGameStore } from "../../src/stores/gameStore";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 import { recordPlay } from "../../src/services/dailyLimits";
 import {
   getQuestions,
@@ -11,6 +12,21 @@ import {
 } from "../../src/services/questions";
 import { getSettings } from "../../src/services/settings";
 import { playSound } from "../../src/services/sounds";
+import { IconButton } from "../../src/components/ui";
+
+// Design colors (same as other screens)
+const COLORS = {
+  bg: "#161a1d",
+  surface: "#1E2529",
+  surfaceLight: "#252e33",
+  purple: "#7c3aed",
+  purpleDim: "rgba(124, 58, 237, 0.15)",
+  primary: "#00c2cc",
+  success: "#22c55e",
+  error: "#ef4444",
+  text: "#ffffff",
+  textMuted: "#9ca3af",
+};
 
 export default function PartyGameScreen() {
   const { players: playersParam, questionCount: questionCountParam } =
@@ -19,6 +35,7 @@ export default function PartyGameScreen() {
       questionCount: string;
     }>();
   const { isPremium } = useAuth();
+  const { t } = useTranslation();
 
   const players: string[] = playersParam
     ? JSON.parse(playersParam)
@@ -214,13 +231,24 @@ export default function PartyGameScreen() {
   // Sort players by score for mini leaderboard
   const sortedPlayers = [...allPlayers].sort((a, b) => b.score - a.score);
 
+  const confirmExit = () => {
+    Alert.alert(
+      t("exitGame"),
+      t("exitGameConfirm"),
+      [
+        { text: t("cancel"), style: "cancel" },
+        { text: t("exit"), style: "destructive", onPress: handleExit },
+      ]
+    );
+  };
+
   // Loading state
   if (status === "idle" || (status === "loading" && !currentPlayer)) {
     return (
-      <SafeAreaView className="flex-1 bg-accent-600 items-center justify-center">
-        <ActivityIndicator size="large" color="#ffffff" />
-        <Text className="text-white mt-4 text-lg">
-          Loading questions...
+      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
+        <ActivityIndicator size="large" color={COLORS.purple} />
+        <Text className="mt-4 text-lg" style={{ color: COLORS.textMuted }}>
+          {t("loadingQuestions")}
         </Text>
       </SafeAreaView>
     );
@@ -229,41 +257,53 @@ export default function PartyGameScreen() {
   // Waiting screen - show who's turn it is
   if (waitingForPlayer) {
     return (
-      <SafeAreaView className="flex-1 bg-accent-600">
-        <View className="flex-1 items-center justify-center px-6">
-          {/* Progress */}
-          <Text className="text-white/60 text-lg mb-2">
-            Question {progress.current}/{progress.total}
-          </Text>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        {/* Header with exit button */}
+        <View className="flex-row items-center justify-between px-5 pt-4">
+          <IconButton
+            name="X"
+            onPress={confirmExit}
+            variant="glass"
+            size={40}
+          />
+          <View className="px-3 py-1.5 rounded-full" style={{ backgroundColor: COLORS.surface }}>
+            <Text style={{ color: COLORS.purple }}>
+              {progress.current}/{progress.total}
+            </Text>
+          </View>
+          <View style={{ width: 40 }} />
+        </View>
 
+        <View className="flex-1 items-center justify-center px-6">
           {/* Hand off message */}
-          <Text className="text-white text-xl mb-2">Pass the phone to</Text>
-          <Text className="text-white text-5xl font-bold mb-8">
+          <Text className="text-lg mb-2" style={{ color: COLORS.textMuted }}>
+            {t("passPhoneTo")}
+          </Text>
+          <Text className="text-5xl font-bold mb-8" style={{ color: COLORS.text }}>
             {currentPlayer?.name || players[currentPlayerIndex]}
           </Text>
 
           {/* Mini scoreboard */}
-          <View className="bg-white/10 rounded-xl p-4 w-full mb-8">
-            <Text className="text-white/60 text-sm text-center mb-3">
-              Leaderboard
+          <View className="rounded-2xl p-4 w-full mb-8" style={{ backgroundColor: COLORS.surface }}>
+            <Text className="text-sm text-center mb-3" style={{ color: COLORS.textMuted }}>
+              {t("leaderboard")}
             </Text>
             {sortedPlayers.slice(0, 4).map((player, index) => (
               <View
                 key={player.name}
-                className={`flex-row justify-between items-center py-2 ${
-                  player.name === currentPlayer?.name
-                    ? "bg-white/10 rounded-lg px-2 -mx-2"
-                    : ""
-                }`}
+                className="flex-row justify-between items-center py-2 px-2 rounded-lg mb-1"
+                style={{
+                  backgroundColor: player.name === currentPlayer?.name ? COLORS.purpleDim : 'transparent',
+                }}
               >
                 <View className="flex-row items-center">
-                  <Text className="text-white/60 w-6">{index + 1}.</Text>
-                  <Text className="text-white font-medium">{player.name}</Text>
+                  <Text className="w-6" style={{ color: COLORS.textMuted }}>{index + 1}.</Text>
+                  <Text className="font-medium" style={{ color: COLORS.text }}>{player.name}</Text>
                   {player.name === currentPlayer?.name && (
-                    <Text className="text-white/60 ml-2">←</Text>
+                    <Text className="ml-2" style={{ color: COLORS.purple }}>←</Text>
                   )}
                 </View>
-                <Text className="text-white font-bold">{player.score}</Text>
+                <Text className="font-bold" style={{ color: COLORS.text }}>{player.score}</Text>
               </View>
             ))}
           </View>
@@ -271,16 +311,12 @@ export default function PartyGameScreen() {
           {/* Ready button */}
           <Pressable
             onPress={handleReady}
-            className="bg-white rounded-2xl py-4 px-16 active:opacity-80"
+            className="rounded-2xl py-4 px-16 active:opacity-80"
+            style={{ backgroundColor: COLORS.purple }}
           >
-            <Text className="text-accent-600 text-xl font-bold">
-              I'm ready!
+            <Text className="text-xl font-bold" style={{ color: COLORS.text }}>
+              {t("imReady")}
             </Text>
-          </Pressable>
-
-          {/* Exit button */}
-          <Pressable onPress={handleExit} className="mt-6 p-2">
-            <Text className="text-white/60">Exit game</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -290,48 +326,60 @@ export default function PartyGameScreen() {
   // Question screen
   if (!currentQuestion) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center">
-        <ActivityIndicator size="large" color="#0ea5e9" />
+      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
+        <ActivityIndicator size="large" color={COLORS.purple} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <View className="flex-1 px-6 pt-4">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      <View className="flex-1 px-5 pt-4">
         {/* Header */}
         <View className="flex-row justify-between items-center mb-4">
           <View className="flex-row items-center">
-            <View className="w-10 h-10 rounded-full bg-accent-500 items-center justify-center mr-3">
-              <Text className="text-white font-bold">
+            <IconButton
+              name="X"
+              onPress={confirmExit}
+              variant="glass"
+              size={40}
+              style={{ marginRight: 12 }}
+            />
+            <View
+              className="w-10 h-10 rounded-full items-center justify-center mr-3"
+              style={{ backgroundColor: COLORS.purple }}
+            >
+              <Text className="font-bold" style={{ color: COLORS.text }}>
                 {currentPlayer?.name.charAt(0).toUpperCase()}
               </Text>
             </View>
             <View>
-              <Text className="text-accent-400 text-lg font-bold">
+              <Text className="text-lg font-bold" style={{ color: COLORS.purple }}>
                 {currentPlayer?.name}
               </Text>
-              <Text className="text-gray-400 text-sm">
+              <Text className="text-sm" style={{ color: COLORS.textMuted }}>
                 {currentPlayer?.score || 0} pts
               </Text>
             </View>
           </View>
-          <Text className="text-gray-400">
-            {progress.current}/{progress.total}
-          </Text>
+          <View className="px-3 py-1.5 rounded-full" style={{ backgroundColor: COLORS.surface }}>
+            <Text style={{ color: COLORS.textMuted }}>
+              {progress.current}/{progress.total}
+            </Text>
+          </View>
         </View>
 
         {/* Progress bar */}
-        <View className="h-2 bg-gray-700 rounded-full mb-6 overflow-hidden">
+        <View className="h-2 rounded-full mb-6 overflow-hidden" style={{ backgroundColor: COLORS.surface }}>
           <View
-            className="h-full bg-accent-500 rounded-full"
-            style={{ width: `${progress.percentage}%` }}
+            className="h-full rounded-full"
+            style={{ width: `${progress.percentage}%`, backgroundColor: COLORS.purple }}
           />
         </View>
 
         {/* Question */}
-        <View className="bg-gray-800 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-xl text-center leading-7">
+        <View className="rounded-2xl p-6 mb-6" style={{ backgroundColor: COLORS.surface }}>
+          <Text className="text-xl text-center leading-7" style={{ color: COLORS.text }}>
             {currentQuestion.question}
           </Text>
         </View>
@@ -339,19 +387,19 @@ export default function PartyGameScreen() {
         {/* Answers */}
         <View className="gap-3">
           {currentQuestion.answers.map((answer, index) => {
-            let bgColor = "bg-gray-700";
-            let borderColor = "border-transparent";
+            let bgColor = COLORS.surfaceLight;
+            let borderColor = 'transparent';
 
             if (hasAnswered) {
               if (index === currentQuestion.correctIndex) {
-                bgColor = "bg-green-600";
-                borderColor = "border-green-400";
+                bgColor = 'rgba(34, 197, 94, 0.2)';
+                borderColor = COLORS.success;
               } else if (
                 lastAnswer?.selectedAnswer === answer &&
                 index !== currentQuestion.correctIndex
               ) {
-                bgColor = "bg-red-600";
-                borderColor = "border-red-400";
+                bgColor = 'rgba(239, 68, 68, 0.2)';
+                borderColor = COLORS.error;
               }
             }
 
@@ -359,10 +407,15 @@ export default function PartyGameScreen() {
               <Pressable
                 key={index}
                 onPress={() => handleAnswer(index)}
-                className={`${bgColor} border-2 ${borderColor} rounded-xl py-4 px-6 active:opacity-80`}
+                className="rounded-xl py-4 px-6 active:opacity-80"
+                style={{
+                  backgroundColor: bgColor,
+                  borderWidth: 2,
+                  borderColor: borderColor,
+                }}
                 disabled={hasAnswered}
               >
-                <Text className="text-white text-lg text-center">{answer}</Text>
+                <Text className="text-lg text-center" style={{ color: COLORS.text }}>{answer}</Text>
               </Pressable>
             );
           })}
@@ -373,30 +426,31 @@ export default function PartyGameScreen() {
           <View className="mt-6">
             {/* Feedback */}
             <View
-              className={`rounded-xl py-3 px-4 mb-4 ${
-                lastAnswer.isCorrect ? "bg-green-900/50" : "bg-red-900/50"
-              }`}
+              className="rounded-xl py-3 px-4 mb-4"
+              style={{
+                backgroundColor: lastAnswer.isCorrect ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+              }}
             >
               <Text
-                className={`text-center font-bold text-lg ${
-                  lastAnswer.isCorrect ? "text-green-400" : "text-red-400"
-                }`}
+                className="text-center font-bold text-lg"
+                style={{ color: lastAnswer.isCorrect ? COLORS.success : COLORS.error }}
               >
                 {lastAnswer.isCorrect
-                  ? `Well done ${currentPlayer?.name}! +${lastAnswer.pointsEarned} pts`
-                  : `Missed ${currentPlayer?.name}!`}
+                  ? `${t("wellDone")} ${currentPlayer?.name}! +${lastAnswer.pointsEarned} pts`
+                  : `${t("missed")} ${currentPlayer?.name}!`}
               </Text>
             </View>
 
             {/* Next button */}
             <Pressable
               onPress={handleNextTurn}
-              className="bg-accent-500 rounded-xl py-4 px-6 active:opacity-80"
+              className="rounded-xl py-4 px-6 active:opacity-80"
+              style={{ backgroundColor: COLORS.purple }}
             >
-              <Text className="text-white text-lg text-center font-bold">
+              <Text className="text-lg text-center font-bold" style={{ color: COLORS.text }}>
                 {progress.current >= progress.total
-                  ? "View results"
-                  : "Next player"}
+                  ? t("viewResults")
+                  : t("nextPlayer")}
               </Text>
             </Pressable>
           </View>

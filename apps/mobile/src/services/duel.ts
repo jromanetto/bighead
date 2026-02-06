@@ -37,12 +37,14 @@ export interface DuelQuestion {
 export const createDuel = async (
   hostId: string,
   category: string = "general",
-  rounds: number = 5
+  rounds: number = 5,
+  language: string = "fr"
 ): Promise<{ duelId: string; code: string }> => {
   const { data, error } = await supabase.rpc("create_duel", {
     p_host_id: hostId,
     p_category: category,
     p_rounds: rounds,
+    p_language: language,
   } as any);
 
   if (error) throw error;

@@ -1,8 +1,13 @@
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Linking } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+
+const LEGAL_URLS = {
+  privacy: "https://bighead.jrmanagement.org/privacy.html",
+  terms: "https://bighead.jrmanagement.org/terms.html",
+};
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTranslation } from "../src/contexts/LanguageContext";
 import {
@@ -343,12 +348,12 @@ export default function PremiumScreen() {
           </View>
 
           <Text className="text-3xl font-black mb-2" style={{ color: COLORS.gold }}>
-            {justPurchased ? "🎉 Bienvenue Premium!" : "Tu es Premium!"}
+            {justPurchased ? t("welcomePremium" as any) : t("youArePremium" as any)}
           </Text>
           <Text style={{ color: COLORS.textMuted }} className="text-center mb-8 px-4">
             {justPurchased
-              ? "Félicitations ! Tu as débloqué toutes les fonctionnalités premium !"
-              : "Profite de toutes les fonctionnalités premium !"}
+              ? t("congratsPremium" as any)
+              : t("enjoyPremium" as any)}
           </Text>
 
           {/* Features unlocked */}
@@ -388,7 +393,7 @@ export default function PremiumScreen() {
             }}
           >
             <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
-              Continuer à jouer
+              {t("continueToPlay" as any)}
             </Text>
           </Pressable>
         </View>
@@ -453,7 +458,7 @@ export default function PremiumScreen() {
               PREMIUM
             </Text>
             <Text className="text-center" style={{ color: 'rgba(0,0,0,0.6)' }}>
-              Unlock the full potential of your brain
+              {t("unlockBrainPotential" as any)}
             </Text>
           </LinearGradient>
         </View>
@@ -563,7 +568,7 @@ export default function PremiumScreen() {
         {/* Plans */}
         <View className="px-5 mb-6">
           <Text className="text-white font-bold text-lg mb-4 uppercase tracking-wide">
-            Choose your plan
+            {t("chooseYourPlan" as any)}
           </Text>
           <View style={{ gap: 12 }}>
             {packages.map((pkg) => {
@@ -680,7 +685,7 @@ export default function PremiumScreen() {
               <ActivityIndicator color={COLORS.bg} />
             ) : (
               <Text className="text-center font-black text-lg" style={{ color: COLORS.bg }}>
-                Subscribe Now
+                {t("subscribeNow" as any)}
               </Text>
             )}
           </Pressable>
@@ -690,18 +695,39 @@ export default function PremiumScreen() {
             style={{ paddingVertical: 12 }}
           >
             <Text className="text-center font-medium" style={{ color: COLORS.textMuted }}>
-              Restore Purchases
+              {t("restorePurchases" as any)}
             </Text>
           </Pressable>
 
-          {/* Terms */}
-          <Text
-            className="text-center text-xs mt-4 px-4"
-            style={{ color: COLORS.textMuted, opacity: 0.7 }}
-          >
-            By subscribing, you agree to our Terms of Service and Privacy Policy.
-            Subscriptions auto-renew unless canceled 24h before the end of the period.
-          </Text>
+          {/* Terms & Privacy - Required by Apple */}
+          <View className="mt-4 px-4">
+            <Text
+              className="text-center text-xs"
+              style={{ color: COLORS.textMuted, opacity: 0.7 }}
+            >
+              {t("termsAgreement" as any)}{" "}
+              <Text
+                style={{ color: COLORS.primary, textDecorationLine: "underline" }}
+                onPress={() => Linking.openURL(LEGAL_URLS.terms)}
+              >
+                {t("termsOfService" as any)}
+              </Text>
+              {" "}{t("and" as any)}{" "}
+              <Text
+                style={{ color: COLORS.primary, textDecorationLine: "underline" }}
+                onPress={() => Linking.openURL(LEGAL_URLS.privacy)}
+              >
+                {t("privacyPolicy" as any)}
+              </Text>
+              .
+            </Text>
+            <Text
+              className="text-center text-xs mt-2"
+              style={{ color: COLORS.textMuted, opacity: 0.7 }}
+            >
+              {t("subscriptionAutoRenew" as any)}
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

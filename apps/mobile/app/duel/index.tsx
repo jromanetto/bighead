@@ -3,6 +3,7 @@ import { router, Link, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef, useCallback } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 import { createDuel, joinDuel } from "../../src/services/duel";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { BottomNavigation } from "../../src/components/BottomNavigation";
@@ -38,6 +39,7 @@ const DUEL_CATEGORIES = [
 
 export default function DuelLobbyScreen() {
   const { user, isPremium } = useAuth();
+  const { language } = useTranslation();
   const [joinCode, setJoinCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +78,7 @@ export default function DuelLobbyScreen() {
     setLoading(true);
     setError(null);
     try {
-      const { duelId, code } = await createDuel(user.id, selectedCategory.id);
+      const { duelId, code } = await createDuel(user.id, selectedCategory.id, 5, language);
       router.push(`/duel/waiting?id=${duelId}&code=${code}`);
     } catch (e) {
       console.error("Error creating duel:", e);

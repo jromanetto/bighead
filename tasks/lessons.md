@@ -62,3 +62,89 @@ function TabBarIcon({ focused }) {
 
 ### Note additionnelle
 Éviter `className` sur `Animated.Text` avec NativeWind 4.x - utiliser `style` directement pour les composants animés.
+
+---
+
+## 2026-02-03: Système i18n BigHead
+
+### Architecture
+```
+src/i18n/translations.ts     - Toutes les traductions EN/FR
+src/contexts/LanguageContext.tsx - Provider + hooks
+```
+
+### Usage dans un component
+```tsx
+import { useTranslation } from "../src/contexts/LanguageContext";
+
+export default function MyScreen() {
+  const { t } = useTranslation();
+
+  return <Text>{t("keyName")}</Text>;
+}
+```
+
+### Pour un sous-component sans hook
+Passer `t` en prop :
+```tsx
+function SubComponent({ t }: { t: (key: TranslationKey) => string }) {
+  return <Text>{t("locked")}</Text>;
+}
+
+// Dans le parent:
+import type { TranslationKey } from "../src/i18n/translations";
+<SubComponent t={t} />
+```
+
+### Règles
+- Langue par défaut : FR
+- Fallback : EN si clé manquante, puis la clé elle-même
+- Persistance : Supabase user settings
+- Changement : `setLanguage("en")` ou `setLanguage("fr")`
+
+### Screens traduits
+- Homepage (`app/(tabs)/index.tsx`)
+- Achievements (`app/achievements.tsx`)
+- Party Setup (`app/party/setup.tsx`)
+- Invite (`app/invite.tsx`)
+- Settings (`app/(tabs)/settings.tsx`)
+
+---
+
+## 2026-02-03: Calcul de niveau XP
+
+### Formule
+```typescript
+// XP requis pour atteindre le niveau N
+const getXPForLevel = (level: number): number => {
+  return Math.floor(100 * Math.pow(1.5, level - 1));
+};
+
+// Calcul niveau depuis XP total
+const calculateLevel = (totalXP: number) => {
+  let level = 1;
+  let xpRemaining = totalXP;
+
+  while (xpRemaining >= getXPForLevel(level)) {
+    xpRemaining -= getXPForLevel(level);
+    level++;
+  }
+
+  const nextLevelXP = getXPForLevel(level);
+  const progress = (xpRemaining / nextLevelXP) * 100;
+
+  return { level, currentXP: xpRemaining, nextLevelXP, progress };
+};
+```
+
+### Table XP par niveau
+- Level 1: 100 XP
+- Level 2: 150 XP
+- Level 3: 225 XP
+- Level 4: 337 XP
+- Level 5: 506 XP
+- ...
+
+### Source de l'XP
+- `profile.total_xp` dans Supabase
+- Gagné via achievements (xp_reward de chaque achievement)
