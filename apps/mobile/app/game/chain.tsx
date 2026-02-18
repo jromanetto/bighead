@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, Image, ScrollView } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -24,6 +24,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import { Icon } from "../../src/components/ui";
+import { QuestionImage } from "../../src/components/QuestionImage";
 
 // New QuizNext design colors
 const COLORS = {
@@ -272,8 +273,6 @@ export default function ChainGameScreen() {
   const [limitChecked, setLimitChecked] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [level, setLevel] = useState(1);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
   // Lifelines state
   const [used50_50, setUsed50_50] = useState(false);
   const [usedSkip, setUsedSkip] = useState(false);
@@ -644,21 +643,15 @@ export default function ChainGameScreen() {
             >
               {/* Question Image (if available) */}
               {currentQuestion.imageUrl && (
-                <View style={{ position: 'relative' }}>
-                  <Image
-                    source={{ uri: currentQuestion.imageUrl }}
-                    style={{ width: '100%', height: 160 }}
-                    resizeMode="cover"
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(false)}
-                  />
-                  {/* Image credit overlay */}
-                  {currentQuestion.imageCredit && (
-                    <View style={{ position: 'absolute', bottom: 0, right: 0, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: 'rgba(0,0,0,0.6)' }}>
-                      <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)' }}>{currentQuestion.imageCredit}</Text>
-                    </View>
-                  )}
-                </View>
+                <QuestionImage
+                  uri={currentQuestion.imageUrl}
+                  style={{ width: '100%', height: 160 }}
+                  credit={currentQuestion.imageCredit}
+                  onImageBroken={() => {
+                    // Skip this question - load next one without penalty
+                    useGameStore.getState().nextQuestion();
+                  }}
+                />
               )}
 
               <View className="p-6">

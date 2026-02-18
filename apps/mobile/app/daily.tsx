@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, ScrollView, Image } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -29,6 +29,7 @@ import { getSettings } from "../src/services/settings";
 import { IconButton } from "../src/components/ui";
 import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
 import { RatingModal } from "../src/components/RatingModal";
+import { QuestionImage } from "../src/components/QuestionImage";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -780,11 +781,9 @@ export default function DailyBrainScreen() {
                 {/* Question Image (for logo questions) */}
                 {currentQuestion.image_url && (
                   <View className="mt-4 items-center">
-                    <Image
-                      source={{ uri: currentQuestion.image_url }}
-                      className="rounded-xl"
-                      style={{ width: 200, height: 150 }}
-                      resizeMode="contain"
+                    <QuestionImage
+                      uri={currentQuestion.image_url}
+                      style={{ width: 200, height: 150, borderRadius: 12 }}
                     />
                   </View>
                 )}
