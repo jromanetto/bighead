@@ -220,34 +220,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       if (token) {
         setExpoPushToken(token);
 
-        // Auto-schedule daily reminder if permissions are granted
-        // This ensures the notification is always programmed even after app updates
-        try {
-          const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-          const hasDailyReminder = scheduled.some(
-            (n) => n.content.data?.type === "daily_reminder"
-          );
-          if (!hasDailyReminder) {
-            console.log("Auto-scheduling daily reminder notification...");
-            await Notifications.scheduleNotificationAsync({
-              content: {
-                title: "🧠 Daily Brain",
-                body: "Ta question du jour t'attend ! Viens tester tes connaissances.",
-                sound: true,
-                data: { type: "daily_reminder", screen: "/daily" },
-              },
-              trigger: {
-                type: Notifications.SchedulableTriggerInputTypes.DAILY,
-                hour: 9,
-                minute: 0,
-                channelId: Platform.OS === "android" ? "reminders" : undefined,
-              },
-            });
-            console.log("Daily reminder scheduled for 9:00 AM");
-          }
-        } catch (e) {
-          console.error("Error auto-scheduling daily reminder:", e);
-        }
+        // Daily reminder is now handled by server-side push notifications
+        // (sends the real daily question). No need to auto-schedule a generic
+        // local notification here. scheduleDailyReminder() remains available
+        // if the user explicitly enables it from settings.
       }
       setIsInitialized(true);
     };

@@ -1,7 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { getLocales } from "expo-localization";
 import { translations, TranslationKey, Language } from "../i18n/translations";
 import { getSettings, saveSettings } from "../services/settings";
 import { useAuth } from "./AuthContext";
+
+function getDeviceLanguage(): Language {
+  const deviceLang = getLocales()[0]?.languageCode;
+  return deviceLang === "fr" ? "fr" : "en";
+}
 
 interface LanguageContextType {
   language: Language;
@@ -13,7 +19,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [language, setLanguageState] = useState<Language>("fr");
+  const [language, setLanguageState] = useState<Language>(getDeviceLanguage());
 
   useEffect(() => {
     loadLanguage();
