@@ -9,6 +9,7 @@ import { ConfettiEffect } from "../../src/components/effects";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { useRatingPrompt } from "../../src/hooks/useRatingPrompt";
 import { RatingModal } from "../../src/components/RatingModal";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 
 // New QuizNext design colors
 const COLORS = {
@@ -79,6 +80,7 @@ function QuestionSummaryItem({
   isCorrect: boolean;
   correctAnswer?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <View
       className="rounded-xl p-4 flex-row items-start gap-3"
@@ -107,7 +109,7 @@ function QuestionSummaryItem({
         </Text>
         {!isCorrect && correctAnswer && (
           <Text className="text-gray-500 text-xs mt-0.5">
-            Correct: {correctAnswer}
+            {t("correctLabel" as any)}: {correctAnswer}
           </Text>
         )}
       </View>
@@ -139,6 +141,7 @@ export default function ResultScreen() {
     : [];
 
   const { user, refreshProfile } = useAuth();
+  const { t } = useTranslation();
   const [saved, setSaved] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const { showRatingModal, closeRatingModal, checkAndShowRating } = useRatingPrompt();
@@ -236,7 +239,7 @@ export default function ResultScreen() {
         </Pressable>
 
         <Text className="flex-1 text-center text-sm font-bold tracking-widest text-gray-400 uppercase">
-          Results
+          {t("results" as any)}
         </Text>
 
         <View className="w-10" />
@@ -249,9 +252,8 @@ export default function ResultScreen() {
       >
         {/* Title */}
         <View className="items-center mt-4 mb-6">
-          <Text className="text-4xl font-black">
-            <Text style={{ color: COLORS.text }}>Stellar </Text>
-            <Text style={{ color: COLORS.primary }}>Job!</Text>
+          <Text className="text-4xl font-black" style={{ color: COLORS.primary }}>
+            {t("stellarJob" as any)}
           </Text>
         </View>
 
@@ -273,11 +275,11 @@ export default function ResultScreen() {
             style={{ backgroundColor: COLORS.surfaceActive }}
           >
             <Text className="mr-2" style={{ color: COLORS.yellow }}>⚡</Text>
-            <Text className="font-bold text-white">+{xpEarned} XP Earned</Text>
+            <Text className="font-bold text-white">{`+${xpEarned} ${t("xpEarned" as any)}`}</Text>
           </View>
 
           <Text className="text-gray-400 text-sm mt-3">
-            You answered {correctNum} out of {totalNum} correctly
+            {t("answeredCorrectly" as any).replace("{{correct}}", String(correctNum)).replace("{{total}}", String(totalNum))}
           </Text>
         </View>
 
@@ -286,7 +288,7 @@ export default function ResultScreen() {
           <View className="mx-6 mb-6">
             <View className="flex-row items-center gap-2 mb-3">
               <Text className="text-xl">💡</Text>
-              <Text className="text-white font-bold">Did You Know?</Text>
+              <Text className="text-white font-bold">{t("didYouKnow" as any)}</Text>
             </View>
 
             <View
@@ -329,7 +331,7 @@ export default function ResultScreen() {
         {/* Question Summary */}
         {parsedQuestionSummary.length > 0 && (
           <View className="mx-6 mb-6">
-            <Text className="text-white font-bold mb-3">Question Summary</Text>
+            <Text className="text-white font-bold mb-3">{t("questionSummaryTitle" as any)}</Text>
 
             <View style={{ gap: 8 }}>
               {parsedQuestionSummary.map((item, index) => (
@@ -379,7 +381,7 @@ export default function ResultScreen() {
         >
           <Text className="text-xl mr-2">↻</Text>
           <Text className="text-lg font-bold" style={{ color: COLORS.bg }}>
-            Play Again
+            {t("playAgain" as any)}
           </Text>
         </Pressable>
 

@@ -9,6 +9,7 @@ import { getUserStats } from "../../src/services/gameResults";
 import { uploadAvatar } from "../../src/services/avatar";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { Icon } from "../../src/components/ui";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 
 // New QuizNext design colors
 const COLORS = {
@@ -72,6 +73,7 @@ function CategoryProgress({
   percentage: number;
   color: string;
 }) {
+  const { t } = useTranslation();
   return (
     <View
       className="rounded-xl p-4 mb-3"
@@ -91,7 +93,7 @@ function CategoryProgress({
           </View>
           <View>
             <Text className="text-white font-semibold">{name}</Text>
-            <Text className="text-gray-500 text-xs">Lvl {level} • {xpNeeded} XP needed</Text>
+            <Text className="text-gray-500 text-xs">Lvl {level} • {xpNeeded} {t("xpNeeded" as any)}</Text>
           </View>
         </View>
         <Text className="font-bold" style={{ color }}>{percentage}%</Text>
@@ -113,6 +115,7 @@ function CategoryProgress({
 
 export default function ProfileScreen() {
   const { user, profile, isAnonymous, isPremium, isLoading, refreshProfile, updateAvatar, updateUsername } = useAuth();
+  const { t } = useTranslation();
 
   const [stats, setStats] = useState({
     totalGames: 0,
@@ -157,11 +160,11 @@ export default function ProfileScreen() {
 
   const handleSaveUsername = async () => {
     if (!newUsername.trim()) {
-      Alert.alert("Error", "Please enter a username");
+      Alert.alert("Erreur", "Veuillez entrer un nom d'utilisateur");
       return;
     }
     if (newUsername.trim().length < 2) {
-      Alert.alert("Error", "Username must be at least 2 characters");
+      Alert.alert("Erreur", "Le nom doit contenir au moins 2 caractères");
       return;
     }
 
@@ -169,9 +172,12 @@ export default function ProfileScreen() {
     try {
       await updateUsername(newUsername.trim());
       setShowUsernameModal(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving username:", error);
-      Alert.alert("Error", "Failed to save username. Please try again.");
+      const message = error?.message?.includes("duplicate") || error?.code === '23505'
+        ? "Ce nom d'utilisateur est déjà pris"
+        : "Impossible de sauvegarder le nom. Réessayez.";
+      Alert.alert("Erreur", message);
     } finally {
       setSavingUsername(false);
     }
@@ -179,21 +185,17 @@ export default function ProfileScreen() {
 
   const handleAvatarChange = async (imageUri: string, mimeType?: string) => {
     if (!user) {
-      Alert.alert("Error", "Please wait for the app to load.");
+      Alert.alert("Erreur", "Veuillez patienter le chargement.");
       return;
     }
 
     setUploadingAvatar(true);
     try {
       const avatarUrl = await uploadAvatar(user.id, imageUri, mimeType);
-      if (avatarUrl) {
-        await updateAvatar(avatarUrl);
-      } else {
-        Alert.alert("Error", "Failed to upload photo. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error uploading avatar:", error);
-      Alert.alert("Error", "Failed to upload photo. Please try again.");
+      await updateAvatar(avatarUrl!);
+    } catch (error: any) {
+      console.error("[Avatar] Error:", error?.message || error);
+      Alert.alert("Erreur", `Upload échoué: ${error?.message || "erreur inconnue"}`);
     } finally {
       setUploadingAvatar(false);
     }
@@ -220,16 +222,16 @@ export default function ProfileScreen() {
 
   // Badges data
   const badges = [
-    { icon: "⚡", name: "Speed Demon", unlocked: true },
-    { icon: "🏛️", name: "History Buff", unlocked: true },
-    { icon: "✨", name: "Perfect Streak", unlocked: true },
-    { icon: "🏆", name: "Trivia God", unlocked: false },
+    { icon: "⚡", name: t("speedDemon" as any), unlocked: true },
+    { icon: "🏛️", name: t("historyBuff" as any), unlocked: true },
+    { icon: "✨", name: t("perfectStreak" as any), unlocked: true },
+    { icon: "🏆", name: t("triviaGod" as any), unlocked: false },
   ];
 
   // Category mastery data
   const categories = [
-    { icon: "🧪", name: "Science & Nature", level: 8, xpNeeded: 450, percentage: 75, color: COLORS.yellow },
-    { icon: "🌍", name: "World Geography", level: 11, xpNeeded: 50, percentage: 90, color: COLORS.coral },
+    { icon: "🧪", name: t("scienceNature" as any), level: 8, xpNeeded: 450, percentage: 75, color: COLORS.yellow },
+    { icon: "🌍", name: t("worldGeography" as any), level: 11, xpNeeded: 50, percentage: 90, color: COLORS.coral },
   ];
 
   return (
@@ -304,7 +306,7 @@ export default function ProfileScreen() {
               <Text className="text-gray-500 ml-2">✏️</Text>
             </View>
             <Text className="text-gray-400">
-              {isAnonymous ? "Tap to set your name" : "Trivia Titan"}
+              {isAnonymous ? t("tapToSetName" as any) : t("triviaTitan" as any)}
             </Text>
           </Pressable>
         </View>
@@ -337,7 +339,7 @@ export default function ProfileScreen() {
               borderColor: 'rgba(255,255,255,0.05)',
             }}
           >
-            <Text className="text-gray-400 text-xs mb-1">Win Rate</Text>
+            <Text className="text-gray-400 text-xs mb-1">{t("winRate" as any)}</Text>
             {loadingStats ? (
               <ActivityIndicator size="small" color={COLORS.purple} />
             ) : (
@@ -355,7 +357,7 @@ export default function ProfileScreen() {
               borderColor: 'rgba(255,255,255,0.05)',
             }}
           >
-            <Text className="text-gray-400 text-xs mb-1">Quizzes</Text>
+            <Text className="text-gray-400 text-xs mb-1">{t("quizzes" as any)}</Text>
             {loadingStats ? (
               <ActivityIndicator size="small" color={COLORS.primary} />
             ) : (
@@ -369,7 +371,7 @@ export default function ProfileScreen() {
         {/* Recent Badges */}
         <View className="mx-6 mb-8">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-white font-bold">Recent Badges</Text>
+            <Text className="text-white font-bold">{t("recentBadges" as any)}</Text>
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
@@ -377,7 +379,7 @@ export default function ProfileScreen() {
               }}
             >
               <Text style={{ color: COLORS.primary }} className="text-sm font-medium">
-                View All
+                {t("viewAll" as any)}
               </Text>
             </Pressable>
           </View>
@@ -391,7 +393,7 @@ export default function ProfileScreen() {
 
         {/* Category Mastery */}
         <View className="mx-6 mb-8">
-          <Text className="text-white font-bold mb-4">Category Mastery</Text>
+          <Text className="text-white font-bold mb-4">{t("categoryMastery" as any)}</Text>
 
           {categories.map((category, index) => (
             <CategoryProgress key={index} {...category} />
@@ -421,10 +423,10 @@ export default function ProfileScreen() {
               </View>
               <View className="flex-1">
                 <Text style={{ color: '#FFD100' }} className="font-bold text-lg">
-                  Upgrade to Premium
+                  {t("upgradePremium" as any)}
                 </Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  Unlock duels, themes & more!
+                  {t("unlockDuelsThemes" as any)}
                 </Text>
               </View>
               <Icon name="ChevronRight" size={20} color="#FFD100" />
@@ -451,13 +453,13 @@ export default function ProfileScreen() {
             onPress={(e) => e.stopPropagation()}
           >
             <Text className="text-white text-xl font-bold mb-4 text-center">
-              Change Username
+              {t("changeUsername" as any)}
             </Text>
 
             <TextInput
               value={newUsername}
               onChangeText={setNewUsername}
-              placeholder="Enter your username"
+              placeholder={t("enterUsername" as any)}
               placeholderTextColor={COLORS.textMuted}
               autoFocus
               maxLength={20}
@@ -472,7 +474,7 @@ export default function ProfileScreen() {
                 style={{ backgroundColor: COLORS.surfaceActive }}
               >
                 <Text className="text-center font-medium" style={{ color: COLORS.textMuted }}>
-                  Cancel
+                  {t("cancel" as any)}
                 </Text>
               </Pressable>
 
@@ -486,7 +488,7 @@ export default function ProfileScreen() {
                   <ActivityIndicator color={COLORS.bg} size="small" />
                 ) : (
                   <Text className="text-center font-bold" style={{ color: COLORS.bg }}>
-                    Save
+                    {t("saveButton" as any)}
                   </Text>
                 )}
               </Pressable>

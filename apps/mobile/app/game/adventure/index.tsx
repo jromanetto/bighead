@@ -132,7 +132,7 @@ export default function AdventureScreen() {
     if (!progress) return;
 
     // Navigate to play screen with category, tier and level
-    router.push({
+    router.navigate({
       pathname: "/game/adventure/play",
       params: {
         category,
@@ -178,7 +178,7 @@ export default function AdventureScreen() {
               if (viewMode === "wheel") {
                 setViewMode("mountain");
               } else {
-                router.back();
+                router.navigate("/(tabs)");
               }
             }}
             variant="glass"

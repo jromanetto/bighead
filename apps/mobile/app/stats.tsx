@@ -213,7 +213,7 @@ export default function StatsScreen() {
         <View className="flex-row items-center mb-6">
           <IconButton
             name="ArrowLeft"
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(tabs)")}
             variant="glass"
             size={40}
             style={{ marginRight: 16 }}

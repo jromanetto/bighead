@@ -9,12 +9,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 import { getDuel, subscribeToDuel, cancelDuel, type Duel } from "../../src/services/duel";
 import { IconButton } from "../../src/components/ui";
 
 export default function DuelWaitingScreen() {
   const { id, code } = useLocalSearchParams<{ id: string; code: string }>();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [duel, setDuel] = useState<Duel | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -76,7 +78,7 @@ export default function DuelWaitingScreen() {
     if (!id) return;
     try {
       await cancelDuel(id);
-      router.back();
+      router.navigate("/(tabs)");
     } catch (error) {
       console.error("Error cancelling:", error);
     }
@@ -103,7 +105,7 @@ export default function DuelWaitingScreen() {
             variant="glass"
             size={40}
           />
-          <Text className="text-white text-xl font-bold">Waiting...</Text>
+          <Text className="text-white text-xl font-bold">{t("waitingTitle" as any)}</Text>
           <View className="w-10" />
         </View>
 
@@ -114,16 +116,16 @@ export default function DuelWaitingScreen() {
           </Animated.View>
 
           <Text className="text-white text-2xl font-bold mb-2">
-            Waiting for opponent
+            {t("waitingForOpponent" as any)}
           </Text>
           <Text className="text-gray-400 text-center mb-8">
-            Share this code with your friend
+            {t("shareCodeMessage" as any)}
           </Text>
 
           {/* Code Display */}
           <View className="bg-gray-800 rounded-2xl p-6 mb-8 w-full">
             <Text className="text-gray-400 text-center text-sm mb-2">
-              DUEL CODE
+              {t("duelCode" as any)}
             </Text>
             <Text className="text-primary-400 text-center text-4xl font-bold tracking-widest">
               {code}
@@ -136,7 +138,7 @@ export default function DuelWaitingScreen() {
             className="bg-primary-500 rounded-xl py-4 px-8 mb-4 w-full"
           >
             <Text className="text-white text-center font-bold text-lg">
-              📤 Share code
+              {`📤 ${t("shareCode2" as any)}`}
             </Text>
           </Pressable>
 
@@ -144,7 +146,7 @@ export default function DuelWaitingScreen() {
           <View className="flex-row items-center mt-8">
             <ActivityIndicator size="small" color="#6B7280" />
             <Text className="text-gray-500 ml-2">
-              Searching for opponent...
+              {t("searchingOpponent" as any)}
             </Text>
           </View>
         </View>
@@ -155,7 +157,7 @@ export default function DuelWaitingScreen() {
           className="bg-red-500/20 rounded-xl py-4 mb-6"
         >
           <Text className="text-red-400 text-center font-bold">
-            Cancel duel
+            {t("cancelDuel" as any)}
           </Text>
         </Pressable>
       </View>

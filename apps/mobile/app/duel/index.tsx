@@ -29,17 +29,17 @@ const COLORS = {
 
 // Available categories for duels
 const DUEL_CATEGORIES = [
-  { id: "general", name: "General Knowledge", icon: "🧠", color: "#00c2cc" },
-  { id: "history", name: "History", icon: "🏛️", color: "#8B5CF6" },
-  { id: "geography", name: "Geography", icon: "🌍", color: "#10B981" },
-  { id: "science", name: "Science", icon: "🔬", color: "#3B82F6" },
-  { id: "sports", name: "Sports", icon: "⚽", color: "#F59E0B" },
-  { id: "pop-culture", name: "Pop Culture", icon: "🎬", color: "#EC4899" },
+  { id: "general", nameKey: "generalKnowledge", icon: "🧠", color: "#00c2cc" },
+  { id: "history", nameKey: "historyCategory", icon: "🏛️", color: "#8B5CF6" },
+  { id: "geography", nameKey: "geographyCategory", icon: "🌍", color: "#10B981" },
+  { id: "science", nameKey: "scienceCategory", icon: "🔬", color: "#3B82F6" },
+  { id: "sports", nameKey: "sportsCategory", icon: "⚽", color: "#F59E0B" },
+  { id: "pop-culture", nameKey: "popCulture", icon: "🎬", color: "#EC4899" },
 ];
 
 export default function DuelLobbyScreen() {
   const { user, isPremium } = useAuth();
-  const { language } = useTranslation();
+  const { t } = useTranslation();
   const [joinCode, setJoinCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,8 +78,8 @@ export default function DuelLobbyScreen() {
     setLoading(true);
     setError(null);
     try {
-      const { duelId, code } = await createDuel(user.id, selectedCategory.id, 5, language);
-      router.push(`/duel/waiting?id=${duelId}&code=${code}`);
+      const { duelId, code } = await createDuel(user.id, selectedCategory.id, 5);
+      router.navigate(`/duel/waiting?id=${duelId}&code=${code}`);
     } catch (e) {
       console.error("Error creating duel:", e);
       setError("Error creating duel");
@@ -110,7 +110,7 @@ export default function DuelLobbyScreen() {
     try {
       const result = await joinDuel(joinCode, user.id);
       if (result.success && result.duelId) {
-        router.push(`/duel/play?id=${result.duelId}`);
+        router.navigate(`/duel/play?id=${result.duelId}`);
       } else {
         setError(result.message);
       }
@@ -128,12 +128,12 @@ export default function DuelLobbyScreen() {
         <View className="flex-row items-center pt-4 mb-6">
           <IconButton
             name="ArrowLeft"
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(tabs)")}
             variant="glass"
             size={40}
             style={{ marginRight: 12 }}
           />
-          <Text className="text-white text-2xl font-black">Duel 1v1</Text>
+          <Text className="text-white text-2xl font-black">{t("duelTitle" as any)}</Text>
         </View>
 
         {/* Create Section */}
@@ -148,17 +148,17 @@ export default function DuelLobbyScreen() {
           <View className="items-center mb-6">
             <Text className="text-5xl mb-4">⚔️</Text>
             <Text className="text-white text-xl font-bold mb-2">
-              Create a duel
+              {t("createDuel" as any)}
             </Text>
             <Text className="text-gray-400 text-center text-sm">
-              Challenge a friend in real-time on your football knowledge
+              {t("createDuelDesc" as any)}
             </Text>
           </View>
 
           {/* Category selector */}
           <View className="mb-4">
             <Text className="text-gray-400 text-xs uppercase tracking-wider mb-2">
-              Category
+              {t("categoryLabel2" as any)}
             </Text>
             <Pressable
               onPress={() => {
@@ -169,7 +169,7 @@ export default function DuelLobbyScreen() {
               style={{ backgroundColor: COLORS.surfaceLight }}
             >
               <Text className="text-xl mr-2">{selectedCategory.icon}</Text>
-              <Text className="text-white flex-1">{selectedCategory.name}</Text>
+              <Text className="text-white flex-1">{t(selectedCategory.nameKey as any)}</Text>
               <Text className="text-gray-400">▼</Text>
             </Pressable>
           </View>
@@ -184,7 +184,7 @@ export default function DuelLobbyScreen() {
               <ActivityIndicator color={COLORS.bg} />
             ) : (
               <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
-                Create a game
+                {t("createGame" as any)}
               </Text>
             )}
           </Pressable>
@@ -202,10 +202,10 @@ export default function DuelLobbyScreen() {
           <View className="items-center mb-6">
             <Text className="text-5xl mb-4">🎯</Text>
             <Text className="text-white text-xl font-bold mb-2">
-              Join a duel
+              {t("joinDuel" as any)}
             </Text>
             <Text className="text-gray-400 text-center text-sm">
-              Enter the code shared by your opponent to start the match
+              {t("joinDuelDesc" as any)}
             </Text>
           </View>
 
@@ -225,8 +225,8 @@ export default function DuelLobbyScreen() {
             disabled={loading || joinCode.length !== 6}
             className="rounded-2xl py-4 active:opacity-80"
             style={{
-              backgroundColor: joinCode.length === 6 ? COLORS.surface : COLORS.surfaceLight,
-              borderWidth: joinCode.length === 6 ? 1 : 0,
+              backgroundColor: joinCode.length === 6 ? COLORS.primary : COLORS.surfaceLight,
+              borderWidth: 0,
               borderColor: 'rgba(255,255,255,0.1)',
             }}
           >
@@ -235,9 +235,9 @@ export default function DuelLobbyScreen() {
             ) : (
               <Text
                 className="text-center font-bold text-lg"
-                style={{ color: joinCode.length === 6 ? COLORS.text : COLORS.textMuted }}
+                style={{ color: joinCode.length === 6 ? '#161a1d' : COLORS.textMuted }}
               >
-                Join
+                {t("joinButton" as any)}
               </Text>
             )}
           </Pressable>
@@ -266,9 +266,9 @@ export default function DuelLobbyScreen() {
             <View className="flex-row items-center">
               <Text className="text-2xl mr-3">🎯</Text>
               <View>
-                <Text className="text-white font-bold">Parties restantes</Text>
+                <Text className="text-white font-bold">{t("remainingGames" as any)}</Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  {isPremium ? "Illimité" : `Renouvellement demain`}
+                  {isPremium ? t("unlimited" as any) : t("renewTomorrow" as any)}
                 </Text>
               </View>
             </View>
@@ -304,10 +304,10 @@ export default function DuelLobbyScreen() {
               <Text className="text-2xl mr-3">👑</Text>
               <View className="flex-1">
                 <Text style={{ color: '#FFD100' }} className="font-bold">
-                  Passer Premium
+                  {t("goPremiumDuel" as any)}
                 </Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  Duels illimités + toutes les fonctionnalités
+                  {t("unlimitedDuels" as any)}
                 </Text>
               </View>
               <Icon name="ChevronRight" size={16} color="#FFD100" />
@@ -345,7 +345,7 @@ export default function DuelLobbyScreen() {
           >
             <View className="w-12 h-1 rounded-full mx-auto mb-6" style={{ backgroundColor: COLORS.surfaceLight }} />
 
-            <Text className="text-white text-xl font-bold mb-4">Choose a category</Text>
+            <Text className="text-white text-xl font-bold mb-4">{t("chooseCategory" as any)}</Text>
 
             <ScrollView style={{ maxHeight: 400 }}>
               {DUEL_CATEGORIES.map((category) => (
@@ -375,7 +375,7 @@ export default function DuelLobbyScreen() {
                     className="text-lg font-medium flex-1"
                     style={{ color: selectedCategory.id === category.id ? category.color : COLORS.text }}
                   >
-                    {category.name}
+                    {t(category.nameKey as any)}
                   </Text>
                   {selectedCategory.id === category.id && (
                     <Text style={{ color: category.color }} className="text-xl">✓</Text>

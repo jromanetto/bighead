@@ -61,13 +61,16 @@ quiz,trivia,brain,game,questions,knowledge,multiplayer,party,challenge,friends,e
 4+ (No objectionable content)
 
 ## Privacy Policy URL
-https://bighead.app/privacy
+https://bighead.jrmanagement.org/privacy.html
+
+## Terms of Service (EULA) URL
+https://bighead.jrmanagement.org/terms.html
 
 ## Support URL
-https://bighead.app/support
+https://bighead.jrmanagement.org/
 
 ## Marketing URL
-https://bighead.app
+https://bighead.jrmanagement.org/
 
 ## Version Release Notes
 

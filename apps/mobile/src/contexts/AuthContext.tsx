@@ -385,48 +385,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Update avatar URL
   const updateAvatar = useCallback(async (avatarUrl: string) => {
-    if (!state.user) return;
+    if (!state.user) throw new Error("Not authenticated");
 
     try {
-      const { error } = await (supabase
-        .from("users") as any)
-        .update({ avatar_url: avatarUrl })
-        .eq("id", state.user.id);
+      if (state.profile) {
+        // Profile exists — just update avatar_url
+        const { error } = await (supabase
+          .from("users") as any)
+          .update({ avatar_url: avatarUrl })
+          .eq("id", state.user.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Update local state
-      setState(prev => ({
-        ...prev,
-        profile: prev.profile ? { ...prev.profile, avatar_url: avatarUrl } : null,
-      }));
+        setState(prev => ({
+          ...prev,
+          profile: prev.profile ? { ...prev.profile, avatar_url: avatarUrl } : null,
+        }));
+      } else {
+        // No profile yet — create one with defaults + avatar
+        const { data, error } = await (supabase
+          .from("users") as any)
+          .insert({
+            id: state.user.id,
+            username: state.user.email?.split("@")[0] || "Player",
+            avatar_url: avatarUrl,
+            total_xp: 0,
+            level: 1,
+            games_played: 0,
+            best_chain: 0,
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        setState(prev => ({ ...prev, profile: data as UserProfile }));
+      }
     } catch (error) {
       console.error("Error updating avatar:", error);
       throw error;
     }
-  }, [state.user]);
+  }, [state.user, state.profile]);
 
   const updateUsername = useCallback(async (username: string) => {
-    if (!state.user) return;
+    if (!state.user) throw new Error("Not authenticated");
 
     try {
-      const { error } = await (supabase
-        .from("users") as any)
-        .update({ username })
-        .eq("id", state.user.id);
+      if (state.profile) {
+        // Profile exists — just update username
+        const { data, error } = await (supabase
+          .from("users") as any)
+          .update({ username })
+          .eq("id", state.user.id)
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
+        setState(prev => ({ ...prev, profile: data as UserProfile }));
+      } else {
+        // No profile yet — create one with defaults + username
+        const { data, error } = await (supabase
+          .from("users") as any)
+          .insert({
+            id: state.user.id,
+            username,
+            total_xp: 0,
+            level: 1,
+            games_played: 0,
+            best_chain: 0,
+          })
+          .select()
+          .single();
 
-      // Update local state
-      setState(prev => ({
-        ...prev,
-        profile: prev.profile ? { ...prev.profile, username } : null,
-      }));
+        if (error) throw error;
+        setState(prev => ({ ...prev, profile: data as UserProfile }));
+      }
     } catch (error) {
       console.error("Error updating username:", error);
       throw error;
     }
-  }, [state.user]);
+  }, [state.user, state.profile]);
 
   const value: AuthContextType = {
     ...state,

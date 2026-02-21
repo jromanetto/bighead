@@ -153,7 +153,7 @@ export const getQuestions = async ({
   difficulty,
   count = 10,
   excludeIds = [],
-  language = "en",
+  language = "fr",
 }: GetQuestionsParams = {}): Promise<Question[]> => {
   let query = supabase
     .from("questions")

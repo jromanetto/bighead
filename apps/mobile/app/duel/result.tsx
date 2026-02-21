@@ -9,11 +9,13 @@ import Animated, {
   withDelay,
 } from "react-native-reanimated";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 import { getDuel, type Duel } from "../../src/services/duel";
 
 export default function DuelResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [duel, setDuel] = useState<Duel | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,13 +66,13 @@ export default function DuelResultScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-5xl mb-6">❌</Text>
           <Text className="text-white text-xl font-bold text-center">
-            Result not found
+            {t("error" as any)}
           </Text>
           <Pressable
             onPress={() => router.replace("/")}
             className="bg-primary-500 rounded-xl py-4 px-8 mt-6"
           >
-            <Text className="text-white font-bold">Back to home</Text>
+            <Text className="text-white font-bold">{t("backToHome" as any)}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -99,14 +101,14 @@ export default function DuelResultScreen() {
             isWinner ? "text-yellow-400" : isDraw ? "text-gray-400" : "text-red-400"
           }`}
         >
-          {isWinner ? "VICTORY!" : isDraw ? "DRAW" : "DEFEAT"}
+          {isWinner ? t("victory" as any) : isDraw ? t("draw" as any) : t("defeat" as any)}
         </Text>
         <Text className="text-gray-400 text-center mb-8">
           {isWinner
-            ? "You dominated this duel!"
+            ? t("victoryMessage" as any)
             : isDraw
-            ? "Close match!"
-            : "Next time will be yours!"}
+            ? t("drawMessage" as any)
+            : t("defeatMessage" as any)}
         </Text>
 
         {/* Score Display */}
@@ -115,7 +117,7 @@ export default function DuelResultScreen() {
             <View className="flex-row items-center justify-around">
               {/* Your Score */}
               <View className="items-center">
-                <Text className="text-gray-400 text-sm mb-1">YOU</Text>
+                <Text className="text-gray-400 text-sm mb-1">{t("you" as any)}</Text>
                 <Text
                   className={`text-5xl font-bold ${
                     myScore > opponentScore ? "text-green-400" : "text-white"
@@ -132,7 +134,7 @@ export default function DuelResultScreen() {
 
               {/* Opponent Score */}
               <View className="items-center">
-                <Text className="text-gray-400 text-sm mb-1">OPPONENT</Text>
+                <Text className="text-gray-400 text-sm mb-1">{t("opponent" as any)}</Text>
                 <Text
                   className={`text-5xl font-bold ${
                     opponentScore > myScore ? "text-red-400" : "text-white"
@@ -145,7 +147,7 @@ export default function DuelResultScreen() {
 
             <View className="border-t border-gray-700 mt-4 pt-4">
               <Text className="text-gray-500 text-center text-sm">
-                {duel.rounds_total} questions • {duel.category === "general" ? "General knowledge" : duel.category}
+                {duel.rounds_total} questions • {duel.category === "general" ? t("generalKnowledgeFull" as any) : duel.category}
               </Text>
             </View>
           </View>
@@ -158,7 +160,7 @@ export default function DuelResultScreen() {
             className="bg-primary-500 rounded-xl py-4 mb-3"
           >
             <Text className="text-white text-center font-bold text-lg">
-              🎮 New duel
+              {`🎮 ${t("newDuel" as any)}`}
             </Text>
           </Pressable>
 
@@ -167,7 +169,7 @@ export default function DuelResultScreen() {
             className="bg-gray-800 rounded-xl py-4"
           >
             <Text className="text-white text-center font-bold">
-              Back to home
+              {t("backToHome" as any)}
             </Text>
           </Pressable>
         </View>

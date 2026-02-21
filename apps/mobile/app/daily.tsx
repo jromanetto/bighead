@@ -502,7 +502,7 @@ export default function DailyBrainScreen() {
           )}
 
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(tabs)")}
             className="rounded-xl py-4 px-8"
             style={{ backgroundColor: COLORS.primary }}
           >
@@ -609,7 +609,7 @@ export default function DailyBrainScreen() {
             )}
 
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.navigate("/(tabs)")}
               className="rounded-xl py-4 px-8"
               style={{ backgroundColor: COLORS.primary }}
             >
@@ -646,7 +646,7 @@ export default function DailyBrainScreen() {
             Reviens plus tard !
           </Text>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(tabs)")}
             className="rounded-xl py-4 px-8"
             style={{ backgroundColor: COLORS.primary }}
           >
@@ -678,7 +678,7 @@ export default function DailyBrainScreen() {
           {/* Exit Button */}
           <IconButton
             name="ArrowLeft"
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(tabs)")}
             variant="glass"
             size={40}
           />

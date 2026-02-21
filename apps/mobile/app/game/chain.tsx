@@ -516,7 +516,7 @@ export default function ChainGameScreen() {
 
   const handleExit = () => {
     useGameStore.getState().reset();
-    router.back();
+    router.navigate("/(tabs)");
   };
 
   // 50/50 Lifeline - remove 2 wrong answers

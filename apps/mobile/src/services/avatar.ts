@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { decode } from "base64-arraybuffer";
 import { Platform } from "react-native";
 
@@ -81,7 +81,7 @@ export async function uploadAvatar(
 
     if (error) {
       console.error("Error uploading avatar:", error);
-      return null;
+      throw new Error(error.message || "Storage upload failed");
     }
 
     // Get public URL
@@ -90,9 +90,9 @@ export async function uploadAvatar(
       .getPublicUrl(data.path);
 
     return urlData.publicUrl;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error uploading avatar:", error);
-    return null;
+    throw error;
   }
 }
 

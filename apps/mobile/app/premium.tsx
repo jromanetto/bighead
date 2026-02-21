@@ -142,30 +142,6 @@ export default function PremiumScreen() {
     }
   };
 
-  const setDemoPackages = () => {
-    setPackages([
-      {
-        identifier: "monthly",
-        product: {
-          title: "Monthly",
-          description: "Billed monthly",
-          priceString: "€4.99/mo",
-        },
-        packageType: "MONTHLY",
-      },
-      {
-        identifier: "annual",
-        product: {
-          title: "Annual",
-          description: "Best value - Save 50%",
-          priceString: "€29.99/yr",
-        },
-        packageType: "ANNUAL",
-      },
-    ]);
-    setSelectedPackage("annual");
-  };
-
   const loadOfferings = async () => {
     try {
       if (user?.id) {
@@ -188,13 +164,13 @@ export default function PremiumScreen() {
             setSelectedPackage(monthly.identifier);
           }
         } else {
-          // Fallback to demo packages if no offerings
-          setDemoPackages();
+          // No offerings available — show error, don't show fake packages
+          setError("Unable to load subscription plans. Please try again later.");
         }
       }
     } catch (err) {
       console.error("Error loading offerings:", err);
-      setDemoPackages();
+      setError("Unable to load subscription plans. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -210,43 +186,23 @@ export default function PremiumScreen() {
       const pkg = packages.find((p) => p.identifier === selectedPackage);
       if (!pkg) return;
 
-      // Try RevenueCat purchase first
-      let success = false;
-      try {
-        success = await purchasePackage(pkg);
-      } catch (purchaseErr: any) {
-        console.log("RevenueCat purchase failed, trying demo mode:", purchaseErr);
-        // If RevenueCat fails (e.g., simulator, no config), use demo mode
-        success = false;
-      }
-
-      // If RevenueCat failed, grant premium directly (demo/dev mode)
-      if (!success && user?.id) {
-        console.log("Using demo mode - granting premium directly");
-        const isAnnual = pkg.packageType === "ANNUAL";
-        const durationDays = isAnnual ? 365 : 30;
-        await grantPremiumToUser(user.id, durationDays);
-        await refreshProfile();
-        success = true;
-      }
+      // Purchase via RevenueCat — this is the ONLY way to become premium
+      const success = await purchasePackage(pkg);
 
       if (success) {
         playHaptic("success");
 
-        // Sync with Supabase - determine duration based on package type
+        // Sync with Supabase after verified purchase
         if (user?.id) {
           const isAnnual = pkg.packageType === "ANNUAL";
           const durationDays = isAnnual ? 365 : 30;
           await grantPremiumToUser(user.id, durationDays);
-
-          // Refresh profile to update global state
           await refreshProfile();
         }
 
         setJustPurchased(true);
         setUserIsPremium(true);
 
-        // Trigger confetti after a short delay
         setTimeout(() => {
           setShowConfetti(true);
         }, 100);
@@ -259,7 +215,6 @@ export default function PremiumScreen() {
         // User cancelled - no error message needed
         return;
       }
-      // Show detailed error for debugging
       const errorMessage = err.message || err.code || "Unknown error";
       setError(`Purchase failed: ${errorMessage}`);
     } finally {
@@ -273,26 +228,32 @@ export default function PremiumScreen() {
 
     try {
       const success = await restorePurchases();
-      if (success) {
-        playHaptic("success");
-
-        // Sync with Supabase - restore as lifetime (null = no expiration)
-        // RevenueCat will manage the actual expiration
-        if (user?.id) {
-          await grantPremiumToUser(user.id, null);
-          await refreshProfile();
-        }
-
-        setJustPurchased(true);
-        setUserIsPremium(true);
-
-        // Trigger confetti after a short delay
-        setTimeout(() => {
-          setShowConfetti(true);
-        }, 100);
-      } else {
+      if (!success) {
         setError("No purchases found to restore.");
+        return;
       }
+
+      // Verify user actually has premium entitlement after restore
+      const hasPremium = await isPremium();
+      if (!hasPremium) {
+        setError("No active premium subscription found.");
+        return;
+      }
+
+      playHaptic("success");
+
+      // Sync verified entitlement with Supabase
+      if (user?.id) {
+        await grantPremiumToUser(user.id, null);
+        await refreshProfile();
+      }
+
+      setJustPurchased(true);
+      setUserIsPremium(true);
+
+      setTimeout(() => {
+        setShowConfetti(true);
+      }, 100);
     } catch (err) {
       console.error("Restore error:", err);
       setError("Failed to restore purchases.");

@@ -261,7 +261,7 @@ export default function AchievementsScreen() {
         <View className="flex-row items-center px-5 pt-4 mb-4">
           <IconButton
             name="ArrowLeft"
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(tabs)")}
             variant="glass"
             size={40}
             style={{ marginRight: 12 }}
