@@ -11,8 +11,11 @@ import Purchases, {
 } from "react-native-purchases";
 import { Platform } from "react-native";
 
-// RevenueCat API key (same key works for iOS and Android)
-const REVENUECAT_API_KEY = process.env.EXPO_PUBLIC_REVENUE_CAT_API_KEY || "";
+// RevenueCat API keys (platform-specific)
+const REVENUECAT_API_KEY =
+  Platform.OS === "android"
+    ? process.env.EXPO_PUBLIC_REVENUE_CAT_GOOGLE_API_KEY || ""
+    : process.env.EXPO_PUBLIC_REVENUE_CAT_API_KEY || "";
 
 // Entitlement identifiers
 export const ENTITLEMENTS = {
@@ -49,7 +52,7 @@ class MonetizationService {
     if (this.isInitialized) return;
 
     // Check if API key is configured and valid (not a placeholder)
-    if (!REVENUECAT_API_KEY || REVENUECAT_API_KEY.includes("YOUR_") || !REVENUECAT_API_KEY.startsWith("appl_")) {
+    if (!REVENUECAT_API_KEY || REVENUECAT_API_KEY.includes("YOUR_")) {
       // Silently skip - RevenueCat not configured (demo mode)
       return;
     }

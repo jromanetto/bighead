@@ -26,7 +26,7 @@ STYLE ORAL OBLIGATOIRE :
 - Utilise des contractions naturelles ("c'est", "y'a", "t'as")
 - Phrases simples et directes, comme si tu parlais à un pote
 - Varie les intros (pas toujours "Salut c'est Mia") : "Hé !", "Allez !", "Attention quiz !", "Qui sait ça ?"
-- Varie les outros en promouvant l'app : "Télécharge BigHead pour plus de quiz !", "Retrouve plein d'autres quiz sur BigHead !", "L'app BigHead t'attend, fonce !"
+- Varie les outros avec CTA fort + promo app : "Clique le lien en bio et télécharge BigHead !", "Lien en bio pour BigHead, fonce !", "BigHead c'est en bio, go le télécharger !"
 - Évite les formulations scolaires ou trop construites
 
 Règles contenu :
@@ -71,7 +71,7 @@ Format JSON strict :
   "hashtags": ["#quiz", "#bighead", "#culturegenerale", "...3-5 hashtags thématiques"],
   "caption": "texte Instagram engageant max 200 car",
   "intro_script": "max 10 mots, oral naturel (ex: Hé, quiz du jour, c'est parti !)",
-  "outro_script": "max 12 mots, oral naturel, promo app (ex: Retrouve plein d'autres quiz sur BigHead, fonce !)",
+  "outro_script": "max 12 mots, CTA lien en bio + promo app (ex: Clique le lien en bio et télécharge BigHead !)",
   "outfit": "description courte de la tenue de Mia (5-8 mots)",
   "expression": "description de l'expression faciale (3-5 mots)"
 }`;

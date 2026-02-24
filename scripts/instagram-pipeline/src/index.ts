@@ -5,11 +5,14 @@ import {
   waitForVideo,
 } from "./heygen.js";
 import { postReelToInstagram, postStoryToInstagram } from "./instagram.js";
+import { postVideoToTikTok } from "./tiktok.js";
+import { readTokens } from "./tiktok-auth.js";
 import { ensureBucket, uploadVideo } from "./storage.js";
 import { createPost, updatePost, getPreviousQuestions } from "./db.js";
 
-const DRY_RUN = process.argv.includes("--dry-run");
-const SKIP_INSTAGRAM = process.argv.includes("--skip-instagram");
+const DRY_RUN = process.argv.includes("--dry-run") || process.env.DRY_RUN === "true";
+const SKIP_INSTAGRAM = process.argv.includes("--skip-instagram") || process.env.SKIP_INSTAGRAM === "true";
+const SKIP_TIKTOK = process.argv.includes("--skip-tiktok") || process.env.SKIP_TIKTOK === "true";
 
 async function main() {
   const startTime = Date.now();
@@ -115,6 +118,28 @@ async function main() {
       }
 
       await updatePost(postId, { status: "published" });
+    }
+
+    // Step 7: Post to TikTok (non-blocking — skip if not configured)
+    if (!SKIP_TIKTOK && readTokens()) {
+      console.log("\n🎵 Step 7: Publishing to TikTok...");
+      try {
+        const tiktokCaption = [
+          question.caption,
+          "",
+          question.hashtags.map((h) => h.replace("#", "#")).join(" "),
+          "",
+          "📲 Télécharge BigHead !",
+        ].join("\n");
+
+        const tiktokResult = await postVideoToTikTok(publicUrl, tiktokCaption);
+        await updatePost(postId, { tiktok_publish_id: tiktokResult.publishId } as any);
+      } catch (tiktokError) {
+        const msg = tiktokError instanceof Error ? tiktokError.message : String(tiktokError);
+        console.warn(`  ⚠️  TikTok posting failed (non-blocking): ${msg}`);
+      }
+    } else if (!SKIP_TIKTOK) {
+      console.log("\n⏭️  Skipping TikTok (not configured — run tiktok-auth setup)");
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(0);

@@ -7,6 +7,7 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { ProfileAvatar } from "../../src/components/ProfileAvatar";
 import { getUserStats } from "../../src/services/gameResults";
 import { uploadAvatar } from "../../src/services/avatar";
+import { supabase } from "../../src/services/supabase";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { Icon } from "../../src/components/ui";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -158,23 +159,66 @@ export default function ProfileScreen() {
     setShowUsernameModal(true);
   };
 
+  const checkUsernameAvailable = async (username: string): Promise<boolean> => {
+    const { data } = await (supabase
+      .from("users") as any)
+      .select("id")
+      .eq("username", username)
+      .neq("id", user?.id ?? "")
+      .limit(1);
+    return !data || data.length === 0;
+  };
+
   const handleSaveUsername = async () => {
-    if (!newUsername.trim()) {
+    const trimmed = newUsername.trim();
+    if (!trimmed) {
       Alert.alert("Erreur", "Veuillez entrer un nom d'utilisateur");
       return;
     }
-    if (newUsername.trim().length < 2) {
+    if (trimmed.length < 2) {
       Alert.alert("Erreur", "Le nom doit contenir au moins 2 caractères");
       return;
     }
 
     setSavingUsername(true);
     try {
-      await updateUsername(newUsername.trim());
+      // Check availability before saving
+      const available = await checkUsernameAvailable(trimmed);
+      if (!available) {
+        // Generate suggestions
+        const rand = () => Math.floor(Math.random() * 999) + 1;
+        const suggestions = [
+          `${trimmed}${rand()}`,
+          `${trimmed}${rand()}`,
+          `${trimmed}${rand()}`,
+        ];
+        Alert.alert(
+          "Nom déjà pris",
+          `"${trimmed}" est déjà utilisé. Suggestions :`,
+          [
+            ...suggestions.map((s) => ({
+              text: s,
+              onPress: async () => {
+                setNewUsername(s);
+                try {
+                  await updateUsername(s);
+                  setShowUsernameModal(false);
+                } catch (e) {
+                  console.error("Error saving suggested username:", e);
+                }
+              },
+            })),
+            { text: "Autre nom", style: "cancel" as const },
+          ]
+        );
+        return;
+      }
+
+      await updateUsername(trimmed);
       setShowUsernameModal(false);
     } catch (error: any) {
       console.error("Error saving username:", error);
-      const message = error?.message?.includes("duplicate") || error?.code === '23505'
+      const message = error?.code === "23505"
         ? "Ce nom d'utilisateur est déjà pris"
         : "Impossible de sauvegarder le nom. Réessayez.";
       Alert.alert("Erreur", message);
@@ -192,9 +236,16 @@ export default function ProfileScreen() {
     setUploadingAvatar(true);
     try {
       const avatarUrl = await uploadAvatar(user.id, imageUri, mimeType);
-      await updateAvatar(avatarUrl!);
+      if (!avatarUrl) throw new Error("Upload failed");
+
+      // DB update may fail (RLS) but photo IS uploaded — don't block UX
+      try {
+        await updateAvatar(avatarUrl);
+      } catch (dbError) {
+        console.warn("[Avatar] DB update failed, photo still uploaded:", dbError);
+      }
     } catch (error: any) {
-      console.error("[Avatar] Error:", error?.message || error);
+      console.error("[Avatar] Storage upload error:", error?.message || error);
       Alert.alert("Erreur", `Upload échoué: ${error?.message || "erreur inconnue"}`);
     } finally {
       setUploadingAvatar(false);
