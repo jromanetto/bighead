@@ -47,10 +47,10 @@ function buildCharacter(category?: QuizCategory) {
   return {
     type: "talking_photo" as const,
     talking_photo_id: talkingPhotoId,
-    scale: 0.7,
-    offset: { x: 0, y: -0.25 },
+    scale: 1.0,
+    offset: { x: 0, y: 0 },
     matting: true,
-    talking_photo_style: "circle",
+    // talking_photo_style: "circle",  // OLD — revert here if needed
     talking_style: "stable",
     expression: "default",
   };
