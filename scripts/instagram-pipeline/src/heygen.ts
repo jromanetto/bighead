@@ -1,4 +1,4 @@
-import type { QuizQuestion } from "./generate-question.js";
+import type { QuizQuestion, QuizCategory } from "./generate-question.js";
 
 const HEYGEN_BASE = "https://api.heygen.com";
 
@@ -10,123 +10,228 @@ function headers() {
   };
 }
 
-/**
- * Build the Video Agent prompt using the Level 4 (scene-by-scene) format
- * from HeyGen's prompt-optimizer guidelines.
- *
- * Key changes from previous version:
- * - Structured Global Style block for visual consistency
- * - Scene-by-scene with precise timing and scene types
- * - "Instruction for Video Agent" catch-all block
- * - Avatar enforced via config.avatar_id + prompt reinforcement
- */
-function buildVideoAgentPrompt(question: QuizQuestion): string {
-  const answerLetter = question.answer.toUpperCase();
+// ============================================================
+// v2 API helpers — deterministic avatar via talking_photo_id
+// ============================================================
 
-  return `# Global Style & Settings
-* **Visual Style:** Néon cyberpunk minimaliste — sombre, épuré, contrasté
-* **Primary Colors:** Violet néon (#8B5CF6), Bleu néon (#3B82F6), Blanc (#FFFFFF)
-* **Background:** Noir profond (#0D0D0D) sur toutes les scènes
-* **Font:** Bold sans-serif pour titres et question, medium sans-serif pour les choix
-* **Vibe:** Moderne, gaming, viral, TikTok-ready
-* **Avatar:** UTILISE EXCLUSIVEMENT l'avatar configuré via config.avatar_id. Cadrage buste, tiers supérieur de l'écran. Ne change JAMAIS d'avatar entre les scènes.
-* **Voice:** Mia — ton naturel, décontracté, fluide, comme une vraie personne
-* **Text Overlays:** Toujours dans le tiers inférieur, centrés horizontalement, sous l'avatar. Ombre néon violet sur les titres.
+// Category → talking_photo_id mapping (Emma avatar looks)
+const CATEGORY_AVATAR: Record<QuizCategory, string> = {
+  stars: "65a62fec10cc492c94fa894bb8e067c0",    // Glamorous Nightshade
+  sport: "b29c1b21c52343cb9ab1f380807627c1",    // Energetic Athletic Avatar
+  pop_culture: "ffcd7866946348109e59a42b4bc1c68e", // Pastel Hoodie Trendsetter
+  musique: "bfdfb0c6ee3e456ab8c752018fb4d28c",  // Rockstar in Leather
+  tech: "329500f8930a45efb8d2bd5f3477380b",     // Neon-Circuit Hooded Avatar
+  science: "58b38887a8524c82b94164b14b0119b8",   // Elegantly Confident Professional
+  geo: "58b38887a8524c82b94164b14b0119b8",       // Elegantly Confident Professional
+  food: "a12176a6a2b5442cb60fe7dd3020f463",     // Pastel Purple Streetwear Guru
+};
 
----
+// Category → background color
+const CATEGORY_BG: Record<QuizCategory, string> = {
+  stars: "#1A0A2E",     // deep purple / glam
+  sport: "#0A1628",     // dark navy / stadium
+  pop_culture: "#1A0F2E", // dark violet
+  musique: "#0D0D0D",   // black / concert
+  tech: "#0A0F1A",      // dark blue / cyber
+  science: "#0D1117",   // dark grey / lab
+  geo: "#0F1A0A",       // dark green / nature
+  food: "#1A0F0A",      // warm dark brown
+};
 
-# Scene-by-Scene Script
-
-### Scene 1: Accroche
-* **Scene Type:** A-roll with Motion Graphics Overlay
-* **Visual:** Avatar en buste dans le tiers supérieur sur fond noir. Particules néon violet subtiles en arrière-plan. Texte accroche au centre du tiers inférieur.
-* **VO:** "${question.intro_script}"
-* **Text Overlay:** "${question.hook}" — bold, grande taille, glow néon violet
-* **Duration:** 0:00 - 0:04
-
-### Scene 2: Question + Choix
-* **Scene Type:** A-roll with Motion Graphics Overlay
-* **Visual:** Avatar lit la question. Overlay texte structuré dans le tiers inférieur : question en haut en bold avec glow violet, puis choix A, B, C listés verticalement avec lettre en néon bleu.
-* **VO:** "${question.question} A : ${question.choices.a}. B : ${question.choices.b}. C : ${question.choices.c}."
-* **Text Overlay:**
-  "${question.question}"
-  "A : ${question.choices.a}"
-  "B : ${question.choices.b}"
-  "C : ${question.choices.c}"
-* **Duration:** 0:04 - 0:12
-
-### Scene 3: Décompte suspense
-* **Scene Type:** A-roll with Motion Graphics Overlay
-* **Visual:** Avatar reste visible avec un regard de suspense. Chiffres 3, 2, 1 s'affichent en GRAND au centre de l'écran avec animation néon rapide. L'avatar NE PARLE PAS dans cette scène — suspense silencieux.
-* **VO:** (silence — 2 secondes de suspense uniquement)
-* **Text Overlay:** "3 … 2 … 1 …" — très grande taille, animation néon, centré
-* **Duration:** 0:12 - 0:14
-
-### Scene 4: Révélation de la réponse
-* **Scene Type:** A-roll with Motion Graphics Overlay
-* **Visual:** Avatar annonce la réponse avec enthousiasme. La bonne réponse s'affiche en grand au centre avec glow néon bleu. Effet de célébration subtil.
-* **VO:** "C'est la réponse ${answerLetter}, ${question.answer_text}. ${question.fun_fact}"
-* **Text Overlay:** "✅ Réponse ${answerLetter} : ${question.answer_text}" — bold, glow néon bleu (#3B82F6)
-* **Duration:** 0:14 - 0:20
-
-### Scene 5: Conclusion + CTA
-* **Scene Type:** A-roll with Motion Graphics Overlay
-* **Visual:** Avatar parle l'outro. Logo BigHead Quiz centré en grand (utiliser le fichier joint). Texte CTA sous le logo en néon violet. Fond noir avec effet néon final.
-* **VO:** "${question.outro_script}"
-* **Text Overlay:** "Télécharge BigHead Quiz !" — néon violet (#8B5CF6), centré
-* **Duration:** 0:20 - 0:25
-
----
-
-**Instruction for Video Agent:** Vidéo portrait 9:16 pour Instagram Reels et TikTok. UTILISE UNIQUEMENT l'avatar configuré — ne sélectionne pas un autre avatar. Fond noir (#0D0D0D) sur TOUTES les scènes sans exception. Palette néon violet (#8B5CF6) et bleu (#3B82F6) uniquement — pas d'autre couleur. Les text overlays doivent être cohérents en style, taille et position d'une scène à l'autre. L'avatar reste TOUJOURS dans le tiers supérieur de l'écran en cadrage buste. Les textes sont TOUJOURS dans le tiers inférieur sous l'avatar. Pas de musique de fond. Durée totale : 25 secondes maximum.`;
+function buildCharacter(category?: QuizCategory) {
+  const fallbackId = process.env.HEYGEN_AVATAR_ID;
+  const talkingPhotoId = (category && CATEGORY_AVATAR[category]) || fallbackId;
+  if (!talkingPhotoId) {
+    throw new Error("Missing HEYGEN_AVATAR_ID (talking_photo_id) in env");
+  }
+  return {
+    type: "talking_photo" as const,
+    talking_photo_id: talkingPhotoId,
+    scale: 0.7,
+    offset: { x: 0, y: -0.25 },
+    matting: true,
+    talking_photo_style: "circle",
+    talking_style: "stable",
+    expression: "default",
+  };
 }
 
-/** Generate video using HeyGen Video Agent (AI prompt-based) */
-export async function generateVideoAgent(
+function buildBackground(category?: QuizCategory) {
+  const color = (category && CATEGORY_BG[category]) || "#0D0D0D";
+  return { type: "color" as const, value: color };
+}
+
+function buildVoice(
+  inputText: string,
+  emotion: "Excited" | "Friendly" = "Friendly"
+) {
+  const voiceId = process.env.HEYGEN_VOICE_ID;
+  if (!voiceId) {
+    throw new Error("Missing HEYGEN_VOICE_ID in env");
+  }
+  return {
+    type: "text" as const,
+    voice_id: voiceId,
+    input_text: inputText,
+    emotion,
+    speed: 1.0,
+  };
+}
+
+function buildSilence(durationSec: number) {
+  return {
+    type: "silence" as const,
+    duration: String(durationSec),
+  };
+}
+
+function buildText(
+  content: string,
+  options: {
+    fontSize?: number;
+    fontWeight?: "normal" | "bold";
+    color?: string;
+    position?: { x: number; y: number };
+    width?: number;
+    textAlign?: "left" | "center" | "right";
+  } = {}
+) {
+  return {
+    type: "text" as const,
+    text: content,
+    font_size: options.fontSize ?? 24,
+    font_weight: options.fontWeight ?? "normal",
+    color: options.color ?? "#FFFFFF",
+    position: options.position ?? { x: 0.06, y: 0.7 },
+    width: options.width ?? 950,
+    text_align: options.textAlign ?? "center",
+    line_height: 1.4,
+  };
+}
+
+// ============================================================
+// generateVideo — v2 API, 5 scenes, guaranteed avatar
+// ============================================================
+
+/**
+ * Generate a quiz video using HeyGen v2 API (/v2/video/generate).
+ *
+ * Uses talking_photo_id for DETERMINISTIC avatar selection (Emma/Mia).
+ * The Video Agent API (/v1/video_agent/generate) was deprecated because
+ * config.avatar_id is only a hint — the AI can and does ignore it.
+ *
+ * 5 scenes: Hook → Question+Choices → Countdown → Answer → Outro
+ */
+export async function generateVideo(
   question: QuizQuestion
 ): Promise<string> {
-  const prompt = buildVideoAgentPrompt(question);
+  const answerLetter = question.answer.toUpperCase();
+  const category = question.category;
+  const character = buildCharacter(category);
+  const bg = buildBackground(category);
 
-  console.log("  Video Agent prompt (structured Level 4):");
-  console.log(`    Question: "${question.question}"`);
-  console.log(`    Answer: ${question.answer.toUpperCase()} - ${question.answer_text}`);
+  // Combine question + choices into a single text overlay
+  const choicesText = [
+    question.question,
+    "",
+    `A : ${question.choices.a}`,
+    `B : ${question.choices.b}`,
+    `C : ${question.choices.c}`,
+  ].join("\n");
 
-  const avatarId = process.env.HEYGEN_AVATAR_ID;
-  if (!avatarId) {
-    throw new Error("Missing HEYGEN_AVATAR_ID in env (talking photo ID)");
-  }
-
-  console.log(`    Avatar ID: ${avatarId}`);
-
-  const body: Record<string, any> = {
-    prompt,
-    config: {
-      avatar_id: avatarId,
-      orientation: "portrait",
-      duration_sec: 25,
-    },
-    files: [
-      { asset_id: "6a60ac20d2ec473e8b61f7f42e9868b1" }, // bighead-app-icon.png
+  const videoConfig = {
+    title: `BigHead Quiz - ${question.question.slice(0, 50)}`,
+    video_inputs: [
+      // Scene 1: Hook / Intro (3-4s)
+      {
+        character,
+        voice: buildVoice(question.intro_script, "Excited"),
+        background: bg,
+        text: buildText(question.hook, {
+          fontSize: 48,
+          fontWeight: "bold",
+          color: "#8B5CF6",
+          position: { x: 0.06, y: 0.58 },
+        }),
+      },
+      // Scene 2: Question + Choices (6-8s)
+      {
+        character,
+        voice: buildVoice(
+          `${question.question} A : ${question.choices.a}. B : ${question.choices.b}. C : ${question.choices.c}.`,
+          "Friendly"
+        ),
+        background: bg,
+        text: buildText(choicesText, {
+          fontSize: 32,
+          fontWeight: "bold",
+          color: "#FFFFFF",
+          position: { x: 0.06, y: 0.53 },
+        }),
+      },
+      // Scene 3: Countdown — silent (2s)
+      {
+        character,
+        voice: buildSilence(2),
+        background: bg,
+        text: buildText("3 … 2 … 1 …", {
+          fontSize: 72,
+          fontWeight: "bold",
+          color: "#8B5CF6",
+          position: { x: 0.06, y: 0.58 },
+        }),
+      },
+      // Scene 4: Answer reveal (5-6s)
+      {
+        character,
+        voice: buildVoice(
+          `C'est la réponse ${answerLetter}, ${question.answer_text} ! ${question.fun_fact}`,
+          "Excited"
+        ),
+        background: bg,
+        text: buildText(`✅ ${answerLetter} : ${question.answer_text}`, {
+          fontSize: 44,
+          fontWeight: "bold",
+          color: "#3B82F6",
+          position: { x: 0.06, y: 0.58 },
+        }),
+      },
+      // Scene 5: Outro + CTA (3-4s)
+      {
+        character,
+        voice: buildVoice(question.outro_script, "Friendly"),
+        background: bg,
+        text: buildText("Télécharge BigHead Quiz !", {
+          fontSize: 44,
+          fontWeight: "bold",
+          color: "#8B5CF6",
+          position: { x: 0.06, y: 0.58 },
+        }),
+      },
     ],
+    dimension: { width: 1080, height: 1920 },
+    caption: false,
   };
 
-  if (process.env.HEYGEN_CALLBACK_URL) {
-    body.callback_url = process.env.HEYGEN_CALLBACK_URL;
-    body.callback_id = "bighead-quiz-pipeline";
-  }
+  console.log("  v2 API — 5 scenes, deterministic avatar:");
+  console.log(`    Category: ${category}`);
+  console.log(`    Question: "${question.question}"`);
+  console.log(`    Answer: ${answerLetter} - ${question.answer_text}`);
+  console.log(`    Avatar (talking_photo_id): ${character.talking_photo_id}`);
+  console.log(`    Background: ${bg.value}`);
 
-  const res = await fetch(`${HEYGEN_BASE}/v1/video_agent/generate`, {
+  const res = await fetch(`${HEYGEN_BASE}/v2/video/generate`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify(body),
+    body: JSON.stringify(videoConfig),
   });
 
   const data = await res.json();
 
   if (!data?.data?.video_id) {
-    console.error("Video Agent response:", JSON.stringify(data, null, 2));
+    console.error("HeyGen v2 response:", JSON.stringify(data, null, 2));
     throw new Error(
-      `HeyGen Video Agent generation failed: ${JSON.stringify(data?.error || data)}`
+      `HeyGen v2 generation failed: ${JSON.stringify(data?.error || data)}`
     );
   }
 

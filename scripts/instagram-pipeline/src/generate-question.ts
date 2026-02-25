@@ -1,5 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 
+export type QuizCategory =
+  | "stars"
+  | "pop_culture"
+  | "musique"
+  | "sport"
+  | "science"
+  | "geo"
+  | "food"
+  | "tech";
+
 export type QuizQuestion = {
   hook: string;
   question: string;
@@ -11,6 +21,7 @@ export type QuizQuestion = {
   caption: string;
   intro_script: string;
   outro_script: string;
+  category: QuizCategory;
   // Appearance variations for HeyGen AI
   outfit: string;
   expression: string;
@@ -72,6 +83,7 @@ Format JSON strict :
   "caption": "texte Instagram engageant max 200 car",
   "intro_script": "max 10 mots, oral naturel (ex: Hé, quiz du jour, c'est parti !)",
   "outro_script": "max 12 mots, CTA lien en bio + promo app (ex: Clique le lien en bio et télécharge BigHead !)",
+  "category": "stars | pop_culture | musique | sport | science | geo | food | tech",
   "outfit": "description courte de la tenue de Mia (5-8 mots)",
   "expression": "description de l'expression faciale (3-5 mots)"
 }`;
@@ -109,6 +121,7 @@ export async function generateQuestion(
     !json.fun_fact ||
     !json.intro_script ||
     !json.outro_script ||
+    !json.category ||
     !json.outfit ||
     !json.expression
   ) {

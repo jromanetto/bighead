@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { generateQuestion } from "./generate-question.js";
 import {
-  generateVideoAgent,
+  generateVideo,
   waitForVideo,
 } from "./heygen.js";
 import { postReelToInstagram, postStoryToInstagram } from "./instagram.js";
@@ -24,7 +24,7 @@ async function main() {
   // Validate env vars
   const required: string[] = ["ANTHROPIC_API_KEY"];
   if (!DRY_RUN) {
-    required.push("HEYGEN_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_KEY");
+    required.push("HEYGEN_API_KEY", "HEYGEN_AVATAR_ID", "HEYGEN_VOICE_ID", "SUPABASE_URL", "SUPABASE_SERVICE_KEY");
   }
   if (!DRY_RUN && !SKIP_INSTAGRAM) {
     required.push("INSTAGRAM_ACCESS_TOKEN", "INSTAGRAM_USER_ID");
@@ -46,6 +46,7 @@ async function main() {
   console.log(`  Fun fact: "${question.fun_fact}"`);
   console.log(`  Intro: "${question.intro_script.slice(0, 80)}..."`);
   console.log(`  Outro: "${question.outro_script.slice(0, 80)}..."`);
+  console.log(`  Category: "${question.category}"`);
   console.log(`  Outfit: "${question.outfit}"`);
   console.log(`  Expression: "${question.expression}"\n`);
 
@@ -60,11 +61,11 @@ async function main() {
   console.log(`  DB record created: ${postId}\n`);
 
   try {
-    // Step 2: Generate video with HeyGen Video Agent
-    console.log("🎥 Step 2: Generating video with HeyGen Video Agent...");
+    // Step 2: Generate video with HeyGen v2 API (deterministic avatar)
+    console.log("🎥 Step 2: Generating video with HeyGen v2 API...");
     await updatePost(postId, { status: "generating" });
 
-    const videoId = await generateVideoAgent(question);
+    const videoId = await generateVideo(question);
 
     console.log(`  Video ID: ${videoId}`);
     await updatePost(postId, { heygen_video_id: videoId });
