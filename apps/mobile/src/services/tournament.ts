@@ -22,6 +22,7 @@ export interface TournamentQuestion {
   question_id: string;
   question_text: string;
   player_name: string;
+  image_url?: string | null;
   options: {
     A: string;
     B: string;

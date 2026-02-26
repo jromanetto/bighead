@@ -26,6 +26,7 @@ import {
   type DuelQuestion,
 } from "../../src/services/duel";
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../../src/utils/feedback";
+import { QuestionImage } from "../../src/components/QuestionImage";
 
 // Arena colors
 const ARENA_COLORS = {
@@ -853,6 +854,14 @@ export default function DuelPlayScreen() {
               Football • ⚽
             </Text>
           </View>
+
+          {/* Question Image */}
+          {currentQuestion.image_url && (
+            <QuestionImage
+              uri={currentQuestion.image_url}
+              style={{ width: '100%', height: 140, borderRadius: 12, marginBottom: 12 }}
+            />
+          )}
 
           {/* Question */}
           <Text className="text-xl font-medium text-white leading-7">

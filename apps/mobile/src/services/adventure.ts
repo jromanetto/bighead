@@ -321,7 +321,7 @@ export async function getFamilyQuestions(
 
   let query = supabase
     .from("questions")
-    .select("id, question_text, correct_answer, category, difficulty, min_age")
+    .select("id, question_text, correct_answer, category, difficulty, min_age, image_url, image_credit")
     .eq("is_active", true)
     .eq("language", "fr")
     .lte("min_age", effectiveMinAge);

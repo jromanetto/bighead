@@ -53,12 +53,13 @@ class MonetizationService {
 
     // Check if API key is configured and valid (not a placeholder)
     if (!REVENUECAT_API_KEY || REVENUECAT_API_KEY.includes("YOUR_")) {
-      // Silently skip - RevenueCat not configured (demo mode)
+      console.warn("[RC] No API key configured, skipping init. Platform:", Platform.OS);
       return;
     }
+    console.log("[RC] Initializing with key:", REVENUECAT_API_KEY.substring(0, 10) + "...");
 
     try {
-      Purchases.setLogLevel(LOG_LEVEL.WARN); // Reduce log noise
+      Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
       await Purchases.configure({
         apiKey: REVENUECAT_API_KEY,
@@ -70,7 +71,7 @@ class MonetizationService {
 
       // Get initial customer info
       await this.refreshCustomerInfo();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize RevenueCat:", error);
     }
   }

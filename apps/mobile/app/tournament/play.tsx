@@ -15,6 +15,7 @@ import {
   type TournamentQuestion,
 } from "../../src/services/tournament";
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../../src/utils/feedback";
+import { QuestionImage } from "../../src/components/QuestionImage";
 
 export default function TournamentPlayScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -213,13 +214,21 @@ export default function TournamentPlayScreen() {
 
         {/* Question */}
         <View className="px-6 py-6">
-          <View className="bg-gray-800 rounded-2xl p-6">
-            <Text className="text-gray-400 text-center text-sm mb-2">
-              QUI EST-CE ?
-            </Text>
-            <Text className="text-white text-lg text-center leading-7">
-              {currentQuestion.question_text}
-            </Text>
+          <View className="bg-gray-800 rounded-2xl overflow-hidden">
+            {currentQuestion.image_url && (
+              <QuestionImage
+                uri={currentQuestion.image_url}
+                style={{ width: '100%', height: 140 }}
+              />
+            )}
+            <View className="p-6">
+              <Text className="text-gray-400 text-center text-sm mb-2">
+                QUI EST-CE ?
+              </Text>
+              <Text className="text-white text-lg text-center leading-7">
+                {currentQuestion.question_text}
+              </Text>
+            </View>
           </View>
         </View>
 

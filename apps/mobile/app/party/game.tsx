@@ -13,6 +13,7 @@ import {
 import { getSettings } from "../../src/services/settings";
 import { playSound } from "../../src/services/sounds";
 import { IconButton } from "../../src/components/ui";
+import { QuestionImage } from "../../src/components/QuestionImage";
 
 // Design colors (same as other screens)
 const COLORS = {
@@ -378,10 +379,19 @@ export default function PartyGameScreen() {
         </View>
 
         {/* Question */}
-        <View className="rounded-2xl p-6 mb-6" style={{ backgroundColor: COLORS.surface }}>
-          <Text className="text-xl text-center leading-7" style={{ color: COLORS.text }}>
-            {currentQuestion.question}
-          </Text>
+        <View className="rounded-2xl overflow-hidden mb-6" style={{ backgroundColor: COLORS.surface }}>
+          {currentQuestion.imageUrl && (
+            <QuestionImage
+              uri={currentQuestion.imageUrl}
+              style={{ width: '100%', height: 160 }}
+              credit={currentQuestion.imageCredit}
+            />
+          )}
+          <View className="p-6">
+            <Text className="text-xl text-center leading-7" style={{ color: COLORS.text }}>
+              {currentQuestion.question}
+            </Text>
+          </View>
         </View>
 
         {/* Answers */}

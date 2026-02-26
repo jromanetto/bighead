@@ -13,6 +13,7 @@ import {
   QuestionCount,
   getCategoryInfo,
 } from "../../../src/types/adventure";
+import { QuestionImage } from "../../../src/components/QuestionImage";
 
 const COLORS = {
   bg: "#161a1d",
@@ -174,6 +175,8 @@ interface Question {
   question_text: string;
   correct_answer: string;
   category: string;
+  image_url?: string | null;
+  image_credit?: string | null;
 }
 
 export default function FamilyPlayScreen() {
@@ -402,16 +405,25 @@ export default function FamilyPlayScreen() {
 
         {/* Question Card */}
         <View
-          className="rounded-3xl p-8"
+          className="rounded-3xl overflow-hidden"
           style={{
             backgroundColor: COLORS.surface,
             borderWidth: 1,
             borderColor: "rgba(255,255,255,0.05)",
           }}
         >
-          <Text className="text-white text-2xl font-bold text-center leading-relaxed">
-            "{currentQuestion?.question_text}"
-          </Text>
+          {currentQuestion?.image_url && (
+            <QuestionImage
+              uri={currentQuestion.image_url}
+              style={{ width: '100%', height: 160 }}
+              credit={currentQuestion.image_credit}
+            />
+          )}
+          <View className="p-8">
+            <Text className="text-white text-2xl font-bold text-center leading-relaxed">
+              "{currentQuestion?.question_text}"
+            </Text>
+          </View>
         </View>
 
         {/* Answer Section */}

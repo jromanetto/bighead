@@ -11,12 +11,12 @@ const LEGAL_URLS = {
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTranslation } from "../src/contexts/LanguageContext";
 import {
-  monetizationService,
   getOfferings,
   purchasePackage,
   restorePurchases,
   isPremium,
   grantPremiumToUser,
+  monetizationService,
 } from "../src/services/monetization";
 import { IconButton } from "../src/components/ui";
 import { getAllLimits, DAILY_LIMITS, GameMode } from "../src/services/dailyLimits";
@@ -145,17 +145,23 @@ export default function PremiumScreen() {
   const loadOfferings = async () => {
     try {
       if (user?.id) {
+        console.log("[Premium] Initializing RC with user:", user.id);
         await monetizationService.initialize(user.id);
+      } else {
+        console.warn("[Premium] No user ID, skipping RC init");
       }
 
       // Check both RevenueCat and Supabase profile for premium status
       const revenueCatPremium = await isPremium();
       const premium = revenueCatPremium || isProfilePremium;
       setUserIsPremium(premium);
+      console.log("[Premium] Status — RC:", revenueCatPremium, "Profile:", isProfilePremium);
 
       if (!premium) {
         const offering = await getOfferings();
-        if (offering?.availablePackages && offering.availablePackages.length > 0) {
+        const pkgCount = offering?.availablePackages?.length || 0;
+        console.log("[Premium] Offerings:", offering ? `${pkgCount} packages` : "null");
+        if (offering?.availablePackages && pkgCount > 0) {
           setPackages(offering.availablePackages as Package[]);
           const monthly = offering.availablePackages.find(
             (p: any) => p.packageType === "MONTHLY"
@@ -164,13 +170,12 @@ export default function PremiumScreen() {
             setSelectedPackage(monthly.identifier);
           }
         } else {
-          // No offerings available — show error, don't show fake packages
-          setError("Unable to load subscription plans. Please try again later.");
+          setError(t("unableToLoadPlans"));
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error loading offerings:", err);
-      setError("Unable to load subscription plans. Please try again later.");
+      setError(t("unableToLoadPlans"));
     } finally {
       setLoading(false);
     }
@@ -207,7 +212,7 @@ export default function PremiumScreen() {
           setShowConfetti(true);
         }, 100);
       } else {
-        setError("Purchase failed. Please try again or contact support.");
+        setError(t("purchaseFailed"));
       }
     } catch (err: any) {
       console.error("Purchase error:", err);
@@ -215,8 +220,7 @@ export default function PremiumScreen() {
         // User cancelled - no error message needed
         return;
       }
-      const errorMessage = err.message || err.code || "Unknown error";
-      setError(`Purchase failed: ${errorMessage}`);
+      setError(t("purchaseFailed"));
     } finally {
       setPurchasing(false);
     }
@@ -229,14 +233,14 @@ export default function PremiumScreen() {
     try {
       const success = await restorePurchases();
       if (!success) {
-        setError("No purchases found to restore.");
+        setError(t("noPurchasesFound"));
         return;
       }
 
       // Verify user actually has premium entitlement after restore
       const hasPremium = await isPremium();
       if (!hasPremium) {
-        setError("No active premium subscription found.");
+        setError(t("noActivePremium"));
         return;
       }
 
@@ -256,7 +260,7 @@ export default function PremiumScreen() {
       }, 100);
     } catch (err) {
       console.error("Restore error:", err);
-      setError("Failed to restore purchases.");
+      setError(t("restoreFailed"));
     } finally {
       setLoading(false);
     }
@@ -626,6 +630,20 @@ export default function PremiumScreen() {
             <Text style={{ color: COLORS.coral }} className="text-center">
               {error}
             </Text>
+            {packages.length === 0 && (
+              <Pressable
+                onPress={() => {
+                  setError(null);
+                  setLoading(true);
+                  loadOfferings();
+                }}
+                style={{ marginTop: 12, alignSelf: "center" }}
+              >
+                <Text style={{ color: COLORS.primary, fontWeight: "600" }}>
+                  {t("retry")}
+                </Text>
+              </Pressable>
+            )}
           </View>
         )}
 

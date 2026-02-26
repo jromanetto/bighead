@@ -301,6 +301,13 @@ export const translations = {
     scienceNature: "Science & Nature",
     worldGeography: "World Geography",
 
+    // Premium Errors
+    unableToLoadPlans: "Unable to load subscription plans. Please try again later.",
+    purchaseFailed: "Purchase failed. Please try again or contact support.",
+    noPurchasesFound: "No purchases found to restore.",
+    noActivePremium: "No active premium subscription found.",
+    restoreFailed: "Failed to restore purchases.",
+
     // Misc
     loading: "Loading...",
     error: "Error",
@@ -610,6 +617,13 @@ export const translations = {
     triviaGod: "Dieu du Quiz",
     scienceNature: "Science & Nature",
     worldGeography: "Géographie mondiale",
+
+    // Premium Errors
+    unableToLoadPlans: "Impossible de charger les abonnements. Réessaie plus tard.",
+    purchaseFailed: "L'achat a échoué. Réessaie ou contacte le support.",
+    noPurchasesFound: "Aucun achat trouvé à restaurer.",
+    noActivePremium: "Aucun abonnement premium actif trouvé.",
+    restoreFailed: "Échec de la restauration des achats.",
 
     // Misc
     loading: "Chargement...",
