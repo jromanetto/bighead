@@ -1,11 +1,11 @@
 name: Daily Notification
 
 on:
-  schedule:
-    # Run every day at 18:00 UTC (19:00 Paris winter / 20:00 Paris summer)
-    # This sends the daily question notification in the evening
-    - cron: '0 18 * * *'
-  workflow_dispatch: # Allow manual trigger for testing
+  # VPS cron at 19:00 Paris handles daily scheduling (correct timezone year-round)
+  # GitHub Actions cron disabled to avoid duplicate notifications
+  # schedule:
+  #   - cron: '0 18 * * *'
+  workflow_dispatch: # Manual trigger for testing
 
 jobs:
   send-notification:
