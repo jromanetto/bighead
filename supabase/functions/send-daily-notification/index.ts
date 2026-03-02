@@ -106,20 +106,35 @@ function truncateQuestion(question: string, maxLength: number = 80): string {
   return question.substring(0, maxLength - 3) + "...";
 }
 
-// Get emoji for category
+// Get emoji for category (using DB category codes)
 function getCategoryEmoji(category: string): string {
   const emojis: Record<string, string> = {
-    "Culture Générale": "🧠",
-    Histoire: "📜",
-    Sport: "⚽",
-    Géographie: "🌍",
-    Cinéma: "🎬",
-    Musique: "🎵",
-    Sciences: "🔬",
-    Littérature: "📚",
-    Art: "🎨",
-    "Jeux Vidéo": "🎮",
-    Technologie: "💻",
+    // DB category codes (English)
+    general: "🧠",
+    history: "📜",
+    sport: "⚽",
+    geography: "🌍",
+    cinema: "🎬",
+    music: "🎵",
+    science: "🔬",
+    literature: "📚",
+    art: "🎨",
+    technology: "💻",
+    nature: "🌿",
+    animals: "🐾",
+    movies: "🎬",
+    // Legacy French category codes (for older questions)
+    culture_generale: "🧠",
+    histoire: "📜",
+    geographie: "🌍",
+    musique: "🎵",
+    sciences: "🔬",
+    litterature: "📚",
+    jeux_video: "🎮",
+    technologie: "💻",
+    animaux: "🐾",
+    football: "⚽",
+    pop_culture: "🌟",
   };
   return emojis[category] || "🧠";
 }
@@ -151,27 +166,42 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    // 1. Get or create today's question (French)
-    console.log("Getting today's question...");
-    const { data: dailyQuestion, error: questionError } = await supabase.rpc(
-      "get_or_create_daily_question",
-      { target_date: new Date().toISOString().split('T')[0], p_language: 'fr' }
-    );
+    const today = new Date().toISOString().split('T')[0];
 
-    if (questionError || !dailyQuestion || dailyQuestion.length === 0) {
+    // 1. Get or create today's questions (both FR and EN)
+    console.log("Getting today's questions (FR + EN)...");
+
+    const [frResult, enResult] = await Promise.all([
+      supabase.rpc("get_or_create_daily_question", { target_date: today, p_language: 'fr' }),
+      supabase.rpc("get_or_create_daily_question", { target_date: today, p_language: 'en' }),
+    ]);
+
+    // French question is required, English is optional
+    if (frResult.error || !frResult.data || frResult.data.length === 0) {
       throw new Error(
-        `Failed to get daily question: ${questionError?.message || "No question returned"}`
+        `Failed to get FR daily question: ${frResult.error?.message || "No question returned"}`
       );
     }
 
-    const question = dailyQuestion[0];
-    console.log(`Daily question: ${question.question_text}`);
+    const frQuestion = frResult.data[0];
+    const enQuestion = enResult.data?.[0] || null;
 
-    // 2. Get all active push tokens
+    console.log(`FR daily question: ${frQuestion.question_text}`);
+    if (enQuestion) {
+      console.log(`EN daily question: ${enQuestion.question_text}`);
+    }
+
+    // 2. Get all active push tokens with user language preference
     console.log("Fetching active push tokens...");
     const { data: tokens, error: tokensError } = await supabase.rpc(
-      "get_active_push_tokens"
-    );
+      "get_active_push_tokens_with_language"
+    ).then((result: any) => {
+      // Fallback to basic token fetch if the new RPC doesn't exist yet
+      if (result.error?.message?.includes("does not exist")) {
+        return supabase.rpc("get_active_push_tokens");
+      }
+      return result;
+    });
 
     if (tokensError) {
       throw new Error(`Failed to get push tokens: ${tokensError.message}`);
@@ -182,7 +212,7 @@ serve(async (req) => {
         JSON.stringify({
           success: true,
           message: "No active push tokens found",
-          question_id: question.question_id,
+          question_id: frQuestion.question_id,
           notifications_sent: 0,
         }),
         {
@@ -193,27 +223,35 @@ serve(async (req) => {
 
     console.log(`Found ${tokens.length} active push tokens`);
 
-    // 3. Prepare notification messages
-    const emoji = getCategoryEmoji(question.category);
-    const title = `${emoji} Question du jour !`;
-    const body = truncateQuestion(question.question_text);
-
+    // 3. Prepare notification messages (language-aware)
     const messages: ExpoPushMessage[] = tokens.map(
-      (t: { user_id: string; push_token: string }) => ({
-        to: t.push_token,
-        title,
-        body,
-        data: {
-          type: "daily_question",
-          questionId: question.question_id,
-          dailyQuestionId: question.id,
-          screen: "daily", // For deep linking
-        },
-        sound: "default",
-        priority: "high",
-        channelId: "reminders",
-        ttl: 86400, // 24 hours
-      })
+      (t: { user_id: string; push_token: string; language?: string }) => {
+        const userLang = t.language || 'fr';
+        const isEn = userLang === 'en' && enQuestion;
+        const question = isEn ? enQuestion : frQuestion;
+
+        const emoji = getCategoryEmoji(question.category);
+        const title = isEn
+          ? `${emoji} Daily Question!`
+          : `${emoji} Question du jour !`;
+        const body = truncateQuestion(question.question_text);
+
+        return {
+          to: t.push_token,
+          title,
+          body,
+          data: {
+            type: "daily_question",
+            questionId: question.question_id,
+            dailyQuestionId: question.id,
+            screen: "daily",
+          },
+          sound: "default" as const,
+          priority: "high" as const,
+          channelId: "reminders",
+          ttl: 86400,
+        };
+      }
     );
 
     // 4. Send notifications
@@ -234,9 +272,9 @@ serve(async (req) => {
           ? ticket.message || ticket.details?.error
           : null;
 
-      // Log to database
+      // Log to database (use FR question ID for logging)
       await supabase.rpc("log_notification_result", {
-        p_daily_question_id: question.id,
+        p_daily_question_id: frQuestion.id,
         p_user_id: token.user_id,
         p_push_token: token.push_token,
         p_status: status,
@@ -271,9 +309,9 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         question: {
-          id: question.id,
-          text: question.question_text,
-          category: question.category,
+          id: frQuestion.id,
+          text: frQuestion.question_text,
+          category: frQuestion.category,
         },
         notifications: {
           total: tokens.length,

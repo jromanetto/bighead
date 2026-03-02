@@ -2,8 +2,9 @@ name: Daily Notification
 
 on:
   schedule:
-    # Run every day at 07:00 UTC (08:00 Paris winter / 09:00 Paris summer)
-    - cron: '0 7 * * *'
+    # Run every day at 18:00 UTC (19:00 Paris winter / 20:00 Paris summer)
+    # This sends the daily question notification in the evening
+    - cron: '0 18 * * *'
   workflow_dispatch: # Allow manual trigger for testing
 
 jobs:

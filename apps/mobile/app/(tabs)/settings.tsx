@@ -31,7 +31,6 @@ export default function SettingsScreen() {
   const { language, setLanguage, t } = useLanguage();
   const {
     requestPermission,
-    scheduleDailyReminder,
     cancelAllNotifications,
   } = useNotificationContext();
   const { showRatingModal, openRatingModal, closeRatingModal } = useRatingPrompt();
@@ -72,10 +71,19 @@ export default function SettingsScreen() {
         if (value) {
           const granted = await requestPermission();
           if (granted) {
-            await scheduleDailyReminder(19, 0);
-            Alert.alert("Notifications activees", "Tu recevras un rappel tous les jours a 19h !");
+            Alert.alert(
+              t("notifications"),
+              language === "fr"
+                ? "Tu recevras la question du jour tous les soirs a 19h !"
+                : "You'll receive the daily question every evening at 7 PM!"
+            );
           } else {
-            Alert.alert("Permission refusee", "Active les notifications dans les reglages de ton telephone.");
+            Alert.alert(
+              language === "fr" ? "Permission refusee" : "Permission denied",
+              language === "fr"
+                ? "Active les notifications dans les reglages de ton telephone."
+                : "Enable notifications in your phone settings."
+            );
             setSettings((prev) => ({ ...prev, notifications_enabled: false }));
           }
         } else {
