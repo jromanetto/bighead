@@ -11,29 +11,25 @@ function headers() {
 }
 
 // ============================================================
-// v2 API helpers — deterministic avatar via talking_photo_id
+// v2 API — deterministic avatar, reliable rendering
 // ============================================================
 
-// Category → talking_photo_id pool (multiple outfits per category for variety)
+// Category → talking_photo_id with outfit matching the theme
 const CATEGORY_AVATARS: Record<QuizCategory, string[]> = {
   stars: [
     "65a62fec10cc492c94fa894bb8e067c0",    // Glamorous Nightshade
     "b91eede2c90f4767909ec6e024aee53b",    // Confident Businesswoman Green Suit
     "36418c4572d64c97b105fc962eb61086",    // Professional Dark Blazer
-    "cad887f2de1844e2a20da03e5be05cc6",    // emma (classic)
   ],
   sport: [
     "b29c1b21c52343cb9ab1f380807627c1",    // Energetic Athletic
     "9b24cc68d0314c09a82d4220ce5019bd",    // Athlète Urbain
     "2d81ec62e53d45f3a8718b929880c633",    // Torcedora Brasileira
-    "a92eeae1acae4a4dba742153ce3435aa",    // Joyful Enthusiast
   ],
   pop_culture: [
     "ffcd7866946348109e59a42b4bc1c68e",    // Pastel Hoodie Trendsetter
     "bfdae66c8b0f4843b4ee80f9feb0d653",    // Casual Chic with a Cap
     "51aacceb3573425591dd7f25a34fbb64",    // Casual Comfort Chic
-    "76f51670a1d84df9b0617640f8d92c7e",    // Casual Chic in Gray
-    "a92eeae1acae4a4dba742153ce3435aa",    // Joyful Enthusiast
   ],
   musique: [
     "bfdfb0c6ee3e456ab8c752018fb4d28c",    // Rockstar in Leather
@@ -52,7 +48,6 @@ const CATEGORY_AVATARS: Record<QuizCategory, string[]> = {
   ],
   geo: [
     "58b38887a8524c82b94164b14b0119b8",    // Elegantly Confident Professional
-    "76f51670a1d84df9b0617640f8d92c7e",    // Casual Chic in Gray
     "bfdae66c8b0f4843b4ee80f9feb0d653",    // Casual Chic with a Cap
     "2d81ec62e53d45f3a8718b929880c633",    // Torcedora Brasileira
   ],
@@ -60,7 +55,6 @@ const CATEGORY_AVATARS: Record<QuizCategory, string[]> = {
     "a12176a6a2b5442cb60fe7dd3020f463",    // Pastel Purple Streetwear
     "0ceb0034e0c644f9a34a96f415b7975d",    // Casual Glow Enthusiast
     "51aacceb3573425591dd7f25a34fbb64",    // Casual Comfort Chic
-    "a92eeae1acae4a4dba742153ce3435aa",    // Joyful Enthusiast
   ],
 };
 
@@ -68,43 +62,44 @@ function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Category → realistic background images (Pexels free stock photos)
+// Category → realistic indoor background images (Pexels free stock photos)
+// These look like real rooms/studios so Mia appears to be filming from a real place
 const CATEGORY_BG_IMAGES: Record<QuizCategory, string[]> = {
   stars: [
-    "https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg?auto=compress&cs=tinysrgb&w=1080",   // spotlight stage
-    "https://images.pexels.com/photos/1387174/pexels-photo-1387174.jpeg?auto=compress&cs=tinysrgb&w=1080",   // red carpet vibes
+    "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920",  // luxury living room
+    "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=1920",  // modern glam interior
   ],
   sport: [
-    "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1080",
-    "https://images.pexels.com/photos/399187/pexels-photo-399187.jpeg?auto=compress&cs=tinysrgb&w=1080",     // stadium night
+    "https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg?auto=compress&cs=tinysrgb&w=1920",  // gym / fitness room
+    "https://images.pexels.com/photos/3076516/pexels-photo-3076516.jpeg?auto=compress&cs=tinysrgb&w=1920",  // sports locker room vibes
   ],
   pop_culture: [
-    "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1080",   // neon lights
-    "https://images.pexels.com/photos/1983037/pexels-photo-1983037.jpeg?auto=compress&cs=tinysrgb&w=1080",   // cinema
+    "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg?auto=compress&cs=tinysrgb&w=1920",  // gaming setup with LED lights
+    "https://images.pexels.com/photos/1444416/pexels-photo-1444416.jpeg?auto=compress&cs=tinysrgb&w=1920",  // neon lit room
   ],
   musique: [
-    "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=1080",   // concert lights
-    "https://images.pexels.com/photos/1644616/pexels-photo-1644616.jpeg?auto=compress&cs=tinysrgb&w=1080",   // DJ stage
+    "https://images.pexels.com/photos/164938/pexels-photo-164938.jpeg?auto=compress&cs=tinysrgb&w=1920",    // music studio with instruments
+    "https://images.pexels.com/photos/6966/abstract-music-rock-bw.jpg?auto=compress&cs=tinysrgb&w=1920",   // music studio dark vibe
   ],
   tech: [
-    "https://images.pexels.com/photos/2007647/pexels-photo-2007647.jpeg?auto=compress&cs=tinysrgb&w=1080",   // neon circuit
-    "https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg?auto=compress&cs=tinysrgb&w=1080",   // tech lights
+    "https://images.pexels.com/photos/1714208/pexels-photo-1714208.jpeg?auto=compress&cs=tinysrgb&w=1920",  // modern desk setup with monitors
+    "https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=1920",  // clean tech workspace
   ],
   science: [
-    "https://images.pexels.com/photos/956981/milky-way-starry-sky-night-sky-star-956981.jpeg?auto=compress&cs=tinysrgb&w=1080",
-    "https://images.pexels.com/photos/1274260/pexels-photo-1274260.jpeg?auto=compress&cs=tinysrgb&w=1080",   // cosmos
+    "https://images.pexels.com/photos/2041540/pexels-photo-2041540.jpeg?auto=compress&cs=tinysrgb&w=1920",  // library with books
+    "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=1920", // bookshelf wall
   ],
   geo: [
-    "https://images.pexels.com/photos/1274260/pexels-photo-1274260.jpeg?auto=compress&cs=tinysrgb&w=1080",   // earth nature
-    "https://images.pexels.com/photos/414171/pexels-photo-414171.jpeg?auto=compress&cs=tinysrgb&w=1080",     // mountain landscape
+    "https://images.pexels.com/photos/2079246/pexels-photo-2079246.jpeg?auto=compress&cs=tinysrgb&w=1920",  // cozy room with world map
+    "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1920",  // warm living room
   ],
   food: [
-    "https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=1080",     // dark restaurant
-    "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=1080",   // kitchen ambiance
+    "https://images.pexels.com/photos/1599791/pexels-photo-1599791.jpeg?auto=compress&cs=tinysrgb&w=1920",  // restaurant interior
+    "https://images.pexels.com/photos/2544829/pexels-photo-2544829.jpeg?auto=compress&cs=tinysrgb&w=1920",  // modern kitchen
   ],
 };
 
-// Fallback solid colors if image backgrounds fail
+// Fallback solid colors if image download fails on HeyGen side
 const CATEGORY_BG_COLORS: Record<QuizCategory, string> = {
   stars: "#1A0A2E",
   sport: "#0A1628",
@@ -116,10 +111,11 @@ const CATEGORY_BG_COLORS: Record<QuizCategory, string> = {
   food: "#1A0F0A",
 };
 
-/** Always use Emma's talking_photo_id from env — single avatar across all videos */
-function pickAvatarId(): string {
+
+/** Always use the same Mia avatar — consistent identity across all videos */
+function getAvatarId(): string {
   const id = process.env.HEYGEN_AVATAR_ID;
-  if (!id) throw new Error("Missing HEYGEN_AVATAR_ID (talking_photo_id) in env");
+  if (!id) throw new Error("Missing HEYGEN_AVATAR_ID in env");
   return id;
 }
 
@@ -137,26 +133,38 @@ function buildCharacter(talkingPhotoId: string, motionPrompt?: string) {
   };
 }
 
-function buildBackground(category?: QuizCategory) {
-  if (category && CATEGORY_BG_IMAGES[category]) {
-    const url = pickRandom(CATEGORY_BG_IMAGES[category]);
-    return { type: "image" as const, url, fit: "cover" as const };
+function buildBackground(category: QuizCategory) {
+  // Use realistic indoor image backgrounds so Mia looks like she's in a real place
+  const images = CATEGORY_BG_IMAGES[category];
+  if (images && images.length > 0) {
+    return { type: "image" as const, url: pickRandom(images), fit: "cover" as const };
   }
-  const color = (category && CATEGORY_BG_COLORS[category]) || "#0D0D0D";
+  // Fallback to solid color
+  const color = CATEGORY_BG_COLORS[category] || "#0D0D0D";
   return { type: "color" as const, value: color };
+}
+
+export type VideoLang = "fr" | "en";
+
+function getVoiceId(lang: VideoLang): string {
+  if (lang === "en") {
+    const id = process.env.HEYGEN_VOICE_ID_EN;
+    if (!id) throw new Error("Missing HEYGEN_VOICE_ID_EN in env");
+    return id;
+  }
+  const id = process.env.HEYGEN_VOICE_ID;
+  if (!id) throw new Error("Missing HEYGEN_VOICE_ID in env");
+  return id;
 }
 
 function buildVoice(
   inputText: string,
+  lang: VideoLang,
   emotion: "Excited" | "Friendly" = "Friendly"
 ) {
-  const voiceId = process.env.HEYGEN_VOICE_ID;
-  if (!voiceId) {
-    throw new Error("Missing HEYGEN_VOICE_ID in env");
-  }
   return {
     type: "text" as const,
-    voice_id: voiceId,
+    voice_id: getVoiceId(lang),
     input_text: inputText,
     emotion,
     speed: 1.0,
@@ -195,102 +203,128 @@ function buildText(
 }
 
 // ============================================================
-// generateVideo — v2 API, 5 scenes, guaranteed avatar
+// generateVideo — v2 API, 6 scenes with improvements
 // ============================================================
 
 /**
  * Generate a quiz video using HeyGen v2 API (/v2/video/generate).
  *
- * Uses talking_photo_id for DETERMINISTIC avatar selection (Emma/Mia).
- * The Video Agent API (/v1/video_agent/generate) was deprecated because
- * config.avatar_id is only a hint — the AI can and does ignore it.
+ * Improvements:
+ * 1. Category-matched video backgrounds (immersive loops)
+ * 2. Avatar dressed per category (different talking_photo_ids)
+ * 3. Question & choices split into 2 scenes with pause
+ * 4. Silent countdown (no voice, just visual)
+ * 5. Larger, bolder text overlays for mobile readability
  *
- * 5 scenes: Hook → Question+Choices → Countdown → Answer → Outro
+ * 6 scenes: Hook → Question → Choices → Silent Countdown → Answer → Outro
  */
 export async function generateVideo(
-  question: QuizQuestion
+  question: QuizQuestion,
+  lang: VideoLang = "fr"
 ): Promise<string> {
   const answerLetter = question.answer.toUpperCase();
   const category = question.category;
-  const avatarId = pickAvatarId();
+  const avatarId = getAvatarId();
   const bg = buildBackground(category);
+  const isFr = lang === "fr";
 
-  // Combine question + choices into a single text overlay
+  // Choices formatted for overlay
   const choicesText = [
-    question.question,
-    "",
     `A : ${question.choices.a}`,
     `B : ${question.choices.b}`,
     `C : ${question.choices.c}`,
   ].join("\n");
 
+  // Language-specific spoken text
+  const choicesVoice = isFr
+    ? `Réponse A : ${question.choices.a}. Réponse B : ${question.choices.b}. Réponse C : ${question.choices.c}.`
+    : `Answer A: ${question.choices.a}. Answer B: ${question.choices.b}. Answer C: ${question.choices.c}.`;
+
+  const answerVoice = isFr
+    ? `C'est la réponse ${answerLetter}, ${question.answer_text} ! ${question.fun_fact}`
+    : `The answer is ${answerLetter}, ${question.answer_text}! ${question.fun_fact}`;
+
+  const ctaText = isFr ? "Télécharge BigHead Quiz !" : "Download BigHead Quiz!";
+
   const videoConfig = {
-    title: `BigHead Quiz - ${question.question.slice(0, 50)}`,
+    title: `BigHead Quiz [${lang.toUpperCase()}] - ${question.question.slice(0, 50)}`,
     video_inputs: [
       // Scene 1: Hook / Intro (3-4s)
       {
         character: buildCharacter(avatarId, "Energetic presenter leaning forward with excitement, expressive hand gestures, smiling"),
-        voice: buildVoice(question.intro_script, "Excited"),
+        voice: buildVoice(question.intro_script, lang, "Excited"),
         background: bg,
         text: buildText(question.hook, {
+          fontSize: 72,
+          fontWeight: "bold",
+          color: "#FACC15",
+          position: { x: 0.05, y: 0.40 },
+          width: 980,
+        }),
+      },
+      // Scene 2: Question ONLY (4-5s) — no choices yet
+      {
+        character: buildCharacter(avatarId, "Curious presenter tilting head, raising one finger, natural head movements"),
+        voice: buildVoice(question.question, lang, "Friendly"),
+        background: bg,
+        text: buildText(question.question, {
+          fontSize: 52,
+          fontWeight: "bold",
+          color: "#FFFFFF",
+          position: { x: 0.05, y: 0.38 },
+          width: 980,
+        }),
+      },
+      // Scene 3: Choices appear (4-5s) — after a brief pause
+      {
+        character: buildCharacter(avatarId, "Pointing and counting choices with fingers, expressive gestures for each option"),
+        voice: buildVoice(choicesVoice, lang, "Friendly"),
+        background: bg,
+        text: buildText(choicesText, {
+          fontSize: 48,
+          fontWeight: "bold",
+          color: "#FFFFFF",
+          position: { x: 0.05, y: 0.40 },
+          width: 980,
+        }),
+      },
+      // Scene 4: Silent countdown (3s) — NO voice, pure visual
+      {
+        character: buildCharacter(avatarId, "Building suspense, leaning forward with anticipation, eyes wide"),
+        voice: buildSilence(3),
+        background: bg,
+        text: buildText("3  …  2  …  1", {
+          fontSize: 100,
+          fontWeight: "bold",
+          color: "#FACC15",
+          position: { x: 0.05, y: 0.40 },
+          width: 980,
+        }),
+      },
+      // Scene 5: Answer reveal (5-6s)
+      {
+        character: buildCharacter(avatarId, "Excited reveal, big smile, celebratory hand gestures, nodding enthusiastically"),
+        voice: buildVoice(answerVoice, lang, "Excited"),
+        background: bg,
+        text: buildText(`✅ ${answerLetter} : ${question.answer_text}`, {
+          fontSize: 64,
+          fontWeight: "bold",
+          color: "#4ADE80",
+          position: { x: 0.05, y: 0.40 },
+          width: 980,
+        }),
+      },
+      // Scene 6: Outro + CTA (3-4s)
+      {
+        character: buildCharacter(avatarId, "Friendly wave, warm smile, inviting gesture pointing down toward the link"),
+        voice: buildVoice(question.outro_script, lang, "Friendly"),
+        background: bg,
+        text: buildText(ctaText, {
           fontSize: 64,
           fontWeight: "bold",
           color: "#FACC15",
-          position: { x: 0.06, y: 0.42 },
-        }),
-      },
-      // Scene 2: Question + Choices (6-8s)
-      {
-        character: buildCharacter(avatarId, "Curious presenter pointing and counting choices with fingers, natural head movements"),
-        voice: buildVoice(
-          `${question.question} A : ${question.choices.a}. B : ${question.choices.b}. C : ${question.choices.c}.`,
-          "Friendly"
-        ),
-        background: bg,
-        text: buildText(choicesText, {
-          fontSize: 42,
-          fontWeight: "bold",
-          color: "#FACC15",
-          position: { x: 0.06, y: 0.38 },
-        }),
-      },
-      // Scene 3: Countdown — silent (2s)
-      {
-        character: buildCharacter(avatarId, "Building suspense, leaning forward with anticipation, counting down with fingers"),
-        voice: buildVoice("Trois… deux… un…", "Excited"),
-        background: bg,
-        text: buildText("3 … 2 … 1 …", {
-          fontSize: 96,
-          fontWeight: "bold",
-          color: "#FACC15",
-          position: { x: 0.06, y: 0.42 },
-        }),
-      },
-      // Scene 4: Answer reveal (5-6s)
-      {
-        character: buildCharacter(avatarId, "Excited reveal, big smile, celebratory hand gestures, nodding enthusiastically"),
-        voice: buildVoice(
-          `C'est la réponse ${answerLetter}, ${question.answer_text} ! ${question.fun_fact}`,
-          "Excited"
-        ),
-        background: bg,
-        text: buildText(`✅ ${answerLetter} : ${question.answer_text}`, {
-          fontSize: 56,
-          fontWeight: "bold",
-          color: "#4ADE80",
-          position: { x: 0.06, y: 0.42 },
-        }),
-      },
-      // Scene 5: Outro + CTA (3-4s)
-      {
-        character: buildCharacter(avatarId, "Friendly wave, warm smile, inviting gesture pointing down toward the link"),
-        voice: buildVoice(question.outro_script, "Friendly"),
-        background: bg,
-        text: buildText("Télécharge BigHead Quiz !", {
-          fontSize: 56,
-          fontWeight: "bold",
-          color: "#FACC15",
-          position: { x: 0.06, y: 0.42 },
+          position: { x: 0.05, y: 0.40 },
+          width: 980,
         }),
       },
     ],
@@ -298,15 +332,14 @@ export async function generateVideo(
     caption: false,
   };
 
-  // Log with first scene's character for reference
-  const firstChar = videoConfig.video_inputs[0].character;
-  console.log("  v2 API + Avatar IV — 5 scenes, animated talking_photo:");
+  console.log(`  v2 API — 6 scenes [${lang.toUpperCase()}]:`);
   console.log(`    Category: ${category}`);
   console.log(`    Question: "${question.question}"`);
   console.log(`    Answer: ${answerLetter} - ${question.answer_text}`);
-  console.log(`    Avatar (talking_photo_id): ${firstChar.talking_photo_id}`);
-  console.log(`    Background: ${bg.type === "image" ? "image (realistic)" : bg.value}`);
-  console.log(`    Avatar IV: enabled (expressive + motion prompts)`);
+  console.log(`    Avatar (talking_photo_id): ${avatarId}`);
+  console.log(`    Background: ${bg.type} (${category} theme)`);
+  console.log(`    Voice: ${lang.toUpperCase()}`);
+  console.log(`    Countdown: SILENT (visual only)`);
 
   const res = await fetch(`${HEYGEN_BASE}/v2/video/generate`, {
     method: "POST",

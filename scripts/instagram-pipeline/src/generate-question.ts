@@ -130,3 +130,44 @@ export async function generateQuestion(
 
   return json as QuizQuestion;
 }
+
+const TRANSLATE_SYSTEM = `You are a translator. Translate the given French quiz question JSON into English.
+Keep the EXACT same structure. Translate all text fields naturally for a casual English-speaking audience.
+The presenter is Mia, a cool quiz host on Instagram Reels and TikTok.
+
+STYLE: Casual, natural spoken English. Like talking to a friend.
+- Vary intros: "Hey!", "Alright!", "Quiz time!", "Who knows this?"
+- Vary outros with CTA: "Link in bio to download BigHead!", "Go grab BigHead, link in bio!", "BigHead is in bio, go download it!"
+- hashtags: keep #quiz #bighead, translate/adapt the rest to English
+- caption: rewrite naturally in English, keep it engaging
+- outfit and expression: translate to English
+- category: keep the same code (don't translate)
+- answer: keep the same letter
+
+Respond ONLY with valid JSON, no markdown.`;
+
+export async function translateQuestion(
+  frQuestion: QuizQuestion
+): Promise<QuizQuestion> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-5-20250929",
+    max_tokens: 1024,
+    system: TRANSLATE_SYSTEM,
+    messages: [
+      { role: "user", content: `Translate this quiz question to English:\n${JSON.stringify(frQuestion, null, 2)}` },
+    ],
+  });
+
+  const raw =
+    response.content[0].type === "text" ? response.content[0].text : "";
+  const text = raw.replace(/^```(?:json)?\s*\n?/m, "").replace(/\n?```\s*$/m, "").trim();
+  const json = JSON.parse(text);
+
+  if (!json.hook || !json.question || !json.choices?.a || !json.answer) {
+    throw new Error(`Invalid translated question: ${text}`);
+  }
+
+  return json as QuizQuestion;
+}

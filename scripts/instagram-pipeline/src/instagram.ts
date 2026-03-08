@@ -1,26 +1,20 @@
 const GRAPH_BASE = "https://graph.instagram.com/v21.0";
 
-function igUserId() {
-  return process.env.INSTAGRAM_USER_ID!;
-}
-
-function accessToken() {
-  return process.env.INSTAGRAM_ACCESS_TOKEN!;
-}
-
 /** Step 1: Create a Reel container with the video URL */
-export async function createReelContainer(
+async function createReelContainer(
   videoUrl: string,
-  caption: string
+  caption: string,
+  token: string,
+  userId: string
 ): Promise<string> {
   const params = new URLSearchParams({
     media_type: "REELS",
     video_url: videoUrl,
     caption,
-    access_token: accessToken(),
+    access_token: token,
   });
 
-  const res = await fetch(`${GRAPH_BASE}/${igUserId()}/media`, {
+  const res = await fetch(`${GRAPH_BASE}/${userId}/media`, {
     method: "POST",
     body: params,
   });
@@ -36,17 +30,18 @@ export async function createReelContainer(
 }
 
 /** Step 2: Poll container status until ready */
-export async function waitForContainer(
+async function waitForContainer(
   containerId: string,
+  token: string,
   maxWaitMs = 300_000
 ): Promise<void> {
   const start = Date.now();
-  const pollInterval = 10_000; // 10s
+  const pollInterval = 10_000;
 
   while (Date.now() - start < maxWaitMs) {
     const params = new URLSearchParams({
       fields: "status_code",
-      access_token: accessToken(),
+      access_token: token,
     });
 
     const res = await fetch(`${GRAPH_BASE}/${containerId}?${params}`);
@@ -67,16 +62,17 @@ export async function waitForContainer(
 }
 
 /** Step 3: Publish the Reel */
-export async function publishReel(containerId: string): Promise<{
-  id: string;
-  permalink?: string;
-}> {
+async function publishMedia(
+  containerId: string,
+  token: string,
+  userId: string
+): Promise<{ id: string; permalink?: string }> {
   const params = new URLSearchParams({
     creation_id: containerId,
-    access_token: accessToken(),
+    access_token: token,
   });
 
-  const res = await fetch(`${GRAPH_BASE}/${igUserId()}/media_publish`, {
+  const res = await fetch(`${GRAPH_BASE}/${userId}/media_publish`, {
     method: "POST",
     body: params,
   });
@@ -91,7 +87,7 @@ export async function publishReel(containerId: string): Promise<{
   // Get permalink
   const mediaParams = new URLSearchParams({
     fields: "permalink",
-    access_token: accessToken(),
+    access_token: token,
   });
   const mediaRes = await fetch(`${GRAPH_BASE}/${data.id}?${mediaParams}`);
   const mediaData = await mediaRes.json();
@@ -102,30 +98,39 @@ export async function publishReel(containerId: string): Promise<{
 /** Full flow: create container → wait → publish */
 export async function postReelToInstagram(
   videoUrl: string,
-  caption: string
+  caption: string,
+  token?: string,
+  userId?: string
 ): Promise<{ mediaId: string; permalink?: string }> {
+  const t = token || process.env.INSTAGRAM_ACCESS_TOKEN!;
+  const u = userId || process.env.INSTAGRAM_USER_ID!;
+
   console.log("📸 Creating Instagram Reel container...");
-  const containerId = await createReelContainer(videoUrl, caption);
+  const containerId = await createReelContainer(videoUrl, caption, t, u);
 
   console.log("⏳ Waiting for Instagram processing...");
-  await waitForContainer(containerId);
+  await waitForContainer(containerId, t);
 
   console.log("🚀 Publishing Reel...");
-  const result = await publishReel(containerId);
+  const result = await publishMedia(containerId, t, u);
 
   console.log(`✅ Reel published: ${result.permalink || result.id}`);
   return { mediaId: result.id, permalink: result.permalink };
 }
 
-/** Create a Story container (no caption supported for Stories) */
-async function createStoryContainer(videoUrl: string): Promise<string> {
+/** Create a Story container */
+async function createStoryContainer(
+  videoUrl: string,
+  token: string,
+  userId: string
+): Promise<string> {
   const params = new URLSearchParams({
     media_type: "STORIES",
     video_url: videoUrl,
-    access_token: accessToken(),
+    access_token: token,
   });
 
-  const res = await fetch(`${GRAPH_BASE}/${igUserId()}/media`, {
+  const res = await fetch(`${GRAPH_BASE}/${userId}/media`, {
     method: "POST",
     body: params,
   });
@@ -142,16 +147,21 @@ async function createStoryContainer(videoUrl: string): Promise<string> {
 
 /** Full flow: create Story container → wait → publish */
 export async function postStoryToInstagram(
-  videoUrl: string
+  videoUrl: string,
+  token?: string,
+  userId?: string
 ): Promise<{ mediaId: string }> {
+  const t = token || process.env.INSTAGRAM_ACCESS_TOKEN!;
+  const u = userId || process.env.INSTAGRAM_USER_ID!;
+
   console.log("📖 Creating Instagram Story container...");
-  const containerId = await createStoryContainer(videoUrl);
+  const containerId = await createStoryContainer(videoUrl, t, u);
 
   console.log("⏳ Waiting for Instagram Story processing...");
-  await waitForContainer(containerId);
+  await waitForContainer(containerId, t);
 
   console.log("🚀 Publishing Story...");
-  const result = await publishReel(containerId);
+  const result = await publishMedia(containerId, t, u);
 
   console.log(`✅ Story published: ${result.id}`);
   return { mediaId: result.id };
