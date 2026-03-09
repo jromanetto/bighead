@@ -1,20 +1,39 @@
 {
-  "name": "BIGHEAD - Quiz Football",
-  "subtitle": "Devine les joueurs de foot !",
-  "description": "BIGHEAD est le quiz ultime pour tester tes connaissances sur les joueurs de football ! Devine qui se cache derrière les indices et deviens le meilleur.\n\n🎮 MODES DE JEU\n• Chain Reaction : Enchaîne les bonnes réponses pour multiplier tes points\n• Mode Party : Joue avec tes amis sur un seul téléphone\n• Défi du jour : Un nouveau défi chaque jour avec bonus XP\n• Duel 1v1 : Affronte tes amis en temps réel\n• Tournois : Compétitions hebdomadaires\n\n🏆 FONCTIONNALITÉS\n• Plus de 100 questions sur les stars du football\n• Classement mondial\n• Succès à débloquer\n• Système de progression avec XP et niveaux\n• Mode sombre élégant\n\n⚽ POUR LES FANS DE FOOT\nDe Mbappé à Messi, de Ronaldo à Zidane, teste tes connaissances sur les légendes et les stars actuelles du football mondial.\n\nTélécharge BIGHEAD maintenant et prouve que tu es un vrai connaisseur du foot !",
+  "name": "BIGHEAD - Quiz Culture",
+  "subtitle": "Quiz & Défis de Culture Gé",
+  "description": "BIGHEAD, c'est LE quiz culture gé qui rend accro ! Plus de 10 000 questions dans 11 catégories. Daily Brain, Duels 1v1, Tournois, Mode Aventure et Party. Télécharge et prouve que t'as la plus grosse tête !",
   "keywords": [
     "quiz",
-    "football",
-    "foot",
-    "joueurs",
-    "mbappe",
-    "messi",
-    "ronaldo",
+    "culture générale",
     "trivia",
     "questions",
-    "sport",
-    "jeu"
+    "cerveau",
+    "défi quotidien",
+    "jeu quiz",
+    "qcm",
+    "test",
+    "blind test",
+    "duel"
   ],
+  "locales": {
+    "en-US": {
+      "name": "BIGHEAD - Trivia Quiz",
+      "subtitle": "Daily Trivia & Brain Challenges",
+      "description": "BIGHEAD is THE trivia quiz that gets you hooked! 10,000+ questions across 11 categories. Daily Brain survival mode, 1v1 Duels, Tournaments, Adventure Mode and Party Mode. Download and prove you're the biggest brain!",
+      "keywords": [
+        "trivia",
+        "quiz game",
+        "brain challenge",
+        "daily quiz",
+        "general knowledge",
+        "trivia game free",
+        "quiz",
+        "brain teaser",
+        "duel quiz",
+        "fun quiz"
+      ]
+    }
+  },
   "categories": {
     "ios": {
       "primary": "Games",
@@ -28,7 +47,7 @@
     "ios": "4+",
     "android": "Everyone"
   },
-  "privacyPolicyUrl": "https://bighead.app/privacy",
-  "supportUrl": "https://bighead.app/support",
-  "marketingUrl": "https://bighead.app"
+  "privacyPolicyUrl": "https://bighead.jrmanagement.org/privacy.html",
+  "supportUrl": "https://bighead.jrmanagement.org",
+  "marketingUrl": "https://bighead.jrmanagement.org"
 }
