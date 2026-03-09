@@ -16,7 +16,7 @@ const SKIP_POSTING = process.argv.includes("--skip-posting") || process.env.SKIP
 // EN is enabled if we have an EN voice (Upload-Post handles account routing)
 const HAS_EN = !!process.env.HEYGEN_VOICE_ID_EN;
 
-// Platforms to post to per language
+// Platforms: "instagram", "tiktok", "youtube" (comma-separated)
 const FR_PLATFORMS = (process.env.FR_PLATFORMS || "instagram").split(",").map(s => s.trim());
 const EN_PLATFORMS = (process.env.EN_PLATFORMS || "instagram").split(",").map(s => s.trim());
 
@@ -64,9 +64,11 @@ async function processLang(
       question.hashtags.join(" "),
       "",
       isFr
-        ? "📲 Télécharge BigHead sur l'App Store pour plus de quiz !"
-        : "📲 Download BigHead on the App Store for more quizzes!",
-      "🔗 Link in bio",
+        ? "📲 Télécharge BigHead sur l'App Store pour découvrir la réponse !"
+        : "📲 Download BigHead on the App Store to find the answer!",
+      isFr
+        ? "🔗 Lien en bio | #quiz #bighead #shorts"
+        : "🔗 Link in bio | #quiz #bighead #shorts",
     ].join("\n");
 
     const user = lang === "fr" ? UPLOAD_POST_USER_FR : UPLOAD_POST_USER_EN;
