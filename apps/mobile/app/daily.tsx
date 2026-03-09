@@ -31,6 +31,8 @@ import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
 import { RatingModal } from "../src/components/RatingModal";
 import { QuestionImage } from "../src/components/QuestionImage";
 import { ShareScorecard } from "../src/components/ShareScorecard";
+import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
+import { inviteFriends } from "../src/utils/share";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -254,6 +256,7 @@ export default function DailyBrainScreen() {
   const [xpEarned, setXpEarned] = useState(0);
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME);
+  const [showInvitePrompt, setShowInvitePrompt] = useState(false);
   const { showRatingModal, closeRatingModal, checkAndShowRating } = useRatingPrompt();
 
   const answeredQuestionIds = useRef<string[]>([]);
@@ -443,6 +446,16 @@ export default function DailyBrainScreen() {
 
     // Check if we should show rating prompt
     await checkAndShowRating();
+
+    // Check if we should show invite prompt (only on wins, i.e. score > 0)
+    if (finalScore > 0) {
+      await incrementWins();
+      const shouldInvite = await shouldShowInvitePrompt();
+      if (shouldInvite) {
+        setShowInvitePrompt(true);
+        await markInviteShown();
+      }
+    }
   };
 
   const animatedScaleStyle = useAnimatedStyle(() => ({
@@ -618,6 +631,47 @@ export default function DailyBrainScreen() {
                 isNewRecord={isNewRecord}
               />
             </View>
+
+            {/* Invite prompt */}
+            {showInvitePrompt && (
+              <View
+                className="rounded-xl p-4 mb-4"
+                style={{
+                  backgroundColor: "rgba(161, 110, 255, 0.15)",
+                  borderWidth: 1,
+                  borderColor: "rgba(161, 110, 255, 0.3)",
+                }}
+              >
+                <Text className="text-white font-bold text-center mb-2">
+                  Invite un ami a jouer !
+                </Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-center text-sm mb-3">
+                  Vous gagnez chacun un indice gratuit
+                </Text>
+                <View className="flex-row gap-3">
+                  <Pressable
+                    onPress={async () => {
+                      await inviteFriends();
+                      setShowInvitePrompt(false);
+                    }}
+                    className="flex-1 rounded-xl py-3 items-center"
+                    style={{ backgroundColor: COLORS.purple }}
+                  >
+                    <Text className="text-white font-bold">Inviter</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={async () => {
+                      await markInviteDismissed();
+                      setShowInvitePrompt(false);
+                    }}
+                    className="flex-1 rounded-xl py-3 items-center"
+                    style={{ backgroundColor: COLORS.surface }}
+                  >
+                    <Text style={{ color: COLORS.textMuted }} className="font-bold">Plus tard</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
 
             <Pressable
               onPress={() => router.navigate("/(tabs)")}
