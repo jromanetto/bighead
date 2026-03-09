@@ -30,6 +30,7 @@ import { IconButton } from "../src/components/ui";
 import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
 import { RatingModal } from "../src/components/RatingModal";
 import { QuestionImage } from "../src/components/QuestionImage";
+import { ShareScorecard } from "../src/components/ShareScorecard";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -607,6 +608,16 @@ export default function DailyBrainScreen() {
                 </View>
               </View>
             )}
+
+            {/* Share Scorecard */}
+            <View className="mb-6">
+              <ShareScorecard
+                score={score}
+                streak={streak}
+                questionsAnswered={score}
+                isNewRecord={isNewRecord}
+              />
+            </View>
 
             <Pressable
               onPress={() => router.navigate("/(tabs)")}
