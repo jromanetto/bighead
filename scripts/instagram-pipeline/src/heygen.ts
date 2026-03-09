@@ -203,7 +203,7 @@ function buildText(
 }
 
 // ============================================================
-// generateVideo — v2 API, 6 scenes with improvements
+// generateVideo — v2 API, 5 scenes with cliffhanger format
 // ============================================================
 
 /**
@@ -216,7 +216,7 @@ function buildText(
  * 4. Silent countdown (no voice, just visual)
  * 5. Larger, bolder text overlays for mobile readability
  *
- * 6 scenes: Hook → Question → Choices → Silent Countdown → Answer → Outro
+ * 5 scenes: Hook → Question → Choices → Silent Countdown → CTA Teaser
  */
 export async function generateVideo(
   question: QuizQuestion,
@@ -241,10 +241,12 @@ export async function generateVideo(
     : `Answer A: ${question.choices.a}. Answer B: ${question.choices.b}. Answer C: ${question.choices.c}.`;
 
   const answerVoice = isFr
-    ? `C'est la réponse ${answerLetter}, ${question.answer_text} ! ${question.fun_fact}`
-    : `The answer is ${answerLetter}, ${question.answer_text}! ${question.fun_fact}`;
+    ? `Alors, tu connais la réponse ? Elle est dans BigHead !`
+    : `So, do you know the answer? It's in BigHead!`;
 
-  const ctaText = isFr ? "Télécharge BigHead Quiz !" : "Download BigHead Quiz!";
+  const ctaText = isFr
+    ? "👇 Réponse dans BigHead\nLien en bio !"
+    : "👇 Answer in BigHead\nLink in bio!";
 
   const videoConfig = {
     title: `BigHead Quiz [${lang.toUpperCase()}] - ${question.question.slice(0, 50)}`,
@@ -301,23 +303,10 @@ export async function generateVideo(
           width: 980,
         }),
       },
-      // Scene 5: Answer reveal (5-6s)
+      // Scene 5: CTA — answer is in the app (4-5s)
       {
-        character: buildCharacter(avatarId, "Excited reveal, big smile, celebratory hand gestures, nodding enthusiastically"),
+        character: buildCharacter(avatarId, "Excited pointing down toward the link, big smile, inviting gesture"),
         voice: buildVoice(answerVoice, lang, "Excited"),
-        background: bg,
-        text: buildText(`✅ ${answerLetter} : ${question.answer_text}`, {
-          fontSize: 64,
-          fontWeight: "bold",
-          color: "#4ADE80",
-          position: { x: 0.05, y: 0.40 },
-          width: 980,
-        }),
-      },
-      // Scene 6: Outro + CTA (3-4s)
-      {
-        character: buildCharacter(avatarId, "Friendly wave, warm smile, inviting gesture pointing down toward the link"),
-        voice: buildVoice(question.outro_script, lang, "Friendly"),
         background: bg,
         text: buildText(ctaText, {
           fontSize: 64,
@@ -332,7 +321,7 @@ export async function generateVideo(
     caption: false,
   };
 
-  console.log(`  v2 API — 6 scenes [${lang.toUpperCase()}]:`);
+  console.log(`  v2 API — 5 scenes [${lang.toUpperCase()}]:`);
   console.log(`    Category: ${category}`);
   console.log(`    Question: "${question.question}"`);
   console.log(`    Answer: ${answerLetter} - ${question.answer_text}`);

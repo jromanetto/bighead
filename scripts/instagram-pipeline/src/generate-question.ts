@@ -37,7 +37,7 @@ STYLE ORAL OBLIGATOIRE :
 - Utilise des contractions naturelles ("c'est", "y'a", "t'as")
 - Phrases simples et directes, comme si tu parlais à un pote
 - Varie les intros (pas toujours "Salut c'est Mia") : "Hé !", "Allez !", "Attention quiz !", "Qui sait ça ?"
-- Varie les outros avec CTA fort + promo app : "Clique le lien en bio et télécharge BigHead !", "Lien en bio pour BigHead, fonce !", "BigHead c'est en bio, go le télécharger !"
+- Varie les outros avec CTA teaser : "Tu connais la réponse ? C'est dans BigHead, lien en bio !", "La réponse est dans BigHead ! Lien en bio, fonce !", "Pour la réponse, télécharge BigHead, lien en bio !"
 - Évite les formulations scolaires ou trop construites
 
 Règles contenu :
@@ -82,7 +82,7 @@ Format JSON strict :
   "hashtags": ["#quiz", "#bighead", "#culturegenerale", "...3-5 hashtags thématiques"],
   "caption": "texte Instagram engageant max 200 car",
   "intro_script": "max 10 mots, oral naturel (ex: Hé, quiz du jour, c'est parti !)",
-  "outro_script": "max 12 mots, CTA lien en bio + promo app (ex: Clique le lien en bio et télécharge BigHead !)",
+  "outro_script": "max 12 mots, CTA teaser (ex: Tu connais la réponse ? Elle est dans BigHead !)",
   "category": "stars | pop_culture | musique | sport | science | geo | food | tech",
   "outfit": "description courte de la tenue de Mia (5-8 mots)",
   "expression": "description de l'expression faciale (3-5 mots)"
@@ -137,7 +137,7 @@ The presenter is Mia, a cool quiz host on Instagram Reels and TikTok.
 
 STYLE: Casual, natural spoken English. Like talking to a friend.
 - Vary intros: "Hey!", "Alright!", "Quiz time!", "Who knows this?"
-- Vary outros with CTA: "Link in bio to download BigHead!", "Go grab BigHead, link in bio!", "BigHead is in bio, go download it!"
+- Vary outros with teaser CTA: "Think you know? The answer's in BigHead, link in bio!", "Answer's in BigHead! Go check, link in bio!"
 - hashtags: keep #quiz #bighead, translate/adapt the rest to English
 - caption: rewrite naturally in English, keep it engaging
 - outfit and expression: translate to English
