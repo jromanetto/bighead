@@ -1,76 +1,66 @@
 # BIGHEAD - App Store Description
 
 ## App Name (30 caractères max)
-```
-BIGHEAD - Quiz Culture
-```
+BIGHEAD - Quiz Culture Gé
 
 ## Subtitle (30 caractères max)
-```
-Défie ton cerveau chaque jour
-```
+Quiz & Défis de Culture Gé
 
 ## Keywords (100 caractères max, séparés par virgules)
-```
-quiz,culture générale,trivia,questions,jeu,brain,cerveau,défi,quotidien,survie,aventure,score
-```
+quiz,culture générale,trivia,questions,cerveau,défi quotidien,jeu quiz,qcm,test,blind test,duel
 
 ## Promotional Text (170 caractères max)
-*Peut être modifié sans nouvelle version*
-```
-Nouveau : Daily Brain ! Un défi quotidien en mode survie. 1 erreur = fin de partie. Combien de questions peux-tu enchaîner ?
-```
+Nouveau : Défie tes amis en duel 1v1 ! Plus de 10 000 questions dans 11 catégories. Daily Brain : 1 erreur = game over. Tu tiens combien ?
 
 ## Description (4000 caractères max)
 
-```
-BIGHEAD, c'est LE quiz qui va challenger ton cerveau !
+BIGHEAD, c'est LE quiz culture gé qui rend accro !
 
-Avec plus de 2200 questions réparties dans 11 catégories, teste tes connaissances et progresse chaque jour. Que tu sois fan de cinéma, de sport, d'histoire ou de sciences, il y a forcément un défi pour toi.
+Plus de 10 000 questions dans 11 catégories : science, histoire, cinéma, sport, musique, géo, nature, techno, art, animaux et culture générale.
 
-DAILY BRAIN - Le défi quotidien
-Chaque jour, une nouvelle série de questions t'attend. Le twist ? Une seule erreur et c'est terminé ! Combien de bonnes réponses peux-tu enchaîner ? Compare ton score avec tes amis et maintiens ta série de jours consécutifs.
+DAILY BRAIN — Le défi quotidien
+Chaque jour, une nouvelle série de questions en mode survie. 1 erreur = game over. Enchaîne les bonnes réponses et compare ton score. Tu tiens combien de jours d'affilée ?
 
-MODE AVENTURE - Gravis la montagne
-Progresse à travers différents niveaux de difficulté. Commence en tant que Curieux et deviens un véritable Génie ! Chaque palier débloque de nouveaux défis.
+DUEL 1v1 — Affronte tes amis
+Défie n'importe qui en temps réel. 5 questions, le plus rapide gagne. Prouve que t'as la plus grosse tête !
 
-MODE SOLO - Entraîne-toi
-10 questions, 15 secondes par question. Utilise tes jokers (50/50, passer) et améliore ton score personnel. Parfait pour t'entraîner avant d'affronter le Daily Brain.
+TOURNOIS — Compétitions hebdomadaires
+Rejoins les tournois chaque semaine et grimpe le classement mondial.
+
+MODE AVENTURE — Du Curieux au Génie
+Progresse à travers 5 niveaux de difficulté. Débloque de nouveaux défis à chaque palier.
+
+MODE PARTY — Jouez ensemble
+Passez-vous le téléphone et jouez à plusieurs. Parfait pour les soirées !
 
 FONCTIONNALITÉS
-• 2200+ questions de culture générale
+• 10 000+ questions de culture générale
 • 11 catégories variées
 • Daily Brain : défi quotidien en mode survie
+• Duels 1v1 en temps réel
+• Tournois hebdomadaires
 • Mode Aventure avec progression
-• Classements et statistiques
+• Mode Party multijoueur local
+• Classements et statistiques détaillées
 • Notifications quotidiennes
-• Design moderne et animations fluides
 
-PREMIUM (optionnel)
-Profite d'une expérience sans pub et accède à des fonctionnalités exclusives avec l'abonnement premium.
+Télécharge BIGHEAD et prouve que t'as la plus grosse tête !
 
----
+Contact : support@bighead-app.com
 
-Télécharge BIGHEAD maintenant et prouve que tu as la plus grosse tête !
-
-Une question ? Un bug ? Écris-nous : support@bighead-app.com
-```
-
-## What's New / Notes de version (4000 caractères max)
+## What's New / Notes de version
 
 ### Version 1.0.0
-```
 Bienvenue dans BIGHEAD !
 
 • Daily Brain : Défi quotidien en mode survie - 1 erreur = fin de partie
 • Mode Aventure : Progresse du Curieux au Génie
-• Mode Solo : 10 questions pour t'entraîner
-• 2200+ questions dans 11 catégories
-• Notifications quotidiennes avec la question du jour
-• Design moderne avec animations fluides
+• Duels 1v1 : Affronte tes amis en temps réel
+• Tournois : Compétitions hebdomadaires
+• Mode Party : Jouez ensemble
+• 10 000+ questions dans 11 catégories
 
 Ton cerveau est-il prêt ?
-```
 
 ---
 
@@ -96,5 +86,5 @@ Ton cerveau est-il prêt ?
 2. **Daily Brain** - Question en cours avec timer
 3. **Réponse correcte** - Feedback vert avec animation
 4. **Game Over** - Écran de fin avec score et streak
-5. **Mode Aventure** - Sélection des niveaux
+5. **Duel 1v1** - Écran de duel en temps réel
 6. **Classement** - Leaderboard avec positions
