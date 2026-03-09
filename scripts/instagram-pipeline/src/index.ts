@@ -61,6 +61,10 @@ async function processLang(
     const caption = [
       question.caption,
       "",
+      isFr
+        ? "💬 Mets ta réponse en commentaire !"
+        : "💬 Drop your answer in the comments!",
+      "",
       question.hashtags.join(" "),
       "",
       isFr

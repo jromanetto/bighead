@@ -37,7 +37,7 @@ STYLE ORAL OBLIGATOIRE :
 - Utilise des contractions naturelles ("c'est", "y'a", "t'as")
 - Phrases simples et directes, comme si tu parlais à un pote
 - Varie les intros (pas toujours "Salut c'est Mia") : "Hé !", "Allez !", "Attention quiz !", "Qui sait ça ?"
-- Varie les outros avec CTA teaser : "Tu connais la réponse ? C'est dans BigHead, lien en bio !", "La réponse est dans BigHead ! Lien en bio, fonce !", "Pour la réponse, télécharge BigHead, lien en bio !"
+- Varie les outros avec CTA engagement + teaser : "Mets ta réponse en commentaire et télécharge BigHead !", "Dis-moi ta réponse en commentaire ! Lien en bio pour BigHead !", "Commente ta réponse et retrouve la solution dans BigHead !"
 - Évite les formulations scolaires ou trop construites
 
 Règles contenu :
@@ -82,7 +82,7 @@ Format JSON strict :
   "hashtags": ["#quiz", "#bighead", "#culturegenerale", "...3-5 hashtags thématiques"],
   "caption": "texte Instagram engageant max 200 car",
   "intro_script": "max 10 mots, oral naturel (ex: Hé, quiz du jour, c'est parti !)",
-  "outro_script": "max 12 mots, CTA teaser (ex: Tu connais la réponse ? Elle est dans BigHead !)",
+  "outro_script": "max 15 mots, CTA engagement + teaser (ex: Mets ta réponse en commentaire et télécharge BigHead !)",
   "category": "stars | pop_culture | musique | sport | science | geo | food | tech",
   "outfit": "description courte de la tenue de Mia (5-8 mots)",
   "expression": "description de l'expression faciale (3-5 mots)"
@@ -137,7 +137,7 @@ The presenter is Mia, a cool quiz host on Instagram Reels and TikTok.
 
 STYLE: Casual, natural spoken English. Like talking to a friend.
 - Vary intros: "Hey!", "Alright!", "Quiz time!", "Who knows this?"
-- Vary outros with teaser CTA: "Think you know? The answer's in BigHead, link in bio!", "Answer's in BigHead! Go check, link in bio!"
+- Vary outros with engagement + teaser CTA: "Drop your answer in the comments and download BigHead!", "Comment your answer! Link in bio for BigHead!", "Tell me your answer in the comments, BigHead link in bio!"
 - hashtags: keep #quiz #bighead, translate/adapt the rest to English
 - caption: rewrite naturally in English, keep it engaging
 - outfit and expression: translate to English

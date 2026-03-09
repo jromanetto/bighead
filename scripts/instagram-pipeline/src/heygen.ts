@@ -241,12 +241,12 @@ export async function generateVideo(
     : `Answer A: ${question.choices.a}. Answer B: ${question.choices.b}. Answer C: ${question.choices.c}.`;
 
   const answerVoice = isFr
-    ? `Alors, tu connais la réponse ? Elle est dans BigHead !`
-    : `So, do you know the answer? It's in BigHead!`;
+    ? `Alors, tu connais la réponse ? Mets-la en commentaire et télécharge BigHead !`
+    : `So, do you know the answer? Drop it in the comments and download BigHead!`;
 
   const ctaText = isFr
-    ? "👇 Réponse dans BigHead\nLien en bio !"
-    : "👇 Answer in BigHead\nLink in bio!";
+    ? "💬 Ta réponse en commentaire !\n👇 Lien en bio"
+    : "💬 Your answer in the comments!\n👇 Link in bio";
 
   const videoConfig = {
     title: `BigHead Quiz [${lang.toUpperCase()}] - ${question.question.slice(0, 50)}`,
