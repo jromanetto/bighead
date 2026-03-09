@@ -7,14 +7,14 @@ import { supabase } from "./supabase";
 import { Platform } from "react-native";
 import * as Clipboard from "expo-clipboard";
 
-const REFERRAL_REWARD_COINS = 500;
-const APP_STORE_URL = "https://apps.apple.com/app/bighead"; // Update with real URL
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.bighead"; // Update with real URL
+const REFERRAL_REWARD_HINTS = 1;
+const APP_STORE_URL = "https://apps.apple.com/app/bighead-quiz-culture/id6758253365";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.jroma51.bighead";
 
 export interface ReferralStats {
   referralCode: string;
   totalReferrals: number;
-  totalCoinsEarned: number;
+  totalHintsEarned: number;
   pendingReferrals: number;
 }
 
@@ -98,7 +98,7 @@ export const getReferralStats = async (userId: string): Promise<ReferralStats | 
     return {
       referralCode: code,
       totalReferrals,
-      totalCoinsEarned: totalReferrals * REFERRAL_REWARD_COINS,
+      totalHintsEarned: totalReferrals * REFERRAL_REWARD_HINTS,
       pendingReferrals: 0, // Could track pending invites
     };
   } catch (error) {
@@ -138,13 +138,14 @@ export const applyReferralCode = async (
 /**
  * Get the share message for inviting friends
  */
-export const getShareMessage = (referralCode: string): string => {
-  return `Join me on BigHead - the ultimate football quiz game! 🎮⚽
+export const getShareMessage = (referralCode: string, lang: "fr" | "en" = "fr"): string => {
+  const storeUrl = Platform.OS === "ios" ? APP_STORE_URL : PLAY_STORE_URL;
 
-Use my code ${referralCode} to get 500 bonus coins when you sign up!
+  if (lang === "en") {
+    return `Join me on BIGHEAD - the ultimate trivia quiz! 🧠\n\nUse my code ${referralCode} to get a free hint!\n\nDownload now:\n${storeUrl}`;
+  }
 
-Download now:
-${Platform.OS === "ios" ? APP_STORE_URL : PLAY_STORE_URL}`;
+  return `Rejoins-moi sur BIGHEAD - le quiz culture gé ultime ! 🧠\n\nUtilise mon code ${referralCode} pour obtenir un indice gratuit !\n\nTélécharge ici :\n${storeUrl}`;
 };
 
 /**

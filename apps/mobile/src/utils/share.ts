@@ -19,7 +19,7 @@ export const shareScore = async (params: ShareScoreParams): Promise<boolean> => 
   let message: string;
 
   if (mode === "chain") {
-    message = `🧠 BIGHEAD - Quiz Football\n\n` +
+    message = `🧠 BIGHEAD - Quiz Culture Gé\n\n` +
       `Score: ${score.toLocaleString()} pts\n` +
       `🔥 Chaîne max: ${maxChain}x\n` +
       `✅ Précision: ${accuracy}%\n\n` +
@@ -52,7 +52,7 @@ export const shareAchievement = async (
   achievementIcon: string
 ): Promise<boolean> => {
   const message = `🏆 J'ai débloqué "${achievementName}" ${achievementIcon} sur BIGHEAD !\n\n` +
-    `Rejoins-moi sur le quiz football le plus addictif !`;
+    `Rejoins-moi sur le quiz le plus addictif !`;
 
   try {
     const result = await Share.share({
@@ -118,8 +118,8 @@ export const shareDailyChallenge = async (
  * Invite friends to play
  */
 export const inviteFriends = async (): Promise<boolean> => {
-  const message = `🧠 BIGHEAD - Le quiz football ultime !\n\n` +
-    `Devine les joueurs, accumule de l'XP et grimpe le classement !\n\n` +
+  const message = `🧠 BIGHEAD - Le quiz culture gé ultime !\n\n` +
+    `Plus de 10 000 questions dans 11 catégories !\n\n` +
     `Rejoins-moi sur BIGHEAD !`;
 
   try {
