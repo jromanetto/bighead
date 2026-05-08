@@ -14,6 +14,9 @@ import { getQuestions, formatQuestionsForGame } from "../../src/services/questio
 import { getSettings } from "../../src/services/settings";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
 import { playSound } from "../../src/services/sounds";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { XPGainBanner } from "../../src/components/XPGainBanner";
+import { computeXP, awardXP } from "../../src/services/xp";
 
 // QuizNext design colors
 const COLORS = {
@@ -34,8 +37,8 @@ const CATEGORIES = [
   { id: "history", name: "History", icon: "📜" },
   { id: "geography", name: "Geography", icon: "🌍" },
   { id: "science", name: "Science", icon: "🔬" },
-  { id: "sports", name: "Sports", icon: "⚽" },
-  { id: "entertainment", name: "Entertainment", icon: "🎬" },
+  { id: "sport", name: "Sports", icon: "⚽" },
+  { id: "cinema", name: "Cinema", icon: "🎬" },
 ];
 
 interface GameQuestion {
@@ -47,6 +50,74 @@ interface GameQuestion {
 }
 
 type GamePhase = "loading" | "bidding" | "category" | "question" | "result" | "gameOver";
+
+function AuctionGameOverView({ players, scores, winner, totalRounds }: { players: string[]; scores: number[]; winner: number; totalRounds: number }) {
+  const { user, refreshProfile } = useAuth();
+  const [xpAwarded, setXpAwarded] = useState(false);
+
+  const deviceScore = Math.max(scores[0], scores[1]);
+  const deviceWon = winner !== -1;
+  const auctionGain = computeXP({
+    source: "auction",
+    correctCount: Math.round(deviceScore / 100),
+    won: deviceWon,
+  });
+
+  useEffect(() => {
+    if (!user || xpAwarded || auctionGain.total === 0) return;
+    awardXP(user.id, auctionGain.total, "auction", { totalRounds, scores, winner })
+      .then(async (newTotal) => { if (newTotal !== null) await refreshProfile(); });
+    setXpAwarded(true);
+  }, [user, xpAwarded, auctionGain.total]);
+
+  return (
+    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-6xl mb-4">{winner === -1 ? "🤝" : "🏆"}</Text>
+        <Text className="text-white text-3xl font-black text-center mb-2">
+          {winner === -1 ? "It's a Tie!" : `${players[winner]} Wins!`}
+        </Text>
+
+        <View className="flex-row items-center gap-8 my-8">
+          <View className="items-center">
+            <Text style={{ color: COLORS.primary }} className="font-bold mb-1">
+              {players[0]}
+            </Text>
+            <Text className="text-white text-4xl font-black">{scores[0]}</Text>
+          </View>
+          <Text className="text-gray-500 text-2xl">-</Text>
+          <View className="items-center">
+            <Text style={{ color: COLORS.coral }} className="font-bold mb-1">
+              {players[1]}
+            </Text>
+            <Text className="text-white text-4xl font-black">{scores[1]}</Text>
+          </View>
+        </View>
+
+        <View style={{ width: "100%", marginBottom: 16 }}>
+          <XPGainBanner gain={auctionGain} compact />
+        </View>
+
+        <Pressable
+          onPress={() => router.replace("/auction")}
+          className="w-full rounded-2xl py-4 mb-3"
+          style={{ backgroundColor: COLORS.yellow }}
+        >
+          <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
+            Play Again
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.replace("/")}
+          className="w-full py-4"
+        >
+          <Text className="text-gray-400 text-center">Back to Home</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
+}
 
 export default function AuctionGameScreen() {
   const { player1, player2, rounds: roundsParam } = useLocalSearchParams<{
@@ -261,50 +332,7 @@ export default function AuctionGameScreen() {
   // Game Over
   if (phase === "gameOver") {
     const winner = scores[0] > scores[1] ? 0 : scores[1] > scores[0] ? 1 : -1;
-
-    return (
-      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-6xl mb-4">{winner === -1 ? "🤝" : "🏆"}</Text>
-          <Text className="text-white text-3xl font-black text-center mb-2">
-            {winner === -1 ? "It's a Tie!" : `${players[winner]} Wins!`}
-          </Text>
-
-          <View className="flex-row items-center gap-8 my-8">
-            <View className="items-center">
-              <Text style={{ color: COLORS.primary }} className="font-bold mb-1">
-                {players[0]}
-              </Text>
-              <Text className="text-white text-4xl font-black">{scores[0]}</Text>
-            </View>
-            <Text className="text-gray-500 text-2xl">-</Text>
-            <View className="items-center">
-              <Text style={{ color: COLORS.coral }} className="font-bold mb-1">
-                {players[1]}
-              </Text>
-              <Text className="text-white text-4xl font-black">{scores[1]}</Text>
-            </View>
-          </View>
-
-          <Pressable
-            onPress={() => router.replace("/auction")}
-            className="w-full rounded-2xl py-4 mb-3"
-            style={{ backgroundColor: COLORS.yellow }}
-          >
-            <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
-              Play Again
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => router.replace("/")}
-            className="w-full py-4"
-          >
-            <Text className="text-gray-400 text-center">Back to Home</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
+    return <AuctionGameOverView players={players} scores={scores} winner={winner} totalRounds={totalRounds} />;
   }
 
   // Bidding Phase

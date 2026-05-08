@@ -8,6 +8,7 @@ import {
   MAX_FREE_ATTEMPTS,
   getNextLevel,
   getCurrentLevelNumber,
+  adventureCategoryToDbCodes,
 } from "../types/adventure";
 
 /**
@@ -216,23 +217,27 @@ export async function getAdventureQuestions(
   tier: Tier,
   limit: number = 10
 ): Promise<any[]> {
-  // Try adaptive questions first (Elo-based matching)
-  try {
-    // @ts-ignore - RPC function types not in generated types
-    const { data: adaptiveData, error: adaptiveError } = await supabase.rpc("get_adaptive_questions", {
-      p_user_id: userId,
-      p_category: category,
-      p_limit: limit,
-      p_language: "fr",
-      p_tier: tier,
-    });
+  const dbCodes = adventureCategoryToDbCodes(category);
 
-    if (!adaptiveError && adaptiveData && (adaptiveData as any[]).length > 0) {
-      console.log(`Got ${(adaptiveData as any[]).length} adaptive questions for ${category}`);
-      return adaptiveData as any[];
+  // Try adaptive questions first (Elo-based matching) — try each DB code
+  for (const dbCat of dbCodes) {
+    try {
+      // @ts-ignore - RPC function types not in generated types
+      const { data: adaptiveData, error: adaptiveError } = await supabase.rpc("get_adaptive_questions", {
+        p_user_id: userId,
+        p_category: dbCat,
+        p_limit: limit,
+        p_language: "fr",
+        p_tier: tier,
+      });
+
+      if (!adaptiveError && adaptiveData && (adaptiveData as any[]).length > 0) {
+        console.log(`Got ${(adaptiveData as any[]).length} adaptive questions for ${category} (db: ${dbCat})`);
+        return adaptiveData as any[];
+      }
+    } catch (err) {
+      console.log("Adaptive questions not available, using fallback:", err);
     }
-  } catch (err) {
-    console.log("Adaptive questions not available, using fallback:", err);
   }
 
   // Fallback: Map tier to difficulty range (8 character-based tiers mapped to difficulty 1-5)
@@ -249,33 +254,31 @@ export async function getAdventureQuestions(
 
   const { min, max } = difficultyMap[tier];
 
-  // Try to get unseen questions
-  // @ts-ignore - RPC function types not in generated types
-  const { data, error } = await supabase.rpc("get_unseen_questions", {
-    p_user_id: userId,
-    p_category: category,
-    p_limit: limit,
-    p_language: "fr",
-  });
-
-  if (error) {
-    console.error("Error getting unseen questions:", error);
-    // Fallback to regular query
-    const { data: fallbackData, error: fallbackError } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("category", category)
-      .gte("difficulty", min)
-      .lte("difficulty", max)
-      .eq("is_active", true)
-      .eq("language", "fr")
-      .limit(limit);
-
-    if (fallbackError) throw fallbackError;
-    return fallbackData || [];
+  // Try unseen questions on each DB code
+  for (const dbCat of dbCodes) {
+    // @ts-ignore - RPC function types not in generated types
+    const { data, error } = await supabase.rpc("get_unseen_questions", {
+      p_user_id: userId,
+      p_category: dbCat,
+      p_limit: limit,
+      p_language: "fr",
+    });
+    if (!error && data && (data as any[]).length > 0) return data as any[];
   }
 
-  return data || [];
+  // Last fallback: direct query across all matching codes
+  const { data: fallbackData, error: fallbackError } = await supabase
+    .from("questions")
+    .select("*")
+    .in("category", dbCodes)
+    .gte("difficulty", min)
+    .lte("difficulty", max)
+    .eq("is_active", true)
+    .eq("language", "fr")
+    .limit(limit);
+
+  if (fallbackError) throw fallbackError;
+  return fallbackData || [];
 }
 
 /**
@@ -303,44 +306,59 @@ export async function getFamilyQuestions(
   const effectiveMinAge = ageToMinAge[minAge] || 16;
   const effectiveLimit = limit === Infinity ? 100 : limit;
 
-  // Try using the RPC function first (more efficient)
-  // @ts-ignore - RPC function types not in generated types
-  const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
-    p_min_age: effectiveMinAge,
-    p_category: category === "mix" ? null : category,
-    p_limit: effectiveLimit,
-    p_language: "fr",
-  });
+  // Resolve adventure FE category code → DB codes (one FE code can map to several DB codes)
+  const dbCodes = category === "mix" ? null : adventureCategoryToDbCodes(category);
 
-  if (!rpcError && rpcData && (rpcData as any[]).length > 0) {
-    return rpcData as any[];
+  // Try RPC first per DB code (RPC only accepts one category at a time)
+  if (dbCodes) {
+    let collected: any[] = [];
+    for (const dbCat of dbCodes) {
+      // @ts-ignore - RPC function types not in generated types
+      const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
+        p_min_age: effectiveMinAge,
+        p_category: dbCat,
+        p_limit: effectiveLimit,
+        p_language: "fr",
+      });
+      if (!rpcError && rpcData && (rpcData as any[]).length > 0) {
+        collected = collected.concat(rpcData as any[]);
+      }
+    }
+    if (collected.length > 0) {
+      return shuffleArray(collected).slice(0, effectiveLimit);
+    }
+  } else {
+    // mix mode — call RPC with NULL category
+    // @ts-ignore - RPC function types not in generated types
+    const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
+      p_min_age: effectiveMinAge,
+      p_category: null,
+      p_limit: effectiveLimit,
+      p_language: "fr",
+    });
+    if (!rpcError && rpcData && (rpcData as any[]).length > 0) return rpcData as any[];
   }
 
-  // Fallback to direct query if RPC fails
-  console.log("RPC failed, using direct query:", rpcError?.message);
-
+  // Direct-query fallback (handles both mix and category modes)
   let query = supabase
     .from("questions")
-    .select("id, question_text, correct_answer, category, difficulty, min_age, image_url, image_credit")
+    .select("id, question_text, correct_answer, wrong_answers, category, difficulty, min_age, image_url, image_credit")
     .eq("is_active", true)
     .eq("language", "fr")
     .lte("min_age", effectiveMinAge);
 
-  if (category !== "mix") {
-    query = query.eq("category", category);
-  }
+  if (dbCodes) query = query.in("category", dbCodes);
 
-  query = query.limit(effectiveLimit);
+  query = query.limit(effectiveLimit * 3); // over-fetch then shuffle/cut
 
   const { data, error } = await query.order("difficulty", { ascending: true });
 
   if (error) {
-    console.error("Direct query also failed:", error);
+    console.error("Family questions direct query failed:", error);
     throw error;
   }
 
-  // Shuffle the questions
-  return shuffleArray(data || []);
+  return shuffleArray(data || []).slice(0, effectiveLimit);
 }
 
 /**

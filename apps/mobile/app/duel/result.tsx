@@ -11,13 +11,16 @@ import Animated, {
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { getDuel, type Duel } from "../../src/services/duel";
+import { XPGainBanner } from "../../src/components/XPGainBanner";
+import { computeXP, awardXP } from "../../src/services/xp";
 
 export default function DuelResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const { t } = useTranslation();
   const [duel, setDuel] = useState<Duel | null>(null);
   const [loading, setLoading] = useState(true);
+  const [xpAwarded, setXpAwarded] = useState(false);
 
   // Animation values
   const trophyScale = useSharedValue(0);
@@ -41,6 +44,20 @@ export default function DuelResultScreen() {
     };
     loadResult();
   }, [id]);
+
+  // Award XP once duel is loaded — dedupe per duel id so re-opening the screen doesn't double-award.
+  useEffect(() => {
+    if (!duel || !user || xpAwarded) return;
+    const isHostUser = duel.host_id === user.id;
+    const myScoreVal = isHostUser ? duel.host_score : duel.guest_score;
+    const wonDuel = duel.winner_id === user.id;
+    const gain = computeXP({ source: "duel", score: myScoreVal, won: wonDuel });
+    awardXP(user.id, gain.total, "duel", { duel_id: duel.id, won: wonDuel }, `duel:${duel.id}`)
+      .then(async (newTotal) => {
+        if (newTotal !== null) await refreshProfile();
+      });
+    setXpAwarded(true);
+  }, [duel, user, xpAwarded]);
 
   const trophyStyle = useAnimatedStyle(() => ({
     transform: [{ scale: trophyScale.value }],
@@ -150,6 +167,14 @@ export default function DuelResultScreen() {
                 {duel.rounds_total} questions • {duel.category === "general" ? t("generalKnowledgeFull" as any) : duel.category}
               </Text>
             </View>
+          </View>
+
+          {/* XP gained */}
+          <View style={{ marginBottom: 24 }}>
+            <XPGainBanner
+              gain={computeXP({ source: "duel", score: myScore, won: isWinner })}
+              compact
+            />
           </View>
         </Animated.View>
 

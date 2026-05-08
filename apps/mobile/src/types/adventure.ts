@@ -52,6 +52,26 @@ export const CATEGORIES: CategoryInfo[] = [
   { code: 'logo', name: 'Logos', nameFr: 'Logo', icon: '🏷️', color: '#a855f7' },
 ];
 
+// Maps adventure Category codes (FR) to DB category codes used in `questions.category`.
+// The DB uses canonical English codes; the adventure UI uses FR codes for historical reasons.
+// Returns array because some FE codes map to multiple DB codes (e.g. cinema covers cinema+movies).
+export function adventureCategoryToDbCodes(c: Category): string[] {
+  switch (c) {
+    case 'culture_generale': return ['general'];
+    case 'histoire': return ['history'];
+    case 'geographie': return ['geography'];
+    case 'sciences': return ['science'];
+    case 'sport': return ['sport', 'sports'];
+    case 'pop_culture': return ['pop-culture', 'pop_culture', 'entertainment'];
+    case 'jeux_video': return ['pop-culture', 'entertainment']; // No dedicated DB cat yet
+    case 'cinema': return ['cinema', 'movies'];
+    case 'musique': return ['music'];
+    case 'technologie': return ['technology'];
+    case 'logo': return ['logo'];
+    default: return [c];
+  }
+}
+
 // Tier display info
 export interface TierInfo {
   code: Tier;

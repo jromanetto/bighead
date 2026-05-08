@@ -10,6 +10,10 @@ import Animated, {
   withSequence,
 } from "react-native-reanimated";
 import { buttonPressFeedback, playHaptic } from "../../src/utils/feedback";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { XPGainBanner } from "../../src/components/XPGainBanner";
+import { computeXP, awardXP } from "../../src/services/xp";
+import { useState } from "react";
 
 // QuizNext design colors
 const COLORS = {
@@ -77,6 +81,20 @@ export default function TraitorResultScreen() {
   // Determine winner
   const traitorCaught = mostVotedIndex === traitorIndex && maxVotes > 0;
   const traitorName = players[traitorIndex];
+
+  const { user, refreshProfile } = useAuth();
+  const [xpAwarded, setXpAwarded] = useState(false);
+
+  // The device owner gets XP based on whether the group caught the traitor (they win as a group)
+  const traitorScore = allAnswers.flat().filter(a => a.isCorrect).length * 100;
+  const traitorGain = computeXP({ source: "traitor", score: traitorScore, won: traitorCaught });
+
+  useEffect(() => {
+    if (!user || xpAwarded) return;
+    awardXP(user.id, traitorGain.total, "traitor", { caught: traitorCaught })
+      .then(async (newTotal) => { if (newTotal !== null) await refreshProfile(); });
+    setXpAwarded(true);
+  }, [user, xpAwarded]);
 
   // Calculate traitor stats
   const traitorStats = (() => {
@@ -161,6 +179,11 @@ export default function TraitorResultScreen() {
                 <Text className="text-gray-400 text-xs">Correct</Text>
               </View>
             </View>
+          </View>
+
+          {/* XP earned */}
+          <View style={{ marginBottom: 24 }}>
+            <XPGainBanner gain={traitorGain} compact />
           </View>
 
           {/* Vote Results */}

@@ -7,7 +7,10 @@ import Animated, {
   withSpring,
   withDelay,
 } from "react-native-reanimated";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { XPGainBanner } from "../../src/components/XPGainBanner";
+import { computeXP, awardXP } from "../../src/services/xp";
 
 export default function TournamentResultScreen() {
   const { id, rank, total, score } = useLocalSearchParams<{
@@ -16,10 +19,19 @@ export default function TournamentResultScreen() {
     total: string;
     score: string;
   }>();
+  const { user, refreshProfile } = useAuth();
+  const [xpAwarded, setXpAwarded] = useState(false);
 
   const rankNum = parseInt(rank || "0");
   const totalNum = parseInt(total || "0");
   const scoreNum = parseInt(score || "0");
+
+  const xpGain = computeXP({
+    source: "tournament",
+    score: scoreNum,
+    rank: rankNum,
+    totalPlayers: totalNum,
+  });
 
   // Animations
   const trophyScale = useSharedValue(0);
@@ -29,6 +41,20 @@ export default function TournamentResultScreen() {
     trophyScale.value = withDelay(200, withSpring(1, { damping: 8 }));
     contentOpacity.value = withDelay(500, withSpring(1));
   }, []);
+
+  useEffect(() => {
+    if (!user || !id || xpAwarded) return;
+    awardXP(
+      user.id,
+      xpGain.total,
+      "tournament",
+      { tournament_id: id, rank: rankNum, score: scoreNum },
+      `tournament:${id}`
+    ).then(async (newTotal) => {
+      if (newTotal !== null) await refreshProfile();
+    });
+    setXpAwarded(true);
+  }, [user, id, xpAwarded]);
 
   const trophyStyle = useAnimatedStyle(() => ({
     transform: [{ scale: trophyScale.value }],
@@ -108,6 +134,11 @@ export default function TournamentResultScreen() {
                 </Text>
               </View>
             )}
+          </View>
+
+          {/* XP gained */}
+          <View style={{ width: "100%", marginBottom: 24 }}>
+            <XPGainBanner gain={xpGain} />
           </View>
 
           {/* Actions */}

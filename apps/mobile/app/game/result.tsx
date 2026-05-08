@@ -10,6 +10,8 @@ import { buttonPressFeedback } from "../../src/utils/feedback";
 import { useRatingPrompt } from "../../src/hooks/useRatingPrompt";
 import { RatingModal } from "../../src/components/RatingModal";
 import { useTranslation } from "../../src/contexts/LanguageContext";
+import { XPGainBanner } from "../../src/components/XPGainBanner";
+import { computeXP } from "../../src/services/xp";
 
 // New QuizNext design colors
 const COLORS = {
@@ -152,8 +154,14 @@ export default function ResultScreen() {
   const maxChainNum = Number(maxChain || 1);
   const accuracy = Math.round((correctNum / totalNum) * 100);
 
-  // XP earned (simplified calculation)
-  const xpEarned = Math.round(scoreNum * 0.1) + correctNum * 10;
+  // XP gain — computed via shared service for consistency across all modes.
+  // Backend is awarded via game_results trigger (chain_solo + party only).
+  const xpGain = computeXP({
+    source: "chain_solo",
+    score: scoreNum,
+    correctCount: correctNum,
+    totalQuestions: totalNum,
+  });
 
   // Trigger confetti for good performance
   useEffect(() => {
@@ -269,13 +277,9 @@ export default function ResultScreen() {
           {/* Score Ring */}
           <ScoreRing percentage={accuracy} />
 
-          {/* XP Badge */}
-          <View
-            className="flex-row items-center rounded-full px-4 py-2 mt-4"
-            style={{ backgroundColor: COLORS.surfaceActive }}
-          >
-            <Text className="mr-2" style={{ color: COLORS.yellow }}>⚡</Text>
-            <Text className="font-bold text-white">{`+${xpEarned} ${t("xpEarned" as any)}`}</Text>
+          {/* Unified XP banner */}
+          <View style={{ marginTop: 16, width: "100%" }}>
+            <XPGainBanner gain={xpGain} compact />
           </View>
 
           <Text className="text-gray-400 text-sm mt-3">

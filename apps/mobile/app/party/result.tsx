@@ -2,6 +2,8 @@ import { View, Text, Pressable, Share } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { PartyPlayer } from "../../src/stores/gameStore";
+import { XPGainBanner } from "../../src/components/XPGainBanner";
+import { computeXP } from "../../src/services/xp";
 
 export default function PartyResultScreen() {
   const { players: playersParam } = useLocalSearchParams<{
@@ -13,6 +15,14 @@ export default function PartyResultScreen() {
   // Sort players by score
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
   const winner = sortedPlayers[0];
+
+  // Party mode is 1-phone multi-player — the device owner earns XP based on the host (top score)
+  // performance. Backend total_xp is awarded by the game_results INSERT trigger in game.tsx.
+  const partyGain = computeXP({
+    source: "party",
+    score: winner?.score || 0,
+    correctCount: winner?.correctCount || 0,
+  });
 
   const getMedal = (index: number) => {
     if (index === 0) return "🥇";
@@ -68,6 +78,11 @@ export default function PartyResultScreen() {
             </View>
           </View>
         )}
+
+        {/* XP earned this round */}
+        <View style={{ marginBottom: 16 }}>
+          <XPGainBanner gain={partyGain} compact />
+        </View>
 
         {/* Full Leaderboard */}
         <View className="bg-white/10 rounded-2xl overflow-hidden mb-6">

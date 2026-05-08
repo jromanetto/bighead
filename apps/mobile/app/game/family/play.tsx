@@ -14,6 +14,8 @@ import {
   getCategoryInfo,
 } from "../../../src/types/adventure";
 import { QuestionImage } from "../../../src/components/QuestionImage";
+import { XPGainBanner } from "../../../src/components/XPGainBanner";
+import { computeXP, awardXP } from "../../../src/services/xp";
 
 const COLORS = {
   bg: "#161a1d",
@@ -185,7 +187,7 @@ export default function FamilyPlayScreen() {
     questionCount: string;
     category: string;
   }>();
-  const { isPremium } = useAuth();
+  const { isPremium, user, refreshProfile } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -193,6 +195,7 @@ export default function FamilyPlayScreen() {
   const [score, setScore] = useState(0);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [xpAwarded, setXpAwarded] = useState(false);
 
   const currentQuestion = questions[currentIndex];
   const categoryInfo = category !== "mix" ? getCategoryInfo(category as Category) : null;
@@ -263,6 +266,23 @@ export default function FamilyPlayScreen() {
     }
   };
 
+  // Compute XP gain (memoized via questions length stability at end of game)
+  const familyGain = computeXP({
+    source: "family",
+    correctCount: score,
+    totalQuestions: questions.length,
+    isPerfect: questions.length > 0 && score === questions.length,
+  });
+
+  // Award XP once on game-over
+  useEffect(() => {
+    if (!gameOver || !user || xpAwarded || familyGain.total === 0) return;
+    const sessionKey = `family:${minAge}:${category}:${Date.now().toString().slice(0, -4)}`;
+    awardXP(user.id, familyGain.total, "family", { category, minAge, score, total: questions.length }, sessionKey)
+      .then(async (newTotal) => { if (newTotal !== null) await refreshProfile(); });
+    setXpAwarded(true);
+  }, [gameOver, user, xpAwarded, familyGain.total]);
+
   const handleExit = () => {
     buttonPressFeedback();
     router.replace("/");
@@ -299,7 +319,7 @@ export default function FamilyPlayScreen() {
 
         {/* Final Score */}
         <View
-          className="w-full p-6 rounded-2xl mb-8 items-center"
+          className="w-full p-6 rounded-2xl mb-6 items-center"
           style={{ backgroundColor: COLORS.surface }}
         >
           <Text style={{ color: COLORS.textMuted }} className="text-sm mb-2">
@@ -333,6 +353,11 @@ export default function FamilyPlayScreen() {
               {Math.round((score / questions.length) * 100)}%
             </Text>
           </View>
+        </View>
+
+        {/* XP gained */}
+        <View style={{ width: "100%", marginBottom: 24 }}>
+          <XPGainBanner gain={familyGain} />
         </View>
 
         <Pressable
