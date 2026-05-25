@@ -224,6 +224,8 @@ serve(async (req) => {
     console.log(`Found ${tokens.length} active push tokens`);
 
     // 3. Prepare notification messages (language-aware)
+    // Note: Daily Brain is now 5 questions/day. We tease only the first one in the
+    // notification body so the user is enticed to open the app for the full set.
     const messages: ExpoPushMessage[] = tokens.map(
       (t: { user_id: string; push_token: string; language?: string }) => {
         const userLang = t.language || 'fr';
@@ -232,9 +234,12 @@ serve(async (req) => {
 
         const emoji = getCategoryEmoji(question.category);
         const title = isEn
-          ? `${emoji} Daily Question!`
-          : `${emoji} Question du jour !`;
-        const body = truncateQuestion(question.question_text);
+          ? `${emoji} 5 Daily Questions!`
+          : `${emoji} 5 questions du jour !`;
+        const tease = truncateQuestion(question.question_text, 70);
+        const body = isEn
+          ? `5 questions today. Starter: ${tease}`
+          : `5 questions aujourd'hui. Pour commencer : ${tease}`;
 
         return {
           to: t.push_token,

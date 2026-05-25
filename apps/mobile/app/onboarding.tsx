@@ -9,7 +9,9 @@ import Animated, {
   interpolate,
 } from "react-native-reanimated";
 import { useAuth } from "../src/contexts/AuthContext";
+import { useTranslation } from "../src/contexts/LanguageContext";
 import { completeOnboarding } from "../src/services/settings";
+import { redeemReferralCode } from "../src/services/referral";
 import { playHaptic } from "../src/utils/feedback";
 
 const COLORS = {
@@ -59,9 +61,15 @@ const slides: OnboardingSlide[] = [
 
 export default function OnboardingScreen() {
   const { user, updateUsername } = useAuth();
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [username, setUsername] = useState("");
   const [showUsernameStep, setShowUsernameStep] = useState(false);
+  const [showReferralStep, setShowReferralStep] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [referralError, setReferralError] = useState<string | null>(null);
+  const [referralSuccess, setReferralSuccess] = useState(false);
+  const [redeeming, setRedeeming] = useState(false);
   const translateX = useSharedValue(0);
 
   const goToSlide = (index: number) => {
@@ -83,8 +91,9 @@ export default function OnboardingScreen() {
     setShowUsernameStep(true);
   };
 
-  const handleComplete = async () => {
-    playHaptic("success");
+  // Step 2: from username → referral
+  const handleUsernameNext = async () => {
+    playHaptic("light");
 
     // Save username if provided
     if (username.trim().length >= 2) {
@@ -94,7 +103,47 @@ export default function OnboardingScreen() {
         console.error("Error saving username:", error);
       }
     }
+    setShowReferralStep(true);
+  };
 
+  const mapRedeemError = (err: string): string => {
+    switch (err) {
+      case "code_not_found":
+      case "invalid_code":
+        return t("referralErrorInvalid");
+      case "self_referral":
+        return t("referralErrorSelf");
+      case "already_redeemed":
+        return t("referralErrorAlready");
+      default:
+        return t("referralErrorUnknown");
+    }
+  };
+
+  const handleRedeem = async () => {
+    const code = referralCode.trim();
+    if (code.length < 4) {
+      setReferralError(t("referralErrorInvalid"));
+      return;
+    }
+    setRedeeming(true);
+    setReferralError(null);
+    try {
+      const result = await redeemReferralCode(code);
+      if (result.success) {
+        playHaptic("success");
+        setReferralSuccess(true);
+      } else {
+        playHaptic("error");
+        setReferralError(mapRedeemError(result.error));
+      }
+    } finally {
+      setRedeeming(false);
+    }
+  };
+
+  const finishOnboarding = async () => {
+    playHaptic("success");
     await completeOnboarding(user?.id);
     router.replace("/");
   };
@@ -135,7 +184,7 @@ export default function OnboardingScreen() {
           />
 
           <Pressable
-            onPress={handleComplete}
+            onPress={handleUsernameNext}
             className="rounded-2xl py-4 mb-4"
             style={{ backgroundColor: COLORS.primary }}
           >
@@ -148,6 +197,105 @@ export default function OnboardingScreen() {
             <Text className="text-gray-500 text-center text-sm">
               You can set your username later in your profile
             </Text>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Referral code step
+  if (showReferralStep) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <View className="flex-1 px-8 justify-center">
+          <View className="items-center mb-8">
+            <View
+              className="w-24 h-24 rounded-full items-center justify-center mb-6"
+              style={{ backgroundColor: `${COLORS.primary}20` }}
+            >
+              <Text className="text-5xl">🎁</Text>
+            </View>
+            <Text className="text-white text-2xl font-bold text-center mb-2">
+              {t("referralEnterCode")}
+            </Text>
+            <Text className="text-gray-400 text-center px-4">
+              {t("referralReward")}
+            </Text>
+          </View>
+
+          {referralSuccess ? (
+            <>
+              <View
+                className="rounded-2xl px-6 py-4 mb-6"
+                style={{ backgroundColor: `${COLORS.primary}20` }}
+              >
+                <Text
+                  className="text-center font-semibold"
+                  style={{ color: COLORS.primary }}
+                >
+                  {t("referralApplied")}
+                </Text>
+              </View>
+              <Pressable
+                onPress={finishOnboarding}
+                className="rounded-2xl py-4"
+                style={{ backgroundColor: COLORS.primary }}
+              >
+                <Text
+                  className="text-center font-bold text-lg"
+                  style={{ color: COLORS.bg }}
+                >
+                  Let's go!
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <TextInput
+                value={referralCode}
+                onChangeText={(v) => {
+                  setReferralCode(v.toUpperCase());
+                  if (referralError) setReferralError(null);
+                }}
+                placeholder={t("referralEnterPlaceholder")}
+                placeholderTextColor={COLORS.textMuted}
+                autoCapitalize="characters"
+                autoCorrect={false}
+                maxLength={12}
+                className="text-white text-xl text-center rounded-2xl px-6 py-4 mb-3"
+                style={{ backgroundColor: COLORS.surface, letterSpacing: 2 }}
+              />
+
+              {referralError && (
+                <Text className="text-red-400 text-center text-sm mb-3">
+                  {referralError}
+                </Text>
+              )}
+
+              <Pressable
+                onPress={handleRedeem}
+                disabled={redeeming || referralCode.trim().length < 4}
+                className="rounded-2xl py-4 mb-3"
+                style={{
+                  backgroundColor: COLORS.primary,
+                  opacity:
+                    redeeming || referralCode.trim().length < 4 ? 0.5 : 1,
+                }}
+              >
+                <Text
+                  className="text-center font-bold text-lg"
+                  style={{ color: COLORS.bg }}
+                >
+                  {redeeming ? "..." : t("referralRedeem")}
+                </Text>
+              </Pressable>
+
+              <Pressable onPress={finishOnboarding} className="py-3">
+                <Text className="text-center text-gray-400">
+                  {t("referralSkip")}
+                </Text>
+              </Pressable>
+            </>
           )}
         </View>
       </SafeAreaView>

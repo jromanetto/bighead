@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Animated, {
@@ -16,11 +16,11 @@ import Animated, {
 import Svg, { Circle } from "react-native-svg";
 import { useAuth } from "../src/contexts/AuthContext";
 import {
-  getNextSurvivalQuestion,
   hasPlayedDailySurvivalToday,
-  submitDailySurvival,
   getDailyStreak,
-  getTodaysDailyQuestion,
+  getTodaysDailyQuestions,
+  submitDailyBrain,
+  DAILY_BRAIN_QUESTION_COUNT,
   type DailyQuestion,
 } from "../src/services/dailyChallenge";
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedback";
@@ -33,6 +33,7 @@ import { QuestionImage } from "../src/components/QuestionImage";
 import { ShareScorecard } from "../src/components/ShareScorecard";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
 import { inviteFriends } from "../src/utils/share";
+import { useTranslation } from "../src/contexts/LanguageContext";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -56,11 +57,18 @@ const COLORS = {
 
 const LETTER_OPTIONS = ['A', 'B', 'C', 'D'];
 const TOTAL_TIME = 15; // 15 seconds per question
+const TOTAL_QUESTIONS = DAILY_BRAIN_QUESTION_COUNT;
+const FEEDBACK_DELAY_MS = 1200;
 
-// Create animated circle component
+// Animated SVG circle
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-// Circular Timer Component - uses SVG with Reanimated for smooth countdown
+// Format helper for templated translations
+function fmt(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ""));
+}
+
+// Circular Timer Component
 function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
   timeRemaining: number;
   totalTime: number;
@@ -74,10 +82,8 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
   const RADIUS = (SIZE - STROKE_WIDTH) / 2;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-  // Animated progress value
   const progress = useSharedValue(timeRemaining / totalTime);
 
-  // Update progress when timeRemaining changes
   useEffect(() => {
     progress.value = withTiming(timeRemaining / totalTime, {
       duration: 300,
@@ -85,14 +91,12 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
     });
   }, [timeRemaining, totalTime]);
 
-  // Animated props for the progress circle
   const animatedProps = useAnimatedProps(() => ({
     strokeDashoffset: CIRCUMFERENCE * (1 - progress.value),
   }));
 
   return (
     <View className="relative items-center justify-center" style={{ width: SIZE + 20, height: SIZE + 20 }}>
-      {/* Glow effect */}
       <View
         className="absolute rounded-full"
         style={{
@@ -104,10 +108,7 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
           shadowRadius: 20,
         }}
       />
-
-      {/* SVG Timer */}
       <Svg width={SIZE} height={SIZE} style={{ transform: [{ rotate: '-90deg' }] }}>
-        {/* Background Circle */}
         <Circle
           cx={SIZE / 2}
           cy={SIZE / 2}
@@ -116,7 +117,6 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
           strokeWidth={STROKE_WIDTH}
           fill="transparent"
         />
-        {/* Progress Circle */}
         <AnimatedCircle
           cx={SIZE / 2}
           cy={SIZE / 2}
@@ -129,8 +129,6 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
           strokeLinecap="round"
         />
       </Svg>
-
-      {/* Timer Content - centered absolutely */}
       <View className="absolute items-center justify-center" style={{ width: SIZE, height: SIZE }}>
         <Text
           className="text-4xl font-black leading-none"
@@ -150,7 +148,7 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
   );
 }
 
-// Answer Option Component (same style as chain.tsx)
+// Answer Option Component
 function AnswerOption({
   answer,
   index,
@@ -209,7 +207,6 @@ function AnswerOption({
         shadowRadius: 4,
       }}
     >
-      {/* Letter Badge */}
       <View
         className="w-10 h-10 rounded-lg items-center justify-center"
         style={{
@@ -222,13 +219,9 @@ function AnswerOption({
           {LETTER_OPTIONS[index]}
         </Text>
       </View>
-
-      {/* Answer Text */}
       <Text className="text-lg font-medium text-white/90 flex-1 text-left">
         {answer}
       </Text>
-
-      {/* Check Icon */}
       {showResult && isCorrect && (
         <Text className="text-xl" style={{ color: COLORS.success }}>✓</Text>
       )}
@@ -241,60 +234,59 @@ function AnswerOption({
 
 export default function DailyBrainScreen() {
   const { user, isAnonymous } = useAuth();
-  const params = useLocalSearchParams<{ fromNotification?: string }>();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
-  const [isDailyQuestion, setIsDailyQuestion] = useState(false);
   const [alreadyPlayed, setAlreadyPlayed] = useState(false);
   const [previousScore, setPreviousScore] = useState<number | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<DailyQuestion | null>(null);
-  const [questionNumber, setQuestionNumber] = useState(0);
+  const [questions, setQuestions] = useState<DailyQuestion[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [gameOver, setGameOver] = useState(false);
   const [streak, setStreak] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
+  const [perfect, setPerfect] = useState(false);
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME);
   const [showInvitePrompt, setShowInvitePrompt] = useState(false);
   const { showRatingModal, closeRatingModal, checkAndShowRating } = useRatingPrompt();
 
-  const answeredQuestionIds = useRef<string[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTime = useRef<number>(Date.now());
-  const questionStartTime = useRef<number>(Date.now());
   const userLanguage = useRef<string>("en");
+  const finishingRef = useRef<boolean>(false);
+  const scoreRef = useRef<number>(0);
 
-  // Animation values
   const scale = useSharedValue(1);
+
+  const currentQuestion = questions[currentIndex] || null;
 
   useEffect(() => {
     checkAndLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // Timer effect - countdown when playing
+  // Timer: counts down per question
   useEffect(() => {
-    // Only run timer when we have a question and haven't answered yet
-    if (currentQuestion && !gameOver && !alreadyPlayed && selectedAnswer === null) {
-      timerRef.current = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            // Time's up - end game
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-              timerRef.current = null;
-            }
-            // Trigger game over
-            wrongAnswerFeedback();
-            setTimeout(() => {
-              endGame(score);
-            }, 500);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    if (!currentQuestion || gameOver || alreadyPlayed || selectedAnswer !== null) {
+      return;
     }
+
+    timerRef.current = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          // Time's up = treat as wrong answer, auto-advance
+          handleTimeout();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
       if (timerRef.current) {
@@ -302,6 +294,7 @@ export default function DailyBrainScreen() {
         timerRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion?.id, gameOver, alreadyPlayed, selectedAnswer]);
 
   // Reset timer when question changes
@@ -309,12 +302,11 @@ export default function DailyBrainScreen() {
     if (currentQuestion && !gameOver && !alreadyPlayed) {
       setTimeRemaining(TOTAL_TIME);
     }
-  }, [currentQuestion?.id]);
+  }, [currentQuestion?.id, gameOver, alreadyPlayed]);
 
   const checkAndLoad = async () => {
     setLoading(true);
     try {
-      // Load user's language preference
       const settings = await getSettings(user?.id);
       userLanguage.current = settings.language || "en";
 
@@ -330,7 +322,6 @@ export default function DailyBrainScreen() {
           return;
         }
       } else {
-        // For anonymous users, check AsyncStorage
         const today = new Date().toISOString().split("T")[0];
         const stored = await AsyncStorage.getItem(DAILY_SURVIVAL_KEY);
         if (stored) {
@@ -344,49 +335,46 @@ export default function DailyBrainScreen() {
         }
       }
 
-      // Start the game
+      // Fetch today's 5 questions
       startTime.current = Date.now();
-
-      // If coming from notification, load today's daily question first
-      if (params.fromNotification === "true") {
-        const dailyQ = await getTodaysDailyQuestion(userLanguage.current);
-        if (dailyQ) {
-          setCurrentQuestion(dailyQ);
-          setQuestionNumber(1);
-          setIsDailyQuestion(true);
-          questionStartTime.current = Date.now();
-          answeredQuestionIds.current.push(dailyQ.id);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Otherwise load a random question
-      await loadNextQuestion();
+      const daily = await getTodaysDailyQuestions(userLanguage.current);
+      setQuestions(daily);
+      setCurrentIndex(0);
     } catch (error) {
-      console.error("Error loading daily survival:", error);
+      console.error("Error loading daily brain:", error);
     }
     setLoading(false);
   };
 
-  const loadNextQuestion = useCallback(async () => {
-    const question = await getNextSurvivalQuestion(answeredQuestionIds.current, userLanguage.current);
-    if (question) {
-      setCurrentQuestion(question);
-      setQuestionNumber((prev) => prev + 1);
+  const advance = useCallback(() => {
+    setCurrentIndex((prevIdx) => {
+      const nextIdx = prevIdx + 1;
+      if (nextIdx >= TOTAL_QUESTIONS || nextIdx >= questions.length) {
+        // End of session
+        finishSession();
+        return prevIdx;
+      }
       setSelectedAnswer(null);
       setIsCorrect(null);
-      questionStartTime.current = Date.now();
-    } else {
-      // No more questions available - end game
-      await endGame(score);
-    }
-  }, [score]);
+      return nextIdx;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions.length]);
 
-  const handleAnswer = async (answerIndex: number) => {
+  const handleTimeout = useCallback(() => {
+    if (selectedAnswer !== null || !currentQuestion) return;
+    setSelectedAnswer(-1); // sentinel: timed out, no selection
+    setIsCorrect(false);
+    wrongAnswerFeedback();
+    setTimeout(() => {
+      advance();
+    }, FEEDBACK_DELAY_MS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAnswer, currentQuestion, advance]);
+
+  const handleAnswer = (answerIndex: number) => {
     if (selectedAnswer !== null || !currentQuestion) return;
 
-    // Stop the timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -396,58 +384,50 @@ export default function DailyBrainScreen() {
     const correct = answerIndex === currentQuestion.correctIndex;
     setIsCorrect(correct);
 
-    answeredQuestionIds.current.push(currentQuestion.id);
-
     if (correct) {
-      await correctAnswerFeedback();
+      correctAnswerFeedback();
       scale.value = withSequence(withSpring(1.1), withSpring(1));
-      setScore((prev) => prev + 1);
-
-      // After the daily question, continue with random questions
-      if (isDailyQuestion) {
-        setIsDailyQuestion(false);
-      }
-
-      // Load next question after delay
-      setTimeout(() => {
-        loadNextQuestion();
-      }, 1500);
+      const newScore = scoreRef.current + 1;
+      scoreRef.current = newScore;
+      setScore(newScore);
     } else {
-      await wrongAnswerFeedback();
-      // Game over on wrong answer
-      setTimeout(() => {
-        endGame(score);
-      }, 1500);
+      wrongAnswerFeedback();
     }
+
+    setTimeout(() => {
+      advance();
+    }, FEEDBACK_DELAY_MS);
   };
 
-  const endGame = async (finalScore: number) => {
+  const finishSession = useCallback(async () => {
+    if (finishingRef.current) return;
+    finishingRef.current = true;
     setGameOver(true);
+
+    const finalScore = scoreRef.current;
     const totalTimeMs = Date.now() - startTime.current;
 
-    // Save result
     if (user && !isAnonymous) {
       try {
-        const result = await submitDailySurvival(user.id, finalScore, totalTimeMs);
+        const result = await submitDailyBrain(user.id, finalScore, totalTimeMs);
         setXpEarned(result.xpEarned);
         setStreak(result.newStreak);
         setIsNewRecord(result.isNewRecord);
+        setPerfect(result.perfect);
       } catch (error) {
         console.error("Error saving result:", error);
       }
     } else {
-      // Save for anonymous users in AsyncStorage
       const today = new Date().toISOString().split("T")[0];
       await AsyncStorage.setItem(
         DAILY_SURVIVAL_KEY,
         JSON.stringify({ date: today, score: finalScore })
       );
+      setPerfect(finalScore >= TOTAL_QUESTIONS);
     }
 
-    // Check if we should show rating prompt
     await checkAndShowRating();
 
-    // Check if we should show invite prompt (only on wins, i.e. score > 0)
     if (finalScore > 0) {
       await incrementWins();
       const shouldInvite = await shouldShowInvitePrompt();
@@ -456,7 +436,8 @@ export default function DailyBrainScreen() {
         await markInviteShown();
       }
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isAnonymous]);
 
   const animatedScaleStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -466,7 +447,6 @@ export default function DailyBrainScreen() {
   if (alreadyPlayed) {
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-        {/* Background Elements */}
         <View className="absolute inset-0 pointer-events-none">
           <View
             className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
@@ -486,16 +466,15 @@ export default function DailyBrainScreen() {
             <Text className="text-5xl">🎯</Text>
           </View>
           <Text className="text-white text-2xl font-bold text-center mb-2">
-            Deja joue aujourd'hui !
+            {t("dailyAlreadyPlayedTitle")}
           </Text>
           <Text style={{ color: COLORS.textMuted }} className="text-center mb-4">
-            Ton score : {previousScore} points
+            {fmt(t("dailyScoreOutOf"), { score: previousScore ?? 0, total: TOTAL_QUESTIONS })}
           </Text>
           <Text style={{ color: COLORS.textMuted }} className="text-center mb-8 opacity-60">
-            Reviens demain pour un nouveau Daily Brain
+            {t("dailyAlreadyPlayedSubtitle")}
           </Text>
 
-          {/* Streak */}
           {streak > 0 && (
             <View
               className="rounded-xl px-6 py-4 mb-8"
@@ -505,10 +484,10 @@ export default function DailyBrainScreen() {
                 <Text className="text-3xl mr-3">🔥</Text>
                 <View>
                   <Text style={{ color: COLORS.orange }} className="font-bold text-xl">
-                    {streak} jours
+                    {fmt(t("dailyStreakDays"), { count: streak })}
                   </Text>
                   <Text style={{ color: COLORS.orange, opacity: 0.6 }} className="text-sm">
-                    Serie en cours
+                    {t("dailyStreakLabel")}
                   </Text>
                 </View>
               </View>
@@ -521,7 +500,7 @@ export default function DailyBrainScreen() {
             style={{ backgroundColor: COLORS.primary }}
           >
             <Text className="font-bold text-lg" style={{ color: COLORS.bg }}>
-              Retour
+              {t("dailyBackHome")}
             </Text>
           </Pressable>
         </View>
@@ -529,11 +508,17 @@ export default function DailyBrainScreen() {
     );
   }
 
-  // Game Over screen
+  // Game Over screen — show summary
   if (gameOver) {
+    const finalScore = scoreRef.current;
+    const headline =
+      finalScore >= TOTAL_QUESTIONS
+        ? t("dailyResultGreat")
+        : finalScore >= 3
+        ? t("dailyResultGood")
+        : t("dailyResultMeh");
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-        {/* Background Elements */}
         <View className="absolute inset-0 pointer-events-none">
           <View
             className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
@@ -545,7 +530,7 @@ export default function DailyBrainScreen() {
           />
         </View>
 
-        <View className="flex-1 items-center justify-center px-6">
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 24 }}>
           <Animated.View
             entering={FadeIn.duration(500)}
             className="items-center"
@@ -553,44 +538,42 @@ export default function DailyBrainScreen() {
             <View
               className="w-28 h-28 rounded-full items-center justify-center mb-6"
               style={{
-                backgroundColor: score >= 10 ? 'rgba(255, 209, 0, 0.2)' : COLORS.primaryDim,
+                backgroundColor: perfect ? 'rgba(255, 209, 0, 0.2)' : COLORS.primaryDim,
               }}
             >
-              <Text className="text-6xl">{score >= 10 ? "🏆" : "💪"}</Text>
+              <Text className="text-6xl">{perfect ? "🏆" : finalScore >= 3 ? "💪" : "🧠"}</Text>
             </View>
 
             <Text className="text-white text-3xl font-bold text-center mb-2">
-              {score >= 20 ? "Incroyable !" : score >= 10 ? "Bien joue !" : "Fin de partie"}
+              {headline}
             </Text>
 
             <Text style={{ color: COLORS.textMuted }} className="text-center mb-6">
-              {score === 0
-                ? "Pas facile... Reviens demain !"
-                : score === 1
-                ? "1 bonne reponse"
-                : `${score} bonnes reponses`}
+              {fmt(t("dailyScoreOutOf"), { score: finalScore, total: TOTAL_QUESTIONS })}
             </Text>
 
-            {/* Score display */}
             <View
               className="rounded-2xl px-8 py-6 mb-6 items-center"
               style={{ backgroundColor: COLORS.surface }}
             >
-              <Text style={{ color: COLORS.textMuted }} className="text-sm mb-1">SCORE</Text>
-              <Text className="text-white text-5xl font-bold">{score}</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-sm mb-1">
+                {t("dailyTotalScore").toUpperCase()}
+              </Text>
+              <Text className="text-white text-5xl font-bold">
+                {finalScore}/{TOTAL_QUESTIONS}
+              </Text>
               {isNewRecord && (
                 <View
                   className="rounded-full px-4 py-1 mt-2"
                   style={{ backgroundColor: 'rgba(255, 209, 0, 0.2)' }}
                 >
                   <Text style={{ color: COLORS.yellow }} className="font-bold">
-                    Nouveau record !
+                    {t("dailyNewRecord")}
                   </Text>
                 </View>
               )}
             </View>
 
-            {/* XP earned */}
             {xpEarned > 0 && (
               <View
                 className="rounded-xl px-6 py-3 mb-4"
@@ -602,7 +585,17 @@ export default function DailyBrainScreen() {
               </View>
             )}
 
-            {/* Streak */}
+            {perfect && (
+              <View
+                className="rounded-xl px-6 py-3 mb-4"
+                style={{ backgroundColor: 'rgba(255, 209, 0, 0.15)' }}
+              >
+                <Text style={{ color: COLORS.yellow }} className="font-bold">
+                  {t("dailyBonus5of5")}
+                </Text>
+              </View>
+            )}
+
             {streak > 0 && (
               <View
                 className="rounded-xl px-6 py-4 mb-8"
@@ -612,27 +605,25 @@ export default function DailyBrainScreen() {
                   <Text className="text-3xl mr-3">🔥</Text>
                   <View>
                     <Text style={{ color: COLORS.orange }} className="font-bold text-xl">
-                      {streak} jours
+                      {fmt(t("dailyStreakDays"), { count: streak })}
                     </Text>
                     <Text style={{ color: COLORS.orange, opacity: 0.6 }} className="text-sm">
-                      Serie en cours
+                      {t("dailyStreakLabel")}
                     </Text>
                   </View>
                 </View>
               </View>
             )}
 
-            {/* Share Scorecard */}
             <View className="mb-6">
               <ShareScorecard
-                score={score}
+                score={finalScore}
                 streak={streak}
-                questionsAnswered={score}
+                questionsAnswered={TOTAL_QUESTIONS}
                 isNewRecord={isNewRecord}
               />
             </View>
 
-            {/* Invite prompt */}
             {showInvitePrompt && (
               <View
                 className="rounded-xl p-4 mb-4"
@@ -643,10 +634,7 @@ export default function DailyBrainScreen() {
                 }}
               >
                 <Text className="text-white font-bold text-center mb-2">
-                  Invite un ami a jouer !
-                </Text>
-                <Text style={{ color: COLORS.textMuted }} className="text-center text-sm mb-3">
-                  Vous gagnez chacun un indice gratuit
+                  {t("inviteFriends")}
                 </Text>
                 <View className="flex-row gap-3">
                   <Pressable
@@ -657,7 +645,7 @@ export default function DailyBrainScreen() {
                     className="flex-1 rounded-xl py-3 items-center"
                     style={{ backgroundColor: COLORS.purple }}
                   >
-                    <Text className="text-white font-bold">Inviter</Text>
+                    <Text className="text-white font-bold">{t("invite")}</Text>
                   </Pressable>
                   <Pressable
                     onPress={async () => {
@@ -667,7 +655,7 @@ export default function DailyBrainScreen() {
                     className="flex-1 rounded-xl py-3 items-center"
                     style={{ backgroundColor: COLORS.surface }}
                   >
-                    <Text style={{ color: COLORS.textMuted }} className="font-bold">Plus tard</Text>
+                    <Text style={{ color: COLORS.textMuted }} className="font-bold">{t("cancel")}</Text>
                   </Pressable>
                 </View>
               </View>
@@ -679,11 +667,11 @@ export default function DailyBrainScreen() {
               style={{ backgroundColor: COLORS.primary }}
             >
               <Text className="font-bold text-lg" style={{ color: COLORS.bg }}>
-                Retour
+                {t("dailyBackHome")}
               </Text>
             </Pressable>
           </Animated.View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -693,39 +681,41 @@ export default function DailyBrainScreen() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
         <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={{ color: COLORS.textMuted }} className="mt-4">Chargement...</Text>
+        <Text style={{ color: COLORS.textMuted }} className="mt-4">{t("loading")}</Text>
       </SafeAreaView>
     );
   }
 
-  // No question available
+  // Empty (no questions available)
   if (!currentQuestion) {
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-5xl mb-6">🎯</Text>
           <Text className="text-white text-xl font-bold text-center mb-2">
-            Aucune question disponible
+            {t("dailyEmptyTitle")}
           </Text>
           <Text style={{ color: COLORS.textMuted }} className="text-center mb-8">
-            Reviens plus tard !
+            {t("dailyEmptySubtitle")}
           </Text>
           <Pressable
             onPress={() => router.navigate("/(tabs)")}
             className="rounded-xl py-4 px-8"
             style={{ backgroundColor: COLORS.primary }}
           >
-            <Text className="font-bold" style={{ color: COLORS.bg }}>Retour</Text>
+            <Text className="font-bold" style={{ color: COLORS.bg }}>{t("dailyBackHome")}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
     );
   }
 
+  const progressPct = ((currentIndex + 1) / TOTAL_QUESTIONS) * 100;
+  const questionNumber = currentIndex + 1;
+
   // Game in progress
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-      {/* Background Elements */}
       <View className="absolute inset-0 pointer-events-none">
         <View
           className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
@@ -740,7 +730,6 @@ export default function DailyBrainScreen() {
       <View className="flex-1 relative">
         {/* Top HUD */}
         <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
-          {/* Exit Button */}
           <IconButton
             name="ArrowLeft"
             onPress={() => router.navigate("/(tabs)")}
@@ -748,7 +737,6 @@ export default function DailyBrainScreen() {
             size={40}
           />
 
-          {/* Mode Badge */}
           <View
             className="px-4 py-2 rounded-full flex-row items-center gap-2"
             style={{
@@ -761,7 +749,6 @@ export default function DailyBrainScreen() {
             <Text className="text-sm font-bold tracking-wide text-white">DAILY BRAIN</Text>
           </View>
 
-          {/* Score Badge */}
           <View
             className="px-4 py-2 rounded-full flex-row items-center gap-2"
             style={{
@@ -771,7 +758,29 @@ export default function DailyBrainScreen() {
             }}
           >
             <Text className="text-xl" style={{ color: COLORS.primary }}>🏆</Text>
-            <Text className="text-sm font-bold tracking-wide text-white">{score} PTS</Text>
+            <Text className="text-sm font-bold tracking-wide text-white">{score}/{TOTAL_QUESTIONS}</Text>
+          </View>
+        </View>
+
+        {/* Progress bar */}
+        <View className="px-6 pt-2">
+          <View className="flex-row items-center justify-between mb-1.5">
+            <Text className="text-xs font-bold tracking-wide" style={{ color: COLORS.textMuted }}>
+              {fmt(t("dailyProgress"), { current: questionNumber, total: TOTAL_QUESTIONS })}
+            </Text>
+          </View>
+          <View
+            className="h-2 rounded-full overflow-hidden"
+            style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
+          >
+            <View
+              style={{
+                width: `${progressPct}%`,
+                height: '100%',
+                backgroundColor: COLORS.primary,
+                borderRadius: 999,
+              }}
+            />
           </View>
         </View>
 
@@ -782,17 +791,6 @@ export default function DailyBrainScreen() {
             totalTime={TOTAL_TIME}
             questionNumber={questionNumber}
           />
-          {isDailyQuestion && (
-            <View
-              className="mt-2 px-3 py-1 rounded-full"
-              style={{ backgroundColor: COLORS.purple }}
-            >
-              <Text className="text-xs font-bold text-white">QUESTION DU JOUR</Text>
-            </View>
-          )}
-          <Text style={{ color: COLORS.error }} className="text-xs font-bold mt-2">
-            1 erreur = fin de partie
-          </Text>
         </View>
 
         {/* Scrollable Question & Answers */}
@@ -801,67 +799,67 @@ export default function DailyBrainScreen() {
           contentContainerStyle={{ paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Question Card */}
           <Animated.View
             key={currentQuestion.id}
             entering={SlideInRight.duration(300)}
             className="px-6 mb-6"
           >
-            <View
+            <Animated.View
+              style={animatedScaleStyle}
               className="rounded-2xl relative overflow-hidden"
-              style={{
-                backgroundColor: COLORS.surface,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.05)',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.3,
-                shadowRadius: 16,
-              }}
             >
-              <View className="p-6">
-                {/* Cyan Left Border */}
-                <View
-                  className="absolute top-0 left-0 w-1 h-full"
-                  style={{ backgroundColor: COLORS.primary }}
-                />
+              <View
+                style={{
+                  backgroundColor: COLORS.surface,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255,255,255,0.05)',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
+                  borderRadius: 16,
+                }}
+              >
+                <View className="p-6">
+                  <View
+                    className="absolute top-0 left-0 w-1 h-full"
+                    style={{ backgroundColor: COLORS.primary }}
+                  />
 
-                {/* Category Badge */}
-                <View className="flex-row items-center justify-between mb-3">
-                  <Text
-                    className="text-sm font-bold uppercase"
-                    style={{ color: COLORS.primary }}
-                  >
-                    {currentQuestion.category}
-                  </Text>
-                  <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                    Diff. {currentQuestion.difficulty}
-                  </Text>
-                </View>
-
-                <Text className="text-xl font-bold leading-relaxed text-white">
-                  {currentQuestion.question}
-                </Text>
-
-                {/* Question Image (for logo questions) */}
-                {currentQuestion.image_url && (
-                  <View className="mt-4 items-center">
-                    <QuestionImage
-                      uri={currentQuestion.image_url}
-                      style={{ width: 200, height: 150, borderRadius: 12 }}
-                    />
+                  <View className="flex-row items-center justify-between mb-3">
+                    <Text
+                      className="text-sm font-bold uppercase"
+                      style={{ color: COLORS.primary }}
+                    >
+                      {currentQuestion.category}
+                    </Text>
+                    <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                      Diff. {currentQuestion.difficulty}
+                    </Text>
                   </View>
-                )}
 
-                <View
-                  className="h-1 w-12 rounded-full mt-4"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
-                />
+                  <Text className="text-xl font-bold leading-relaxed text-white">
+                    {currentQuestion.question}
+                  </Text>
+
+                  {currentQuestion.image_url && (
+                    <View className="mt-4 items-center">
+                      <QuestionImage
+                        uri={currentQuestion.image_url}
+                        style={{ width: 200, height: 150, borderRadius: 12 }}
+                      />
+                    </View>
+                  )}
+
+                  <View
+                    className="h-1 w-12 rounded-full mt-4"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                  />
+                </View>
               </View>
-            </View>
+            </Animated.View>
           </Animated.View>
 
-          {/* Answer Options */}
           <View className="px-6 flex-col gap-3">
             {currentQuestion.answers.map((answer, index) => (
               <Animated.View
@@ -881,7 +879,6 @@ export default function DailyBrainScreen() {
             ))}
           </View>
 
-          {/* Feedback message */}
           {selectedAnswer !== null && (
             <View className="px-6 mt-6">
               <View
@@ -894,7 +891,7 @@ export default function DailyBrainScreen() {
                   className="text-center font-bold text-lg"
                   style={{ color: isCorrect ? COLORS.success : COLORS.error }}
                 >
-                  {isCorrect ? "Correct ! Question suivante..." : "Perdu !"}
+                  {isCorrect ? t("dailyCorrectNext") : t("dailyWrongNext")}
                 </Text>
               </View>
             </View>
@@ -902,7 +899,6 @@ export default function DailyBrainScreen() {
         </ScrollView>
       </View>
 
-      {/* Rating Modal */}
       <RatingModal visible={showRatingModal} onClose={closeRatingModal} />
     </SafeAreaView>
   );

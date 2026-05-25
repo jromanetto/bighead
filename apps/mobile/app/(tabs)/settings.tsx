@@ -6,6 +6,12 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { useLanguage } from "../../src/contexts/LanguageContext";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings, saveSettings, type UserSettings } from "../../src/services/settings";
+import {
+  getPrefs,
+  updatePref,
+  type NotificationPrefKey,
+  type NotificationPreferences,
+} from "../../src/services/notificationPreferences";
 import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
 import { IconButton, Icon } from "../../src/components/ui";
 import { RatingModal } from "../../src/components/RatingModal";
@@ -44,9 +50,15 @@ export default function SettingsScreen() {
     onboarding_completed: true,
   });
   const [saving, setSaving] = useState(false);
+  const [notifPrefs, setNotifPrefs] = useState<NotificationPreferences>({
+    friend_overtake: true,
+    achievement: true,
+    streak_warning: true,
+  });
 
   useEffect(() => {
     loadSettings();
+    loadNotifPrefs();
   }, [user]);
 
   const loadSettings = async () => {
@@ -55,6 +67,27 @@ export default function SettingsScreen() {
       setSettings(data);
     } catch (error) {
       console.error("Error loading settings:", error);
+    }
+  };
+
+  const loadNotifPrefs = async () => {
+    try {
+      const prefs = await getPrefs(user?.id);
+      setNotifPrefs(prefs);
+    } catch (error) {
+      console.error("Error loading notification prefs:", error);
+    }
+  };
+
+  const updateNotifPref = async (key: NotificationPrefKey, value: boolean) => {
+    playHaptic("light");
+    setNotifPrefs((prev) => ({ ...prev, [key]: value }));
+    try {
+      await updatePref(key, value, user?.id);
+    } catch (error) {
+      console.error("Error updating notification pref:", error);
+      // Rollback on failure
+      setNotifPrefs((prev) => ({ ...prev, [key]: !value }));
     }
   };
 
@@ -267,6 +300,44 @@ export default function SettingsScreen() {
               subtitle={t("dailyReminders")}
               value={settings.notifications_enabled}
               onToggle={(v) => updateSetting("notifications_enabled", v)}
+            />
+          </View>
+
+          {/* Per-trigger notification preferences */}
+          <Text
+            className="text-xs font-bold mb-2 mt-6 uppercase tracking-wider"
+            style={{ color: COLORS.textMuted }}
+          >
+            {t("notifSettings")}
+          </Text>
+          <View
+            className="rounded-2xl px-4"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <SettingRow
+              icon="🚨"
+              title={t("notifFriendOvertake")}
+              subtitle={t("notifFriendOvertakeDesc")}
+              value={notifPrefs.friend_overtake}
+              onToggle={(v) => updateNotifPref("friend_overtake", v)}
+            />
+            <SettingRow
+              icon="🎖️"
+              title={t("notifAchievement")}
+              subtitle={t("notifAchievementDesc")}
+              value={notifPrefs.achievement}
+              onToggle={(v) => updateNotifPref("achievement", v)}
+            />
+            <SettingRow
+              icon="🔥"
+              title={t("notifStreakWarning")}
+              subtitle={t("notifStreakWarningDesc")}
+              value={notifPrefs.streak_warning}
+              onToggle={(v) => updateNotifPref("streak_warning", v)}
             />
           </View>
 

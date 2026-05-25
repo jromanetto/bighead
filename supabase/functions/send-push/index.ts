@@ -87,6 +87,16 @@ const TEMPLATES: Record<string, { title: string; body: string; data?: Record<str
     body: "Joue aujourd'hui pour maintenir ta série de {days} jours !",
     data: { screen: "home" },
   },
+  streak_warning: {
+    title: "🔥 Ta série est en danger !",
+    body: "Joue avant minuit pour garder ta série de {days} jours",
+    data: { screen: "home" },
+  },
+  friend_overtake: {
+    title: "🚨 Tu es dépassé !",
+    body: "{username} t'a battu de {xp_diff} XP cette semaine. Reprends la tête !",
+    data: { screen: "leaderboard" },
+  },
   friend_joined: {
     title: "👋 Nouvel ami !",
     body: "{username} a rejoint BIGHEAD !",

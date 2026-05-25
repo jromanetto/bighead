@@ -1,6 +1,11 @@
 /**
  * Referral Service
  * Handles invite codes and referral rewards
+ *
+ * v2 (2026-05-25): level-5 gated rewards (500 XP + 30 days premium for both
+ * referrer and referee). Backed by `referral_codes` + `referrals` tables.
+ * Legacy `users.referral_code` / `users.referred_by` columns are still mirrored
+ * server-side for backwards compatibility.
  */
 
 import { supabase } from "./supabase";
@@ -10,6 +15,7 @@ import * as Clipboard from "expo-clipboard";
 const REFERRAL_REWARD_HINTS = 1;
 const APP_STORE_URL = "https://apps.apple.com/app/bighead-quiz-culture/id6758253365";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.jroma51.bighead";
+const SHARE_URL = "https://bighead.app";
 
 export interface ReferralStats {
   referralCode: string;
@@ -17,6 +23,17 @@ export interface ReferralStats {
   totalHintsEarned: number;
   pendingReferrals: number;
 }
+
+export interface ReferralStatsV2 {
+  code: string;
+  totalInvited: number;
+  completed: number;
+  pending: number;
+}
+
+export type RedeemResult =
+  | { success: true; referrerId: string }
+  | { success: false; error: "code_not_found" | "self_referral" | "already_redeemed" | "invalid_code" | "not_authenticated" | "unknown" };
 
 /**
  * Generate a unique referral code for a user
@@ -173,6 +190,104 @@ export const copyReferralCode = async (code: string): Promise<boolean> => {
     console.error("Error copying to clipboard:", error);
     return false;
   }
+};
+
+// =====================================================================
+// v2 API — level-5 gated rewards (500 XP + 30 days premium for both)
+// =====================================================================
+
+/**
+ * Ensure the current user has a referral code (server-generated, format BH-XXXXXX).
+ * Idempotent. Returns the code or null on error.
+ */
+export const ensureReferralCode = async (userId: string): Promise<string | null> => {
+  try {
+    // @ts-ignore — RPC not in generated types
+    const { data, error } = await supabase.rpc("ensure_referral_code", {
+      p_user_id: userId,
+    });
+    if (error) {
+      console.error("ensure_referral_code error:", error);
+      return null;
+    }
+    return (data as string) || null;
+  } catch (e) {
+    console.error("ensureReferralCode failed:", e);
+    return null;
+  }
+};
+
+/**
+ * Redeem a referral code as the currently authenticated user.
+ * Server-side check enforces no self-referral and no double-redeem.
+ */
+export const redeemReferralCode = async (code: string): Promise<RedeemResult> => {
+  try {
+    // @ts-ignore — RPC not in generated types
+    const { data, error } = await supabase.rpc("redeem_referral_code", {
+      p_code: code,
+    });
+    if (error) {
+      console.error("redeem_referral_code error:", error);
+      return { success: false, error: "unknown" };
+    }
+    const result = data as {
+      success: boolean;
+      error?: RedeemResult extends { success: false } ? RedeemResult["error"] : string;
+      referrer_id?: string;
+    };
+    if (result?.success && result.referrer_id) {
+      return { success: true, referrerId: result.referrer_id };
+    }
+    return {
+      success: false,
+      error: (result?.error as any) || "unknown",
+    };
+  } catch (e) {
+    console.error("redeemReferralCode failed:", e);
+    return { success: false, error: "unknown" };
+  }
+};
+
+/**
+ * Fetch v2 referral stats for the currently authenticated user.
+ */
+export const getReferralStatsV2 = async (): Promise<ReferralStatsV2 | null> => {
+  try {
+    // @ts-ignore — RPC not in generated types
+    const { data, error } = await supabase.rpc("get_referral_stats");
+    if (error) {
+      console.error("get_referral_stats error:", error);
+      return null;
+    }
+    const result = data as {
+      success: boolean;
+      code?: string;
+      total_invited?: number;
+      completed?: number;
+      pending?: number;
+    };
+    if (!result?.success || !result.code) return null;
+    return {
+      code: result.code,
+      totalInvited: result.total_invited ?? 0,
+      completed: result.completed ?? 0,
+      pending: result.pending ?? 0,
+    };
+  } catch (e) {
+    console.error("getReferralStatsV2 failed:", e);
+    return null;
+  }
+};
+
+/**
+ * Build the localized share message for v2 (mentions 500 XP + 1 month premium reward).
+ */
+export const getShareMessageV2 = (code: string, lang: "fr" | "en" = "fr"): string => {
+  if (lang === "en") {
+    return `🎯 Join me on BigHead with my code ${code}! We both get 500 XP + 1 month premium when you reach level 5. Download the app: ${SHARE_URL}`;
+  }
+  return `🎯 Rejoins-moi sur BigHead avec mon code ${code} ! On gagne 500 XP + 1 mois premium chacun quand t'atteins le niveau 5. Télécharge l'app : ${SHARE_URL}`;
 };
 
 /**

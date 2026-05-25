@@ -8,6 +8,7 @@ import { ProfileAvatar } from "../../src/components/ProfileAvatar";
 import { getUserStats } from "../../src/services/gameResults";
 import { uploadAvatar } from "../../src/services/avatar";
 import { supabase } from "../../src/services/supabase";
+import { fetchAvailable as fetchStreakFreezes } from "../../src/services/streakFreeze";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { Icon } from "../../src/components/ui";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -126,6 +127,7 @@ export default function ProfileScreen() {
   });
   const [loadingStats, setLoadingStats] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [streakFreezes, setStreakFreezes] = useState<number>(0);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [newUsername, setNewUsername] = useState("");
   const [savingUsername, setSavingUsername] = useState(false);
@@ -152,6 +154,20 @@ export default function ProfileScreen() {
     };
 
     loadStats();
+  }, [user, isAnonymous]);
+
+  // Load streak freezes
+  useEffect(() => {
+    const loadFreezes = async () => {
+      if (!user || isAnonymous) return;
+      try {
+        const count = await fetchStreakFreezes();
+        setStreakFreezes(count);
+      } catch (e) {
+        console.error("Error loading streak freezes:", e);
+      }
+    };
+    loadFreezes();
   }, [user, isAnonymous]);
 
   const handleEditUsername = () => {
@@ -441,6 +457,37 @@ export default function ProfileScreen() {
             ))}
           </View>
         </View>
+
+        {/* Streak Freezes */}
+        {!isAnonymous && (
+          <View
+            className="mx-6 mb-6 rounded-xl p-4"
+            style={{
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <View className="flex-row items-center">
+              <View
+                className="w-12 h-12 rounded-xl items-center justify-center mr-3"
+                style={{ backgroundColor: 'rgba(0, 194, 204, 0.15)' }}
+              >
+                <Text className="text-2xl">🛡️</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-bold">
+                  {t("streakFreezeAvailable" as any)}: {streakFreezes}
+                </Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-xs mt-1">
+                  {isPremium
+                    ? t("streakFreezePremium" as any)
+                    : t("streakFreezeWeekly" as any)}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Category Mastery */}
         <View className="mx-6 mb-8">
