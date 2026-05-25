@@ -9,6 +9,7 @@ import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/d
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
 import { Icon } from "../../src/components/ui";
+import { WeeklyChallengeBanner } from "../../src/components/WeeklyChallengeBanner";
 
 // New QuizNext design colors
 const COLORS = {
@@ -160,6 +161,9 @@ export default function HomeScreen() {
 
         {/* Main Content */}
         <View className="px-4 flex-col gap-6">
+          {/* Weekly Challenge banner */}
+          <WeeklyChallengeBanner />
+
           {/* Featured Section */}
           <View className="flex-col gap-3">
             <View className="flex-row items-baseline justify-between px-1">

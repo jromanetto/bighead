@@ -92,6 +92,21 @@ const TEMPLATES: Record<string, { title: string; body: string; data?: Record<str
     body: "{username} a rejoint BIGHEAD !",
     data: { screen: "friends" },
   },
+  weekly_start: {
+    title: "{emoji} Nouveau défi : {theme}",
+    body: "30 questions sur le thème de la semaine. Lance-toi !",
+    data: { screen: "weekly" },
+  },
+  weekly_midweek: {
+    title: "{emoji} Plus que 4 jours pour {theme}",
+    body: "Pas encore commencé ? Tu peux encore décrocher le badge Expert !",
+    data: { screen: "weekly" },
+  },
+  weekly_lastday: {
+    title: "⏰ Dernier jour : {theme}",
+    body: "Fin du défi à minuit ! Termine tes 30 questions pour le bonus XP.",
+    data: { screen: "weekly" },
+  },
 };
 
 async function sendExpoPush(messages: ExpoPushMessage[]): Promise<{ sent: number; failed: number }> {
