@@ -453,6 +453,18 @@ export const translations = {
     activityTimeAgoDays: "{count}d ago",
     activityHomeLink: "Activity",
     activityHomeSubtitle: "What your friends are up to",
+
+    // Universal XP rewards
+    xpDailyLogin: "Daily login bonus",
+    xpMilestoneOnboarding: "Welcome aboard!",
+    xpMilestoneProfile: "Profile complete",
+    xpMilestoneFirstShare: "Thanks for sharing",
+    xpStreakMilestone: "{days}-day streak!",
+    xpAchievementUnlock: "Achievement unlocked",
+    xpLifelineUse: "Lifeline used",
+    xpWelcomeBack: "Welcome back!",
+    xpBonusReceived: "Bonus received",
+    xpAmount: "+{amount} XP",
   },
   fr: {
     // Navigation & Headers
@@ -908,6 +920,18 @@ export const translations = {
     activityTimeAgoDays: "il y a {count} j",
     activityHomeLink: "Activité",
     activityHomeSubtitle: "Ce que font tes amis",
+
+    // Universal XP rewards
+    xpDailyLogin: "Bonus de connexion",
+    xpMilestoneOnboarding: "Bienvenue à bord !",
+    xpMilestoneProfile: "Profil complété",
+    xpMilestoneFirstShare: "Merci pour le partage",
+    xpStreakMilestone: "Série de {days} jours !",
+    xpAchievementUnlock: "Succès débloqué",
+    xpLifelineUse: "Joker utilisé",
+    xpWelcomeBack: "Bon retour !",
+    xpBonusReceived: "Bonus reçu",
+    xpAmount: "+{amount} XP",
   },
   es: {
     // Navigation & Headers
@@ -1363,6 +1387,18 @@ export const translations = {
     activityTimeAgoDays: "hace {count} d",
     activityHomeLink: "Actividad",
     activityHomeSubtitle: "Lo que están haciendo tus amigos",
+
+    // Universal XP rewards
+    xpDailyLogin: "Bonus de inicio de sesión",
+    xpMilestoneOnboarding: "¡Bienvenido a bordo!",
+    xpMilestoneProfile: "Perfil completo",
+    xpMilestoneFirstShare: "Gracias por compartir",
+    xpStreakMilestone: "¡Racha de {days} días!",
+    xpAchievementUnlock: "Logro desbloqueado",
+    xpLifelineUse: "Comodín usado",
+    xpWelcomeBack: "¡Bienvenido de vuelta!",
+    xpBonusReceived: "Bono recibido",
+    xpAmount: "+{amount} XP",
   },
   de: {
     // Navigation & Headers
@@ -1818,6 +1854,18 @@ export const translations = {
     activityTimeAgoDays: "vor {count} T.",
     activityHomeLink: "Aktivität",
     activityHomeSubtitle: "Was deine Freunde so machen",
+
+    // Universal XP rewards
+    xpDailyLogin: "Tägliches Login-Bonus",
+    xpMilestoneOnboarding: "Willkommen an Bord!",
+    xpMilestoneProfile: "Profil vollständig",
+    xpMilestoneFirstShare: "Danke fürs Teilen",
+    xpStreakMilestone: "{days}-Tage-Serie!",
+    xpAchievementUnlock: "Erfolg freigeschaltet",
+    xpLifelineUse: "Joker eingesetzt",
+    xpWelcomeBack: "Willkommen zurück!",
+    xpBonusReceived: "Bonus erhalten",
+    xpAmount: "+{amount} XP",
   },
 };
 

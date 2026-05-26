@@ -13,7 +13,24 @@ export type XPSource =
   | "challenge"
   | "daily"
   | "achievement"
-  | "referral";
+  | "referral"
+  // Universal (non-gameplay) sources — see 20260526110000_universal_xp.sql
+  | "daily_login"
+  | "weekly_open"
+  | "onboarding_complete"
+  | "profile_complete"
+  | "first_friend"
+  | "first_share"
+  | "first_rating"
+  | "first_feedback"
+  | "language_change"
+  | "tutorial_complete"
+  | "lifeline_use"
+  | "achievement_unlock"
+  | "activity_feed_open"
+  | "friend_added"
+  | "streak_milestone"
+  | "referral_bonus";
 
 export interface XPGain {
   base: number;

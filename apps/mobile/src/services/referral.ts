@@ -11,6 +11,7 @@
 import { supabase } from "./supabase";
 import { Platform } from "react-native";
 import * as Clipboard from "expo-clipboard";
+import { claimMilestone } from "./universalXp";
 
 const REFERRAL_REWARD_HINTS = 1;
 const APP_STORE_URL = "https://apps.apple.com/app/bighead-quiz-culture/id6758253365";
@@ -180,6 +181,8 @@ export const shareReferralCode = async (referralCode: string): Promise<boolean> 
   try {
     const message = getShareMessage(referralCode);
     await Clipboard.setStringAsync(message);
+    // Reward first_share milestone (server enforces lifetime dedupe)
+    claimMilestone("first_share").catch(() => {});
     return true;
   } catch (error) {
     console.error("Error sharing referral code:", error);

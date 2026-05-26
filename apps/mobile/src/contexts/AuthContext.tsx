@@ -1,7 +1,20 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import * as Sentry from "@sentry/react-native";
 import { supabase } from "../services/supabase";
+import { claimDailyLoginBonus } from "../services/universalXp";
 import type { User, Session } from "@supabase/supabase-js";
+
+// Fire-and-forget daily login bonus claim (server enforces 1×/UTC-day dedupe).
+// Wrapped in try/catch — observability or rewards must never crash auth.
+const tryClaimDailyLogin = (userId: string) => {
+  if (!userId) return;
+  // Run on next tick so we never block auth init
+  setTimeout(() => {
+    claimDailyLoginBonus().catch(() => {
+      // never throw
+    });
+  }, 0);
+};
 
 // Attach (or clear) Sentry user context. Wrapped in try/catch so a missing
 // Sentry init (e.g. no DSN locally) never breaks auth flow.
@@ -180,6 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isInitialized: true,
           });
           syncSentryUser(session.user, profile);
+          tryClaimDailyLogin(session.user.id);
         } else {
           // No session - create anonymous session
           await signInAnonymouslyInternal();
@@ -213,6 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isInitialized: true,
           });
           syncSentryUser(session.user, profile);
+          tryClaimDailyLogin(session.user.id);
         } else if (event === "SIGNED_OUT") {
           setState({
             user: null,

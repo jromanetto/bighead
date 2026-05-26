@@ -19,6 +19,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { requestStoreReview, submitFeedback, markAsDismissed } from "../services/rating";
+import { claimMilestone } from "../services/universalXp";
 import { playHaptic } from "../utils/feedback";
 
 const COLORS = {
@@ -76,6 +77,8 @@ export function RatingModal({ visible, onClose }: RatingModalProps) {
     if (rating === 5) {
       // 5 stars - open App Store
       const success = await requestStoreReview();
+      // Reward first_rating XP (lifetime dedupe)
+      claimMilestone("first_rating").catch(() => {});
       setLoading(false);
       if (success) {
         setStep("thanks");
@@ -101,6 +104,11 @@ export function RatingModal({ visible, onClose }: RatingModalProps) {
     setLoading(true);
 
     await submitFeedback(rating, feedback);
+    // Reward first_rating + first_feedback (lifetime dedupe server-side)
+    claimMilestone("first_rating").catch(() => {});
+    if (feedback.trim().length > 0) {
+      claimMilestone("first_feedback").catch(() => {});
+    }
 
     setLoading(false);
     setStep("thanks");

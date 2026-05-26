@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { getLocales } from "expo-localization";
 import { translations, TranslationKey, Language } from "../i18n/translations";
 import { getSettings, saveSettings } from "../services/settings";
+import { claimMilestone } from "../services/universalXp";
 import { useAuth } from "./AuthContext";
 
 const SUPPORTED_LANGUAGES: Language[] = ["en", "fr", "es", "de"];
@@ -46,9 +47,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   const setLanguage = async (lang: Language) => {
+    const previous = language;
     setLanguageState(lang);
     try {
       await saveSettings({ language: lang }, user?.id);
+      // Reward language_change once (lifetime dedupe server-side).
+      // Only fire when the user actually switched to a different language.
+      if (previous !== lang) {
+        claimMilestone("language_change").catch(() => {});
+      }
     } catch (error) {
       console.error("Error saving language:", error);
     }

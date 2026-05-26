@@ -16,6 +16,8 @@ import {
   type ActivityEvent,
 } from "../src/services/activityFeed";
 import { Icon } from "../src/components/ui";
+import { useAuth } from "../src/contexts/AuthContext";
+import { awardXP } from "../src/services/xp";
 
 const COLORS = {
   bg: "#161a1d",
@@ -29,6 +31,7 @@ const PAGE_SIZE = 30;
 
 export default function ActivityScreen() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [events, setEvents] = useState<ActivityEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -45,6 +48,15 @@ export default function ActivityScreen() {
       setLoading(false);
     })();
   }, [load]);
+
+  // Reward +2 XP for opening the activity feed (capped 1×/day via dedupe key)
+  useEffect(() => {
+    if (!user?.id) return;
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
+    awardXP(user.id, 2, "activity_feed_open", { day: today }, `activity_feed_open_${today}`).catch(
+      () => {}
+    );
+  }, [user?.id]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

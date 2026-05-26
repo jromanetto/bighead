@@ -12,6 +12,7 @@ import { useAuth } from "../src/contexts/AuthContext";
 import { useTranslation } from "../src/contexts/LanguageContext";
 import { completeOnboarding } from "../src/services/settings";
 import { redeemReferralCode } from "../src/services/referral";
+import { claimMilestone } from "../src/services/universalXp";
 import { playHaptic } from "../src/utils/feedback";
 
 const COLORS = {
@@ -145,6 +146,8 @@ export default function OnboardingScreen() {
   const finishOnboarding = async () => {
     playHaptic("success");
     await completeOnboarding(user?.id);
+    // Reward onboarding XP — fire and forget, server enforces lifetime dedupe
+    claimMilestone("onboarding_complete").catch(() => {});
     router.replace("/");
   };
 

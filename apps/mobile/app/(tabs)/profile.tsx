@@ -9,6 +9,7 @@ import { getUserStats } from "../../src/services/gameResults";
 import { uploadAvatar } from "../../src/services/avatar";
 import { supabase } from "../../src/services/supabase";
 import { fetchAvailable as fetchStreakFreezes } from "../../src/services/streakFreeze";
+import { claimMilestone } from "../../src/services/universalXp";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { Icon } from "../../src/components/ui";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -169,6 +170,17 @@ export default function ProfileScreen() {
     };
     loadFreezes();
   }, [user, isAnonymous]);
+
+  // Claim profile_complete milestone when both username AND avatar are set.
+  // Server enforces lifetime dedupe — safe to call defensively.
+  useEffect(() => {
+    if (!user || isAnonymous || !profile) return;
+    const hasUsername = !!profile.username && profile.username.trim().length >= 2;
+    const hasAvatar = !!profile.avatar_url;
+    if (hasUsername && hasAvatar) {
+      claimMilestone("profile_complete").catch(() => {});
+    }
+  }, [user, isAnonymous, profile?.username, profile?.avatar_url]);
 
   const handleEditUsername = () => {
     setNewUsername(profile?.username || "");

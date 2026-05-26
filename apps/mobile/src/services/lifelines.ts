@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { claimLifelineXp } from "./universalXp";
 
 export type LifelineType = "fifty_fifty" | "skip" | "plus_5s" | "double_xp";
 
@@ -37,6 +38,8 @@ export async function useLifeline(type: LifelineType): Promise<number | null> {
     console.warn("[lifelines] useLifeline error", error.message);
     return null;
   }
+  // Reward +2 XP per use (capped 10×/day server-side). Fire-and-forget.
+  claimLifelineXp().catch(() => {});
   return typeof data === "number" ? data : null;
 }
 
