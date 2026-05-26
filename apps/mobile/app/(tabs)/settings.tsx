@@ -129,7 +129,7 @@ export default function SettingsScreen() {
     setSaving(false);
   };
 
-  const handleLanguageChange = async (lang: "en" | "fr") => {
+  const handleLanguageChange = async (lang: "en" | "fr" | "es" | "de") => {
     playHaptic("light");
     await setLanguage(lang);
     setSettings((prev) => ({ ...prev, language: lang }));
@@ -367,6 +367,18 @@ export default function SettingsScreen() {
               title="Français"
               subtitle={language === "fr" ? t("selected") : undefined}
               onPress={() => handleLanguageChange("fr")}
+            />
+            <MenuRow
+              icon="ES"
+              title="Español"
+              subtitle={language === "es" ? t("selected") : undefined}
+              onPress={() => handleLanguageChange("es")}
+            />
+            <MenuRow
+              icon="DE"
+              title="Deutsch"
+              subtitle={language === "de" ? t("selected") : undefined}
+              onPress={() => handleLanguageChange("de")}
             />
           </View>
 

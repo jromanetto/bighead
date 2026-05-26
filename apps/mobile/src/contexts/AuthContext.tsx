@@ -1,6 +1,27 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import * as Sentry from "@sentry/react-native";
 import { supabase } from "../services/supabase";
 import type { User, Session } from "@supabase/supabase-js";
+
+// Attach (or clear) Sentry user context. Wrapped in try/catch so a missing
+// Sentry init (e.g. no DSN locally) never breaks auth flow.
+const syncSentryUser = (
+  user: User | null,
+  profile: { username?: string | null } | null
+) => {
+  try {
+    if (!user) {
+      Sentry.setUser(null);
+      return;
+    }
+    Sentry.setUser({
+      id: user.id,
+      username: profile?.username ?? undefined,
+    });
+  } catch {
+    // ignore — observability must never crash the app
+  }
+};
 
 interface UserProfile {
   id: string;
@@ -158,6 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoading: false,
             isInitialized: true,
           });
+          syncSentryUser(session.user, profile);
         } else {
           // No session - create anonymous session
           await signInAnonymouslyInternal();
@@ -190,6 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoading: false,
             isInitialized: true,
           });
+          syncSentryUser(session.user, profile);
         } else if (event === "SIGNED_OUT") {
           setState({
             user: null,
@@ -200,6 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoading: false,
             isInitialized: true,
           });
+          syncSentryUser(null, null);
         }
       }
     );
@@ -272,6 +296,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isLoading: false,
           isInitialized: true,
         });
+        syncSentryUser(data.user, profile);
       }
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }));
@@ -307,6 +332,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isLoading: false,
           isInitialized: true,
         });
+        syncSentryUser(data.user, profile);
       }
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }));

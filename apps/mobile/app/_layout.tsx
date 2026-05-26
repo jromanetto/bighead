@@ -1,4 +1,21 @@
 import "../global.css";
+import * as Sentry from "@sentry/react-native";
+
+// Initialise Sentry as early as possible. Skip if DSN is not set so the app
+// keeps working when running locally without observability configured.
+// EXPO_PUBLIC_SENTRY_DSN must be configured in EAS secrets for prod builds.
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    // Disable in dev to avoid noisy events while developing.
+    enabled: !__DEV__,
+    debug: __DEV__,
+    tracesSampleRate: 0.2,
+    environment: __DEV__ ? "development" : "production",
+  });
+}
+
 import { useEffect, useState, useCallback } from "react";
 import { View, LogBox } from "react-native";
 import { Stack } from "expo-router";
@@ -21,7 +38,7 @@ if (__DEV__) {
 // Keep the native splash screen visible while we load resources
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
   const [showAnimatedSplash, setShowAnimatedSplash] = useState(true);
 
@@ -89,3 +106,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

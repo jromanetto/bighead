@@ -106,12 +106,12 @@ function BrainLogo({ size = 80 }: { size?: number }) {
 }
 
 // Mode display names for limits section
-const MODE_NAMES: Record<GameMode, { en: string; fr: string }> = {
-  adventure: { en: "Adventure", fr: "Aventure" },
-  solo_run: { en: "Solo Run", fr: "Solo Run" },
-  family: { en: "Family", fr: "Famille" },
-  party: { en: "Party", fr: "Party" },
-  versus: { en: "Versus", fr: "Versus" },
+const MODE_NAMES: Record<GameMode, { en: string; fr: string; es: string; de: string }> = {
+  adventure: { en: "Adventure", fr: "Aventure", es: "Aventura", de: "Adventure" },
+  solo_run: { en: "Solo Run", fr: "Solo Run", es: "Solo Run", de: "Solo Run" },
+  family: { en: "Family", fr: "Famille", es: "Familia", de: "Familie" },
+  party: { en: "Party", fr: "Party", es: "Party", de: "Party" },
+  versus: { en: "Versus", fr: "Versus", es: "Versus", de: "Versus" },
 };
 
 export default function PremiumScreen() {

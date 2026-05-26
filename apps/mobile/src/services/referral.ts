@@ -155,11 +155,19 @@ export const applyReferralCode = async (
 /**
  * Get the share message for inviting friends
  */
-export const getShareMessage = (referralCode: string, lang: "fr" | "en" = "fr"): string => {
+export const getShareMessage = (referralCode: string, lang: "fr" | "en" | "es" | "de" = "fr"): string => {
   const storeUrl = Platform.OS === "ios" ? APP_STORE_URL : PLAY_STORE_URL;
 
   if (lang === "en") {
     return `Join me on BIGHEAD - the ultimate trivia quiz! 🧠\n\nUse my code ${referralCode} to get a free hint!\n\nDownload now:\n${storeUrl}`;
+  }
+
+  if (lang === "es") {
+    return `¡Únete a mí en BIGHEAD - el quiz de cultura general definitivo! 🧠\n\nUsa mi código ${referralCode} para conseguir una pista gratis.\n\nDescárgala aquí:\n${storeUrl}`;
+  }
+
+  if (lang === "de") {
+    return `Komm zu mir auf BIGHEAD - das ultimative Wissens-Quiz! 🧠\n\nNutz meinen Code ${referralCode} und hol dir einen Gratis-Tipp!\n\nJetzt laden:\n${storeUrl}`;
   }
 
   return `Rejoins-moi sur BIGHEAD - le quiz culture gé ultime ! 🧠\n\nUtilise mon code ${referralCode} pour obtenir un indice gratuit !\n\nTélécharge ici :\n${storeUrl}`;
@@ -283,9 +291,15 @@ export const getReferralStatsV2 = async (): Promise<ReferralStatsV2 | null> => {
 /**
  * Build the localized share message for v2 (mentions 500 XP + 1 month premium reward).
  */
-export const getShareMessageV2 = (code: string, lang: "fr" | "en" = "fr"): string => {
+export const getShareMessageV2 = (code: string, lang: "fr" | "en" | "es" | "de" = "fr"): string => {
   if (lang === "en") {
     return `🎯 Join me on BigHead with my code ${code}! We both get 500 XP + 1 month premium when you reach level 5. Download the app: ${SHARE_URL}`;
+  }
+  if (lang === "es") {
+    return `🎯 ¡Únete a BigHead con mi código ${code}! Cuando llegues al nivel 5, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: ${SHARE_URL}`;
+  }
+  if (lang === "de") {
+    return `🎯 Komm mit meinem Code ${code} zu BigHead! Wenn du Level 5 erreichst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: ${SHARE_URL}`;
   }
   return `🎯 Rejoins-moi sur BigHead avec mon code ${code} ! On gagne 500 XP + 1 mois premium chacun quand t'atteins le niveau 5. Télécharge l'app : ${SHARE_URL}`;
 };

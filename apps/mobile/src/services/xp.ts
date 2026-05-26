@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react-native";
 import { supabase } from "./supabase";
 
 export type XPSource =
@@ -152,11 +153,25 @@ export async function awardXP(
     });
     if (error) {
       console.warn("[xp] award_xp error:", error.message);
+      Sentry.addBreadcrumb({
+        category: "xp",
+        message: "award_xp returned error",
+        level: "warning",
+        data: { source, amount, code: error.code, message: error.message },
+      });
+      Sentry.captureException(error, {
+        tags: { feature: "xp", rpc: "award_xp" },
+        extra: { userId, amount, source, dedupeKey },
+      });
       return null;
     }
     return data as number;
   } catch (e) {
     console.warn("[xp] award_xp threw:", e);
+    Sentry.captureException(e, {
+      tags: { feature: "xp", rpc: "award_xp" },
+      extra: { userId, amount, source, dedupeKey },
+    });
     return null;
   }
 }

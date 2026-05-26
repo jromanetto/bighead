@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react-native";
 import { supabase } from "./supabase";
 import type { Question } from "../types/database";
 import { useFreeze as useStreakFreezeRpc } from "./streakFreeze";
@@ -566,6 +567,12 @@ export const submitDailyBrain = async (
   correctCount: number,
   totalTimeMs: number
 ): Promise<{ xpEarned: number; newStreak: number; isNewRecord: boolean; perfect: boolean }> => {
+  Sentry.addBreadcrumb({
+    category: "daily-brain",
+    message: "submitDailyBrain start",
+    level: "info",
+    data: { userId, correctCount, totalTimeMs },
+  });
   const today = dayOffset(0);
   const yesterday = dayOffset(-1);
   const perfect = correctCount >= DAILY_BRAIN_QUESTION_COUNT;
@@ -594,6 +601,10 @@ export const submitDailyBrain = async (
 
   if (insertError && !insertError.message.includes("does not exist")) {
     console.error("Error saving daily brain:", insertError);
+    Sentry.captureException(insertError, {
+      tags: { feature: "daily-brain", step: "insert" },
+      extra: { userId, correctCount, totalTimeMs },
+    });
   }
 
   const { data: user } = await supabase

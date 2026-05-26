@@ -1,6 +1,7 @@
 import "react-native-url-polyfill/auto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/react-native";
 import type { Database } from "../types/database";
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
@@ -10,6 +11,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
     "Supabase credentials not found. Please set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in your .env file."
   );
+  try {
+    Sentry.captureMessage("supabase: missing credentials at boot", "fatal");
+  } catch {
+    // ignore
+  }
 }
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {

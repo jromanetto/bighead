@@ -170,14 +170,18 @@ export default function HomeScreen() {
               <Text className="text-base font-bold text-gray-100 tracking-wide uppercase">
                 {t("featured")}
               </Text>
-              <View
-                className="px-2 py-0.5 rounded-full"
+              <Pressable
+                onPress={() => {
+                  buttonPressFeedback();
+                  router.push("/activity" as any);
+                }}
+                className="px-2.5 py-1 rounded-full active:opacity-80"
                 style={{ backgroundColor: `${COLORS.primary}15`, borderWidth: 1, borderColor: `${COLORS.primary}30` }}
               >
                 <Text className="text-xs font-medium" style={{ color: COLORS.primary }}>
-                  {t("new")}
+                  👥 {t("activityHomeLink")}
                 </Text>
-              </View>
+              </Pressable>
             </View>
 
             {/* Featured Card - Daily Brain */}
@@ -421,6 +425,48 @@ export default function HomeScreen() {
                 </LinearGradient>
               </Pressable>
             </View>
+
+            {/* Audio Quiz Card */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/audio/play" as any);
+              }}
+              className="rounded-xl overflow-hidden active:opacity-95"
+              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(0, 194, 204, 0.2)' }}
+            >
+              <LinearGradient
+                colors={['#0e7490', '#0891b2', '#06b6d4']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <View className="flex-col justify-center flex-1">
+                  <View className="flex-row items-center gap-2 mb-1">
+                    <View
+                      className="px-2 py-0.5 rounded-sm"
+                      style={{ backgroundColor: '#FFD700' }}
+                    >
+                      <Text className="text-[10px] font-bold tracking-wider uppercase" style={{ color: '#0e7490' }}>
+                        {t("new").toUpperCase()}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text className="text-xl font-black tracking-tight text-white">
+                    {t("audioQuizCta")}
+                  </Text>
+                  <Text className="text-cyan-100 text-xs mt-0.5">
+                    {t("audioQuizSubtitle")}
+                  </Text>
+                </View>
+                <View
+                  className="w-14 h-14 rounded-2xl items-center justify-center"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
+                >
+                  <Text className="text-3xl">🎧</Text>
+                </View>
+              </LinearGradient>
+            </Pressable>
 
             {/* Level & Achievements Card */}
             <Pressable

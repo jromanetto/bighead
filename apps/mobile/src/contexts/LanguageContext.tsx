@@ -4,9 +4,18 @@ import { translations, TranslationKey, Language } from "../i18n/translations";
 import { getSettings, saveSettings } from "../services/settings";
 import { useAuth } from "./AuthContext";
 
+const SUPPORTED_LANGUAGES: Language[] = ["en", "fr", "es", "de"];
+
+function isSupportedLanguage(value: unknown): value is Language {
+  return typeof value === "string" && (SUPPORTED_LANGUAGES as string[]).includes(value);
+}
+
 function getDeviceLanguage(): Language {
   const deviceLang = getLocales()[0]?.languageCode;
-  return deviceLang === "fr" ? "fr" : "en";
+  if (deviceLang === "fr") return "fr";
+  if (deviceLang === "es") return "es";
+  if (deviceLang === "de") return "de";
+  return "en";
 }
 
 interface LanguageContextType {
@@ -28,7 +37,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const loadLanguage = async () => {
     try {
       const settings = await getSettings(user?.id);
-      if (settings.language && (settings.language === "en" || settings.language === "fr")) {
+      if (isSupportedLanguage(settings.language)) {
         setLanguageState(settings.language);
       }
     } catch (error) {
