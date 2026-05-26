@@ -8,7 +8,6 @@ import {
   getNextWeeklyQuestion,
   submitWeeklyAnswer,
   shuffleAnswers,
-  dayQuotaRemaining,
   type WeeklyChallenge,
   type WeeklyQuestion,
 } from "../../src/services/weeklyChallenge";
@@ -85,11 +84,6 @@ export default function WeeklyPlay() {
       router.replace("/weekly/result" as any);
       return;
     }
-    const quota = dayQuotaRemaining(c, p);
-    if (!quota.unlimited && quota.remaining === 0) {
-      router.replace("/weekly" as any);
-      return;
-    }
     const nextPos = (p?.current_position ?? 0) + 1;
     setPosition(nextPos);
     setCorrectSoFar(p?.correct_count ?? 0);
@@ -127,11 +121,6 @@ export default function WeeklyPlay() {
     const p = await getMyWeeklyProgress(challenge.id);
     if (p && p.completed_at) {
       router.replace("/weekly/result" as any);
-      return;
-    }
-    const quota = dayQuotaRemaining(challenge, p);
-    if (!quota.unlimited && quota.remaining === 0) {
-      router.replace("/weekly" as any);
       return;
     }
     loadCurrent();

@@ -1,5 +1,4 @@
 import { supabase } from "./supabase";
-import { getTodayIsoDate } from "../utils/dates";
 
 export interface WeeklyChallenge {
   id: string;
@@ -55,8 +54,7 @@ export interface WeeklyLeaderboardEntry {
   rank: number;
 }
 
-const DAILY_LIMIT_BEFORE_UNLOCK = 5;
-const FREE_PLAY_FROM_DAY = 4;
+// Weekly challenge: all 30 questions unlocked from day 1. No daily cap.
 
 export async function getActiveWeeklyChallenge(): Promise<WeeklyChallenge | null> {
   const { data, error } = await (supabase as any)
@@ -168,14 +166,11 @@ export function daysIntoChallenge(c: Pick<WeeklyChallenge, "start_date">): numbe
 }
 
 export function dayQuotaRemaining(
-  challenge: Pick<WeeklyChallenge, "start_date">,
-  progress: WeeklyProgress | null,
+  _challenge: Pick<WeeklyChallenge, "start_date">,
+  _progress: WeeklyProgress | null,
 ): { remaining: number; unlimited: boolean } {
-  const dayIdx = daysIntoChallenge(challenge);
-  if (dayIdx >= FREE_PLAY_FROM_DAY) return { remaining: Infinity, unlimited: true };
-  const today = getTodayIsoDate();
-  const played = progress?.daily_play_counts?.[today] ?? 0;
-  return { remaining: Math.max(0, DAILY_LIMIT_BEFORE_UNLOCK - played), unlimited: false };
+  // All 30 questions unlocked from day 1. Kept for signature compatibility.
+  return { remaining: Infinity, unlimited: true };
 }
 
 export function timeUntilEnd(c: Pick<WeeklyChallenge, "end_date">): {

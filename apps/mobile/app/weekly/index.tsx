@@ -9,9 +9,7 @@ import {
   getActiveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
-  dayQuotaRemaining,
   timeUntilEnd,
-  daysIntoChallenge,
   type WeeklyChallenge,
   type WeeklyProgress,
   type WeeklyLeaderboardEntry,
@@ -126,8 +124,6 @@ export default function WeeklyHome() {
   const position = progress?.current_position ?? 0;
   const completed = position >= challenge.total_questions;
   const { days, hours } = timeUntilEnd(challenge);
-  const quota = dayQuotaRemaining(challenge, progress);
-  const dayIdx = daysIntoChallenge(challenge);
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
@@ -195,18 +191,6 @@ export default function WeeklyHome() {
               >
                 <Text className="text-white text-base font-bold">✓ {t("weeklySeeRecap")}</Text>
               </Pressable>
-            ) : quota.remaining === 0 && !quota.unlimited ? (
-              <View
-                className="mt-5 rounded-2xl items-center justify-center"
-                style={{ backgroundColor: "rgba(0,0,0,0.35)", paddingVertical: 14 }}
-              >
-                <Text className="text-white/90 text-sm font-semibold">
-                  {t("weeklyDailyDoneTitle")}
-                </Text>
-                <Text className="text-white/70 text-xs mt-0.5">
-                  {t("weeklyDailyDoneSubtitle")}
-                </Text>
-              </View>
             ) : (
               <Pressable
                 onPress={() => {
@@ -221,11 +205,6 @@ export default function WeeklyHome() {
                 <Text style={{ color: challenge.color, fontSize: 16, fontWeight: "800" }}>
                   ▶ {position === 0 ? t("weeklyStart") : t("weeklyContinue")}
                 </Text>
-                {!quota.unlimited && (
-                  <Text style={{ color: challenge.color, opacity: 0.7 }} className="text-xs mt-0.5">
-                    {quota.remaining}/{5} {t("weeklyTodayLeft")}
-                  </Text>
-                )}
               </Pressable>
             )}
           </LinearGradient>
@@ -240,9 +219,7 @@ export default function WeeklyHome() {
             {t("weeklyHowItWorks")}
           </Text>
           <Text className="text-gray-400 text-sm leading-5">
-            {dayIdx < 4
-              ? t("weeklyRules5PerDay").replace("{day}", String(dayIdx))
-              : t("weeklyRulesFreePlay")}
+            {t("weeklyRules5PerDay")}
           </Text>
         </View>
 
