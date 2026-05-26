@@ -13,6 +13,8 @@ import { claimMilestone } from "../../src/services/universalXp";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { Icon } from "../../src/components/ui";
 import { useTranslation } from "../../src/contexts/LanguageContext";
+import { Skeleton } from "../../src/components/Skeleton";
+import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 
 // New QuizNext design colors
 const COLORS = {
@@ -293,8 +295,35 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <ScrollView contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
+          {/* Avatar skeleton */}
+          <View className="items-center mt-12 mb-6">
+            <Skeleton width={112} height={112} rounded={56} />
+            <View style={{ height: 16 }} />
+            <Skeleton width={160} height={22} rounded={6} />
+            <View style={{ height: 8 }} />
+            <Skeleton width={120} height={12} rounded={5} />
+          </View>
+          {/* Stat row skeleton */}
+          <View className="flex-row mx-6 mb-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <View
+                key={i}
+                className="flex-1 rounded-xl py-4 items-center mx-1"
+                style={{
+                  backgroundColor: COLORS.surface,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.05)",
+                }}
+              >
+                <Skeleton width={28} height={10} rounded={5} />
+                <View style={{ height: 8 }} />
+                <Skeleton width={56} height={20} rounded={6} />
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -402,11 +431,14 @@ export default function ProfileScreen() {
           >
             <Text className="text-gray-400 text-xs mb-1">XP</Text>
             {loadingStats ? (
-              <ActivityIndicator size="small" color={COLORS.primary} />
+              <Skeleton width={56} height={20} rounded={6} />
             ) : (
-              <Text className="text-xl font-black" style={{ color: COLORS.primary }}>
-                {formatXP(displayXP)}
-              </Text>
+              <AnimatedNumber
+                value={displayXP}
+                duration={800}
+                style={{ color: COLORS.primary, fontSize: 20, fontWeight: "900" }}
+                formatter={formatXP}
+              />
             )}
           </View>
 
@@ -420,7 +452,7 @@ export default function ProfileScreen() {
           >
             <Text className="text-gray-400 text-xs mb-1">{t("winRate")}</Text>
             {loadingStats ? (
-              <ActivityIndicator size="small" color={COLORS.purple} />
+              <Skeleton width={56} height={20} rounded={6} />
             ) : (
               <Text className="text-xl font-black" style={{ color: COLORS.purple }}>
                 {winRate}%
@@ -438,7 +470,7 @@ export default function ProfileScreen() {
           >
             <Text className="text-gray-400 text-xs mb-1">{t("quizzes")}</Text>
             {loadingStats ? (
-              <ActivityIndicator size="small" color={COLORS.primary} />
+              <Skeleton width={56} height={20} rounded={6} />
             ) : (
               <Text className="text-xl font-black" style={{ color: COLORS.primary }}>
                 {stats.totalGames || 42}

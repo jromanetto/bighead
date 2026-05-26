@@ -10,6 +10,7 @@ import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedb
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
 import { Icon } from "../../src/components/ui";
 import { WeeklyChallengeBanner } from "../../src/components/WeeklyChallengeBanner";
+import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 
 // New QuizNext design colors
 const COLORS = {
@@ -157,7 +158,11 @@ export default function HomeScreen() {
                   borderColor: '#fbbf24',
                 }}
               >
-                <Text className="text-base font-black" style={{ color: '#fbbf24' }}>{levelData.level}</Text>
+                <AnimatedNumber
+                  value={levelData.level}
+                  duration={600}
+                  style={{ color: '#fbbf24', fontSize: 16, fontWeight: '900' }}
+                />
               </View>
             </Pressable>
           </View>
@@ -520,7 +525,11 @@ export default function HomeScreen() {
                         shadowRadius: 8,
                       }}
                     >
-                      <Text className="text-3xl font-black" style={{ color: '#fbbf24' }}>{levelData.level}</Text>
+                      <AnimatedNumber
+                        value={levelData.level}
+                        duration={600}
+                        style={{ color: '#fbbf24', fontSize: 30, fontWeight: '900' }}
+                      />
                     </View>
                     <View>
                       <Text className="text-white font-bold text-lg">{t("level")} {levelData.level}</Text>

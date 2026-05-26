@@ -13,6 +13,8 @@ import { useTranslation } from "../../src/contexts/LanguageContext";
 import { getDuel, type Duel } from "../../src/services/duel";
 import { XPGainBanner } from "../../src/components/XPGainBanner";
 import { computeXP, awardXP } from "../../src/services/xp";
+import { AnimatedNumber } from "../../src/components/AnimatedNumber";
+import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
 
 export default function DuelResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -104,6 +106,7 @@ export default function DuelResultScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
+      <ConfettiEffect trigger={isWinner} />
       <View className="flex-1 px-6 items-center justify-center">
         {/* Trophy/Result Icon */}
         <Animated.View style={trophyStyle} className="mb-8">
@@ -135,13 +138,13 @@ export default function DuelResultScreen() {
               {/* Your Score */}
               <View className="items-center">
                 <Text className="text-gray-400 text-sm mb-1">{t("you" as any)}</Text>
-                <Text
+                <AnimatedNumber
+                  value={myScore}
+                  duration={900}
                   className={`text-5xl font-bold ${
                     myScore > opponentScore ? "text-green-400" : "text-white"
                   }`}
-                >
-                  {myScore}
-                </Text>
+                />
               </View>
 
               {/* VS */}
@@ -152,13 +155,13 @@ export default function DuelResultScreen() {
               {/* Opponent Score */}
               <View className="items-center">
                 <Text className="text-gray-400 text-sm mb-1">{t("opponent" as any)}</Text>
-                <Text
+                <AnimatedNumber
+                  value={opponentScore}
+                  duration={900}
                   className={`text-5xl font-bold ${
                     opponentScore > myScore ? "text-red-400" : "text-white"
                   }`}
-                >
-                  {opponentScore}
-                </Text>
+                />
               </View>
             </View>
 

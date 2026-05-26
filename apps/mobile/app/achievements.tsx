@@ -14,6 +14,7 @@ import {
   type Achievement,
 } from "../src/services/achievements";
 import { IconButton } from "../src/components/ui";
+import { EmptyState } from "../src/components/EmptyState";
 
 // Design colors
 const COLORS = {
@@ -420,13 +421,11 @@ export default function AchievementsScreen() {
         ) : (
           <View className="px-5 pb-8">
             {sortedAchievements.length === 0 ? (
-              <View className="items-center py-12">
-                <Text className="text-5xl mb-4">🔍</Text>
-                <Text className="text-white font-bold text-lg">{t("noAchievementsFound")}</Text>
-                <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  {t("tryDifferentCategory")}
-                </Text>
-              </View>
+              <EmptyState
+                emoji="🔍"
+                title={t("noAchievementsFound")}
+                subtitle={t("achievementsEmptyFiltered")}
+              />
             ) : (
               sortedAchievements.map((achievement) => (
                 <AchievementCard

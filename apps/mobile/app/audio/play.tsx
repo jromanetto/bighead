@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -16,6 +16,10 @@ import { useTranslation } from "../../src/contexts/LanguageContext";
 import { AudioPlayer } from "../../src/components/AudioPlayer";
 import { XPGainBanner } from "../../src/components/XPGainBanner";
 import { Icon } from "../../src/components/ui";
+import { Skeleton } from "../../src/components/Skeleton";
+import { EmptyState } from "../../src/components/EmptyState";
+import { AnimatedNumber } from "../../src/components/AnimatedNumber";
+import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
 import {
   getRandomAudioQuestions,
   formatAudioQuestions,
@@ -209,9 +213,35 @@ export default function AudioQuizPlayScreen() {
   // ---- Render --------------------------------------------------------
   if (phase === "loading") {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={{ color: COLORS.textMuted, marginTop: 16 }}>{t("audioLoading")}</Text>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 12 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+            <Skeleton width={28} height={28} rounded={14} />
+            <Skeleton width={56} height={14} rounded={6} />
+            <Skeleton width={56} height={56} rounded={28} />
+          </View>
+          <View
+            style={{
+              backgroundColor: COLORS.surface,
+              borderRadius: 16,
+              paddingVertical: 28,
+              paddingHorizontal: 20,
+              alignItems: "center",
+              marginBottom: 24,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.05)",
+            }}
+          >
+            <Skeleton width={120} height={120} rounded={60} />
+          </View>
+          <Skeleton width="80%" height={20} rounded={6} />
+          <View style={{ height: 18 }} />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <View key={i} style={{ marginBottom: 12 }}>
+              <Skeleton width="100%" height={60} rounded={12} />
+            </View>
+          ))}
+        </View>
       </SafeAreaView>
     );
   }
@@ -219,22 +249,15 @@ export default function AudioQuizPlayScreen() {
   if (phase === "empty") {
     return (
       <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: COLORS.bg }}>
-        <Text style={{ fontSize: 56, marginBottom: 16 }}>🎵</Text>
-        <Text className="text-white text-2xl font-black text-center mb-2">
-          {t("audioQuizTitle")}
-        </Text>
-        <Text style={{ color: COLORS.textMuted, textAlign: "center", marginBottom: 24 }}>
-          {t("audioEmpty")}
-        </Text>
-        <Pressable
-          onPress={() => router.back()}
-          className="active:opacity-80 px-6 py-3 rounded-xl"
-          style={{ backgroundColor: COLORS.primary }}
-        >
-          <Text className="font-bold" style={{ color: COLORS.bg }}>
-            {t("backToHome")}
-          </Text>
-        </Pressable>
+        <EmptyState
+          emoji="🎵"
+          title={t("audioQuizEmptyTitle")}
+          subtitle={t("audioQuizEmptySubtitle")}
+          cta={{
+            label: t("backToHome"),
+            onPress: () => router.back(),
+          }}
+        />
       </SafeAreaView>
     );
   }
@@ -243,6 +266,7 @@ export default function AudioQuizPlayScreen() {
     const isPerfect = correctCount === questions.length && questions.length > 0;
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <ConfettiEffect trigger={isPerfect} />
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}>
           <View className="items-center">
             <Text style={{ fontSize: 64, marginBottom: 12 }}>{isPerfect ? "🏆" : "🎵"}</Text>
@@ -260,12 +284,16 @@ export default function AudioQuizPlayScreen() {
               <Text style={{ color: COLORS.textMuted, fontSize: 12, marginBottom: 4 }}>
                 {t("yourScore")}
               </Text>
-              <Text className="text-white text-5xl font-black">
-                {correctCount}
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <AnimatedNumber
+                  value={correctCount}
+                  duration={900}
+                  style={{ color: "#ffffff", fontSize: 48, fontWeight: "900" }}
+                />
                 <Text style={{ color: COLORS.textMuted, fontSize: 28, fontWeight: "700" }}>
                   {" / "}{questions.length}
                 </Text>
-              </Text>
+              </View>
             </View>
 
             {xpGain && (

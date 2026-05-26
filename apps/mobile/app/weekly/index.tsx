@@ -1,9 +1,10 @@
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Skeleton, SkeletonStat } from "../../src/components/Skeleton";
 import {
   getActiveWeeklyChallenge,
   getMyWeeklyProgress,
@@ -48,8 +49,61 @@ export default function WeeklyHome() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
-        <ActivityIndicator color="#fff" />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <Header />
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+          {/* Hero skeleton */}
+          <View
+            style={{
+              borderRadius: 24,
+              padding: 20,
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.05)",
+            }}
+          >
+            <View style={{ alignItems: "center" }}>
+              <Skeleton width={72} height={72} rounded={36} />
+              <View style={{ height: 12 }} />
+              <Skeleton width={120} height={10} rounded={5} />
+              <View style={{ height: 10 }} />
+              <Skeleton width={220} height={22} rounded={6} />
+              <View style={{ height: 8 }} />
+              <Skeleton width={260} height={12} rounded={5} />
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: 20, marginHorizontal: -4 }}>
+              <SkeletonStat />
+              <SkeletonStat />
+              <SkeletonStat />
+            </View>
+
+            <View style={{ marginTop: 16 }}>
+              <Skeleton width="100%" height={12} rounded={6} />
+            </View>
+            <View style={{ marginTop: 16 }}>
+              <Skeleton width="100%" height={48} rounded={16} />
+            </View>
+          </View>
+
+          {/* Rules card */}
+          <View
+            style={{
+              borderRadius: 16,
+              padding: 16,
+              marginTop: 16,
+              backgroundColor: COLORS.surface,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.05)",
+            }}
+          >
+            <Skeleton width={140} height={10} rounded={5} />
+            <View style={{ height: 10 }} />
+            <Skeleton width="100%" height={10} rounded={5} />
+            <View style={{ height: 6 }} />
+            <Skeleton width="80%" height={10} rounded={5} />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

@@ -5,7 +5,6 @@ import {
   Pressable,
   FlatList,
   RefreshControl,
-  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -19,6 +18,8 @@ import { Icon } from "../src/components/ui";
 import { useAuth } from "../src/contexts/AuthContext";
 import { awardXP } from "../src/services/xp";
 import { getTodayIsoDate } from "../src/utils/dates";
+import { SkeletonCard } from "../src/components/Skeleton";
+import { EmptyState } from "../src/components/EmptyState";
 
 const COLORS = {
   bg: "#161a1d",
@@ -83,8 +84,10 @@ export default function ActivityScreen() {
       </View>
 
       {loading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={COLORS.primary} />
+        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 4 }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </View>
       ) : (
         <FlatList
@@ -95,6 +98,7 @@ export default function ActivityScreen() {
             paddingHorizontal: 16,
             paddingBottom: 32,
             gap: 8,
+            flexGrow: 1,
           }}
           refreshControl={
             <RefreshControl
@@ -104,18 +108,15 @@ export default function ActivityScreen() {
             />
           }
           ListEmptyComponent={
-            <View className="items-center justify-center py-16 px-6">
-              <Text className="text-5xl mb-3">👥</Text>
-              <Text className="text-base font-semibold text-white text-center">
-                {t("activityEmpty")}
-              </Text>
-              <Text
-                className="text-sm mt-1 text-center"
-                style={{ color: COLORS.textMuted }}
-              >
-                {t("activityNoFriends")}
-              </Text>
-            </View>
+            <EmptyState
+              emoji="🎯"
+              title={t("activityEmpty")}
+              subtitle={t("activityNoFriends")}
+              cta={{
+                label: t("activityFeedEmptyCTA"),
+                onPress: () => router.push("/(tabs)" as any),
+              }}
+            />
           }
         />
       )}

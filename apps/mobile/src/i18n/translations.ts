@@ -470,6 +470,16 @@ export const translations = {
     xpWelcomeBack: "Welcome back!",
     xpBonusReceived: "Bonus received",
     xpAmount: "+{amount} XP",
+
+    // Empty States
+    leaderboardEmptyTitle: "No leaderboard yet",
+    leaderboardEmptySubtitle: "Play games to climb the rankings and appear here!",
+    achievementsEmptyFiltered: "No achievements match this category. Try another filter.",
+    audioQuizEmptyTitle: "No audio questions yet",
+    audioQuizEmptySubtitle: "We're tuning up new audio quizzes. Check back soon!",
+    activityFeedEmptyCTA: "Play a game",
+    weeklyNoPlayers: "No players this week",
+    weeklyNoPlayersSubtitle: "Be the first to climb the weekly board!",
   },
   fr: {
     // Navigation & Headers
@@ -942,6 +952,16 @@ export const translations = {
     xpWelcomeBack: "Bon retour !",
     xpBonusReceived: "Bonus reçu",
     xpAmount: "+{amount} XP",
+
+    // Empty States
+    leaderboardEmptyTitle: "Pas encore de classement",
+    leaderboardEmptySubtitle: "Joue pour grimper dans le classement et apparaître ici !",
+    achievementsEmptyFiltered: "Aucun succès dans cette catégorie. Essaie un autre filtre.",
+    audioQuizEmptyTitle: "Pas encore de quiz audio",
+    audioQuizEmptySubtitle: "On prépare de nouveaux quiz audio. Reviens vite !",
+    activityFeedEmptyCTA: "Jouer une partie",
+    weeklyNoPlayers: "Aucun joueur cette semaine",
+    weeklyNoPlayersSubtitle: "Sois le premier à grimper dans le classement !",
   },
   es: {
     // Navigation & Headers
@@ -1414,6 +1434,16 @@ export const translations = {
     xpWelcomeBack: "¡Bienvenido de vuelta!",
     xpBonusReceived: "Bono recibido",
     xpAmount: "+{amount} XP",
+
+    // Empty States
+    leaderboardEmptyTitle: "Aún no hay clasificación",
+    leaderboardEmptySubtitle: "¡Juega para subir en el ranking y aparecer aquí!",
+    achievementsEmptyFiltered: "No hay logros en esta categoría. Prueba con otro filtro.",
+    audioQuizEmptyTitle: "Aún no hay preguntas de audio",
+    audioQuizEmptySubtitle: "Estamos preparando nuevos quizzes de audio. ¡Vuelve pronto!",
+    activityFeedEmptyCTA: "Jugar una partida",
+    weeklyNoPlayers: "Esta semana no hay jugadores",
+    weeklyNoPlayersSubtitle: "¡Sé el primero en subir al ranking semanal!",
   },
   de: {
     // Navigation & Headers
@@ -1886,6 +1916,16 @@ export const translations = {
     xpWelcomeBack: "Willkommen zurück!",
     xpBonusReceived: "Bonus erhalten",
     xpAmount: "+{amount} XP",
+
+    // Empty States
+    leaderboardEmptyTitle: "Noch keine Bestenliste",
+    leaderboardEmptySubtitle: "Spiele Partien, um aufzusteigen und hier zu erscheinen!",
+    achievementsEmptyFiltered: "Keine Erfolge in dieser Kategorie. Versuche einen anderen Filter.",
+    audioQuizEmptyTitle: "Noch keine Audio-Fragen",
+    audioQuizEmptySubtitle: "Wir bereiten neue Audio-Quiz vor. Schau bald wieder vorbei!",
+    activityFeedEmptyCTA: "Eine Runde spielen",
+    weeklyNoPlayers: "Diese Woche keine Spieler",
+    weeklyNoPlayersSubtitle: "Sei der Erste, der die Wochenrangliste erklimmt!",
   },
 };
 

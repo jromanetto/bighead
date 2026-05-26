@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import type { XPGain } from "../services/xp";
+import { AnimatedNumber } from "./AnimatedNumber";
 
 interface Props {
   gain: XPGain;
@@ -25,6 +26,8 @@ interface Props {
 export function XPGainBanner({ gain, delayMs = 300, compact = false, showBreakdown = true }: Props) {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.7);
+  // Drive the animated counter once the banner has visually appeared.
+  const [targetXP, setTargetXP] = useState(0);
 
   useEffect(() => {
     opacity.value = withDelay(delayMs, withTiming(1, { duration: 300 }));
@@ -35,7 +38,11 @@ export function XPGainBanner({ gain, delayMs = 300, compact = false, showBreakdo
         withSpring(1, { damping: 12, stiffness: 150 })
       )
     );
-  }, [delayMs]);
+
+    setTargetXP(0);
+    const timer = setTimeout(() => setTargetXP(gain.total), delayMs);
+    return () => clearTimeout(timer);
+  }, [delayMs, gain.total]);
 
   const animStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -64,16 +71,18 @@ export function XPGainBanner({ gain, delayMs = 300, compact = false, showBreakdo
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
           <Text style={{ fontSize: compact ? 24 : 32 }}>⚡</Text>
           <View style={{ alignItems: "center" }}>
-            <Text
+            <AnimatedNumber
+              value={targetXP}
+              duration={800}
+              prefix="+"
+              suffix=" XP"
               style={{
                 color: "#1a1a1a",
                 fontSize: compact ? 22 : 32,
                 fontWeight: "900",
                 letterSpacing: -0.5,
               }}
-            >
-              +{gain.total.toLocaleString()} XP
-            </Text>
+            />
             {!compact && showBreakdown && gain.breakdown.length > 0 && (
               <Text style={{ color: "#1a1a1a", fontSize: 12, opacity: 0.7, marginTop: 2 }}>
                 {gain.breakdown

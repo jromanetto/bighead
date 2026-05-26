@@ -23,6 +23,7 @@ import { getAllLimits, DAILY_LIMITS, GameMode } from "../src/services/dailyLimit
 import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
 import { ConfettiEffect } from "../src/components/effects/ConfettiEffect";
 import { isUserPremium } from "../src/utils/premium";
+import { Skeleton } from "../src/components/Skeleton";
 
 const COLORS = {
   bg: "#161a1d",
@@ -365,8 +366,73 @@ export default function PremiumScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="pb-8"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="flex-row items-center px-5 pt-4 mb-6">
+            <IconButton
+              name="ArrowLeft"
+              onPress={() => router.back()}
+              variant="glass"
+              size={40}
+              style={{ marginRight: 12 }}
+            />
+            <Text className="text-white text-2xl font-black">PREMIUM</Text>
+          </View>
+
+          {/* Hero skeleton */}
+          <View className="px-5">
+            <View
+              style={{
+                borderRadius: 24,
+                padding: 24,
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.05)",
+                alignItems: "center",
+              }}
+            >
+              <Skeleton width={64} height={64} rounded={32} />
+              <View style={{ height: 14 }} />
+              <Skeleton width={200} height={22} rounded={6} />
+              <View style={{ height: 10 }} />
+              <Skeleton width={260} height={12} rounded={5} />
+            </View>
+          </View>
+
+          {/* Plan cards skeleton (3) */}
+          <View className="px-5 mt-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <View
+                key={i}
+                style={{
+                  borderRadius: 20,
+                  padding: 18,
+                  backgroundColor: COLORS.surface,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.05)",
+                  marginBottom: 12,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View style={{ flex: 1 }}>
+                    <Skeleton width={120} height={14} rounded={6} />
+                    <View style={{ height: 8 }} />
+                    <Skeleton width={80} height={12} rounded={5} />
+                  </View>
+                  <Skeleton width={80} height={24} rounded={6} />
+                </View>
+                <View style={{ height: 14 }} />
+                <Skeleton width="100%" height={10} rounded={5} />
+                <View style={{ height: 6 }} />
+                <Skeleton width="70%" height={10} rounded={5} />
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

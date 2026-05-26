@@ -14,6 +14,8 @@ import {
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { mixHex } from "../../src/utils/colors";
+import { AnimatedNumber } from "../../src/components/AnimatedNumber";
+import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
 
 const COLORS = { bg: "#161a1d", surface: "#1E2529", text: "#ffffff", textMuted: "#9ca3af" };
 
@@ -70,8 +72,11 @@ export default function WeeklyResult() {
   const badge = getBadge(score);
   const myEntry = leaderboard.find((e) => e.correct_count === score && e.current_position === progress.current_position);
 
+  const hasBadge = !!badge;
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      <ConfettiEffect trigger={hasBadge} />
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View
           className="rounded-3xl overflow-hidden"
@@ -87,7 +92,14 @@ export default function WeeklyResult() {
             <Text className="text-white/85 text-xs font-bold tracking-widest uppercase mt-3">
               {t("weeklyYourScore")}
             </Text>
-            <Text className="text-white text-6xl font-extrabold mt-1">{score}/{total}</Text>
+            <View style={{ flexDirection: "row", alignItems: "baseline", marginTop: 4 }}>
+              <AnimatedNumber
+                value={score}
+                duration={900}
+                style={{ color: "#ffffff", fontSize: 60, fontWeight: "800" }}
+              />
+              <Text className="text-white text-6xl font-extrabold">/{total}</Text>
+            </View>
             <Text className="text-white/90 text-base font-semibold mt-1">{pct}%</Text>
             {badge && (
               <View

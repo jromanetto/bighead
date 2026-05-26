@@ -32,6 +32,8 @@ import { ShareScorecard } from "../src/components/ShareScorecard";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
 import { inviteFriends } from "../src/utils/share";
 import { useTranslation } from "../src/contexts/LanguageContext";
+import { AnimatedNumber } from "../src/components/AnimatedNumber";
+import { ConfettiEffect } from "../src/components/effects/ConfettiEffect";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -491,6 +493,7 @@ export default function DailyBrainScreen() {
         : t("dailyResultMeh");
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <ConfettiEffect trigger={perfect} />
         <View className="absolute inset-0 pointer-events-none">
           <View
             className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
@@ -531,9 +534,14 @@ export default function DailyBrainScreen() {
               <Text style={{ color: COLORS.textMuted }} className="text-sm mb-1">
                 {t("dailyTotalScore").toUpperCase()}
               </Text>
-              <Text className="text-white text-5xl font-bold">
-                {finalScore}/{TOTAL_QUESTIONS}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <AnimatedNumber
+                  value={finalScore}
+                  duration={900}
+                  style={{ color: "#ffffff", fontSize: 48, fontWeight: "700" }}
+                />
+                <Text className="text-white text-5xl font-bold">/{TOTAL_QUESTIONS}</Text>
+              </View>
               {isNewRecord && (
                 <View
                   className="rounded-full px-4 py-1 mt-2"
@@ -551,9 +559,13 @@ export default function DailyBrainScreen() {
                 className="rounded-xl px-6 py-3 mb-4"
                 style={{ backgroundColor: COLORS.primaryDim }}
               >
-                <Text style={{ color: COLORS.primary }} className="font-bold text-lg">
-                  +{xpEarned} XP
-                </Text>
+                <AnimatedNumber
+                  value={xpEarned}
+                  duration={800}
+                  prefix="+"
+                  suffix=" XP"
+                  style={{ color: COLORS.primary, fontWeight: "700", fontSize: 18 }}
+                />
               </View>
             )}
 

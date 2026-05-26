@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
@@ -7,6 +7,9 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
 import { IconButton } from "../../src/components/ui";
+import { SkeletonLeaderboardRow } from "../../src/components/Skeleton";
+import { EmptyState } from "../../src/components/EmptyState";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 
 // New QuizNext design colors
 const COLORS = {
@@ -107,6 +110,7 @@ function LeaderboardRow({
 
 export default function LeaderboardScreen() {
   const { user, profile, isAnonymous } = useAuth();
+  const { t } = useTranslation();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"weekly" | "alltime">("weekly");
@@ -209,31 +213,26 @@ export default function LeaderboardScreen() {
 
         {/* Loading state */}
         {loading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text className="text-gray-400 mt-4">Loading...</Text>
-          </View>
+          <ScrollView className="flex-1 px-5" contentContainerClassName="pb-32" showsVerticalScrollIndicator={false}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonLeaderboardRow key={i} />
+            ))}
+          </ScrollView>
         ) : leaderboard.length === 0 ? (
-          <View className="flex-1 items-center justify-center px-6">
-            <Text className="text-6xl mb-4">🏆</Text>
-            <Text className="text-white text-xl font-bold text-center mb-2">
-              No leaderboard yet
-            </Text>
-            <Text className="text-gray-400 text-center">
-              {activeTab === "weekly"
-                ? "No players this week. Be the first!"
-                : "Play games to appear on the leaderboard!"}
-            </Text>
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/game/chain");
+          <View className="flex-1 items-center justify-center">
+            <EmptyState
+              emoji="📊"
+              title={t("leaderboardEmptyTitle")}
+              subtitle={
+                activeTab === "weekly"
+                  ? t("weeklyNoPlayersSubtitle")
+                  : t("leaderboardEmptySubtitle")
+              }
+              cta={{
+                label: t("play"),
+                onPress: () => router.push("/game/chain"),
               }}
-              className="rounded-2xl py-4 px-8 mt-6"
-              style={{ backgroundColor: COLORS.primary }}
-            >
-              <Text className="font-bold" style={{ color: COLORS.bg }}>Play Now</Text>
-            </Pressable>
+            />
           </View>
         ) : (
           <>
