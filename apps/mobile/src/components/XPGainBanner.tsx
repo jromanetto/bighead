@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -23,7 +23,7 @@ interface Props {
  * Visual XP gain banner used by all game-mode result screens.
  * Animates in with a spring + scale pulse.
  */
-export function XPGainBanner({ gain, delayMs = 300, compact = false, showBreakdown = true }: Props) {
+function XPGainBannerInner({ gain, delayMs = 300, compact = false, showBreakdown = true }: Props) {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.7);
   // Drive the animated counter once the banner has visually appeared.
@@ -97,3 +97,6 @@ export function XPGainBanner({ gain, delayMs = 300, compact = false, showBreakdo
     </Animated.View>
   );
 }
+
+// gain.breakdown array identity matters; rely on shallow comparison from caller.
+export const XPGainBanner = memo(XPGainBannerInner);

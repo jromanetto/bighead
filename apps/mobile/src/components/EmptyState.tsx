@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,7 +27,7 @@ interface EmptyStateProps {
  * Empty state with a large emoji, title, optional subtitle and CTA.
  * Performs a subtle fade-in + slide-up entrance animation.
  */
-export function EmptyState({ emoji, title, subtitle, cta }: EmptyStateProps) {
+function EmptyStateInner({ emoji, title, subtitle, cta }: EmptyStateProps) {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(12);
 
@@ -106,5 +106,9 @@ export function EmptyState({ emoji, title, subtitle, cta }: EmptyStateProps) {
     </Animated.View>
   );
 }
+
+// cta has a function ref — caller is expected to memoize it (or accept re-render
+// when the cta prop identity changes). Shallow comparison is correct here.
+export const EmptyState = memo(EmptyStateInner);
 
 export default EmptyState;

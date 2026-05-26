@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   getActiveWeeklyChallenge,
@@ -176,12 +176,12 @@ export default function WeeklyResult() {
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+const Stat = memo(function Stat({ value, label }: { value: string; label: string }) {
   return (
     <View className="flex-1 rounded-xl py-2 items-center" style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
       <Text className="text-white text-base font-extrabold">{value}</Text>
       <Text className="text-white/70 text-[10px] uppercase tracking-wider">{label}</Text>
     </View>
   );
-}
+});
 

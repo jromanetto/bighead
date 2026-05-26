@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, ImageBackground } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -54,8 +54,8 @@ const calculateLevel = (totalXP: number): { level: number; currentXP: number; ne
   return { level, currentXP: xpRemaining, nextLevelXP, progress };
 };
 
-// Stats Pill component
-function StatsPill({ icon, value, color }: { icon: string; value: string | number; color: string }) {
+// Stats Pill component — memoized: re-renders only when icon/value/color change.
+const StatsPill = memo(function StatsPill({ icon, value, color }: { icon: string; value: string | number; color: string }) {
   return (
     <View
       className="flex-row items-center px-3 py-1.5 rounded-full"
@@ -65,7 +65,7 @@ function StatsPill({ icon, value, color }: { icon: string; value: string | numbe
       <Text className="text-sm font-bold text-gray-200">{value}</Text>
     </View>
   );
-}
+});
 
 export default function HomeScreen() {
   const { user, profile, isAnonymous } = useAuth();

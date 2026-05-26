@@ -1,5 +1,5 @@
 import { View, type DimensionValue } from "react-native";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -33,7 +33,7 @@ interface SkeletonProps {
  * Animated pulse block — base building primitive for all skeleton screens.
  * Pulses between #252e33 → #2f3a40 over ~800ms.
  */
-export function Skeleton({
+function SkeletonInner({
   width = "100%",
   height,
   rounded = 8,
@@ -78,10 +78,13 @@ export function Skeleton({
   );
 }
 
+// Pure presentational primitive — memoize all skeleton variants.
+export const Skeleton = memo(SkeletonInner);
+
 /**
  * Generic card-shaped skeleton. Matches default card padding of the app.
  */
-export function SkeletonCard() {
+function SkeletonCardInner() {
   return (
     <View
       style={{
@@ -105,10 +108,12 @@ export function SkeletonCard() {
   );
 }
 
+export const SkeletonCard = memo(SkeletonCardInner);
+
 /**
  * Row mimicking a leaderboard entry: rank + avatar + name/sub + score.
  */
-export function SkeletonLeaderboardRow() {
+function SkeletonLeaderboardRowInner() {
   return (
     <View
       style={{
@@ -134,10 +139,12 @@ export function SkeletonLeaderboardRow() {
   );
 }
 
+export const SkeletonLeaderboardRow = memo(SkeletonLeaderboardRowInner);
+
 /**
  * Small stat pill skeleton (used as part of larger compositions).
  */
-export function SkeletonStat() {
+function SkeletonStatInner() {
   return (
     <View
       style={{
@@ -156,5 +163,7 @@ export function SkeletonStat() {
     </View>
   );
 }
+
+export const SkeletonStat = memo(SkeletonStatInner);
 
 export default Skeleton;

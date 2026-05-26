@@ -1,4 +1,5 @@
 import { View, Text } from "react-native";
+import { memo } from "react";
 import { SmallAvatar } from "./ProfileAvatar";
 import { useTranslation } from "../contexts/LanguageContext";
 import type { ActivityEvent } from "../services/activityFeed";
@@ -86,7 +87,7 @@ function renderEventText(
   }
 }
 
-export function ActivityCard({ event }: { event: ActivityEvent }) {
+function ActivityCardInner({ event }: { event: ActivityEvent }) {
   const { t } = useTranslation();
   return (
     <View
@@ -115,3 +116,11 @@ export function ActivityCard({ event }: { event: ActivityEvent }) {
     </View>
   );
 }
+
+// Custom equality: event objects are immutable per id+created_at.
+export const ActivityCard = memo(
+  ActivityCardInner,
+  (prev, next) =>
+    prev.event.id === next.event.id &&
+    prev.event.created_at === next.event.created_at,
+);

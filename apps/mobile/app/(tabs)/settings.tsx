@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Switch, ScrollView, Alert } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useLanguage } from "../../src/contexts/LanguageContext";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
@@ -32,6 +32,49 @@ const COLORS = {
   text: "#ffffff",
   textMuted: "#9ca3af",
 };
+
+// Memoized row: avoids re-render storms when parent toggles (sound, haptic, etc.).
+const MenuRow = memo(function MenuRow({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  danger,
+}: {
+  icon: string;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  danger?: boolean;
+}) {
+  return (
+    <Pressable
+      onPress={() => {
+        buttonPressFeedback();
+        onPress();
+      }}
+      className="flex-row items-center py-4 active:opacity-70"
+      style={{ borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}
+    >
+      <View
+        className="w-10 h-10 rounded-xl items-center justify-center mr-4"
+        style={{ backgroundColor: danger ? COLORS.errorDim : COLORS.surfaceLight }}
+      >
+        <Text className="text-xl" style={{ color: danger ? COLORS.error : COLORS.text }}>{icon}</Text>
+      </View>
+      <View className="flex-1">
+        <Text
+          className="font-medium"
+          style={{ color: danger ? COLORS.error : COLORS.text }}
+        >
+          {title}
+        </Text>
+        {subtitle && <Text style={{ color: COLORS.textMuted }} className="text-sm">{subtitle}</Text>}
+      </View>
+      <Icon name="ChevronRight" size={16} color={COLORS.textMuted} />
+    </Pressable>
+  );
+});
 
 export default function SettingsScreen() {
   const { user, isAnonymous, signOut } = useAuth();
@@ -237,45 +280,8 @@ export default function SettingsScreen() {
     </View>
   );
 
-  const MenuRow = ({
-    icon,
-    title,
-    subtitle,
-    onPress,
-    danger,
-  }: {
-    icon: string;
-    title: string;
-    subtitle?: string;
-    onPress: () => void;
-    danger?: boolean;
-  }) => (
-    <Pressable
-      onPress={() => {
-        buttonPressFeedback();
-        onPress();
-      }}
-      className="flex-row items-center py-4 active:opacity-70"
-      style={{ borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}
-    >
-      <View
-        className="w-10 h-10 rounded-xl items-center justify-center mr-4"
-        style={{ backgroundColor: danger ? COLORS.errorDim : COLORS.surfaceLight }}
-      >
-        <Text className="text-xl" style={{ color: danger ? COLORS.error : COLORS.text }}>{icon}</Text>
-      </View>
-      <View className="flex-1">
-        <Text
-          className="font-medium"
-          style={{ color: danger ? COLORS.error : COLORS.text }}
-        >
-          {title}
-        </Text>
-        {subtitle && <Text style={{ color: COLORS.textMuted }} className="text-sm">{subtitle}</Text>}
-      </View>
-      <Icon name="ChevronRight" size={16} color={COLORS.textMuted} />
-    </Pressable>
-  );
+  // MenuRow lifted to module scope below and memoized to skip re-renders
+  // when parent state (toggles, switches) ticks but row props are unchanged.
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>

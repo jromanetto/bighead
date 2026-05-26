@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Text, type TextStyle } from "react-native";
 import Animated, {
   useSharedValue,
@@ -29,7 +29,7 @@ const AnimatedText = Animated.createAnimatedComponent(Text);
  *    push the rounded value back to JS state. This works on iOS / Android.
  *  - Easing: `Easing.out(Easing.cubic)`.
  */
-export function AnimatedNumber({
+function AnimatedNumberInner({
   value,
   duration = 800,
   className,
@@ -69,5 +69,8 @@ export function AnimatedNumber({
     </AnimatedText>
   );
 }
+
+// Memoize to skip re-renders when value/duration/etc are identical.
+export const AnimatedNumber = memo(AnimatedNumberInner);
 
 export default AnimatedNumber;

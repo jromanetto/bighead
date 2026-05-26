@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Skeleton, SkeletonStat } from "../../src/components/Skeleton";
@@ -305,7 +305,7 @@ function Header() {
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+const Stat = memo(function Stat({ value, label }: { value: string; label: string }) {
   return (
     <View
       className="flex-1 rounded-xl py-2 items-center"
@@ -315,5 +315,5 @@ function Stat({ value, label }: { value: string; label: string }) {
       <Text className="text-white/70 text-[10px] uppercase tracking-wider">{label}</Text>
     </View>
   );
-}
+});
 

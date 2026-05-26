@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -13,7 +13,8 @@ import { useTranslation } from "../contexts/LanguageContext";
 import { buttonPressFeedback } from "../utils/feedback";
 import { mixHex } from "../utils/colors";
 
-export function WeeklyChallengeBanner() {
+// Memoized: takes no props, internal state isolates re-renders from parent.
+function WeeklyChallengeBannerInner() {
   const { t, language } = useTranslation();
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
@@ -132,4 +133,6 @@ export function WeeklyChallengeBanner() {
     </Pressable>
   );
 }
+
+export const WeeklyChallengeBanner = memo(WeeklyChallengeBannerInner);
 

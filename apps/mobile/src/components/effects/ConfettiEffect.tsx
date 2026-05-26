@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -268,7 +268,7 @@ if (Platform.OS !== 'web') {
   }
 }
 
-export function ConfettiEffect({
+function ConfettiEffectInner({
   trigger,
   onComplete,
   duration = 3000,
@@ -333,5 +333,9 @@ export function ConfettiEffect({
     </View>
   );
 }
+
+// Heavy component (60 particles): avoid re-renders when parent state changes
+// but trigger/onComplete are unchanged.
+export const ConfettiEffect = memo(ConfettiEffectInner);
 
 export default ConfettiEffect;

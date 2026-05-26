@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -27,7 +27,7 @@ type QuestionImageProps = {
  * Shows a loading indicator while loading, a fallback UI on final failure,
  * and an optional credit overlay.
  */
-export function QuestionImage({
+function QuestionImageInner({
   uri,
   style,
   credit,
@@ -187,3 +187,13 @@ export function QuestionImage({
     </View>
   );
 }
+
+// Custom equality: only re-render when uri or credit actually change.
+// onImageBroken is a function ref — caller should memoize.
+export const QuestionImage = memo(
+  QuestionImageInner,
+  (prev, next) =>
+    prev.uri === next.uri &&
+    prev.credit === next.credit &&
+    prev.fallbackText === next.fallbackText,
+);

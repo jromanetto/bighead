@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Alert } from "react-native";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import type { LifelineType, Lifelines } from "../services/lifelines";
 import { useLifeline as useLifelineRpc } from "../services/lifelines";
 import { useTranslation } from "../contexts/LanguageContext";
@@ -42,7 +42,7 @@ export interface LifelineBarProps {
   onChange?: () => void;
 }
 
-export function LifelineBar({
+function LifelineBarInner({
   lifelines,
   hide = [],
   onUse,
@@ -133,3 +133,7 @@ export function LifelineBar({
     </View>
   );
 }
+
+// Re-renders only when lifelines object identity, hide array, or callbacks change.
+// Callers should memoize onUse/onChange via useCallback for max benefit.
+export const LifelineBar = memo(LifelineBarInner);
