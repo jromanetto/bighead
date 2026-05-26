@@ -1,4 +1,7 @@
 // Supabase Edge Function: Generate Weekly Challenge
+// Deployed with verify_jwt=false — auth gating relies on URL secrecy +
+// the function only creates new challenges, no destructive operations.
+// Cron sends `Authorization: Bearer ${get_service_role_jwt()}` (sb_secret_*).
 //
 // Picks the least-recently-used active theme, generates 30 bilingual
 // (FR + EN) trivia questions via Claude Sonnet 4.6 with educational

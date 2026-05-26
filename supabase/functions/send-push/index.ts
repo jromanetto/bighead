@@ -1,6 +1,8 @@
 // Supabase Edge Function: Send Push Notification
-// Generic function to send push notifications to specific users or broadcast
-// Used for: duel invites, tournament alerts, achievements, etc.
+// Generic function to send push notifications to specific users or broadcast.
+// verify_jwt=false at platform level — internal isAuthorized() checks the
+// Authorization Bearer against SUPABASE_SERVICE_ROLE_KEY OR CRON_ACCESS_TOKEN
+// (the latter is the new sb_secret_* API key used by pg_cron callers).
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -8,6 +10,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const EXPO_ACCESS_TOKEN = Deno.env.get("EXPO_ACCESS_TOKEN");
+const CRON_ACCESS_TOKEN = Deno.env.get("CRON_ACCESS_TOKEN");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -176,6 +179,18 @@ async function sendExpoPush(messages: ExpoPushMessage[]): Promise<{ sent: number
   return { sent, failed };
 }
 
+// Auth gate: Authorization header must Bearer-equal either the platform's
+// SERVICE_ROLE_KEY (legacy JWT) or the configured CRON_ACCESS_TOKEN (new
+// sb_secret_*). Both refer to "trusted server caller".
+function isAuthorized(authHeader: string | null): boolean {
+  if (!authHeader) return false;
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return false;
+  if (token === SUPABASE_SERVICE_ROLE_KEY) return true;
+  if (CRON_ACCESS_TOKEN && token === CRON_ACCESS_TOKEN) return true;
+  return false;
+}
+
 // Replace template variables like {username} with actual values
 function applyTemplate(
   template: string,
@@ -195,9 +210,8 @@ serve(async (req) => {
 
   try {
     // Auth check
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+    if (!isAuthorized(req.headers.get("Authorization"))) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

@@ -1,4 +1,7 @@
 // Supabase Edge Function: Close Weekly Challenge
+// Deployed with verify_jwt=false — auth gating relies on URL secrecy +
+// idempotency of the logic (we accept calls only from pg_cron internally).
+// Cron sends `Authorization: Bearer ${get_service_role_jwt()}` (sb_secret_*).
 //
 // Triggered weekly by pg_cron (Sunday 23:00 UTC) BEFORE the new one is
 // generated. Takes the currently `active` challenge, sets its status to
