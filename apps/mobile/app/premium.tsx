@@ -14,7 +14,7 @@ import {
   getOfferings,
   purchasePackage,
   restorePurchases,
-  isPremium,
+  isPremium as isRevenueCatPremium,
   grantPremiumToUser,
   monetizationService,
 } from "../src/services/monetization";
@@ -22,6 +22,7 @@ import { IconButton } from "../src/components/ui";
 import { getAllLimits, DAILY_LIMITS, GameMode } from "../src/services/dailyLimits";
 import { buttonPressFeedback, playHaptic } from "../src/utils/feedback";
 import { ConfettiEffect } from "../src/components/effects/ConfettiEffect";
+import { isUserPremium } from "../src/utils/premium";
 
 const COLORS = {
   bg: "#161a1d",
@@ -115,7 +116,7 @@ const MODE_NAMES: Record<GameMode, { en: string; fr: string; es: string; de: str
 };
 
 export default function PremiumScreen() {
-  const { user, refreshProfile, isPremium: isProfilePremium } = useAuth();
+  const { user, profile, refreshProfile, isPremium: isProfilePremium } = useAuth();
   const { t, language } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
@@ -145,22 +146,18 @@ export default function PremiumScreen() {
   const loadOfferings = async () => {
     try {
       if (user?.id) {
-        console.log("[Premium] Initializing RC with user:", user.id);
         await monetizationService.initialize(user.id);
-      } else {
-        console.warn("[Premium] No user ID, skipping RC init");
       }
 
       // Check both RevenueCat and Supabase profile for premium status
-      const revenueCatPremium = await isPremium();
-      const premium = revenueCatPremium || isProfilePremium;
+      const revenueCatPremium = await isRevenueCatPremium();
+      const profilePremium = isUserPremium(profile);
+      const premium = revenueCatPremium || profilePremium;
       setUserIsPremium(premium);
-      console.log("[Premium] Status — RC:", revenueCatPremium, "Profile:", isProfilePremium);
 
       if (!premium) {
         const offering = await getOfferings();
         const pkgCount = offering?.availablePackages?.length || 0;
-        console.log("[Premium] Offerings:", offering ? `${pkgCount} packages` : "null");
         if (offering?.availablePackages && pkgCount > 0) {
           setPackages(offering.availablePackages as Package[]);
           const monthly = offering.availablePackages.find(
@@ -238,7 +235,7 @@ export default function PremiumScreen() {
       }
 
       // Verify user actually has premium entitlement after restore
-      const hasPremium = await isPremium();
+      const hasPremium = await isRevenueCatPremium();
       if (!hasPremium) {
         setError(t("noActivePremium"));
         return;

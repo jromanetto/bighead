@@ -17,6 +17,7 @@ import {
 } from "../../src/services/weeklyChallenge";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { mixHex } from "../../src/utils/colors";
 
 const COLORS = {
   bg: "#161a1d",
@@ -135,6 +136,8 @@ export default function WeeklyHome() {
                 }}
                 className="mt-5 rounded-2xl items-center justify-center"
                 style={{ backgroundColor: "#22c55e", paddingVertical: 14 }}
+                accessibilityRole="button"
+                accessibilityLabel={t("weeklySeeRecap")}
               >
                 <Text className="text-white text-base font-bold">✓ {t("weeklySeeRecap")}</Text>
               </Pressable>
@@ -158,6 +161,8 @@ export default function WeeklyHome() {
                 }}
                 className="mt-5 rounded-2xl items-center justify-center"
                 style={{ backgroundColor: "#fff", paddingVertical: 14 }}
+                accessibilityRole="button"
+                accessibilityLabel={position === 0 ? t("weeklyStart") : t("weeklyContinue")}
               >
                 <Text style={{ color: challenge.color, fontSize: 16, fontWeight: "800" }}>
                   ▶ {position === 0 ? t("weeklyStart") : t("weeklyContinue")}
@@ -235,6 +240,8 @@ function Header() {
         onPress={() => router.back()}
         className="w-10 h-10 rounded-full items-center justify-center"
         style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
       >
         <Text className="text-white text-lg">←</Text>
       </Pressable>
@@ -256,13 +263,3 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function mixHex(a: string, b: string, ratio: number): string {
-  const pa = parseInt(a.replace("#", ""), 16);
-  const pb = parseInt(b.replace("#", ""), 16);
-  const ar = (pa >> 16) & 0xff, ag = (pa >> 8) & 0xff, ab = pa & 0xff;
-  const br = (pb >> 16) & 0xff, bg = (pb >> 8) & 0xff, bb = pb & 0xff;
-  const r = Math.round(ar * (1 - ratio) + br * ratio);
-  const g = Math.round(ag * (1 - ratio) + bg * ratio);
-  const bl = Math.round(ab * (1 - ratio) + bb * ratio);
-  return `#${((r << 16) | (g << 8) | bl).toString(16).padStart(6, "0")}`;
-}

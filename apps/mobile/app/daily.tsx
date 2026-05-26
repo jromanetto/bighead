@@ -5,16 +5,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedProps,
   withSpring,
   withSequence,
-  withTiming,
-  Easing,
   FadeIn,
   SlideInRight,
 } from "react-native-reanimated";
-import Svg, { Circle } from "react-native-svg";
 import { useAuth } from "../src/contexts/AuthContext";
+import { CircularTimer } from "../src/components/CircularTimer";
+import { getTodayIsoDate } from "../src/utils/dates";
 import {
   hasPlayedDailySurvivalToday,
   getDailyStreak,
@@ -60,43 +58,31 @@ const TOTAL_TIME = 15; // 15 seconds per question
 const TOTAL_QUESTIONS = DAILY_BRAIN_QUESTION_COUNT;
 const FEEDBACK_DELAY_MS = 1200;
 
-// Animated SVG circle
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
 // Format helper for templated translations
 function fmt(template: string, values: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ""));
 }
 
-// Circular Timer Component
-function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
+// Local wrapper around the shared CircularTimer to preserve the question-number
+// label and shadow halo specific to the Daily Brain screen.
+function DailyCircularTimer({
+  timeRemaining,
+  totalTime,
+  questionNumber,
+}: {
   timeRemaining: number;
   totalTime: number;
   questionNumber: number;
 }) {
   const isLow = timeRemaining <= 5;
   const color = isLow ? COLORS.error : COLORS.primary;
-
   const SIZE = 120;
-  const STROKE_WIDTH = 8;
-  const RADIUS = (SIZE - STROKE_WIDTH) / 2;
-  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-
-  const progress = useSharedValue(timeRemaining / totalTime);
-
-  useEffect(() => {
-    progress.value = withTiming(timeRemaining / totalTime, {
-      duration: 300,
-      easing: Easing.linear,
-    });
-  }, [timeRemaining, totalTime]);
-
-  const animatedProps = useAnimatedProps(() => ({
-    strokeDashoffset: CIRCUMFERENCE * (1 - progress.value),
-  }));
 
   return (
-    <View className="relative items-center justify-center" style={{ width: SIZE + 20, height: SIZE + 20 }}>
+    <View
+      className="relative items-center justify-center"
+      style={{ width: SIZE + 20, height: SIZE + 20 }}
+    >
       <View
         className="absolute rounded-full"
         style={{
@@ -108,28 +94,14 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
           shadowRadius: 20,
         }}
       />
-      <Svg width={SIZE} height={SIZE} style={{ transform: [{ rotate: '-90deg' }] }}>
-        <Circle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
-          r={RADIUS}
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth={STROKE_WIDTH}
-          fill="transparent"
-        />
-        <AnimatedCircle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
-          r={RADIUS}
-          stroke={color}
-          strokeWidth={STROKE_WIDTH}
-          fill="transparent"
-          strokeDasharray={CIRCUMFERENCE}
-          animatedProps={animatedProps}
-          strokeLinecap="round"
-        />
-      </Svg>
-      <View className="absolute items-center justify-center" style={{ width: SIZE, height: SIZE }}>
+      <CircularTimer
+        totalSeconds={totalTime}
+        timeLeft={timeRemaining}
+        size={SIZE}
+        color={color}
+        textColor={isLow ? COLORS.error : COLORS.text}
+        hideTimeText
+      >
         <Text
           className="text-4xl font-black leading-none"
           style={{ color: isLow ? COLORS.error : COLORS.text }}
@@ -143,7 +115,7 @@ function CircularTimer({ timeRemaining, totalTime, questionNumber }: {
         >
           Q{questionNumber}
         </Text>
-      </View>
+      </CircularTimer>
     </View>
   );
 }
@@ -322,7 +294,7 @@ export default function DailyBrainScreen() {
           return;
         }
       } else {
-        const today = new Date().toISOString().split("T")[0];
+        const today = getTodayIsoDate();
         const stored = await AsyncStorage.getItem(DAILY_SURVIVAL_KEY);
         if (stored) {
           const data = JSON.parse(stored);
@@ -418,7 +390,7 @@ export default function DailyBrainScreen() {
         console.error("Error saving result:", error);
       }
     } else {
-      const today = new Date().toISOString().split("T")[0];
+      const today = getTodayIsoDate();
       await AsyncStorage.setItem(
         DAILY_SURVIVAL_KEY,
         JSON.stringify({ date: today, score: finalScore })
@@ -786,7 +758,7 @@ export default function DailyBrainScreen() {
 
         {/* Timer Section */}
         <View className="items-center py-4">
-          <CircularTimer
+          <DailyCircularTimer
             timeRemaining={timeRemaining}
             totalTime={TOTAL_TIME}
             questionNumber={questionNumber}

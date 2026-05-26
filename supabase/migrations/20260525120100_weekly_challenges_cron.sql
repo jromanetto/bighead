@@ -2,8 +2,13 @@
 -- Sunday 23:00 UTC → close current active challenge (award XP + migrate Q to main DB)
 -- Sunday 23:30 UTC → generate next week's challenge (Monday 00:00 → Sunday 23:59)
 --
--- The service_role bearer token is hardcoded in cron.job entries — these are
--- stored in a restricted Supabase-managed schema. Rotate the token if exposed.
+-- !! SECURITY NOTE !!
+-- The original revision of this file inlined the project's service_role JWT in
+-- the cron.schedule() bodies below. That token has been REDACTED.
+-- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
+-- The cron jobs are dropped + recreated by 20260526120000_secure_cron_jwt.sql
+-- using a Vault-backed get_service_role_jwt() helper. See
+-- docs/security/JWT_ROTATION_TODO.md for rotation steps.
 
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;
@@ -18,7 +23,9 @@ BEGIN
   END IF;
 END $$;
 
--- NOTE : both schedules use the project's service role JWT. Replace if rotated.
+-- close-weekly-challenge
+-- Original body called net.http_post with a hardcoded Bearer service_role JWT.
+-- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
 SELECT cron.schedule(
   'close-weekly-challenge',
   '0 23 * * 0',
@@ -27,13 +34,15 @@ SELECT cron.schedule(
     url := 'https://dqhhpoxqrtlmhosrsdxp.supabase.co/functions/v1/close-weekly-challenge',
     headers := jsonb_build_object(
       'Content-Type','application/json',
-      'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaGhwb3hxcnRsbWhvc3JzZHhwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTAxODIyMywiZXhwIjoyMDg0NTk0MjIzfQ.oTir57-MZlIsvi2gUT6jCRhh-E_-1869-wAX4G5Av64'
+      'Authorization', 'Bearer <REDACTED_SEE_20260526120000_secure_cron_jwt>'
     ),
     body := '{}'::jsonb
   );
   $cron$
 );
 
+-- generate-weekly-challenge
+-- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
 SELECT cron.schedule(
   'generate-weekly-challenge',
   '30 23 * * 0',
@@ -42,7 +51,7 @@ SELECT cron.schedule(
     url := 'https://dqhhpoxqrtlmhosrsdxp.supabase.co/functions/v1/generate-weekly-challenge',
     headers := jsonb_build_object(
       'Content-Type','application/json',
-      'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaGhwb3hxcnRsbWhvc3JzZHhwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTAxODIyMywiZXhwIjoyMDg0NTk0MjIzfQ.oTir57-MZlIsvi2gUT6jCRhh-E_-1869-wAX4G5Av64'
+      'Authorization', 'Bearer <REDACTED_SEE_20260526120000_secure_cron_jwt>'
     ),
     body := '{}'::jsonb,
     timeout_milliseconds := 240000

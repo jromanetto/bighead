@@ -185,7 +185,13 @@ export default function WeeklyPlay() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: COLORS.bg }}>
         <Text className="text-white text-base">{error ?? "Erreur"}</Text>
-        <Pressable onPress={() => router.replace("/weekly" as any)} className="mt-4 px-4 py-2 rounded-lg" style={{ backgroundColor: COLORS.surface }}>
+        <Pressable
+          onPress={() => router.replace("/weekly" as any)}
+          className="mt-4 px-4 py-2 rounded-lg"
+          style={{ backgroundColor: COLORS.surface }}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+        >
           <Text className="text-white">←</Text>
         </Pressable>
       </SafeAreaView>
@@ -202,6 +208,8 @@ export default function WeeklyPlay() {
           onPress={() => router.back()}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
         >
           <Text className="text-white text-lg">←</Text>
         </Pressable>
@@ -294,6 +302,9 @@ export default function WeeklyPlay() {
                   borderColor: border,
                   opacity: isHidden ? 0.25 : 1,
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={`${LETTERS[idx]}: ${ans}`}
+                accessibilityState={{ disabled: selected !== null || isHidden, selected: isSelected }}
               >
                 <View
                   className="w-8 h-8 rounded-full items-center justify-center mr-3"
@@ -328,6 +339,8 @@ export default function WeeklyPlay() {
             onPress={goNext}
             className="mt-5 rounded-2xl items-center justify-center"
             style={{ backgroundColor: challenge.color, paddingVertical: 16 }}
+            accessibilityRole="button"
+            accessibilityLabel={position >= challenge.total_questions ? t("weeklyFinish") : t("weeklyNext")}
           >
             <Text className="text-white text-base font-bold">
               {position >= challenge.total_questions ? t("weeklyFinish") : t("weeklyNext")} →

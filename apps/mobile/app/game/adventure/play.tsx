@@ -636,15 +636,9 @@ export default function AdventurePlayScreen() {
 
   // Load questions
   useEffect(() => {
-    console.log("=== PLAY SCREEN MOUNTED ===");
-    console.log("Category:", category);
-    console.log("Tier:", tier);
-    console.log("User:", user?.id || "guest");
-
     const loadQuestions = async () => {
       // Wait for params to be available
       if (!category || !tier) {
-        console.log("Waiting for params... category:", category, "tier:", tier);
         return;
       }
 
@@ -654,7 +648,6 @@ export default function AdventurePlayScreen() {
           const { canPlay } = await import("../../../src/services/dailyLimits");
           const canPlayNow = await canPlay("adventure");
           if (!canPlayNow) {
-            console.log("No plays remaining, redirecting to home");
             router.replace("/");
             return;
           }
@@ -663,13 +656,11 @@ export default function AdventurePlayScreen() {
         }
       }
 
-      console.log("Loading questions for category:", category, "tier:", tier);
       setLoading(true);
 
       try {
         // Try to fetch from database if user exists
         if (user?.id) {
-          console.log("Trying database for user:", user.id);
           const questionsNeeded = getQuestionsForLevel(level);
           const fetchedQuestions = await getAdventureQuestions(
             user.id,
@@ -678,21 +669,15 @@ export default function AdventurePlayScreen() {
             questionsNeeded
           );
           if (fetchedQuestions && fetchedQuestions.length > 0) {
-            console.log("Got", fetchedQuestions.length, "questions from DB");
             const formatted = formatQuestions(fetchedQuestions);
             setQuestions(formatted);
             setLoading(false);
             return;
           }
-          console.log("No questions from DB, using mock");
         }
 
         // Use mock questions as fallback (for guests or if DB fails)
-        console.log("Using MOCK questions for category:", category);
-        console.log("Available mock categories:", Object.keys(MOCK_QUESTIONS));
         const categoryQuestions = MOCK_QUESTIONS[category as string];
-        console.log("Found mock questions:", categoryQuestions?.length || 0);
-
         const questionsNeeded = getQuestionsForLevel(level);
 
         if (categoryQuestions && categoryQuestions.length > 0) {
@@ -700,11 +685,9 @@ export default function AdventurePlayScreen() {
           const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
           const limited = shuffled.slice(0, questionsNeeded);
           const formatted = formatQuestions(limited);
-          console.log("Formatted questions:", formatted.length, "for tier:", tier);
           setQuestions(formatted);
         } else {
           // Ultimate fallback
-          console.log("No mock questions for category, using culture_generale");
           const fallbackQuestions = MOCK_QUESTIONS.culture_generale;
           const shuffled = [...fallbackQuestions].sort(() => Math.random() - 0.5);
           const limited = shuffled.slice(0, questionsNeeded);
@@ -765,14 +748,10 @@ export default function AdventurePlayScreen() {
     if (currentQuestion?.id) {
       const timeToAnswer = TIME_PER_QUESTION * 1000; // Full time elapsed
       if (user?.id) {
-        recordAnswer(user.id, currentQuestion.id, false, timeToAnswer, tier).catch((err) => {
-          console.log("Error recording timeout answer:", err);
-        });
+        recordAnswer(user.id, currentQuestion.id, false, timeToAnswer, tier).catch(() => {});
         markQuestionSeen(user.id, currentQuestion.id, false).catch(console.error);
       } else {
-        updateLocalSkill(category as string, false).catch((err) => {
-          console.log("Error updating local skill on timeout:", err);
-        });
+        updateLocalSkill(category as string, false).catch(() => {});
       }
     }
 
@@ -800,16 +779,12 @@ export default function AdventurePlayScreen() {
     if (currentQuestion?.id) {
       if (user?.id) {
         // Logged-in user: record to database
-        recordAnswer(user.id, currentQuestion.id, isCorrect, timeToAnswer, tier).catch((err) => {
-          console.log("Error recording answer:", err);
-        });
+        recordAnswer(user.id, currentQuestion.id, isCorrect, timeToAnswer, tier).catch(() => {});
         // Also mark question as seen
         markQuestionSeen(user.id, currentQuestion.id, isCorrect).catch(console.error);
       } else {
         // Guest user: track locally
-        updateLocalSkill(category as string, isCorrect).catch((err) => {
-          console.log("Error updating local skill:", err);
-        });
+        updateLocalSkill(category as string, isCorrect).catch(() => {});
       }
     }
 
@@ -854,7 +829,6 @@ export default function AdventurePlayScreen() {
 
           // Add category to completed list - ONLY if truly successful
           if (!progress.completed_categories.includes(category as Category)) {
-            console.log("Adding category to completed:", category);
             progress.completed_categories.push(category as Category);
           }
 

@@ -102,6 +102,9 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
               <Pressable
                 className="flex-1 items-center justify-center"
                 onPress={onPress}
+                accessibilityRole="button"
+                accessibilityLabel={tabConfig.label}
+                accessibilityState={{ selected: isFocused }}
               >
                 <TabBarIcon icon={tabConfig.icon} focused={isFocused} />
               </Pressable>

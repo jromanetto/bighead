@@ -5,7 +5,12 @@
 -- 4. pg_cron: hourly friend_overtake scan
 -- 5. pg_cron: daily 20:00 UTC streak_warning scan
 --
--- NOTE: the service_role JWT below is the same one used in 20260525120100_weekly_challenges_cron.sql
+-- !! SECURITY NOTE !!
+-- The original revision of this file inlined the project's service_role JWT in
+-- the notify_user_if_enabled() body below. That token has been REDACTED.
+-- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
+-- notify_user_if_enabled() is redefined by 20260526120000_secure_cron_jwt.sql
+-- to read the JWT from Supabase Vault. See docs/security/JWT_ROTATION_TODO.md.
 
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;
@@ -100,7 +105,8 @@ BEGIN
     url := 'https://dqhhpoxqrtlmhosrsdxp.supabase.co/functions/v1/send-push',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaGhwb3hxcnRsbWhvc3JzZHhwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTAxODIyMywiZXhwIjoyMDg0NTk0MjIzfQ.oTir57-MZlIsvi2gUT6jCRhh-E_-1869-wAX4G5Av64'
+      -- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
+      'Authorization', 'Bearer <REDACTED_SEE_20260526120000_secure_cron_jwt>'
     ),
     body := v_payload
   );

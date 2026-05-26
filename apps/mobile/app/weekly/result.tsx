@@ -13,6 +13,7 @@ import {
 } from "../../src/services/weeklyChallenge";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { mixHex } from "../../src/utils/colors";
 
 const COLORS = { bg: "#161a1d", surface: "#1E2529", text: "#ffffff", textMuted: "#9ca3af" };
 
@@ -172,13 +173,3 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function mixHex(a: string, b: string, ratio: number): string {
-  const pa = parseInt(a.replace("#", ""), 16);
-  const pb = parseInt(b.replace("#", ""), 16);
-  const ar = (pa >> 16) & 0xff, ag = (pa >> 8) & 0xff, ab = pa & 0xff;
-  const br = (pb >> 16) & 0xff, bg = (pb >> 8) & 0xff, bb = pb & 0xff;
-  const r = Math.round(ar * (1 - ratio) + br * ratio);
-  const g = Math.round(ag * (1 - ratio) + bg * ratio);
-  const bl = Math.round(ab * (1 - ratio) + bb * ratio);
-  return `#${((r << 16) | (g << 8) | bl).toString(16).padStart(6, "0")}`;
-}

@@ -80,7 +80,7 @@ export default function AudioQuizPlayScreen() {
         setQuestions(formatAudioQuestions(raw));
         setPhase("playing");
       } catch (e) {
-        console.warn("[audio/play] load error:", e);
+        console.error("[audio/play] load error:", e);
         setPhase("empty");
       }
     })();

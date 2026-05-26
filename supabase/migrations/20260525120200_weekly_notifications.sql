@@ -4,6 +4,13 @@
 --   Thu 09:00 UTC → weekly_midweek (nudge for non-starters)
 --   Sun 18:00 UTC → weekly_lastday (final hours before close)
 -- All target the user's "weekly" screen.
+--
+-- !! SECURITY NOTE !!
+-- The original revision of this file inlined the project's service_role JWT in
+-- the notify_weekly_challenge() body below. That token has been REDACTED.
+-- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
+-- notify_weekly_challenge() is redefined by 20260526120000_secure_cron_jwt.sql
+-- to read the JWT from Supabase Vault. See docs/security/JWT_ROTATION_TODO.md.
 
 CREATE OR REPLACE FUNCTION notify_weekly_challenge(p_template TEXT)
 RETURNS VOID
@@ -30,7 +37,8 @@ BEGIN
     url := 'https://dqhhpoxqrtlmhosrsdxp.supabase.co/functions/v1/send-push',
     headers := jsonb_build_object(
       'Content-Type','application/json',
-      'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaGhwb3hxcnRsbWhvc3JzZHhwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTAxODIyMywiZXhwIjoyMDg0NTk0MjIzfQ.oTir57-MZlIsvi2gUT6jCRhh-E_-1869-wAX4G5Av64'
+      -- service_role JWT was inlined here; replaced by migration 20260526120000_secure_cron_jwt.sql
+      'Authorization', 'Bearer <REDACTED_SEE_20260526120000_secure_cron_jwt>'
     ),
     body := jsonb_build_object(
       'broadcast', true,

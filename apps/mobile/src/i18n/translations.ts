@@ -39,6 +39,11 @@ export const translations = {
     contact: "Contact",
     reportProblem: "Report a problem",
     madeByTeam: "Made by the team",
+    deleteAccount: "Delete account",
+    deleteAccountConfirm: "Are you sure you want to delete your account?",
+    deleteAccountWarning: "This will permanently erase your profile, progress, and stats. This cannot be undone.",
+    deleteAccountCta: "Delete forever",
+    deleteAccountSuccess: "Your account has been deleted.",
 
     // Alerts
     signOutConfirm: "Are you sure you want to sign out?",
@@ -506,6 +511,11 @@ export const translations = {
     contact: "Contact",
     reportProblem: "Signaler un problème",
     madeByTeam: "Créé par l'équipe",
+    deleteAccount: "Supprimer mon compte",
+    deleteAccountConfirm: "Voulez-vous vraiment supprimer votre compte ?",
+    deleteAccountWarning: "Votre profil, votre progression et vos statistiques seront effacés définitivement. Cette action est irréversible.",
+    deleteAccountCta: "Supprimer définitivement",
+    deleteAccountSuccess: "Votre compte a été supprimé.",
 
     // Alerts
     signOutConfirm: "Êtes-vous sûr de vouloir vous déconnecter ?",
@@ -973,6 +983,11 @@ export const translations = {
     contact: "Contacto",
     reportProblem: "Reportar un problema",
     madeByTeam: "Hecho por el equipo",
+    deleteAccount: "Eliminar cuenta",
+    deleteAccountConfirm: "¿Seguro que quieres eliminar tu cuenta?",
+    deleteAccountWarning: "Tu perfil, progreso y estadísticas se borrarán definitivamente. Esta acción no se puede deshacer.",
+    deleteAccountCta: "Eliminar para siempre",
+    deleteAccountSuccess: "Tu cuenta ha sido eliminada.",
 
     // Alerts
     signOutConfirm: "¿Seguro que quieres cerrar sesión?",
@@ -1440,6 +1455,11 @@ export const translations = {
     contact: "Kontakt",
     reportProblem: "Problem melden",
     madeByTeam: "Gemacht vom Team",
+    deleteAccount: "Konto löschen",
+    deleteAccountConfirm: "Möchtest du dein Konto wirklich löschen?",
+    deleteAccountWarning: "Dein Profil, Fortschritt und deine Statistiken werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    deleteAccountCta: "Endgültig löschen",
+    deleteAccountSuccess: "Dein Konto wurde gelöscht.",
 
     // Alerts
     signOutConfirm: "Möchtest du dich wirklich abmelden?",

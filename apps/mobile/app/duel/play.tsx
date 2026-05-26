@@ -15,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
+import { CircularTimer as SharedCircularTimer } from "../../src/components/CircularTimer";
 import { recordPlay } from "../../src/services/dailyLimits";
 import {
   getDuel,
@@ -99,72 +100,39 @@ const MOCK_QUESTIONS: DuelQuestion[] = [
   },
 ];
 
-// Circular Timer Component
+// Duel-specific timer: wraps the shared SVG-based CircularTimer with
+// the "SEC" label and the lightning-bolt badge required by the arena layout.
 function CircularTimer({
   timeLeft,
-  totalTime
+  totalTime,
 }: {
   timeLeft: number;
   totalTime: number;
 }) {
-  const progress = timeLeft / totalTime;
-  const rotation = useSharedValue(0);
-
-  useEffect(() => {
-    rotation.value = withTiming(1 - progress, {
-      duration: 300,
-      easing: Easing.linear
-    });
-  }, [progress]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    const rotate = interpolate(rotation.value, [0, 1], [0, 360]);
-    return {
-      transform: [{ rotate: `${rotate}deg` }],
-    };
-  });
-
+  const SIZE = 80;
   return (
-    <View className="relative w-20 h-20 items-center justify-center">
-      {/* Background ring */}
-      <View
-        className="absolute inset-0 rounded-full border-4"
-        style={{ borderColor: ARENA_COLORS.surfaceLight }}
-      />
-
-      {/* Progress ring (simplified - full circle that fades) */}
-      <Animated.View
-        className="absolute inset-0 rounded-full border-4"
-        style={[
-          {
-            borderColor: ARENA_COLORS.teal,
-            opacity: progress,
-          }
-        ]}
-      />
-
-      {/* Inner circle */}
-      <View
-        className="absolute rounded-full"
-        style={{
-          width: 64,
-          height: 64,
-          backgroundColor: ARENA_COLORS.bg
-        }}
-      />
-
-      {/* Timer text */}
-      <View className="z-10 items-center">
+    <View
+      className="relative items-center justify-center"
+      style={{ width: SIZE, height: SIZE }}
+    >
+      <SharedCircularTimer
+        totalSeconds={totalTime}
+        timeLeft={timeLeft}
+        size={SIZE}
+        color={ARENA_COLORS.teal}
+        strokeWidth={4}
+        hideTimeText
+      >
         <Text
           className="text-3xl font-bold text-white"
-          style={{ fontVariant: ['tabular-nums'] }}
+          style={{ fontVariant: ["tabular-nums"] }}
         >
-          {String(timeLeft).padStart(2, '0')}
+          {String(timeLeft).padStart(2, "0")}
         </Text>
         <Text className="text-[9px] uppercase tracking-widest text-gray-400">
           SEC
         </Text>
-      </View>
+      </SharedCircularTimer>
 
       {/* Lightning bolt badge */}
       <View
@@ -172,7 +140,7 @@ function CircularTimer({
         style={{
           backgroundColor: ARENA_COLORS.surfaceLight,
           borderWidth: 1,
-          borderColor: 'rgba(255,255,255,0.1)',
+          borderColor: "rgba(255,255,255,0.1)",
         }}
       >
         <Text className="text-lg">⚡</Text>

@@ -10,6 +10,24 @@ import {
   getCurrentLevelNumber,
   adventureCategoryToDbCodes,
 } from "../types/adventure";
+import { getTodayIsoDate } from "../utils/dates";
+
+/**
+ * Local shape for adventure question rows returned by RPCs / fallback queries.
+ * Kept minimal so we can drop most `as any[]` casts without lying about types.
+ */
+interface AdventureQuestionRow {
+  id: string;
+  question_text: string;
+  correct_answer: string;
+  wrong_answers: string[];
+  category: string;
+  difficulty: number;
+  min_age?: number;
+  image_url?: string | null;
+  image_credit?: string | null;
+  [key: string]: unknown;
+}
 
 /**
  * Get user's adventure progress
@@ -43,9 +61,11 @@ export async function initializeAdventureProgress(userId: string): Promise<Adven
     completed_categories: [],
   };
 
-  const { data, error } = await supabase
-    .from("adventure_progress")
-    .insert(initialProgress as any)
+  // untyped: adventure_progress.tier enum in generated Database type is stale
+  // (DB has homer/mario/.../einstein, types still list coton/carton/...).
+  const { data, error } = await (supabase
+    .from("adventure_progress") as any)
+    .insert(initialProgress)
     .select()
     .single();
 
@@ -83,6 +103,9 @@ export async function completeCategory(
   let newTier = progress.tier;
   let newLevel = progress.level;
 
+  // untyped: adventure_progress.tier enum in generated Database type is stale.
+  const adventureTable = supabase.from("adventure_progress") as any;
+
   if (allCategoriesCompleted) {
     // Level up!
     const nextLevelInfo = getNextLevel(progress.tier, progress.level);
@@ -92,8 +115,7 @@ export async function completeCategory(
       levelUp = true;
     }
     // Reset completed categories for the new level
-    const { error } = await (supabase
-      .from("adventure_progress") as any)
+    const { error } = await adventureTable
       .update({
         tier: newTier,
         level: newLevel,
@@ -105,8 +127,7 @@ export async function completeCategory(
     if (error) throw error;
   } else {
     // Just update completed categories
-    const { error } = await (supabase
-      .from("adventure_progress") as any)
+    const { error } = await adventureTable
       .update({
         completed_categories: newCompletedCategories,
         updated_at: new Date().toISOString(),
@@ -123,7 +144,7 @@ export async function completeCategory(
  * Get today's attempts for a user
  */
 export async function getDailyAttempts(userId: string): Promise<DailyAttempts | null> {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
 
   const { data, error } = await supabase
     .from("daily_attempts")
@@ -146,13 +167,15 @@ export async function getDailyAttempts(userId: string): Promise<DailyAttempts | 
  * Use an attempt (called when player fails a category)
  */
 export async function useAttempt(userId: string): Promise<{ attemptsRemaining: number }> {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
   const existing = await getDailyAttempts(userId);
+  // untyped: supabase-js v2.91 strict typing surfaces daily_attempts row as
+  // `never` despite the table being declared in Database type.
+  const dailyAttempts = supabase.from("daily_attempts") as any;
 
   if (existing) {
     const newAttemptsUsed = existing.attempts_used + 1;
-    const { error } = await (supabase
-      .from("daily_attempts") as any)
+    const { error } = await dailyAttempts
       .update({ attempts_used: newAttemptsUsed })
       .eq("user_id", userId)
       .eq("date", today);
@@ -160,13 +183,11 @@ export async function useAttempt(userId: string): Promise<{ attemptsRemaining: n
     if (error) throw error;
     return { attemptsRemaining: Math.max(0, MAX_FREE_ATTEMPTS - newAttemptsUsed) };
   } else {
-    const { error } = await supabase
-      .from("daily_attempts")
-      .insert({
-        user_id: userId,
-        date: today,
-        attempts_used: 1,
-      } as any);
+    const { error } = await dailyAttempts.insert({
+      user_id: userId,
+      date: today,
+      attempts_used: 1,
+    });
 
     if (error) throw error;
     return { attemptsRemaining: MAX_FREE_ATTEMPTS - 1 };
@@ -222,21 +243,20 @@ export async function getAdventureQuestions(
   // Try adaptive questions first (Elo-based matching) — try each DB code
   for (const dbCat of dbCodes) {
     try {
-      // @ts-ignore - RPC function types not in generated types
-      const { data: adaptiveData, error: adaptiveError } = await supabase.rpc("get_adaptive_questions", {
+      // @ts-ignore - RPC function not in generated types
+      const { data, error } = await supabase.rpc("get_adaptive_questions", {
         p_user_id: userId,
         p_category: dbCat,
         p_limit: limit,
         p_language: "fr",
         p_tier: tier,
       });
-
-      if (!adaptiveError && adaptiveData && (adaptiveData as any[]).length > 0) {
-        console.log(`Got ${(adaptiveData as any[]).length} adaptive questions for ${category} (db: ${dbCat})`);
-        return adaptiveData as any[];
+      const adaptiveData = data as AdventureQuestionRow[] | null;
+      if (!error && adaptiveData && adaptiveData.length > 0) {
+        return adaptiveData;
       }
     } catch (err) {
-      console.log("Adaptive questions not available, using fallback:", err);
+      // Adaptive RPC not deployed yet — silently fall through to fallback.
     }
   }
 
@@ -256,14 +276,15 @@ export async function getAdventureQuestions(
 
   // Try unseen questions on each DB code
   for (const dbCat of dbCodes) {
-    // @ts-ignore - RPC function types not in generated types
+    // @ts-ignore - RPC function not in generated types
     const { data, error } = await supabase.rpc("get_unseen_questions", {
       p_user_id: userId,
       p_category: dbCat,
       p_limit: limit,
       p_language: "fr",
     });
-    if (!error && data && (data as any[]).length > 0) return data as any[];
+    const rows = data as AdventureQuestionRow[] | null;
+    if (!error && rows && rows.length > 0) return rows;
   }
 
   // Last fallback: direct query across all matching codes
@@ -311,17 +332,18 @@ export async function getFamilyQuestions(
 
   // Try RPC first per DB code (RPC only accepts one category at a time)
   if (dbCodes) {
-    let collected: any[] = [];
+    let collected: AdventureQuestionRow[] = [];
     for (const dbCat of dbCodes) {
-      // @ts-ignore - RPC function types not in generated types
-      const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
+      // @ts-ignore - RPC function not in generated types
+      const { data, error: rpcError } = await supabase.rpc("get_family_questions", {
         p_min_age: effectiveMinAge,
         p_category: dbCat,
         p_limit: effectiveLimit,
         p_language: "fr",
       });
-      if (!rpcError && rpcData && (rpcData as any[]).length > 0) {
-        collected = collected.concat(rpcData as any[]);
+      const rpcData = data as AdventureQuestionRow[] | null;
+      if (!rpcError && rpcData && rpcData.length > 0) {
+        collected = collected.concat(rpcData);
       }
     }
     if (collected.length > 0) {
@@ -329,14 +351,15 @@ export async function getFamilyQuestions(
     }
   } else {
     // mix mode — call RPC with NULL category
-    // @ts-ignore - RPC function types not in generated types
-    const { data: rpcData, error: rpcError } = await supabase.rpc("get_family_questions", {
+    // @ts-ignore - RPC function not in generated types
+    const { data, error: rpcError } = await supabase.rpc("get_family_questions", {
       p_min_age: effectiveMinAge,
       p_category: null,
       p_limit: effectiveLimit,
       p_language: "fr",
     });
-    if (!rpcError && rpcData && (rpcData as any[]).length > 0) return rpcData as any[];
+    const rpcData = data as AdventureQuestionRow[] | null;
+    if (!rpcError && rpcData && rpcData.length > 0) return rpcData;
   }
 
   // Direct-query fallback (handles both mix and category modes)

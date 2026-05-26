@@ -96,7 +96,7 @@ function CategoryProgress({
           </View>
           <View>
             <Text className="text-white font-semibold">{name}</Text>
-            <Text className="text-gray-500 text-xs">Lvl {level} • {xpNeeded} {t("xpNeeded" as any)}</Text>
+            <Text className="text-gray-500 text-xs">Lvl {level} • {xpNeeded} {t("xpNeeded")}</Text>
           </View>
         </View>
         <Text className="font-bold" style={{ color }}>{percentage}%</Text>
@@ -270,7 +270,7 @@ export default function ProfileScreen() {
       try {
         await updateAvatar(avatarUrl);
       } catch (dbError) {
-        console.warn("[Avatar] DB update failed, photo still uploaded:", dbError);
+        console.error("[Avatar] DB update failed, photo still uploaded:", dbError);
       }
     } catch (error: any) {
       console.error("[Avatar] Storage upload error:", error?.message || error);
@@ -301,16 +301,16 @@ export default function ProfileScreen() {
 
   // Badges data
   const badges = [
-    { icon: "⚡", name: t("speedDemon" as any), unlocked: true },
-    { icon: "🏛️", name: t("historyBuff" as any), unlocked: true },
-    { icon: "✨", name: t("perfectStreak" as any), unlocked: true },
-    { icon: "🏆", name: t("triviaGod" as any), unlocked: false },
+    { icon: "⚡", name: t("speedDemon"), unlocked: true },
+    { icon: "🏛️", name: t("historyBuff"), unlocked: true },
+    { icon: "✨", name: t("perfectStreak"), unlocked: true },
+    { icon: "🏆", name: t("triviaGod"), unlocked: false },
   ];
 
   // Category mastery data
   const categories = [
-    { icon: "🧪", name: t("scienceNature" as any), level: 8, xpNeeded: 450, percentage: 75, color: COLORS.yellow },
-    { icon: "🌍", name: t("worldGeography" as any), level: 11, xpNeeded: 50, percentage: 90, color: COLORS.coral },
+    { icon: "🧪", name: t("scienceNature"), level: 8, xpNeeded: 450, percentage: 75, color: COLORS.yellow },
+    { icon: "🌍", name: t("worldGeography"), level: 11, xpNeeded: 50, percentage: 90, color: COLORS.coral },
   ];
 
   return (
@@ -385,7 +385,7 @@ export default function ProfileScreen() {
               <Text className="text-gray-500 ml-2">✏️</Text>
             </View>
             <Text className="text-gray-400">
-              {isAnonymous ? t("tapToSetName" as any) : t("triviaTitan" as any)}
+              {isAnonymous ? t("tapToSetName") : t("triviaTitan")}
             </Text>
           </Pressable>
         </View>
@@ -418,7 +418,7 @@ export default function ProfileScreen() {
               borderColor: 'rgba(255,255,255,0.05)',
             }}
           >
-            <Text className="text-gray-400 text-xs mb-1">{t("winRate" as any)}</Text>
+            <Text className="text-gray-400 text-xs mb-1">{t("winRate")}</Text>
             {loadingStats ? (
               <ActivityIndicator size="small" color={COLORS.purple} />
             ) : (
@@ -436,7 +436,7 @@ export default function ProfileScreen() {
               borderColor: 'rgba(255,255,255,0.05)',
             }}
           >
-            <Text className="text-gray-400 text-xs mb-1">{t("quizzes" as any)}</Text>
+            <Text className="text-gray-400 text-xs mb-1">{t("quizzes")}</Text>
             {loadingStats ? (
               <ActivityIndicator size="small" color={COLORS.primary} />
             ) : (
@@ -450,7 +450,7 @@ export default function ProfileScreen() {
         {/* Recent Badges */}
         <View className="mx-6 mb-8">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-white font-bold">{t("recentBadges" as any)}</Text>
+            <Text className="text-white font-bold">{t("recentBadges")}</Text>
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
@@ -458,7 +458,7 @@ export default function ProfileScreen() {
               }}
             >
               <Text style={{ color: COLORS.primary }} className="text-sm font-medium">
-                {t("viewAll" as any)}
+                {t("viewAll")}
               </Text>
             </Pressable>
           </View>
@@ -489,12 +489,12 @@ export default function ProfileScreen() {
               </View>
               <View className="flex-1">
                 <Text className="text-white font-bold">
-                  {t("streakFreezeAvailable" as any)}: {streakFreezes}
+                  {t("streakFreezeAvailable")}: {streakFreezes}
                 </Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-xs mt-1">
                   {isPremium
-                    ? t("streakFreezePremium" as any)
-                    : t("streakFreezeWeekly" as any)}
+                    ? t("streakFreezePremium")
+                    : t("streakFreezeWeekly")}
                 </Text>
               </View>
             </View>
@@ -503,7 +503,7 @@ export default function ProfileScreen() {
 
         {/* Category Mastery */}
         <View className="mx-6 mb-8">
-          <Text className="text-white font-bold mb-4">{t("categoryMastery" as any)}</Text>
+          <Text className="text-white font-bold mb-4">{t("categoryMastery")}</Text>
 
           {categories.map((category, index) => (
             <CategoryProgress key={index} {...category} />
@@ -533,10 +533,10 @@ export default function ProfileScreen() {
               </View>
               <View className="flex-1">
                 <Text style={{ color: '#FFD100' }} className="font-bold text-lg">
-                  {t("upgradePremium" as any)}
+                  {t("upgradePremium")}
                 </Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  {t("unlockDuelsThemes" as any)}
+                  {t("unlockDuelsThemes")}
                 </Text>
               </View>
               <Icon name="ChevronRight" size={20} color="#FFD100" />
@@ -563,13 +563,13 @@ export default function ProfileScreen() {
             onPress={(e) => e.stopPropagation()}
           >
             <Text className="text-white text-xl font-bold mb-4 text-center">
-              {t("changeUsername" as any)}
+              {t("changeUsername")}
             </Text>
 
             <TextInput
               value={newUsername}
               onChangeText={setNewUsername}
-              placeholder={t("enterUsername" as any)}
+              placeholder={t("enterUsername")}
               placeholderTextColor={COLORS.textMuted}
               autoFocus
               maxLength={20}
@@ -584,7 +584,7 @@ export default function ProfileScreen() {
                 style={{ backgroundColor: COLORS.surfaceActive }}
               >
                 <Text className="text-center font-medium" style={{ color: COLORS.textMuted }}>
-                  {t("cancel" as any)}
+                  {t("cancel")}
                 </Text>
               </Pressable>
 
@@ -598,7 +598,7 @@ export default function ProfileScreen() {
                   <ActivityIndicator color={COLORS.bg} size="small" />
                 ) : (
                   <Text className="text-center font-bold" style={{ color: COLORS.bg }}>
-                    {t("saveButton" as any)}
+                    {t("saveButton")}
                   </Text>
                 )}
               </Pressable>

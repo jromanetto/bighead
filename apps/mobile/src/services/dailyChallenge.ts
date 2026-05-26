@@ -2,14 +2,7 @@ import * as Sentry from "@sentry/react-native";
 import { supabase } from "./supabase";
 import type { Question } from "../types/database";
 import { useFreeze as useStreakFreezeRpc } from "./streakFreeze";
-
-/**
- * Returns YYYY-MM-DD for a date N days before today (UTC-day boundary, same
- * semantics as the existing toISOString().split("T")[0] elsewhere in this
- * service).
- */
-const dayOffset = (offset: number): string =>
-  new Date(Date.now() + offset * 86400000).toISOString().split("T")[0];
+import { getTodayIsoDate, getDayOffset as dayOffset } from "../utils/dates";
 
 /**
  * If the user has a 1-day gap (last play = 2 days ago, today = first play
@@ -153,7 +146,7 @@ export const getDailySurvivalQuestions = async (
  * Check if user has completed today's challenge
  */
 export const hasCompletedDailyChallenge = async (userId: string): Promise<boolean> => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
 
   const { data, error } = await supabase
     .from("user_daily_challenges")
@@ -254,7 +247,7 @@ export const submitDailySurvival = async (
   score: number,
   totalTimeMs: number
 ): Promise<{ xpEarned: number; newStreak: number; isNewRecord: boolean }> => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
 
   // Calculate XP based on score (10 XP per correct answer + bonus for high scores)
   let xpEarned = score * 10;
@@ -385,7 +378,7 @@ export const getDailyStreak = async (userId: string): Promise<number> => {
  * Check if user has already played today's daily survival
  */
 export const hasPlayedDailySurvivalToday = async (userId: string): Promise<{ played: boolean; score?: number }> => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
 
   const { data, error } = await supabase
     .from("daily_survival_results")
@@ -466,7 +459,7 @@ interface DailyQuestionRPC {
  * Get today's daily question (the one sent in the notification)
  */
 export const getTodaysDailyQuestion = async (language: string = "en"): Promise<DailyQuestion | null> => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
 
   // @ts-ignore - RPC function not in generated types
   const { data, error } = await supabase.rpc("get_or_create_daily_question", {
@@ -525,7 +518,7 @@ interface DailyQuestionsV2RPC {
 export const getTodaysDailyQuestions = async (
   language: string = "en"
 ): Promise<DailyQuestion[]> => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayIsoDate();
 
   // @ts-ignore - RPC function not in generated types
   const { data, error } = await supabase.rpc("get_or_create_daily_questions_v2", {

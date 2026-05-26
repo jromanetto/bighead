@@ -17,6 +17,7 @@ import { IconButton, Icon } from "../../src/components/ui";
 import { RatingModal } from "../../src/components/RatingModal";
 import { ContactModal } from "../../src/components/ContactModal";
 import { useRatingPrompt } from "../../src/hooks/useRatingPrompt";
+import { supabase } from "../../src/services/supabase";
 
 // New QuizNext design colors
 const COLORS = {
@@ -150,6 +151,49 @@ export default function SettingsScreen() {
               router.replace("/");
             } catch (error) {
               console.error("Error signing out:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t("deleteAccount" as any),
+      `${t("deleteAccountConfirm" as any)}\n\n${t("deleteAccountWarning" as any)}`,
+      [
+        { text: t("cancel"), style: "cancel" },
+        {
+          text: t("deleteAccountCta" as any),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session?.access_token) {
+                Alert.alert(t("deleteAccount" as any), "Not authenticated.");
+                return;
+              }
+              const supaUrl = (supabase as any).supabaseUrl as string;
+              const res = await fetch(`${supaUrl}/functions/v1/delete-account`, {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${session.access_token}`,
+                  "Content-Type": "application/json",
+                },
+              });
+              if (!res.ok) {
+                const text = await res.text();
+                console.error("delete-account failed:", res.status, text);
+                Alert.alert(t("deleteAccount" as any), `Error: ${res.status}`);
+                return;
+              }
+              await signOut();
+              Alert.alert(t("deleteAccountSuccess" as any), "");
+              router.replace("/");
+            } catch (error) {
+              console.error("Error deleting account:", error);
+              Alert.alert(t("deleteAccount" as any), "Unexpected error.");
             }
           },
         },
@@ -470,6 +514,15 @@ export default function SettingsScreen() {
               subtitle={t("reportProblem")}
               onPress={() => setShowContactModal(true)}
             />
+            {!isAnonymous && (
+              <MenuRow
+                icon="✕"
+                title={t("deleteAccount" as any)}
+                subtitle={t("deleteAccountWarning" as any)}
+                onPress={handleDeleteAccount}
+                danger
+              />
+            )}
           </View>
 
           {/* Version */}

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import * as Sentry from "@sentry/react-native";
 import { supabase } from "../services/supabase";
 import { claimDailyLoginBonus } from "../services/universalXp";
+import { isUserPremium } from "../utils/premium";
 import type { User, Session } from "@supabase/supabase-js";
 
 // Fire-and-forget daily login bonus claim (server enforces 1×/UTC-day dedupe).
@@ -90,12 +91,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isInitialized: false,
   });
 
-  // Check if premium is still valid
-  const checkPremiumStatus = (profile: UserProfile | null): boolean => {
-    if (!profile?.is_premium) return false;
-    if (!profile.premium_expires_at) return true; // Lifetime premium
-    return new Date(profile.premium_expires_at) > new Date();
-  };
+  // Check if premium is still valid (delegates to centralized util)
+  const checkPremiumStatus = (profile: UserProfile | null): boolean =>
+    isUserPremium(profile);
 
   // Fetch user profile from users table
   const fetchProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {

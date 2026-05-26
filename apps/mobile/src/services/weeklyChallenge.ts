@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { getTodayIsoDate } from "../utils/dates";
 
 export interface WeeklyChallenge {
   id: string;
@@ -172,7 +173,7 @@ export function dayQuotaRemaining(
 ): { remaining: number; unlimited: boolean } {
   const dayIdx = daysIntoChallenge(challenge);
   if (dayIdx >= FREE_PLAY_FROM_DAY) return { remaining: Infinity, unlimited: true };
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getTodayIsoDate();
   const played = progress?.daily_play_counts?.[today] ?? 0;
   return { remaining: Math.max(0, DAILY_LIMIT_BEFORE_UNLOCK - played), unlimited: false };
 }

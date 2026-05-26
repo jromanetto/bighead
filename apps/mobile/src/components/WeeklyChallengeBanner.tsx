@@ -11,6 +11,7 @@ import {
 } from "../services/weeklyChallenge";
 import { useTranslation } from "../contexts/LanguageContext";
 import { buttonPressFeedback } from "../utils/feedback";
+import { mixHex } from "../utils/colors";
 
 export function WeeklyChallengeBanner() {
   const { t, language } = useTranslation();
@@ -132,17 +133,3 @@ export function WeeklyChallengeBanner() {
   );
 }
 
-function mixHex(a: string, b: string, ratio: number): string {
-  const pa = parseInt(a.replace("#", ""), 16);
-  const pb = parseInt(b.replace("#", ""), 16);
-  const ar = (pa >> 16) & 0xff;
-  const ag = (pa >> 8) & 0xff;
-  const ab = pa & 0xff;
-  const br = (pb >> 16) & 0xff;
-  const bg = (pb >> 8) & 0xff;
-  const bb = pb & 0xff;
-  const r = Math.round(ar * (1 - ratio) + br * ratio);
-  const g = Math.round(ag * (1 - ratio) + bg * ratio);
-  const bl = Math.round(ab * (1 - ratio) + bb * ratio);
-  return `#${((r << 16) | (g << 8) | bl).toString(16).padStart(6, "0")}`;
-}

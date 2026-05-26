@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getTodayIsoDate } from "../utils/dates";
 
 const STORAGE_KEY = "daily_usage";
 
@@ -30,9 +31,7 @@ interface DailyUsage {
 /**
  * Get today's date in YYYY-MM-DD format
  */
-const getTodayDate = (): string => {
-  return new Date().toISOString().split("T")[0];
-};
+const getTodayDate = (): string => getTodayIsoDate();
 
 /**
  * Get default empty usage object for today

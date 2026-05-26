@@ -124,6 +124,8 @@ export default function HomeScreen() {
                 router.push("/profile");
               }}
               className="active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={t("profile")}
             >
               <SmallAvatar userId={user?.id} username={profile?.username} avatarUrl={profile?.avatar_url} size={40} />
             </Pressable>
@@ -141,6 +143,8 @@ export default function HomeScreen() {
                 router.push("/achievements");
               }}
               className="active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={t("achievements")}
             >
               <View
                 className="flex-row items-center justify-center rounded-xl"
@@ -177,6 +181,8 @@ export default function HomeScreen() {
                 }}
                 className="px-2.5 py-1 rounded-full active:opacity-80"
                 style={{ backgroundColor: `${COLORS.primary}15`, borderWidth: 1, borderColor: `${COLORS.primary}30` }}
+                accessibilityRole="button"
+                accessibilityLabel={t("activityHomeLink")}
               >
                 <Text className="text-xs font-medium" style={{ color: COLORS.primary }}>
                   👥 {t("activityHomeLink")}
@@ -191,6 +197,8 @@ export default function HomeScreen() {
                 router.push("/daily");
               }}
               className="rounded-2xl overflow-hidden active:opacity-95"
+              accessibilityRole="button"
+              accessibilityLabel={t("dailyBrain")}
               style={{
                 height: 176,
                 backgroundColor: COLORS.surface,
@@ -277,6 +285,8 @@ export default function HomeScreen() {
               }}
               className="rounded-xl overflow-hidden active:opacity-95"
               style={{ height: 140, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              accessibilityRole="button"
+              accessibilityLabel={t("adventure")}
             >
               <LinearGradient
                 colors={['#1e3a5f', '#2d5a87', '#3b82f6']}
@@ -318,6 +328,8 @@ export default function HomeScreen() {
                 }}
                 className="flex-1 rounded-xl overflow-hidden active:opacity-95"
                 style={{ height: 120, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+                accessibilityRole="button"
+                accessibilityLabel={t("soloRun")}
               >
                 <LinearGradient
                   colors={['#134e4a', '#0f766e']}
@@ -346,6 +358,8 @@ export default function HomeScreen() {
                 }}
                 className="flex-1 rounded-xl overflow-hidden active:opacity-95"
                 style={{ height: 120, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+                accessibilityRole="button"
+                accessibilityLabel={t("family")}
               >
                 <LinearGradient
                   colors={['#7c2d12', '#c2410c']}
@@ -377,6 +391,8 @@ export default function HomeScreen() {
                 }}
                 className="flex-1 rounded-xl overflow-hidden active:opacity-95"
                 style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+                accessibilityRole="button"
+                accessibilityLabel={t("versus")}
               >
                 <LinearGradient
                   colors={['#450a0a', '#7f1d1d']}
@@ -405,6 +421,8 @@ export default function HomeScreen() {
                 }}
                 className="flex-1 rounded-xl overflow-hidden active:opacity-95"
                 style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+                accessibilityRole="button"
+                accessibilityLabel={t("party")}
               >
                 <LinearGradient
                   colors={['#3b0764', '#7c3aed']}
@@ -434,6 +452,8 @@ export default function HomeScreen() {
               }}
               className="rounded-xl overflow-hidden active:opacity-95"
               style={{ height: 96, borderWidth: 1, borderColor: 'rgba(0, 194, 204, 0.2)' }}
+              accessibilityRole="button"
+              accessibilityLabel={t("audioQuizCta")}
             >
               <LinearGradient
                 colors={['#0e7490', '#0891b2', '#06b6d4']}
@@ -476,6 +496,8 @@ export default function HomeScreen() {
               }}
               className="rounded-2xl overflow-hidden active:opacity-95"
               style={{ borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.2)' }}
+              accessibilityRole="button"
+              accessibilityLabel={t("viewAchievementsBadges")}
             >
               <LinearGradient
                 colors={['#451a03', '#78350f', '#92400e']}
@@ -552,6 +574,8 @@ export default function HomeScreen() {
               }}
               className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              accessibilityRole="button"
+              accessibilityLabel={t("stats")}
             >
               <View
                 className="w-9 h-9 rounded-lg items-center justify-center"
@@ -572,6 +596,8 @@ export default function HomeScreen() {
               }}
               className="flex-1 p-3 rounded-lg flex-row items-center gap-3 active:opacity-80"
               style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
+              accessibilityRole="button"
+              accessibilityLabel={t("ranking")}
             >
               <View
                 className="w-9 h-9 rounded-lg items-center justify-center"
@@ -594,6 +620,8 @@ export default function HomeScreen() {
             }}
             className="rounded-xl overflow-hidden active:opacity-95"
             style={{ borderWidth: 1, borderColor: 'rgba(255, 209, 0, 0.3)' }}
+            accessibilityRole="button"
+            accessibilityLabel={t("goPremium")}
           >
             <LinearGradient
               colors={['#7c3aed', '#c026d3', '#f59e0b']}
