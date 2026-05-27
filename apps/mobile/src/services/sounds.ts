@@ -28,6 +28,24 @@ const MUSIC_ENABLED_KEY = "@bighead_music_enabled";
 const SOUND_VOLUME_KEY = "@bighead_sound_volume";
 const MUSIC_VOLUME_KEY = "@bighead_music_volume";
 
+// Default max duration per effect (ms). Celebration / outcome sounds get
+// capped so they never drag on past the visual feedback. 0 = play in full.
+const DEFAULT_MAX_DURATION: Partial<Record<SoundEffect, number>> = {
+  win: 1500,
+  levelUp: 1500,
+  achievement: 1500,
+  gameOver: 1500,
+  lose: 1500,
+  gameStart: 1200,
+  chain: 800,
+  countdown: 600,
+  correct: 600,
+  wrong: 600,
+  tick: 250,
+  timeout: 900,
+  buttonPress: 200,
+};
+
 // Sound URLs (using free sound effects)
 const SOUND_URLS: Record<SoundEffect, string> = {
   correct: "https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3", // Success ding
@@ -115,6 +133,9 @@ class SoundService {
   async play(effect: SoundEffect, maxDurationMs?: number): Promise<void> {
     if (!this.soundEnabled) return;
 
+    // Apply per-effect default cap if caller didn't override
+    const effectiveMaxMs = maxDurationMs ?? DEFAULT_MAX_DURATION[effect];
+
     try {
       // Get or create sound object
       let sound = this.soundObjects.get(effect);
@@ -135,8 +156,8 @@ class SoundService {
       await sound.setIsLoopingAsync(false);
       await sound.playAsync();
 
-      // If maxDuration is specified, stop the sound after that time
-      if (maxDurationMs && maxDurationMs > 0) {
+      // If maxDuration is specified or defaulted, stop the sound after that time
+      if (effectiveMaxMs && effectiveMaxMs > 0) {
         setTimeout(async () => {
           try {
             const status = await sound?.getStatusAsync();
@@ -146,7 +167,7 @@ class SoundService {
           } catch {
             // Ignore errors during cleanup
           }
-        }, maxDurationMs);
+        }, effectiveMaxMs);
       }
     } catch {
       // Silently fail - sounds are optional
