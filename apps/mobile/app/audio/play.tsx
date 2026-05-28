@@ -71,6 +71,10 @@ export default function AudioQuizPlayScreen() {
 
   const progress = useSharedValue(1);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Timer starts only once audio is ready; tracked per question index.
+  const [audioLoading, setAudioLoading] = useState(true);
+  const timerStartedForIdx = useRef<number>(-1);
+  const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---- Load questions on mount ---------------------------------------
   useEffect(() => {
@@ -125,13 +129,40 @@ export default function AudioQuizPlayScreen() {
     }
   }, []);
 
+  // Called by AudioPlayer once the audio actually starts (or fails to load).
+  // Starts the countdown only then, so loading time isn't deducted.
+  const handleAudioReady = useCallback(() => {
+    if (phase !== "playing") return;
+    if (timerStartedForIdx.current === idx) return; // already started this question
+    timerStartedForIdx.current = idx;
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
+    setAudioLoading(false);
+    startTimer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, idx, startTimer]);
+
+  // On entering a question: reset loading state + arm a safety fallback so a
+  // hung download never leaves the user stuck without a timer.
   useEffect(() => {
     if (phase === "playing" && questions.length > 0) {
-      startTimer();
+      setAudioLoading(true);
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = setTimeout(() => {
+        handleAudioReady();
+      }, 6000);
     }
     if (phase !== "playing") {
       stopTimer();
     }
+    return () => {
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current);
+        fallbackTimerRef.current = null;
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, idx, questions.length]);
 
@@ -383,10 +414,10 @@ export default function AudioQuizPlayScreen() {
               position: "absolute",
               color: timeLeft <= 5 ? COLORS.red : COLORS.text,
               fontWeight: "800",
-              fontSize: 14,
+              fontSize: audioLoading && !isFeedback ? 16 : 14,
             }}
           >
-            {timeLeft}
+            {audioLoading && !isFeedback ? "🎵" : timeLeft}
           </Text>
         </View>
       </View>
@@ -405,7 +436,14 @@ export default function AudioQuizPlayScreen() {
             colors={["transparent", "rgba(0, 194, 204, 0.08)", "transparent"]}
             style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, borderRadius: 16 }}
           />
-          <AudioPlayer audioUrl={q.audioUrl} questionId={q.id} maxReplays={2} autoPlay />
+          <AudioPlayer
+            audioUrl={q.audioUrl}
+            questionId={q.id}
+            maxReplays={2}
+            autoPlay
+            onPlaybackStart={handleAudioReady}
+            onLoadError={handleAudioReady}
+          />
           {q.audioCredit && (
             <Text style={{ color: COLORS.textMuted, fontSize: 10, marginTop: 8 }}>
               {q.audioCredit}

@@ -19,6 +19,12 @@ interface AudioPlayerProps {
   maxReplays?: number;
   /** Optional auto-play first time the component mounts / questionId changes. */
   autoPlay?: boolean;
+  /** Fires once the audio is loaded AND playback has actually begun. Used by
+   *  the parent to start the question timer only after loading completes. */
+  onPlaybackStart?: () => void;
+  /** Fires if the audio fails to load, so the parent can start the timer
+   *  anyway and not leave the user stuck. */
+  onLoadError?: () => void;
 }
 
 const COLORS = {
@@ -40,11 +46,15 @@ export function AudioPlayer({
   questionId,
   maxReplays = 2,
   autoPlay = false,
+  onPlaybackStart,
+  onLoadError,
 }: AudioPlayerProps) {
   const soundRef = useRef<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playsUsed, setPlaysUsed] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  // Ensures onPlaybackStart fires only once per question (not on replays)
+  const startNotifiedRef = useRef(false);
 
   const pulse = useSharedValue(1);
   const opacity = useSharedValue(0.7);
@@ -53,6 +63,7 @@ export function AudioPlayer({
   useEffect(() => {
     setPlaysUsed(0);
     setIsPlaying(false);
+    startNotifiedRef.current = false;
 
     return () => {
       cleanupSound();
@@ -133,6 +144,8 @@ export function AudioPlayer({
         shouldDuckAndroid: true,
       });
 
+      // createAsync resolves once the sound is loaded; with shouldPlay:true
+      // playback has begun at this point.
       const { sound } = await Audio.Sound.createAsync(
         { uri: audioUrl },
         { shouldPlay: true, volume: 1.0 },
@@ -141,9 +154,19 @@ export function AudioPlayer({
       soundRef.current = sound;
       setIsPlaying(true);
       setPlaysUsed((n) => n + 1);
+      // Notify parent that playback actually started (once per question)
+      if (!startNotifiedRef.current) {
+        startNotifiedRef.current = true;
+        onPlaybackStart?.();
+      }
     } catch (e) {
       console.warn("[AudioPlayer] play error:", e);
       setIsPlaying(false);
+      // Let the parent start the timer anyway so the user isn't stuck
+      if (!startNotifiedRef.current) {
+        startNotifiedRef.current = true;
+        onLoadError?.();
+      }
     } finally {
       setIsLoading(false);
     }
