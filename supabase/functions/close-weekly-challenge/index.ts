@@ -4,10 +4,15 @@
 // Cron sends `Authorization: Bearer ${get_service_role_jwt()}` (sb_secret_*).
 //
 // Triggered weekly by pg_cron (Sunday 23:00 UTC) BEFORE the new one is
-// generated. Takes the currently `active` challenge, sets its status to
-// `closed`, awards completion XP to players, then mirrors the 30 bilingual
-// questions into the main `questions` table (one FR row + one EN row each)
-// using the theme's target_category. Marks the challenge `archived`.
+// generated. Closes EVERY currently `active` challenge (there can be a
+// 'themed' AND a 'news' one running in parallel):
+//   - sets status to `closed`, awards completion XP + badges to players;
+//   - for challenge_type='themed': mirrors the bilingual questions into the
+//     main `questions` table (one FR row + one EN row each) using the theme's
+//     target_category;
+//   - for challenge_type='news': SKIPS question migration (news questions go
+//     stale and would pollute the general DB);
+//   - marks the challenge `archived`.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -65,12 +70,13 @@ serve(async (req) => {
       } catch (_) { /* empty body OK */ }
     }
 
-    // 1. Find the challenge to close
+    // 1. Find the challenge(s) to close. There can be BOTH a themed and a news
+    //    challenge active simultaneously, so we process all of them.
     let query = supabase.from("weekly_challenges").select("*");
     if (forcedId) {
       query = query.eq("id", forcedId);
     } else {
-      query = query.eq("status", "active").order("end_date", { ascending: true }).limit(1);
+      query = query.eq("status", "active").order("end_date", { ascending: true });
     }
     const { data: challenges, error: selErr } = await query;
     if (selErr) throw new Error(`select active challenge: ${selErr.message}`);
@@ -80,115 +86,132 @@ serve(async (req) => {
         headers: { ...corsHeaders, "content-type": "application/json" },
       });
     }
-    const challenge = challenges[0];
 
-    // 2. Mark closed
-    await supabase.from("weekly_challenges")
-      .update({ status: "closed", closed_at: new Date().toISOString() })
-      .eq("id", challenge.id);
+    const results: Array<Record<string, unknown>> = [];
 
-    // 3. Award final XP + badge per player
-    const { data: progress, error: pErr } = await supabase
-      .from("weekly_challenge_progress")
-      .select("id, user_id, correct_count, best_day_streak, final_xp_awarded")
-      .eq("challenge_id", challenge.id);
-    if (pErr) throw new Error(`fetch progress: ${pErr.message}`);
+    for (const challenge of challenges) {
+      const isNews = challenge.challenge_type === "news";
 
-    let totalAwarded = 0;
-    for (const p of progress ?? []) {
-      if (p.final_xp_awarded > 0) continue;
-      const xp = xpFor(p.correct_count, p.best_day_streak);
-      const badge = badgeFor(p.correct_count);
-      const { error: xpErr } = await supabase.rpc("award_xp", {
-        p_user_id: p.user_id,
-        p_amount: xp,
-        p_source: "challenge",
-        p_metadata: {
-          weekly_challenge_id: challenge.id,
-          theme: challenge.theme_slug,
-          correct_count: p.correct_count,
-          badge,
-        },
-        p_dedupe_key: `weekly_${challenge.id}`,
+      // 2. Mark closed
+      await supabase.from("weekly_challenges")
+        .update({ status: "closed", closed_at: new Date().toISOString() })
+        .eq("id", challenge.id);
+
+      // 3. Award final XP + badge per player (BOTH types).
+      const { data: progress, error: pErr } = await supabase
+        .from("weekly_challenge_progress")
+        .select("id, user_id, correct_count, best_day_streak, final_xp_awarded")
+        .eq("challenge_id", challenge.id);
+      if (pErr) throw new Error(`fetch progress: ${pErr.message}`);
+
+      let totalAwarded = 0;
+      for (const p of progress ?? []) {
+        if (p.final_xp_awarded > 0) continue;
+        const xp = xpFor(p.correct_count, p.best_day_streak);
+        const badge = badgeFor(p.correct_count);
+        const { error: xpErr } = await supabase.rpc("award_xp", {
+          p_user_id: p.user_id,
+          p_amount: xp,
+          p_source: "challenge",
+          p_metadata: {
+            weekly_challenge_id: challenge.id,
+            theme: challenge.theme_slug,
+            challenge_type: challenge.challenge_type,
+            correct_count: p.correct_count,
+            badge,
+          },
+          p_dedupe_key: `weekly_${challenge.id}`,
+        });
+        if (xpErr) {
+          console.error(`award_xp failed for user ${p.user_id}:`, xpErr.message);
+          continue;
+        }
+        await supabase.from("weekly_challenge_progress")
+          .update({
+            final_score: p.correct_count,
+            final_xp_awarded: xp,
+            badge_earned: badge,
+          })
+          .eq("id", p.id);
+        totalAwarded++;
+      }
+
+      // 4. Migrate questions to main `questions` table — THEMED ONLY.
+      //    News questions go stale; skip migration so they don't pollute the
+      //    general DB.
+      let migratedCount = 0;
+      if (!isNews) {
+        const { data: wcQs, error: wqErr } = await supabase
+          .from("weekly_challenge_questions")
+          .select("*")
+          .eq("challenge_id", challenge.id)
+          .order("position");
+        if (wqErr) throw new Error(`fetch wc questions: ${wqErr.message}`);
+
+        for (const q of (wcQs ?? []) as WCQuestion[]) {
+          // Skip if already migrated
+          if (q.archived_question_id_fr && q.archived_question_id_en) continue;
+
+          const baseRow = {
+            category: challenge.target_category,
+            difficulty: q.difficulty,
+            image_url: q.image_url,
+            image_credit: q.image_credit,
+            is_active: true,
+          };
+
+          const frRow = {
+            ...baseRow,
+            question_text: q.question_fr,
+            correct_answer: q.correct_answer_fr,
+            wrong_answers: q.wrong_answers_fr,
+            explanation: q.learning_fact_fr,
+            language: "fr",
+          };
+          const enRow = {
+            ...baseRow,
+            question_text: q.question_en,
+            correct_answer: q.correct_answer_en,
+            wrong_answers: q.wrong_answers_en,
+            explanation: q.learning_fact_en,
+            language: "en",
+          };
+
+          const { data: insFr, error: frErr } = await supabase.from("questions").insert(frRow).select("id").single();
+          const { data: insEn, error: enErr } = await supabase.from("questions").insert(enRow).select("id").single();
+          if (frErr || enErr) {
+            console.error(`migrate q ${q.position}: fr=${frErr?.message} en=${enErr?.message}`);
+            continue;
+          }
+
+          await supabase.from("weekly_challenge_questions").update({
+            archived_question_id_fr: insFr?.id,
+            archived_question_id_en: insEn?.id,
+          }).eq("id", q.id);
+          migratedCount++;
+        }
+      }
+
+      // 5. Final state : archived
+      await supabase.from("weekly_challenges")
+        .update({ status: "archived", archived_at: new Date().toISOString() })
+        .eq("id", challenge.id);
+
+      results.push({
+        challenge_id: challenge.id,
+        theme: challenge.theme_slug,
+        challenge_type: challenge.challenge_type,
+        players_awarded: totalAwarded,
+        questions_migrated: migratedCount,
+        migration_skipped: isNews,
+        target_category: challenge.target_category,
       });
-      if (xpErr) {
-        console.error(`award_xp failed for user ${p.user_id}:`, xpErr.message);
-        continue;
-      }
-      await supabase.from("weekly_challenge_progress")
-        .update({
-          final_score: p.correct_count,
-          final_xp_awarded: xp,
-          badge_earned: badge,
-        })
-        .eq("id", p.id);
-      totalAwarded++;
     }
-
-    // 4. Migrate the 30 questions to main `questions` table (FR + EN rows)
-    const { data: wcQs, error: wqErr } = await supabase
-      .from("weekly_challenge_questions")
-      .select("*")
-      .eq("challenge_id", challenge.id)
-      .order("position");
-    if (wqErr) throw new Error(`fetch wc questions: ${wqErr.message}`);
-
-    let migratedCount = 0;
-    for (const q of (wcQs ?? []) as WCQuestion[]) {
-      // Skip if already migrated
-      if (q.archived_question_id_fr && q.archived_question_id_en) continue;
-
-      const baseRow = {
-        category: challenge.target_category,
-        difficulty: q.difficulty,
-        image_url: q.image_url,
-        image_credit: q.image_credit,
-        is_active: true,
-      };
-
-      const frRow = {
-        ...baseRow,
-        question_text: q.question_fr,
-        correct_answer: q.correct_answer_fr,
-        wrong_answers: q.wrong_answers_fr,
-        explanation: q.learning_fact_fr,
-        language: "fr",
-      };
-      const enRow = {
-        ...baseRow,
-        question_text: q.question_en,
-        correct_answer: q.correct_answer_en,
-        wrong_answers: q.wrong_answers_en,
-        explanation: q.learning_fact_en,
-        language: "en",
-      };
-
-      const { data: insFr, error: frErr } = await supabase.from("questions").insert(frRow).select("id").single();
-      const { data: insEn, error: enErr } = await supabase.from("questions").insert(enRow).select("id").single();
-      if (frErr || enErr) {
-        console.error(`migrate q ${q.position}: fr=${frErr?.message} en=${enErr?.message}`);
-        continue;
-      }
-
-      await supabase.from("weekly_challenge_questions").update({
-        archived_question_id_fr: insFr?.id,
-        archived_question_id_en: insEn?.id,
-      }).eq("id", q.id);
-      migratedCount++;
-    }
-
-    // 5. Final state : archived
-    await supabase.from("weekly_challenges")
-      .update({ status: "archived", archived_at: new Date().toISOString() })
-      .eq("id", challenge.id);
 
     return new Response(JSON.stringify({
       success: true,
-      challenge_id: challenge.id,
-      theme: challenge.theme_slug,
-      players_awarded: totalAwarded,
-      questions_migrated: migratedCount,
-      target_category: challenge.target_category,
+      closed: results.length,
+      challenges: results,
     }), {
       status: 200,
       headers: { ...corsHeaders, "content-type": "application/json" },

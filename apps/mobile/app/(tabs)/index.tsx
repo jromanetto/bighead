@@ -170,8 +170,9 @@ export default function HomeScreen() {
 
         {/* Main Content */}
         <View className="px-4 flex-col gap-6">
-          {/* Weekly Challenge banner */}
-          <WeeklyChallengeBanner />
+          {/* Weekly Challenge banners: themed + news (run in parallel) */}
+          <WeeklyChallengeBanner type="themed" />
+          <WeeklyChallengeBanner type="news" />
 
           {/* Featured Section */}
           <View className="flex-col gap-3">

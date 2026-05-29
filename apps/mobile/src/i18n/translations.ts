@@ -323,6 +323,8 @@ export const translations = {
 
     // Weekly Challenge
     weeklyChallenge: "Weekly Challenge",
+    weeklyNewsTag: "News",
+    weeklyNewsTitle: "This Week in News",
     weeklyDone: "Done",
     weeklyCorrect: "Correct",
     weeklyDayStreak: "Streak",
@@ -804,6 +806,8 @@ export const translations = {
 
     // Weekly Challenge
     weeklyChallenge: "Défi de la semaine",
+    weeklyNewsTag: "Actu",
+    weeklyNewsTitle: "L'actu de la semaine",
     weeklyDone: "Faits",
     weeklyCorrect: "Bonnes",
     weeklyDayStreak: "Série",
@@ -1285,6 +1289,8 @@ export const translations = {
 
     // Weekly Challenge
     weeklyChallenge: "Reto semanal",
+    weeklyNewsTag: "Noticias",
+    weeklyNewsTitle: "La actualidad de la semana",
     weeklyDone: "Hechas",
     weeklyCorrect: "Correctas",
     weeklyDayStreak: "Racha",
@@ -1766,6 +1772,8 @@ export const translations = {
 
     // Weekly Challenge
     weeklyChallenge: "Wochen-Challenge",
+    weeklyNewsTag: "News",
+    weeklyNewsTitle: "Diese Woche in den News",
     weeklyDone: "Erledigt",
     weeklyCorrect: "Richtig",
     weeklyDayStreak: "Streak",

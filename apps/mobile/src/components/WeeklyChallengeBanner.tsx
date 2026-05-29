@@ -7,14 +7,15 @@ import {
   getMyWeeklyProgress,
   timeUntilEnd,
   type WeeklyChallenge,
+  type WeeklyChallengeType,
   type WeeklyProgress,
 } from "../services/weeklyChallenge";
 import { useTranslation } from "../contexts/LanguageContext";
 import { buttonPressFeedback } from "../utils/feedback";
 import { mixHex } from "../utils/colors";
 
-// Memoized: takes no props, internal state isolates re-renders from parent.
-function WeeklyChallengeBannerInner() {
+// Memoized: takes a single `type` prop, internal state isolates re-renders.
+function WeeklyChallengeBannerInner({ type = "themed" }: { type?: WeeklyChallengeType }) {
   const { t, language } = useTranslation();
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
@@ -22,12 +23,12 @@ function WeeklyChallengeBannerInner() {
 
   useEffect(() => {
     (async () => {
-      const c = await getActiveWeeklyChallenge();
+      const c = await getActiveWeeklyChallenge(type);
       setChallenge(c);
       if (c) setProgress(await getMyWeeklyProgress(c.id));
       setLoaded(true);
     })();
-  }, []);
+  }, [type]);
 
   if (!loaded || !challenge) return null;
 
@@ -47,7 +48,7 @@ function WeeklyChallengeBannerInner() {
     <Pressable
       onPress={() => {
         buttonPressFeedback();
-        router.push("/weekly" as any);
+        router.push({ pathname: "/weekly", params: { type } } as any);
       }}
       className="rounded-2xl overflow-hidden active:opacity-95"
       style={{
@@ -80,7 +81,7 @@ function WeeklyChallengeBannerInner() {
                 style={{ backgroundColor: "rgba(0,0,0,0.35)" }}
               >
                 <Text className="text-white text-[10px] font-bold tracking-wider uppercase">
-                  {t("weeklyChallenge")}
+                  {type === "news" ? t("weeklyNewsTag") : t("weeklyChallenge")}
                 </Text>
               </View>
               <Text className="text-white/80 text-[11px] font-medium">⏱ {timeLabel}</Text>

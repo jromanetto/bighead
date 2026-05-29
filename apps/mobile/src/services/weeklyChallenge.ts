@@ -10,12 +10,15 @@ export interface WeeklyChallenge {
   emoji: string;
   color: string;
   target_category: string;
+  challenge_type: "themed" | "news";
   start_date: string;
   end_date: string;
   status: "active" | "closed" | "archived" | "upcoming";
   total_questions: number;
   total_players: number;
 }
+
+export type WeeklyChallengeType = "themed" | "news";
 
 export interface WeeklyQuestion {
   id: string;
@@ -56,11 +59,14 @@ export interface WeeklyLeaderboardEntry {
 
 // Weekly challenge: all 30 questions unlocked from day 1. No daily cap.
 
-export async function getActiveWeeklyChallenge(): Promise<WeeklyChallenge | null> {
+export async function getActiveWeeklyChallenge(
+  type: WeeklyChallengeType = "themed",
+): Promise<WeeklyChallenge | null> {
   const { data, error } = await (supabase as any)
     .from("weekly_challenges")
     .select("*")
     .eq("status", "active")
+    .eq("challenge_type", type)
     .order("start_date", { ascending: false })
     .limit(1)
     .maybeSingle();

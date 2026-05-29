@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -11,6 +11,7 @@ import {
   getWeeklyLeaderboard,
   timeUntilEnd,
   type WeeklyChallenge,
+  type WeeklyChallengeType,
   type WeeklyProgress,
   type WeeklyLeaderboardEntry,
 } from "../../src/services/weeklyChallenge";
@@ -27,13 +28,15 @@ const COLORS = {
 
 export default function WeeklyHome() {
   const { t, language } = useTranslation();
+  const params = useLocalSearchParams<{ type?: string }>();
+  const challengeType: WeeklyChallengeType = params.type === "news" ? "news" : "themed";
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<WeeklyLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
-    const c = await getActiveWeeklyChallenge();
+    const c = await getActiveWeeklyChallenge(challengeType);
     setChallenge(c);
     if (c) {
       const [p, lb] = await Promise.all([getMyWeeklyProgress(c.id), getWeeklyLeaderboard(c.id, 20)]);
@@ -41,7 +44,7 @@ export default function WeeklyHome() {
       setLeaderboard(lb);
     }
     setLoading(false);
-  }, []);
+  }, [challengeType]);
 
   useFocusEffect(useCallback(() => { reload(); }, [reload]));
 
@@ -182,7 +185,7 @@ export default function WeeklyHome() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.push("/weekly/result" as any);
+                  router.push({ pathname: "/weekly/result", params: { type: challengeType } } as any);
                 }}
                 className="mt-5 rounded-2xl items-center justify-center"
                 style={{ backgroundColor: "#22c55e", paddingVertical: 14 }}
@@ -195,7 +198,7 @@ export default function WeeklyHome() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.push("/weekly/play" as any);
+                  router.push({ pathname: "/weekly/play", params: { type: challengeType } } as any);
                 }}
                 className="mt-5 rounded-2xl items-center justify-center"
                 style={{ backgroundColor: "#fff", paddingVertical: 14 }}

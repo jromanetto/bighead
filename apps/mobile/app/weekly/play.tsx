@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -9,6 +9,7 @@ import {
   submitWeeklyAnswer,
   shuffleAnswers,
   type WeeklyChallenge,
+  type WeeklyChallengeType,
   type WeeklyQuestion,
 } from "../../src/services/weeklyChallenge";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -35,6 +36,8 @@ const LETTERS = ["A", "B", "C", "D"];
 
 export default function WeeklyPlay() {
   const { t, language } = useTranslation();
+  const params = useLocalSearchParams<{ type?: string }>();
+  const challengeType: WeeklyChallengeType = params.type === "news" ? "news" : "themed";
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [question, setQuestion] = useState<WeeklyQuestion | null>(null);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -72,7 +75,7 @@ export default function WeeklyPlay() {
     setSelected(null);
     setShowLearning(false);
     setHiddenAnswers([]);
-    const c = await getActiveWeeklyChallenge();
+    const c = await getActiveWeeklyChallenge(challengeType);
     if (!c) {
       setError(t("weeklyNoneTitle"));
       setLoading(false);
@@ -81,7 +84,7 @@ export default function WeeklyPlay() {
     setChallenge(c);
     const p = await getMyWeeklyProgress(c.id);
     if (p && p.completed_at) {
-      router.replace("/weekly/result" as any);
+      router.replace({ pathname: "/weekly/result", params: { type: challengeType } } as any);
       return;
     }
     const nextPos = (p?.current_position ?? 0) + 1;
@@ -96,7 +99,7 @@ export default function WeeklyPlay() {
     setQuestion(q);
     setAnswers(shuffleAnswers(q));
     setLoading(false);
-  }, [language, t]);
+  }, [language, t, challengeType]);
 
   useEffect(() => { loadCurrent(); }, [loadCurrent]);
 
@@ -120,11 +123,11 @@ export default function WeeklyPlay() {
     if (!challenge) return;
     const p = await getMyWeeklyProgress(challenge.id);
     if (p && p.completed_at) {
-      router.replace("/weekly/result" as any);
+      router.replace({ pathname: "/weekly/result", params: { type: challengeType } } as any);
       return;
     }
     loadCurrent();
-  }, [challenge, loadCurrent]);
+  }, [challenge, loadCurrent, challengeType]);
 
   /**
    * Lifeline effects (local to weekly screen).
