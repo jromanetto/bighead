@@ -262,6 +262,25 @@ export default function WeeklyHome() {
             </View>
           </View>
         )}
+
+        {/* History button */}
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.push("/weekly/history" as any);
+          }}
+          className="mt-4 rounded-2xl items-center justify-center"
+          style={{
+            backgroundColor: COLORS.surface,
+            borderWidth: 1,
+            borderColor: "rgba(255,255,255,0.06)",
+            paddingVertical: 14,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={t("weeklyHistoryButton")}
+        >
+          <Text className="text-white font-semibold">{t("weeklyHistoryButton")}</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
