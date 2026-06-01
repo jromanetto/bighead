@@ -202,6 +202,30 @@ serve(async (req) => {
     const start = forceStartDate ? new Date(forceStartDate + "T00:00:00Z") : getNextMonday(now);
     const end = new Date(start);
     end.setUTCDate(end.getUTCDate() + 6);
+    const startStr = isoDate(start);
+
+    // 2b. Dedup guard: when triggered by cron (no force* args), skip if a themed
+    // challenge already exists for this start_date — avoids duplicates when the
+    // next week's challenge was pre-generated manually.
+    if (!forcedThemeSlug && !forceStartDate) {
+      const { data: existing } = await supabase
+        .from("weekly_challenges")
+        .select("id, theme_slug")
+        .eq("challenge_type", "themed")
+        .eq("start_date", startStr)
+        .in("status", ["upcoming", "active"]);
+      if (existing && existing.length > 0) {
+        return new Response(JSON.stringify({
+          success: true,
+          skipped: "themed challenge already exists for this week",
+          existing_id: existing[0].id,
+          existing_theme: existing[0].theme_slug,
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, "content-type": "application/json" },
+        });
+      }
+    }
 
     // 3. Create challenge row (status=upcoming, generation=generating)
     const { data: challenge, error: insErr } = await supabase
