@@ -204,6 +204,13 @@ STRICT RULES:
 - Vary difficulty (1 easy, 2 medium, 3 hard). All four options similar in length & form.
 - Proper French (avec accents) and proper English.
 
+SELF-CHECK before including each question (real hallucinations have shipped, be paranoid):
+1. CONSISTENCY: re-read your own learning_fact. If it implies a different answer than your correct_answer, DISCARD this question.
+2. CITATION: every fact must trace back to a specific bullet in the digest. If you cannot point to one, skip the question.
+3. ANSWER ALIGNMENT: the correct_answer must be the ONLY answer that fits both the question AND the learning_fact AND the digest entry.
+4. DATES & NUMBERS: copy them verbatim from the digest. Do not "round" or paraphrase numbers.
+If a question fails any check, generate a different one.
+
 If there aren't enough non-sensitive events for 15 questions, generate fewer (MINIMUM 8). Quality over quantity — never pad with fabricated facts.
 
 Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:

@@ -76,6 +76,14 @@ Requirements per question:
 - All four answer options should be of similar length and grammatical form so the correct one is not obvious by shape alone.
 - Use proper French (avec accents) and proper English.
 
+CRITICAL — SELF-CHECK before including each question (real hallucinations have shipped — be paranoid):
+1. CONSISTENCY: re-read your own learning_fact. If it implies a different answer than your correct_answer, DISCARD this question (real example: Q said "Korean brand named after Seoul → Kia" while the fact said "Kia means 'rising out of Asia'" — contradiction).
+2. ETYMOLOGY: only generate name-origin / etymology questions when the etymology is well-documented (Wikipedia-grade). If unsure, skip (real example: "Volvo = Latin for iron → Volvo" is wrong; volvo means "I roll" from volvere, iron is ferrum).
+3. DATES & RECORDS: be precise. If you can't pin down a year/record with confidence, choose a different angle.
+4. VERIFIABILITY: every fact must be one a knowledgeable human could verify on Wikipedia. If you're guessing, skip.
+5. ANSWER ALIGNMENT: the correct_answer must be the ONLY answer that fits both the question AND the learning_fact.
+If a question fails any check, generate a different one. Quality > quantity, but still output 30.
+
 Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
 
 {
