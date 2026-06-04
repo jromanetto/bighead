@@ -77,6 +77,27 @@ export async function getActiveWeeklyChallenge(
   return (data as WeeklyChallenge) ?? null;
 }
 
+/**
+ * Fetches the most recent weekly challenges (any type, any non-upcoming status)
+ * sorted by start_date DESC. Used on the home screen to surface the latest defis.
+ * Skips challenges that haven't finished generating.
+ */
+export async function getRecentChallenges(limit: number = 4): Promise<WeeklyChallenge[]> {
+  const { data, error } = await (supabase as any)
+    .from("weekly_challenges")
+    .select("*")
+    .in("status", ["active", "closed", "archived"])
+    .eq("generation_status", "ready")
+    .order("start_date", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.warn("[weekly] recent fetch:", error.message);
+    return [];
+  }
+  return (data as WeeklyChallenge[]) ?? [];
+}
+
 export async function getMyWeeklyProgress(challengeId: string): Promise<WeeklyProgress | null> {
   const user = (await supabase.auth.getUser()).data.user;
   if (!user) return null;

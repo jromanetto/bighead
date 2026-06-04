@@ -1,7 +1,8 @@
 import { View, Text, Pressable, ScrollView, ImageBackground } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -11,6 +12,8 @@ import { SmallAvatar } from "../../src/components/ProfileAvatar";
 import { Icon } from "../../src/components/ui";
 import { WeeklyChallengeBanner } from "../../src/components/WeeklyChallengeBanner";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
+import { SkeletonCard } from "../../src/components/Skeleton";
+import { getRecentChallenges, type WeeklyChallenge } from "../../src/services/weeklyChallenge";
 
 // New QuizNext design colors
 const COLORS = {
@@ -73,11 +76,28 @@ export default function HomeScreen() {
   const [dailyStreak, setDailyStreak] = useState(0);
   const [dailyCompleted, setDailyCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState("12m");
+  const [recentChallenges, setRecentChallenges] = useState<WeeklyChallenge[] | null>(null);
 
   useEffect(() => {
     loadFeedbackSettings(user?.id);
     loadDailyStatus();
   }, [user]);
+
+  const loadRecentChallenges = useCallback(async () => {
+    try {
+      const list = await getRecentChallenges(4);
+      setRecentChallenges(list);
+    } catch (err) {
+      console.warn("[home] recent challenges load failed:", err);
+      setRecentChallenges([]);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadRecentChallenges();
+    }, [loadRecentChallenges]),
+  );
 
   const loadDailyStatus = async () => {
     if (user && !isAnonymous) {
@@ -170,9 +190,59 @@ export default function HomeScreen() {
 
         {/* Main Content */}
         <View className="px-4 flex-col gap-6">
-          {/* Weekly Challenge banners: themed + news (run in parallel) */}
-          <WeeklyChallengeBanner type="themed" />
-          <WeeklyChallengeBanner type="news" />
+          {/* Weekly Challenges: 4 most recent (any type/status) + history link */}
+          <View className="flex-col gap-2">
+            <View className="flex-row items-baseline justify-between px-1">
+              <Text className="text-base font-bold text-gray-100 tracking-wide uppercase">
+                📅 {t("weeklyRecentTitle")}
+              </Text>
+            </View>
+
+            {recentChallenges === null ? (
+              <View>
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </View>
+            ) : recentChallenges.length === 0 ? (
+              <View
+                className="rounded-2xl p-4 items-center"
+                style={{
+                  backgroundColor: COLORS.surface,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255,255,255,0.05)',
+                }}
+              >
+                <Text className="text-gray-400 text-sm">—</Text>
+              </View>
+            ) : (
+              <>
+                {recentChallenges.map((c) => (
+                  <WeeklyChallengeBanner key={c.id} challenge={c} compact />
+                ))}
+              </>
+            )}
+
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/weekly/history" as any);
+              }}
+              className="rounded-xl flex-row items-center justify-center py-3 px-4 active:opacity-80"
+              style={{
+                backgroundColor: COLORS.surface,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.06)',
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={t("weeklyMoreButton")}
+            >
+              <Text className="text-sm font-semibold" style={{ color: COLORS.primary }}>
+                {t("weeklyMoreButton")}
+              </Text>
+            </Pressable>
+          </View>
 
           {/* Featured Section */}
           <View className="flex-col gap-3">
