@@ -1,17 +1,27 @@
-import { View, Text, Pressable, TextInput, ActivityIndicator, ScrollView, Modal } from "react-native";
-import { router, Link, useFocusEffect } from "expo-router";
+import {
+  View,
+  Text,
+  Pressable,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl,
+  Image,
+} from "react-native";
+import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
-import { createDuel, joinDuel } from "../../src/services/duel";
+import {
+  getMyDuels,
+  categorizeAsyncDuel,
+  type AsyncDuelInboxItem,
+  type AsyncDuelBucket,
+} from "../../src/services/duel";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { BottomNavigation } from "../../src/components/BottomNavigation";
-import { LimitReachedModal, LimitReachedModalRef } from "../../src/components/LimitReachedModal";
-import { canPlay, getRemainingPlays, DAILY_LIMITS } from "../../src/services/dailyLimits";
-import { IconButton, Icon } from "../../src/components/ui";
+import { IconButton } from "../../src/components/ui";
 
-// New QuizNext design colors
 const COLORS = {
   bg: "#161a1d",
   surface: "#1E2529",
@@ -19,113 +29,220 @@ const COLORS = {
   primary: "#00c2cc",
   primaryDim: "rgba(0, 194, 204, 0.15)",
   success: "#22c55e",
+  successDim: "rgba(34, 197, 94, 0.15)",
   error: "#ef4444",
   errorDim: "rgba(239, 68, 68, 0.15)",
-  coral: "#FF6B6B",
-  coralDim: "rgba(255, 107, 107, 0.15)",
+  warn: "#facc15",
+  warnDim: "rgba(250, 204, 21, 0.15)",
   text: "#ffffff",
   textMuted: "#9ca3af",
 };
 
-// Available categories for duels
-const DUEL_CATEGORIES = [
-  { id: "general", nameKey: "generalKnowledge", icon: "🧠", color: "#00c2cc" },
-  { id: "history", nameKey: "historyCategory", icon: "🏛️", color: "#8B5CF6" },
-  { id: "geography", nameKey: "geographyCategory", icon: "🌍", color: "#10B981" },
-  { id: "science", nameKey: "scienceCategory", icon: "🔬", color: "#3B82F6" },
-  { id: "sports", nameKey: "sportsCategory", icon: "⚽", color: "#F59E0B" },
-  { id: "pop-culture", nameKey: "popCulture", icon: "🎬", color: "#EC4899" },
-];
+const STATUS_LABEL: Record<AsyncDuelBucket, { emoji: string; tKey: string; color: string; bgKey: string }> = {
+  my_turn: { emoji: "🎯", tKey: "duelMyTurn", color: COLORS.primary, bgKey: "primaryDim" },
+  waiting: { emoji: "⏳", tKey: "duelWaiting", color: COLORS.warn, bgKey: "warnDim" },
+  finished: { emoji: "✅", tKey: "duelFinished", color: COLORS.success, bgKey: "successDim" },
+  expired: { emoji: "❌", tKey: "duelExpired", color: COLORS.error, bgKey: "errorDim" },
+  invite_sent: { emoji: "📨", tKey: "duelInviteSent", color: COLORS.textMuted, bgKey: "surfaceLight" },
+};
 
-export default function DuelLobbyScreen() {
-  const { user, isPremium } = useAuth();
+interface DuelCardProps {
+  duel: AsyncDuelInboxItem;
+  bucket: AsyncDuelBucket;
+  myUserId: string;
+  t: (k: any) => string;
+}
+
+const DuelCard = memo(function DuelCard({ duel, bucket, myUserId, t }: DuelCardProps) {
+  const isWinner = duel.winner_id === myUserId;
+  const isDraw = duel.status === "completed" && duel.winner_id === null;
+  const meta = STATUS_LABEL[bucket];
+
+  const handlePress = () => {
+    buttonPressFeedback();
+    if (bucket === "my_turn") {
+      router.navigate(`/duel/play?id=${duel.duel_id}`);
+    } else {
+      router.navigate(`/duel/result?id=${duel.duel_id}`);
+    }
+  };
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      disabled={bucket === "expired"}
+      className="flex-row items-center rounded-2xl p-4 mb-3 active:opacity-80"
+      style={{
+        backgroundColor: COLORS.surface,
+        borderWidth: 1,
+        borderColor:
+          bucket === "my_turn"
+            ? `${COLORS.primary}40`
+            : "rgba(255,255,255,0.05)",
+        opacity: bucket === "expired" ? 0.6 : 1,
+      }}
+    >
+      {/* Avatar */}
+      <View
+        className="w-12 h-12 rounded-full mr-3 items-center justify-center overflow-hidden"
+        style={{ backgroundColor: COLORS.surfaceLight }}
+      >
+        {duel.opponent_avatar ? (
+          <Image source={{ uri: duel.opponent_avatar }} className="w-full h-full" />
+        ) : (
+          <Text className="text-xl">🧠</Text>
+        )}
+      </View>
+
+      {/* Content */}
+      <View className="flex-1">
+        <View className="flex-row items-center mb-1">
+          <Text className="text-white font-bold text-base" numberOfLines={1}>
+            {duel.opponent_username || "Player"}
+          </Text>
+          {duel.category && (
+            <Text style={{ color: COLORS.textMuted }} className="text-xs ml-2">
+              · {duel.category}
+            </Text>
+          )}
+        </View>
+
+        <View className="flex-row items-center">
+          <Text className="text-sm mr-1">{meta.emoji}</Text>
+          <Text style={{ color: meta.color }} className="text-xs font-semibold">
+            {t(meta.tKey)}
+          </Text>
+
+          {/* Score visibility */}
+          {duel.status === "completed" && (
+            <Text className="text-xs ml-2" style={{ color: COLORS.textMuted }}>
+              {duel.my_score}/10 · {duel.opponent_score}/10
+              {isWinner ? " 🏆" : isDraw ? " 🤝" : ""}
+            </Text>
+          )}
+          {bucket === "waiting" && duel.my_score !== null && (
+            <Text className="text-xs ml-2" style={{ color: COLORS.textMuted }}>
+              {(t("duelMyScore") as string).replace("{{score}}", String(duel.my_score))}
+            </Text>
+          )}
+        </View>
+      </View>
+
+      {/* Chevron */}
+      <Text style={{ color: COLORS.textMuted }} className="text-lg">
+        ›
+      </Text>
+    </Pressable>
+  );
+});
+
+interface BucketSectionProps {
+  title: string;
+  emoji: string;
+  items: AsyncDuelInboxItem[];
+  bucket: AsyncDuelBucket;
+  myUserId: string;
+  t: (k: any) => string;
+  defaultCollapsed?: boolean;
+}
+
+function BucketSection({
+  title,
+  emoji,
+  items,
+  bucket,
+  myUserId,
+  t,
+  defaultCollapsed = false,
+}: BucketSectionProps) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+  if (items.length === 0) return null;
+
+  return (
+    <View className="mb-5">
+      <Pressable
+        onPress={() => {
+          buttonPressFeedback();
+          setCollapsed((c) => !c);
+        }}
+        className="flex-row items-center justify-between mb-2 px-1"
+      >
+        <View className="flex-row items-center">
+          <Text className="text-base mr-2">{emoji}</Text>
+          <Text className="text-white font-bold text-base">{title}</Text>
+          <View
+            className="ml-2 px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: COLORS.surfaceLight }}
+          >
+            <Text className="text-xs font-bold" style={{ color: COLORS.textMuted }}>
+              {items.length}
+            </Text>
+          </View>
+        </View>
+        <Text style={{ color: COLORS.textMuted }} className="text-sm">
+          {collapsed ? "▾" : "▴"}
+        </Text>
+      </Pressable>
+
+      {!collapsed &&
+        items.map((d) => (
+          <DuelCard key={d.duel_id} duel={d} bucket={bucket} myUserId={myUserId} t={t} />
+        ))}
+    </View>
+  );
+}
+
+export default function DuelInboxScreen() {
+  const { user } = useAuth();
   const { t } = useTranslation();
-  const [joinCode, setJoinCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState(DUEL_CATEGORIES[0]);
-  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
-  const [canPlayGame, setCanPlayGame] = useState(true);
-  const [remaining, setRemaining] = useState<number>(DAILY_LIMITS.versus);
-  const limitModalRef = useRef<LimitReachedModalRef>(null);
+  const [duels, setDuels] = useState<AsyncDuelInboxItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Load daily limits when screen focuses
+  const load = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const data = await getMyDuels();
+      setDuels(data);
+    } catch (e) {
+      console.error("getMyDuels error", e);
+    }
+    setLoading(false);
+    setRefreshing(false);
+  }, [user]);
+
   useFocusEffect(
     useCallback(() => {
-      const loadLimits = async () => {
-        const canPlayNow = await canPlay("versus");
-        const remainingPlays = await getRemainingPlays("versus");
-        setCanPlayGame(isPremium || canPlayNow);
-        setRemaining(remainingPlays);
-      };
-      loadLimits();
-    }, [isPremium])
+      setLoading(true);
+      load();
+    }, [load])
   );
 
-  const handleCreateDuel = async () => {
-    buttonPressFeedback();
-    // Check limits before creating
-    if (!canPlayGame && !isPremium) {
-      limitModalRef.current?.open("versus");
-      return;
+  const buckets = useMemo(() => {
+    const out: Record<AsyncDuelBucket, AsyncDuelInboxItem[]> = {
+      my_turn: [],
+      waiting: [],
+      finished: [],
+      expired: [],
+      invite_sent: [],
+    };
+    for (const d of duels) {
+      const b = categorizeAsyncDuel(d);
+      out[b].push(d);
     }
-
-    if (!user) {
-      setError("You must be logged in");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const { duelId, code } = await createDuel(user.id, selectedCategory.id, 5);
-      router.navigate(`/duel/waiting?id=${duelId}&code=${code}`);
-    } catch (e) {
-      console.error("Error creating duel:", e);
-      setError("Error creating duel");
-    }
-    setLoading(false);
-  };
-
-  const handleJoinDuel = async () => {
-    buttonPressFeedback();
-    // Check limits before joining
-    if (!canPlayGame && !isPremium) {
-      limitModalRef.current?.open("versus");
-      return;
-    }
-
-    if (!user) {
-      setError("You must be logged in");
-      return;
-    }
-
-    if (joinCode.length !== 6) {
-      setError("Code must be 6 characters");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await joinDuel(joinCode, user.id);
-      if (result.success && result.duelId) {
-        router.navigate(`/duel/play?id=${result.duelId}`);
-      } else {
-        setError(result.message);
-      }
-    } catch (e) {
-      console.error("Error joining duel:", e);
-      setError("Error joining duel");
-    }
-    setLoading(false);
-  };
+    // Cap finished to last 10
+    out.finished = out.finished.slice(0, 10);
+    return out;
+  }, [duels]);
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-1 px-5">
         {/* Header */}
-        <View className="flex-row items-center pt-4 mb-6">
+        <View className="flex-row items-center pt-4 mb-4">
           <IconButton
             name="ArrowLeft"
             onPress={() => router.navigate("/(tabs)")}
@@ -133,264 +250,96 @@ export default function DuelLobbyScreen() {
             size={40}
             style={{ marginRight: 12 }}
           />
-          <Text className="text-white text-2xl font-black">{t("duelTitle" as any)}</Text>
-        </View>
-
-        {/* Create Section */}
-        <View
-          className="rounded-2xl p-6 mb-4"
-          style={{
-            backgroundColor: COLORS.surface,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.05)',
-          }}
-        >
-          <View className="items-center mb-6">
-            <Text className="text-5xl mb-4">⚔️</Text>
-            <Text className="text-white text-xl font-bold mb-2">
-              {t("createDuel" as any)}
-            </Text>
-            <Text className="text-gray-400 text-center text-sm">
-              {t("createDuelDesc" as any)}
-            </Text>
-          </View>
-
-          {/* Category selector */}
-          <View className="mb-4">
-            <Text className="text-gray-400 text-xs uppercase tracking-wider mb-2">
-              {t("categoryLabel2" as any)}
-            </Text>
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                setShowCategoryPicker(true);
-              }}
-              className="flex-row items-center rounded-xl py-3 px-4"
-              style={{ backgroundColor: COLORS.surfaceLight }}
-            >
-              <Text className="text-xl mr-2">{selectedCategory.icon}</Text>
-              <Text className="text-white flex-1">{t(selectedCategory.nameKey as any)}</Text>
-              <Text className="text-gray-400">▼</Text>
-            </Pressable>
-          </View>
-
-          <Pressable
-            onPress={handleCreateDuel}
-            disabled={loading}
-            className="rounded-2xl py-4 active:opacity-80"
-            style={{ backgroundColor: COLORS.primary }}
-          >
-            {loading ? (
-              <ActivityIndicator color={COLORS.bg} />
-            ) : (
-              <Text className="text-center font-bold text-lg" style={{ color: COLORS.bg }}>
-                {t("createGame" as any)}
-              </Text>
-            )}
-          </Pressable>
-        </View>
-
-        {/* Join Section */}
-        <View
-          className="rounded-2xl p-6 mb-4"
-          style={{
-            backgroundColor: COLORS.surface,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.05)',
-          }}
-        >
-          <View className="items-center mb-6">
-            <Text className="text-5xl mb-4">🎯</Text>
-            <Text className="text-white text-xl font-bold mb-2">
-              {t("joinDuel" as any)}
-            </Text>
-            <Text className="text-gray-400 text-center text-sm">
-              {t("joinDuelDesc" as any)}
-            </Text>
-          </View>
-
-          <TextInput
-            value={joinCode}
-            onChangeText={(text) => setJoinCode(text.toUpperCase())}
-            placeholder="CODE"
-            placeholderTextColor="#6B7280"
-            maxLength={6}
-            autoCapitalize="characters"
-            className="text-white text-center text-2xl font-bold rounded-xl py-4 mb-4 tracking-widest"
-            style={{ backgroundColor: COLORS.surfaceLight }}
-          />
-
-          <Pressable
-            onPress={handleJoinDuel}
-            disabled={loading || joinCode.length !== 6}
-            className="rounded-2xl py-4 active:opacity-80"
-            style={{
-              backgroundColor: joinCode.length === 6 ? COLORS.primary : COLORS.surfaceLight,
-              borderWidth: 0,
-              borderColor: 'rgba(255,255,255,0.1)',
-            }}
-          >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text
-                className="text-center font-bold text-lg"
-                style={{ color: joinCode.length === 6 ? '#161a1d' : COLORS.textMuted }}
-              >
-                {t("joinButton" as any)}
-              </Text>
-            )}
-          </Pressable>
-        </View>
-
-        {/* Error */}
-        {error && (
-          <View
-            className="rounded-2xl p-4"
-            style={{ backgroundColor: COLORS.errorDim }}
-          >
-            <Text style={{ color: COLORS.error }} className="text-center">{error}</Text>
-          </View>
-        )}
-
-        {/* Daily Plays Counter */}
-        <View
-          className="rounded-2xl p-4 mt-4"
-          style={{
-            backgroundColor: COLORS.surface,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.05)',
-          }}
-        >
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <Text className="text-2xl mr-3">🎯</Text>
-              <View>
-                <Text className="text-white font-bold">{t("remainingGames" as any)}</Text>
-                <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  {isPremium ? t("unlimited" as any) : t("renewTomorrow" as any)}
-                </Text>
-              </View>
-            </View>
-            {isPremium ? (
-              <View className="flex-row items-center px-3 py-2 rounded-xl" style={{ backgroundColor: "rgba(255, 209, 0, 0.15)" }}>
-                <Text style={{ color: "#FFD700", fontWeight: "bold" }}>👑 ∞</Text>
-              </View>
-            ) : (
-              <View className="flex-row items-center px-3 py-2 rounded-xl" style={{ backgroundColor: canPlayGame ? COLORS.primaryDim : COLORS.errorDim }}>
-                <Text style={{ color: canPlayGame ? COLORS.primary : COLORS.error, fontWeight: "bold" }}>
-                  {remaining}/{DAILY_LIMITS.versus}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Premium Upsell */}
-        {!isPremium && (
-          <Pressable
-            onPress={() => {
-              buttonPressFeedback();
-              router.push("/premium");
-            }}
-            className="rounded-2xl p-4 mt-4 active:opacity-80"
-            style={{
-              backgroundColor: 'rgba(255, 209, 0, 0.15)',
-              borderWidth: 1,
-              borderColor: 'rgba(255, 209, 0, 0.3)',
-            }}
-          >
-            <View className="flex-row items-center">
-              <Text className="text-2xl mr-3">👑</Text>
-              <View className="flex-1">
-                <Text style={{ color: '#FFD100' }} className="font-bold">
-                  {t("goPremiumDuel" as any)}
-                </Text>
-                <Text style={{ color: COLORS.textMuted }} className="text-sm">
-                  {t("unlimitedDuels" as any)}
-                </Text>
-              </View>
-              <Icon name="ChevronRight" size={16} color="#FFD100" />
-            </View>
-          </Pressable>
-        )}
-
-        {/* Footer */}
-        <View className="mt-auto pb-4 items-center">
-          <Text className="text-gray-600 text-xs">
-            BIGHEAD V1.0.0 • MADE WITH ❤️
+          <Text className="text-white text-2xl font-black flex-1">
+            {t("duelTitle" as any)}
           </Text>
         </View>
+
+        {/* New Duel button */}
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.navigate("/duel/new");
+          }}
+          className="rounded-2xl py-4 mb-5 active:opacity-80"
+          style={{ backgroundColor: COLORS.primary }}
+        >
+          <Text
+            className="text-center font-bold text-lg"
+            style={{ color: COLORS.bg }}
+          >
+            ⚔️ {t("duelNewDuel" as any)}
+          </Text>
+        </Pressable>
+
+        {loading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                tintColor={COLORS.primary}
+                onRefresh={() => {
+                  setRefreshing(true);
+                  load();
+                }}
+              />
+            }
+            contentContainerStyle={{ paddingBottom: 100 }}
+          >
+            {duels.length === 0 ? (
+              <View className="items-center justify-center py-16">
+                <Text className="text-6xl mb-4">⚔️</Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-center">
+                  {t("duelInboxEmpty" as any)}
+                </Text>
+              </View>
+            ) : (
+              <>
+                <BucketSection
+                  title={t("duelMyTurn" as any)}
+                  emoji="🎯"
+                  items={buckets.my_turn}
+                  bucket="my_turn"
+                  myUserId={user?.id || ""}
+                  t={t as any}
+                />
+                <BucketSection
+                  title={t("duelWaiting" as any)}
+                  emoji="⏳"
+                  items={buckets.waiting}
+                  bucket="waiting"
+                  myUserId={user?.id || ""}
+                  t={t as any}
+                />
+                <BucketSection
+                  title={t("duelFinished" as any)}
+                  emoji="✅"
+                  items={buckets.finished}
+                  bucket="finished"
+                  myUserId={user?.id || ""}
+                  t={t as any}
+                />
+                <BucketSection
+                  title={t("duelExpired" as any)}
+                  emoji="❌"
+                  items={buckets.expired}
+                  bucket="expired"
+                  myUserId={user?.id || ""}
+                  t={t as any}
+                  defaultCollapsed
+                />
+              </>
+            )}
+          </ScrollView>
+        )}
       </View>
 
-      {/* Bottom Navigation */}
       <BottomNavigation />
-
-      {/* Category Picker Modal */}
-      <Modal
-        visible={showCategoryPicker}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowCategoryPicker(false)}
-      >
-        <Pressable
-          className="flex-1 justify-end"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-          onPress={() => setShowCategoryPicker(false)}
-        >
-          <Pressable
-            className="rounded-t-3xl p-6"
-            style={{ backgroundColor: COLORS.surface }}
-            onPress={(e) => e.stopPropagation()}
-          >
-            <View className="w-12 h-1 rounded-full mx-auto mb-6" style={{ backgroundColor: COLORS.surfaceLight }} />
-
-            <Text className="text-white text-xl font-bold mb-4">{t("chooseCategory" as any)}</Text>
-
-            <ScrollView style={{ maxHeight: 400 }}>
-              {DUEL_CATEGORIES.map((category) => (
-                <Pressable
-                  key={category.id}
-                  onPress={() => {
-                    buttonPressFeedback();
-                    setSelectedCategory(category);
-                    setShowCategoryPicker(false);
-                  }}
-                  className="flex-row items-center p-4 rounded-xl mb-2"
-                  style={{
-                    backgroundColor: selectedCategory.id === category.id
-                      ? `${category.color}20`
-                      : COLORS.surfaceLight,
-                    borderWidth: selectedCategory.id === category.id ? 1 : 0,
-                    borderColor: category.color,
-                  }}
-                >
-                  <View
-                    className="w-12 h-12 rounded-xl items-center justify-center mr-4"
-                    style={{ backgroundColor: `${category.color}30` }}
-                  >
-                    <Text className="text-2xl">{category.icon}</Text>
-                  </View>
-                  <Text
-                    className="text-lg font-medium flex-1"
-                    style={{ color: selectedCategory.id === category.id ? category.color : COLORS.text }}
-                  >
-                    {t(category.nameKey as any)}
-                  </Text>
-                  {selectedCategory.id === category.id && (
-                    <Text style={{ color: category.color }} className="text-xl">✓</Text>
-                  )}
-                </Pressable>
-              ))}
-            </ScrollView>
-
-            <View style={{ height: 20 }} />
-          </Pressable>
-        </Pressable>
-      </Modal>
-
-      {/* Limit Reached Modal */}
-      <LimitReachedModal ref={limitModalRef} />
     </SafeAreaView>
   );
 }

@@ -5,7 +5,7 @@ export interface Duel {
   code: string;
   host_id: string;
   guest_id: string | null;
-  status: "waiting" | "playing" | "finished" | "cancelled";
+  status: "waiting" | "playing" | "finished" | "cancelled" | "pending" | "awaiting_opponent" | "completed" | "expired";
   category: string;
   rounds_total: number;
   current_round: number;
@@ -15,7 +15,161 @@ export interface Duel {
   created_at: string;
   started_at: string | null;
   finished_at: string | null;
+  mode?: "async" | "sync";
+  expires_at?: string | null;
+  questions_payload?: AsyncDuelQuestion[] | null;
+  host_played_at?: string | null;
+  guest_played_at?: string | null;
 }
+
+// =========================================================================
+// Async Duel — turn-based 1v1 (Trivia Crack model)
+// =========================================================================
+
+export interface AsyncDuelQuestion {
+  id: string;
+  question_text: string;
+  correct_answer: string;
+  wrong_answers: string[];
+  image_url?: string | null;
+  explanation?: string | null;
+  player_name?: string | null;
+}
+
+export interface AsyncDuelAnswer {
+  question_id: string;
+  position: number;
+  answer_idx: number;
+  is_correct: boolean;
+  time_ms: number;
+}
+
+export interface AsyncDuelInboxItem {
+  duel_id: string;
+  my_role: "host" | "guest";
+  opponent_id: string;
+  opponent_username: string | null;
+  opponent_avatar: string | null;
+  category: string | null;
+  status: "pending" | "awaiting_opponent" | "completed" | "expired";
+  my_played_at: string | null;
+  opponent_played_at: string | null;
+  my_score: number | null;
+  opponent_score: number | null; // hide client-side until status='completed'
+  winner_id: string | null;
+  expires_at: string | null;
+  created_at: string;
+}
+
+export type AsyncDuelBucket = "my_turn" | "waiting" | "finished" | "expired" | "invite_sent";
+
+/**
+ * Categorize an inbox item based on who has played.
+ */
+export const categorizeAsyncDuel = (d: AsyncDuelInboxItem): AsyncDuelBucket => {
+  if (d.status === "expired") return "expired";
+  if (d.status === "completed") return "finished";
+  if (d.my_played_at) return "waiting";
+  return "my_turn";
+};
+
+/**
+ * Create a new async duel. opponentId=null → random opponent (level band ±5).
+ * Returns the new duel id.
+ */
+export const createAsyncDuel = async (
+  category: string,
+  language: string,
+  opponentId?: string | null
+): Promise<string> => {
+  // @ts-ignore — RPC not typed
+  const { data, error } = await supabase.rpc("create_async_duel", {
+    p_guest_id: opponentId ?? null,
+    p_category: category,
+    p_language: language,
+  } as any);
+  if (error) throw error;
+  return data as unknown as string;
+};
+
+/**
+ * Find a random opponent within level band (no duel created).
+ */
+export const findRandomOpponent = async (levelBand = 5): Promise<string | null> => {
+  // @ts-ignore — RPC not typed
+  const { data, error } = await supabase.rpc("find_random_opponent", {
+    p_level_band: levelBand,
+  } as any);
+  if (error) throw error;
+  return (data as unknown as string) || null;
+};
+
+/**
+ * List the current user's async duels (inbox).
+ */
+export const getMyDuels = async (): Promise<AsyncDuelInboxItem[]> => {
+  // @ts-ignore — RPC not typed
+  const { data, error } = await supabase.rpc("get_my_duels");
+  if (error) throw error;
+  return ((data as any[]) || []).map((r: any) => ({
+    duel_id: r.duel_id,
+    my_role: r.my_role,
+    opponent_id: r.opponent_id,
+    opponent_username: r.opponent_username,
+    opponent_avatar: r.opponent_avatar,
+    category: r.category,
+    status: r.status,
+    my_played_at: r.my_played_at,
+    opponent_played_at: r.opponent_played_at,
+    my_score: r.my_score,
+    opponent_score: r.opponent_score,
+    winner_id: r.winner_id,
+    expires_at: r.expires_at,
+    created_at: r.created_at,
+  }));
+};
+
+/**
+ * Fetch the questions snapshot for a duel (the 10 frozen questions both players play).
+ */
+export const getAsyncDuelQuestions = async (
+  duelId: string
+): Promise<{ duel: Duel; questions: AsyncDuelQuestion[] }> => {
+  const { data, error } = await (supabase.from("duels") as any)
+    .select("*")
+    .eq("id", duelId)
+    .single();
+  if (error) throw error;
+  const duel = data as Duel;
+  const questions = (duel.questions_payload as AsyncDuelQuestion[]) || [];
+  return { duel, questions };
+};
+
+export interface AsyncDuelPlayResult {
+  status: "pending" | "awaiting_opponent" | "completed" | "expired";
+  my_score: number;
+  opponent_score: number | null;
+  winner_id: string | null;
+}
+
+/**
+ * Submit the player's 10 answers. Computes server-side score and (if both played)
+ * awards XP + sets winner_id.
+ */
+export const submitAsyncPlay = async (
+  duelId: string,
+  answers: AsyncDuelAnswer[],
+  totalTimeMs: number
+): Promise<AsyncDuelPlayResult> => {
+  // @ts-ignore — RPC not typed
+  const { data, error } = await supabase.rpc("submit_async_duel_play", {
+    p_duel_id: duelId,
+    p_answers: answers as any,
+    p_total_time_ms: totalTimeMs,
+  } as any);
+  if (error) throw error;
+  return data as unknown as AsyncDuelPlayResult;
+};
 
 export interface DuelQuestion {
   round_number: number;
@@ -32,8 +186,13 @@ export interface DuelQuestion {
   };
 }
 
+// =========================================================================
+// LEGACY SYNC DUEL — kept for backward compatibility, not used by new UI.
+// @deprecated Use createAsyncDuel / submitAsyncPlay / getMyDuels instead.
+// =========================================================================
+
 /**
- * Create a new duel
+ * @deprecated Use createAsyncDuel.
  */
 export const createDuel = async (
   hostId: string,
