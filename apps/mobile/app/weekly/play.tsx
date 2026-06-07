@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getActiveWeeklyChallenge,
   getMyWeeklyProgress,
@@ -33,6 +33,7 @@ const COLORS = {
 };
 
 const LETTERS = ["A", "B", "C", "D"];
+const QUESTION_TIME_SEC = 20;
 
 export default function WeeklyPlay() {
   const { t, language } = useTranslation();
@@ -52,6 +53,16 @@ export default function WeeklyPlay() {
   // Lifelines
   const [lifelines, setLifelines] = useState<Lifelines | null>(null);
   const [doubleXpActive, setDoubleXpActive] = useState(false);
+
+  // 20s timer per question — auto-submits as wrong on timeout
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME_SEC);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stopTimer = useCallback(() => {
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
+  }, []);
 
   const refreshLifelines = useCallback(async () => {
     const l = await fetchLifelines();
@@ -105,6 +116,7 @@ export default function WeeklyPlay() {
 
   const handleSelect = useCallback(async (answer: string) => {
     if (selected || !question || !challenge) return;
+    stopTimer();
     setSelected(answer);
     const isCorrect = answer === question.correct_answer;
     if (isCorrect) correctAnswerFeedback(); else wrongAnswerFeedback();
@@ -116,7 +128,39 @@ export default function WeeklyPlay() {
       setCorrectSoFar(res.correct_count);
     }
     setTimeout(() => setShowLearning(true), 600);
-  }, [selected, question, challenge, doubleXpActive]);
+  }, [selected, question, challenge, doubleXpActive, stopTimer]);
+
+  // Auto-submit as wrong when the timer hits 0
+  const handleTimeout = useCallback(async () => {
+    if (selected || !question || !challenge) return;
+    stopTimer();
+    setSelected("__timeout__");
+    wrongAnswerFeedback();
+    if (doubleXpActive) setDoubleXpActive(false);
+    const res = await submitWeeklyAnswer(challenge.id, question.position, false);
+    if (res) setCorrectSoFar(res.correct_count);
+    setTimeout(() => setShowLearning(true), 600);
+  }, [selected, question, challenge, doubleXpActive, stopTimer]);
+
+  // Reset + start the 20s timer whenever a fresh question is loaded
+  useEffect(() => {
+    if (loading || !question || selected !== null) return;
+    setTimeLeft(QUESTION_TIME_SEC);
+    stopTimer();
+    tickRef.current = setInterval(() => {
+      setTimeLeft((s) => {
+        if (s <= 1) {
+          stopTimer();
+          // handleTimeout reads latest state via useCallback closure on next render
+          handleTimeout();
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return stopTimer;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question?.id, loading]);
 
   const goNext = useCallback(async () => {
     buttonPressFeedback();
@@ -161,7 +205,11 @@ export default function WeeklyPlay() {
         return;
       }
 
-      // plus_5s: no-op in weekly (no timer). Should be hidden anyway.
+      if (type === "plus_5s") {
+        // Add 5 seconds to the running timer (capped at QUESTION_TIME_SEC + 30)
+        setTimeLeft((s) => Math.min(s + 5, QUESTION_TIME_SEC + 30));
+        return;
+      }
     },
     [answers, hiddenAnswers, question, challenge, loadCurrent],
   );
@@ -219,12 +267,34 @@ export default function WeeklyPlay() {
             {position} / {challenge.total_questions} · ✓ {correctSoFar}
           </Text>
         </View>
-        <View className="w-10" />
+        <View
+          className="w-10 h-10 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: selected !== null
+              ? "rgba(255,255,255,0.06)"
+              : timeLeft <= 5 ? "rgba(239,68,68,0.25)" : "rgba(255,255,255,0.08)",
+            borderWidth: 1.5,
+            borderColor: selected !== null
+              ? "rgba(255,255,255,0.1)"
+              : timeLeft <= 5 ? "#ef4444" : challenge.color,
+          }}
+        >
+          <Text
+            className="font-bold"
+            style={{
+              color: selected !== null
+                ? COLORS.textMuted
+                : timeLeft <= 5 ? "#ef4444" : COLORS.text,
+              fontSize: 14,
+            }}
+          >
+            {timeLeft}
+          </Text>
+        </View>
       </View>
 
       <LifelineBar
         lifelines={lifelines}
-        hide={["plus_5s"]}
         onUse={(type) => {
           handleLifelineUse(type);
         }}
@@ -313,6 +383,17 @@ export default function WeeklyPlay() {
             );
           })}
         </View>
+
+        {selected === "__timeout__" && (
+          <View
+            className="mt-4 rounded-xl p-3"
+            style={{ backgroundColor: "rgba(239,68,68,0.12)", borderWidth: 1, borderColor: "rgba(239,68,68,0.35)" }}
+          >
+            <Text className="text-red-400 text-sm font-bold text-center">
+              ⏱️ {t("timeUp")}
+            </Text>
+          </View>
+        )}
 
         {showLearning && question.learning_fact && (
           <View
