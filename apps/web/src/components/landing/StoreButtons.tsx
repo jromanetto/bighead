@@ -15,6 +15,8 @@ export function StoreButtons({ className = '' }: { className?: string }) {
     <div className={`flex flex-col gap-3 sm:flex-row ${className}`}>
       <a
         href={APP_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className="group flex items-center gap-3 rounded-xl border border-white/15 bg-fg px-5 py-3 text-bg transition-transform hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
       >
         <Apple className="h-7 w-7 shrink-0" aria-hidden="true" />
@@ -22,20 +24,29 @@ export function StoreButtons({ className = '' }: { className?: string }) {
           <span className="text-[0.65rem] font-medium opacity-70">
             {t('landing.app.appStore.sub')}
           </span>
-          <span className="text-base font-bold">{t('landing.app.appStore')}</span>
+          <span className="text-base font-bold">
+            {t('landing.app.appStore')}
+          </span>
         </span>
       </a>
 
       <a
         href={PLAY_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className="group flex items-center gap-3 rounded-xl border border-white/20 bg-surface px-5 py-3 text-fg transition-transform hover:-translate-y-0.5 hover:border-primary/60 focus-visible:-translate-y-0.5"
       >
-        <Play className="h-7 w-7 shrink-0 fill-primary text-primary" aria-hidden="true" />
+        <Play
+          className="h-7 w-7 shrink-0 fill-primary text-primary"
+          aria-hidden="true"
+        />
         <span className="flex flex-col leading-tight text-left">
           <span className="text-[0.65rem] font-medium text-fg/60">
             {t('landing.app.googlePlay.sub')}
           </span>
-          <span className="text-base font-bold">{t('landing.app.googlePlay')}</span>
+          <span className="text-base font-bold">
+            {t('landing.app.googlePlay')}
+          </span>
         </span>
       </a>
     </div>

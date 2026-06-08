@@ -1,9 +1,10 @@
 /**
- * Public store links for the BIGHEAD mobile apps.
+ * Public store links for the BIGHEAD mobile apps (both live, verified 2026-06-08).
  *
- * The iOS app exists on App Store Connect (id 6758253365) but the public
- * marketing URL isn't confirmed, so these stay as placeholders.
+ * iOS: App Store id 6758253365 ("BIGHEAD - Culture Quiz"). The id-only URL is
+ * locale-agnostic (Apple redirects to the visitor's storefront).
+ * Android: package `com.jroma51.bighead`.
  */
-// TODO: real store URLs (iOS App Store Connect id 6758253365; Android package TBD)
-export const APP_STORE_URL = '#'
-export const PLAY_STORE_URL = '#'
+export const APP_STORE_URL = 'https://apps.apple.com/app/id6758253365'
+export const PLAY_STORE_URL =
+  'https://play.google.com/store/apps/details?id=com.jroma51.bighead'

@@ -44,12 +44,16 @@ export function AppPromoBanner() {
         <p className="flex-1 font-medium text-fg">{t('promo.banner.text')}</p>
         <a
           href={APP_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="rounded-lg bg-fg px-3 py-1.5 text-xs font-semibold text-bg transition-opacity hover:opacity-90"
         >
           {t('promo.appStore')}
         </a>
         <a
           href={PLAY_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-fg transition-colors hover:bg-white/5"
         >
           {t('promo.googlePlay')}

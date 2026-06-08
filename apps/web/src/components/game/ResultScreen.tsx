@@ -75,7 +75,9 @@ export function ResultScreen({
       className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center"
     >
       <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-fg">{title ?? t('result.title')}</h1>
+        <h1 className="text-2xl font-bold text-fg">
+          {title ?? t('result.title')}
+        </h1>
         {perfect ? (
           <motion.span
             initial={{ scale: 0.5, rotate: -6 }}
@@ -125,6 +127,8 @@ export function ResultScreen({
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <a
             href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={t('result.cta.appStore')}
             className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
           >
@@ -132,6 +136,8 @@ export function ResultScreen({
           </a>
           <a
             href={PLAY_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={t('result.cta.googlePlay')}
             className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
           >

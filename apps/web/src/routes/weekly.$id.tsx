@@ -431,7 +431,9 @@ function WeeklyComplete({
       className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center"
     >
       <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-fg">{t('weekly.result.title')}</h1>
+        <h1 className="text-2xl font-bold text-fg">
+          {t('weekly.result.title')}
+        </h1>
         {state.perfect ? (
           <motion.span
             initial={{ scale: 0.5, rotate: -6 }}
@@ -464,12 +466,16 @@ function WeeklyComplete({
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <a
             href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
           >
             {t('promo.appStore')}
           </a>
           <a
             href={PLAY_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
           >
             {t('promo.googlePlay')}

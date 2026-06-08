@@ -124,7 +124,10 @@ export function AccountPrompt({ open, onClose }: AccountPromptProps) {
                 {t('prompt.success')}
               </p>
             ) : (
-              <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3">
+              <form
+                onSubmit={handleSubmit}
+                className="mt-5 flex flex-col gap-3"
+              >
                 <label className="flex flex-col gap-1 text-sm text-fg/70">
                   {t('prompt.email')}
                   <input
@@ -176,12 +179,16 @@ export function AccountPrompt({ open, onClose }: AccountPromptProps) {
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 <a
                   href={APP_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-center text-sm font-semibold text-bg transition-opacity hover:opacity-90"
                 >
                   {t('promo.appStore')}
                 </a>
                 <a
                   href={PLAY_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-center text-sm font-semibold text-fg transition-colors hover:bg-white/5"
                 >
                   {t('promo.googlePlay')}

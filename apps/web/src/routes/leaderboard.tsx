@@ -170,12 +170,16 @@ function AppCta() {
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
         <a
           href={APP_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
         >
           {t('promo.appStore')}
         </a>
         <a
           href={PLAY_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
         >
           {t('promo.googlePlay')}
