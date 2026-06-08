@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import { type Lang, type StringKey, t as translate } from './strings'
+import {   t as translate } from './strings'
+import type {Lang, StringKey} from './strings';
 
 const STORAGE_KEY = 'bighead.lang'
 
@@ -24,7 +25,7 @@ function detectInitialLang(): Lang {
     // localStorage may be unavailable (private mode); fall through.
   }
 
-  const nav = window.navigator?.language ?? ''
+  const nav = window.navigator.language
   return nav.toLowerCase().startsWith('fr') ? 'fr' : 'en'
 }
 

@@ -1,6 +1,4 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite'
-import { configDefaults } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 import { devtools } from '@tanstack/devtools-vite'
 
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'

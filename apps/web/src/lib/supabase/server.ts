@@ -30,7 +30,7 @@ export function getServerClient() {
             // In dev (http://localhost) it must stay unset or the cookie is dropped.
             setCookie(name, value, {
               ...options,
-              secure: import.meta.env.PROD ? true : options?.secure,
+              secure: import.meta.env.PROD ? true : options.secure,
             })
           })
         },

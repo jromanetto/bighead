@@ -19,8 +19,8 @@ export type StringKey = keyof typeof strings
  * Returns the localized string for `key` in `lang`.
  * Unknown keys are returned verbatim (acts as a visible fallback).
  */
-export function t(key: StringKey, lang: Lang): string {
-  const entry = strings[key]
+export function t(key: string, lang: Lang): string {
+  const entry = (strings as Record<string, Entry | undefined>)[key]
   if (!entry) return key
   return entry[lang]
 }

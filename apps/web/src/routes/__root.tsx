@@ -22,7 +22,12 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'BIGHEAD — Le quiz qui défie ton cerveau',
+      },
+      {
+        name: 'description',
+        content:
+          'BIGHEAD : le quiz qui défie ton cerveau. Joue gratuitement, grimpe au classement et défie tes amis. Aussi sur iOS et Android.',
       },
     ],
     links: [
@@ -37,7 +42,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         <HeadContent />
       </head>

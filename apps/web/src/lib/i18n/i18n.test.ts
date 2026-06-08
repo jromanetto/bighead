@@ -13,6 +13,6 @@ describe('t', () => {
   })
 
   it('returns the key itself for an unknown key', () => {
-    expect(t('nonexistent.key' as never, 'fr')).toBe('nonexistent.key')
+    expect(t('nonexistent.key', 'fr')).toBe('nonexistent.key')
   })
 })

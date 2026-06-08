@@ -15,6 +15,11 @@ export default [
     },
   },
   {
-    ignores: ['eslint.config.js', 'prettier.config.js'],
+    // Generated Supabase types — not authored by us, don't lint.
+    ignores: [
+      'eslint.config.js',
+      'prettier.config.js',
+      'src/lib/database.types.ts',
+    ],
   },
 ]
