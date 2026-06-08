@@ -26,7 +26,12 @@ export function getServerClient() {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            setCookie(name, value, options)
+            // Force `secure` in production (served over HTTPS behind nginx).
+            // In dev (http://localhost) it must stay unset or the cookie is dropped.
+            setCookie(name, value, {
+              ...options,
+              secure: import.meta.env.PROD ? true : options?.secure,
+            })
           })
         },
       },

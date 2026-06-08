@@ -14,9 +14,11 @@
     "test:e2e": "playwright test",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
-    "check": "prettier --check ."
+    "check": "prettier --check .",
+    "start": "node server.mjs"
   },
   "dependencies": {
+    "@hono/node-server": "^2.0.4",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.108.0",
     "@tailwindcss/vite": "^4.1.18",
