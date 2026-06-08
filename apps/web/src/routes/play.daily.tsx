@@ -9,6 +9,7 @@ import {
   submitDailyResult,
 } from '#/lib/game/daily'
 import { awardXp } from '#/lib/game/results'
+import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
@@ -36,7 +37,7 @@ function todayISO(): string {
 
 function DailyScreen() {
   const t = useT()
-  const { lang } = useLang()
+  const { lang, ready } = useLang()
 
   const [phase, setPhase] = useState<Phase>('loading')
   const [previousScore, setPreviousScore] = useState<number | undefined>(
@@ -52,7 +53,10 @@ function DailyScreen() {
   const submittedRef = useRef(false)
 
   // Load: skip if already played today, else fetch the 5 daily questions.
+  // Wait for the client language to resolve post-hydration so questions are
+  // fetched in the language the UI shows (not the SSR default 'fr').
   useEffect(() => {
+    if (!ready) return
     let cancelled = false
     // Read through a function so TS does not narrow `cancelled` across awaits.
     const isCancelled = () => cancelled
@@ -82,7 +86,7 @@ function DailyScreen() {
     return () => {
       cancelled = true
     }
-  }, [lang])
+  }, [ready, lang])
 
   // Finalize: submit result + award XP exactly once.
   function finish(finalScore: number) {
@@ -110,6 +114,8 @@ function DailyScreen() {
   function resolve(chosen: number, nextScore: number) {
     setSelectedIndex(chosen)
     setScore(nextScore)
+    // Count this resolved question (answer or timeout) for the free-play gate.
+    recordAnsweredQuestion()
     window.setTimeout(() => {
       if (index + 1 >= questions.length) {
         finish(nextScore)

@@ -18,7 +18,7 @@ const FEEDBACK_MS = 900
 
 function ChainScreen() {
   const t = useT()
-  const { lang } = useLang()
+  const { lang, ready } = useLang()
 
   const status = useChainStore((s) => s.status)
   const questions = useChainStore((s) => s.questions)
@@ -38,17 +38,16 @@ function ChainScreen() {
   const tick = useChainStore((s) => s.tick)
   const end = useChainStore((s) => s.end)
 
-  // Start a fresh run on mount. Browser-only side-effect (kept out of SSR render).
-  // A ref guards against a double-start when LangProvider syncs the detected
-  // language right after the first render.
+  // Start a fresh run once the client language is resolved post-hydration, so
+  // questions are fetched in the language the UI actually shows (the SSR default
+  // 'fr' would otherwise win the race). A ref guards against a double-start.
   const startedRef = useRef(false)
-  const langRef = useRef(lang)
-  langRef.current = lang
   useEffect(() => {
+    if (!ready) return
     if (startedRef.current) return
     startedRef.current = true
-    void start(langRef.current)
-  }, [start])
+    void start(lang)
+  }, [ready, lang, start])
 
   // Countdown: ticks once per second while playing and not in feedback.
   useEffect(() => {
