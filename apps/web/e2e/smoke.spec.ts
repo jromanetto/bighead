@@ -18,8 +18,11 @@ test('app shell renders brand and Play nav link', async ({ page }) => {
   ).toBeVisible()
 
   // Nav link to Play is visible. Asserted by href to stay language-agnostic
-  // (SSR renders the FR label "Jouer", the EN label is "Play").
-  await expect(page.locator('a[href="/play"]')).toBeVisible()
+  // (SSR renders the FR label "Jouer", the EN label is "Play"). Scoped to the
+  // header banner since the landing body also links to /play.
+  await expect(
+    page.getByRole('banner').locator('a[href="/play"]'),
+  ).toBeVisible()
 })
 
 test('silent anonymous Supabase auth cookie is set on first load', async ({

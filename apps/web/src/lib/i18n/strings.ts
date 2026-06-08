@@ -12,6 +12,110 @@ export const strings = {
     en: 'The quiz that pulls no punches.',
   },
 
+  // Landing — hero
+  'landing.hero.subtitle': {
+    fr: 'Des milliers de questions, quatre modes de jeu, un seul objectif : prouver que t’as la plus grosse tête. Joue gratuitement dans ton navigateur, puis emporte BIGHEAD partout sur mobile.',
+    en: 'Thousands of questions, four game modes, one goal: prove you’ve got the biggest brain. Play free in your browser, then take BIGHEAD anywhere on mobile.',
+  },
+  'landing.hero.ctaPrimary': { fr: 'Jouer gratuitement', en: 'Play for free' },
+  'landing.hero.ctaSecondary': {
+    fr: 'Télécharger l’app',
+    en: 'Download the app',
+  },
+  'landing.hero.cardCategory': { fr: 'Culture générale', en: 'General' },
+  'landing.hero.cardQuestion': {
+    fr: 'Quelle planète du système solaire tourne sur le côté ?',
+    en: 'Which planet in the solar system spins on its side?',
+  },
+  'landing.hero.cardAnswerA': { fr: 'Mars', en: 'Mars' },
+  'landing.hero.cardAnswerB': { fr: 'Uranus', en: 'Uranus' },
+  'landing.hero.cardAnswerC': { fr: 'Vénus', en: 'Venus' },
+  'landing.hero.cardChain': { fr: 'Série ×7', en: 'Chain ×7' },
+  'landing.trust.questions': { fr: '36 000+ questions', en: '36,000+ questions' },
+  'landing.trust.categories': { fr: '11 catégories', en: '11 categories' },
+  'landing.trust.langs': { fr: 'FR & EN', en: 'FR & EN' },
+
+  // Landing — features
+  'landing.features.eyebrow': { fr: 'Modes de jeu', en: 'Game modes' },
+  'landing.features.title': {
+    fr: 'Quatre façons de t’entraîner',
+    en: 'Four ways to train your brain',
+  },
+  'landing.features.subtitle': {
+    fr: 'Du rush sans fin au défi de la semaine — choisis ton terrain.',
+    en: 'From endless rush to the weekly challenge — pick your battleground.',
+  },
+  'landing.mode.chain.desc': {
+    fr: 'Mode sans fin : enchaîne les bonnes réponses et fais exploser ton multiplicateur de série.',
+    en: 'Endless mode: stack correct answers and blow up your chain multiplier.',
+  },
+  'landing.mode.daily.desc': {
+    fr: '5 questions fraîches chaque jour. Vise le sans-faute et tiens ta série.',
+    en: '5 fresh questions every day. Go for a perfect run and keep your streak.',
+  },
+  'landing.mode.duels.desc': {
+    fr: 'Affronte un autre joueur en 1 contre 1 asynchrone. Joue quand tu veux.',
+    en: 'Take on another player in async 1v1. Play whenever you like.',
+  },
+  'landing.mode.weekly.desc': {
+    fr: 'Un thème par semaine, des questions inédites et de quoi apprendre en jouant.',
+    en: 'A new theme each week, fresh questions, and something to learn as you play.',
+  },
+  'landing.value.free.title': { fr: '100 % gratuit', en: '100% free' },
+  'landing.value.free.desc': {
+    fr: 'Joue sans compte, sans paiement. Crée un profil quand tu veux garder ta progression.',
+    en: 'Play with no account, no payment. Make a profile when you want to keep your progress.',
+  },
+  'landing.value.bilingual.title': { fr: 'Bilingue', en: 'Bilingual' },
+  'landing.value.bilingual.desc': {
+    fr: 'Toutes les questions disponibles en français et en anglais, d’un simple clic.',
+    en: 'Every question available in French and English, one click away.',
+  },
+  'landing.value.global.title': {
+    fr: 'Classement mondial',
+    en: 'Global leaderboard',
+  },
+  'landing.value.global.desc': {
+    fr: 'Compare ton XP et tes séries avec les joueurs du monde entier.',
+    en: 'Compare your XP and chains with players from around the world.',
+  },
+
+  // Landing — app funnel
+  'landing.app.eyebrow': { fr: 'L’app mobile', en: 'The mobile app' },
+  'landing.app.title': { fr: 'Va plus loin sur l’app', en: 'Go further on the app' },
+  'landing.app.subtitle': {
+    fr: 'Joue partout, reçois la question du jour en notification et défie tes amis en duel. La meilleure façon de jouer à BIGHEAD.',
+    en: 'Play anywhere, get the daily question as a notification, and challenge your friends to duels. The best way to play BIGHEAD.',
+  },
+  'landing.app.point.daily': {
+    fr: 'La question du jour, droit dans tes notifications',
+    en: 'The daily question, straight to your notifications',
+  },
+  'landing.app.point.offline': {
+    fr: 'Joue partout, même hors-ligne',
+    en: 'Play anywhere, even offline',
+  },
+  'landing.app.point.friends': {
+    fr: 'Défie tes amis et grimpe les classements',
+    en: 'Challenge your friends and climb the leaderboards',
+  },
+  'landing.app.appStore': { fr: 'App Store', en: 'App Store' },
+  'landing.app.appStore.sub': {
+    fr: 'Télécharger sur l’',
+    en: 'Download on the',
+  },
+  'landing.app.googlePlay': { fr: 'Google Play', en: 'Google Play' },
+  'landing.app.googlePlay.sub': { fr: 'Disponible sur', en: 'Get it on' },
+
+  // Landing — footer
+  'landing.footer.play': { fr: 'Jouer', en: 'Play' },
+  'landing.footer.leaderboard': { fr: 'Classement', en: 'Leaderboard' },
+  'landing.footer.features': { fr: 'Modes de jeu', en: 'Game modes' },
+  'landing.footer.rights': {
+    fr: 'Tous droits réservés.',
+    en: 'All rights reserved.',
+  },
+
   // Quiz gameplay
   'quiz.timer.label': { fr: 'Temps restant', en: 'Time remaining' },
   'quiz.chain.label': { fr: 'Série', en: 'Chain' },
