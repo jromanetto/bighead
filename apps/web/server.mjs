@@ -3,6 +3,11 @@
 // Static assets in dist/client are served by nginx in front of this process
 // (try_files $uri @ssr); this server only handles SSR + server functions.
 import { serve } from '@hono/node-server'
+import { WebSocket } from 'ws'
+// Supabase realtime references a global WebSocket. Node < 22 has none, which
+// crashes SSR when the Supabase client is created. Polyfill it for Node 20.
+if (!globalThis.WebSocket) globalThis.WebSocket = WebSocket
+
 import handler from './dist/server/server.js'
 
 const port = Number(process.env.PORT || 3050)
