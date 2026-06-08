@@ -299,6 +299,59 @@ export const strings = {
   },
   'duel.result.back': { fr: 'Retour aux duels', en: 'Back to duels' },
 
+  // Weekly Challenge route
+  'nav.weekly': { fr: 'Défi', en: 'Challenge' },
+  'weekly.title': { fr: 'Défi de la semaine', en: 'Weekly Challenge' },
+  'weekly.subtitle': {
+    fr: 'Un thème par semaine. Réponds dans l’ordre et apprends en jouant.',
+    en: 'A fresh theme each week. Answer in order and learn as you play.',
+  },
+  'weekly.type.news': { fr: 'Actu', en: 'News' },
+  'weekly.type.themed': { fr: 'Thème', en: 'Theme' },
+  'weekly.questions': { fr: 'questions', en: 'questions' },
+  'weekly.progress': { fr: 'Progression', en: 'Progress' },
+  'weekly.notStarted': { fr: 'Commencer', en: 'Start' },
+  'weekly.continue': { fr: 'Continuer', en: 'Continue' },
+  'weekly.completed.badge': { fr: 'Terminé', en: 'Completed' },
+  'weekly.empty.title': {
+    fr: 'Aucun défi actif',
+    en: 'No active challenge',
+  },
+  'weekly.empty.subtitle': {
+    fr: 'Reviens bientôt pour un nouveau défi hebdomadaire.',
+    en: 'Check back soon for a new weekly challenge.',
+  },
+  'weekly.error': {
+    fr: 'Impossible de charger les défis.',
+    en: 'Could not load the challenges.',
+  },
+  'weekly.cta.title': {
+    fr: 'Nouveaux défis chaque semaine + badges dans l’app',
+    en: 'New challenges every week + badges in the app',
+  },
+  'weekly.back': { fr: 'Retour aux défis', en: 'Back to challenges' },
+  'weekly.notFound.title': {
+    fr: 'Défi introuvable',
+    en: 'Challenge not found',
+  },
+  'weekly.learn.title': { fr: 'Le savais-tu ?', en: 'Did you know?' },
+  'weekly.next': { fr: 'Suivant', en: 'Next' },
+  'weekly.result.title': { fr: 'Défi terminé !', en: 'Challenge complete!' },
+  'weekly.result.score': { fr: 'Score', en: 'Score' },
+  'weekly.result.correct': { fr: 'Bonnes réponses', en: 'Correct answers' },
+  'weekly.result.perfect': { fr: 'SANS-FAUTE !', en: 'FLAWLESS!' },
+  'weekly.result.streak': { fr: 'Série de jours', en: 'Day streak' },
+  'weekly.leaderboard.title': {
+    fr: 'Classement du défi',
+    en: 'Challenge leaderboard',
+  },
+  'weekly.leaderboard.empty': {
+    fr: 'Sois le premier à terminer ce défi !',
+    en: 'Be the first to finish this challenge!',
+  },
+  'weekly.leaderboard.you': { fr: 'Toi', en: 'You' },
+  'weekly.leaderboard.anon': { fr: 'Joueur anonyme', en: 'Anonymous player' },
+
   // Categories
   'category.general': { fr: 'Culture générale', en: 'General' },
   'category.history': { fr: 'Histoire', en: 'History' },

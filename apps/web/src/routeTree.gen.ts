@@ -9,18 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WeeklyRouteImport } from './routes/weekly'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as DuelsRouteImport } from './routes/duels'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WeeklyIndexRouteImport } from './routes/weekly.index'
 import { Route as PlayIndexRouteImport } from './routes/play.index'
 import { Route as DuelsIndexRouteImport } from './routes/duels.index'
+import { Route as WeeklyIdRouteImport } from './routes/weekly.$id'
 import { Route as PlayDailyRouteImport } from './routes/play.daily'
 import { Route as PlayChainRouteImport } from './routes/play.chain'
 import { Route as DuelsIdRouteImport } from './routes/duels.$id'
 
+const WeeklyRoute = WeeklyRouteImport.update({
+  id: '/weekly',
+  path: '/weekly',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -51,6 +59,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WeeklyIndexRoute = WeeklyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WeeklyRoute,
+} as any)
 const PlayIndexRoute = PlayIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -60,6 +73,11 @@ const DuelsIndexRoute = DuelsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DuelsRoute,
+} as any)
+const WeeklyIdRoute = WeeklyIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => WeeklyRoute,
 } as any)
 const PlayDailyRoute = PlayDailyRouteImport.update({
   id: '/daily',
@@ -84,11 +102,14 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/play': typeof PlayRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/weekly': typeof WeeklyRouteWithChildren
   '/duels/$id': typeof DuelsIdRoute
   '/play/chain': typeof PlayChainRoute
   '/play/daily': typeof PlayDailyRoute
+  '/weekly/$id': typeof WeeklyIdRoute
   '/duels/': typeof DuelsIndexRoute
   '/play/': typeof PlayIndexRoute
+  '/weekly/': typeof WeeklyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,8 +119,10 @@ export interface FileRoutesByTo {
   '/duels/$id': typeof DuelsIdRoute
   '/play/chain': typeof PlayChainRoute
   '/play/daily': typeof PlayDailyRoute
+  '/weekly/$id': typeof WeeklyIdRoute
   '/duels': typeof DuelsIndexRoute
   '/play': typeof PlayIndexRoute
+  '/weekly': typeof WeeklyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -109,11 +132,14 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/play': typeof PlayRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/weekly': typeof WeeklyRouteWithChildren
   '/duels/$id': typeof DuelsIdRoute
   '/play/chain': typeof PlayChainRoute
   '/play/daily': typeof PlayDailyRoute
+  '/weekly/$id': typeof WeeklyIdRoute
   '/duels/': typeof DuelsIndexRoute
   '/play/': typeof PlayIndexRoute
+  '/weekly/': typeof WeeklyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,11 +150,14 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/play'
     | '/profile'
+    | '/weekly'
     | '/duels/$id'
     | '/play/chain'
     | '/play/daily'
+    | '/weekly/$id'
     | '/duels/'
     | '/play/'
+    | '/weekly/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -138,8 +167,10 @@ export interface FileRouteTypes {
     | '/duels/$id'
     | '/play/chain'
     | '/play/daily'
+    | '/weekly/$id'
     | '/duels'
     | '/play'
+    | '/weekly'
   id:
     | '__root__'
     | '/'
@@ -148,11 +179,14 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/play'
     | '/profile'
+    | '/weekly'
     | '/duels/$id'
     | '/play/chain'
     | '/play/daily'
+    | '/weekly/$id'
     | '/duels/'
     | '/play/'
+    | '/weekly/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -162,10 +196,18 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   PlayRoute: typeof PlayRouteWithChildren
   ProfileRoute: typeof ProfileRoute
+  WeeklyRoute: typeof WeeklyRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/weekly': {
+      id: '/weekly'
+      path: '/weekly'
+      fullPath: '/weekly'
+      preLoaderRoute: typeof WeeklyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -208,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/weekly/': {
+      id: '/weekly/'
+      path: '/'
+      fullPath: '/weekly/'
+      preLoaderRoute: typeof WeeklyIndexRouteImport
+      parentRoute: typeof WeeklyRoute
+    }
     '/play/': {
       id: '/play/'
       path: '/'
@@ -221,6 +270,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/duels/'
       preLoaderRoute: typeof DuelsIndexRouteImport
       parentRoute: typeof DuelsRoute
+    }
+    '/weekly/$id': {
+      id: '/weekly/$id'
+      path: '/$id'
+      fullPath: '/weekly/$id'
+      preLoaderRoute: typeof WeeklyIdRouteImport
+      parentRoute: typeof WeeklyRoute
     }
     '/play/daily': {
       id: '/play/daily'
@@ -272,6 +328,19 @@ const PlayRouteChildren: PlayRouteChildren = {
 
 const PlayRouteWithChildren = PlayRoute._addFileChildren(PlayRouteChildren)
 
+interface WeeklyRouteChildren {
+  WeeklyIdRoute: typeof WeeklyIdRoute
+  WeeklyIndexRoute: typeof WeeklyIndexRoute
+}
+
+const WeeklyRouteChildren: WeeklyRouteChildren = {
+  WeeklyIdRoute: WeeklyIdRoute,
+  WeeklyIndexRoute: WeeklyIndexRoute,
+}
+
+const WeeklyRouteWithChildren =
+  WeeklyRoute._addFileChildren(WeeklyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
@@ -279,6 +348,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   PlayRoute: PlayRouteWithChildren,
   ProfileRoute: ProfileRoute,
+  WeeklyRoute: WeeklyRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

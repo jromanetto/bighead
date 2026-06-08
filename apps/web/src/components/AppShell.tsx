@@ -8,6 +8,7 @@ import type { StringKey } from '#/lib/i18n/strings'
 const NAV_ITEMS: Array<{ to: string; key: StringKey }> = [
   { to: '/play', key: 'nav.play' },
   { to: '/duels', key: 'nav.duels' },
+  { to: '/weekly', key: 'nav.weekly' },
   { to: '/leaderboard', key: 'nav.leaderboard' },
   { to: '/profile', key: 'nav.profile' },
 ]
