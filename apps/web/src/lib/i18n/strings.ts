@@ -149,6 +149,82 @@ export const strings = {
     en: 'Something went wrong. Please try again.',
   },
   'auth.backToPlay': { fr: 'Retour au jeu', en: 'Back to the game' },
+
+  // Leaderboard route
+  'lb.title': { fr: 'Classement', en: 'Leaderboard' },
+  'lb.tab.weekly': { fr: 'Cette semaine', en: 'This week' },
+  'lb.tab.allTime': { fr: 'Tous les temps', en: 'All-time' },
+  'lb.col.rank': { fr: 'Rang', en: 'Rank' },
+  'lb.col.player': { fr: 'Joueur', en: 'Player' },
+  'lb.col.xp': { fr: 'XP', en: 'XP' },
+  'lb.col.chain': { fr: 'Série', en: 'Chain' },
+  'lb.you': { fr: 'Toi', en: 'You' },
+  'lb.anon': { fr: 'Joueur anonyme', en: 'Anonymous player' },
+  'lb.empty': {
+    fr: 'Aucun joueur pour l’instant. Sois le premier !',
+    en: 'No players yet. Be the first!',
+  },
+  'lb.error': {
+    fr: 'Impossible de charger le classement.',
+    en: 'Could not load the leaderboard.',
+  },
+  'lb.cta.title': {
+    fr: 'Vois le classement complet + défie tes amis dans l’app',
+    en: 'See the full leaderboard + challenge your friends in the app',
+  },
+
+  // Profile route
+  'profile.title': { fr: 'Profil', en: 'Profile' },
+  'profile.error': {
+    fr: 'Impossible de charger ton profil.',
+    en: 'Could not load your profile.',
+  },
+  'profile.level': { fr: 'Niveau', en: 'Level' },
+  'profile.xp': { fr: 'XP total', en: 'Total XP' },
+  'profile.stat.gamesPlayed': { fr: 'Parties jouées', en: 'Games played' },
+  'profile.stat.gamesWon': { fr: 'Parties gagnées', en: 'Games won' },
+  'profile.stat.bestChain': { fr: 'Meilleure série', en: 'Best chain' },
+  'profile.stat.dailyStreak': { fr: 'Série quotidienne', en: 'Daily streak' },
+  'profile.stat.perfectGames': { fr: 'Parties parfaites', en: 'Perfect games' },
+  'profile.achievements.title': { fr: 'Succès', en: 'Achievements' },
+  'profile.achievements.count': { fr: 'débloqués', en: 'unlocked' },
+  'profile.achievements.empty': {
+    fr: 'Aucun succès débloqué pour l’instant.',
+    en: 'No achievements unlocked yet.',
+  },
+  'profile.recent.title': { fr: 'Parties récentes', en: 'Recent games' },
+  'profile.recent.empty': {
+    fr: 'Aucune partie pour l’instant.',
+    en: 'No games yet.',
+  },
+  'profile.username.label': { fr: 'Nom d’utilisateur', en: 'Username' },
+  'profile.username.placeholder': {
+    fr: 'Choisis un pseudo',
+    en: 'Pick a name',
+  },
+  'profile.username.save': { fr: 'Enregistrer', en: 'Save' },
+  'profile.username.saving': { fr: 'Enregistrement…', en: 'Saving…' },
+  'profile.username.success': {
+    fr: 'Pseudo mis à jour !',
+    en: 'Username updated!',
+  },
+  'profile.username.errorEmpty': {
+    fr: 'Le pseudo ne peut pas être vide.',
+    en: 'Username cannot be empty.',
+  },
+  'profile.username.error': {
+    fr: 'Impossible de mettre à jour le pseudo.',
+    en: 'Could not update the username.',
+  },
+  'profile.anon.title': {
+    fr: 'Crée un compte pour sauvegarder ta progression',
+    en: 'Create an account to save your progress',
+  },
+  'profile.anon.subtitle': {
+    fr: 'Garde ton XP, tes succès et tes séries sur tous tes appareils.',
+    en: 'Keep your XP, achievements and chains across all your devices.',
+  },
+  'profile.anon.cta': { fr: 'Créer mon compte', en: 'Create my account' },
 } satisfies Record<string, Entry>
 
 export type StringKey = keyof typeof strings

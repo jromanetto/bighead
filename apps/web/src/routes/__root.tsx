@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { ensureSession } from '#/lib/auth/ensure-session'
 import { AppShell } from '#/components/AppShell'
@@ -41,15 +43,33 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  // One QueryClient per app instance. `useState` keeps it stable across
+  // re-renders and gives the server its own instance per request (SSR-safe).
+  // Data is fetched client-side only, so SSR renders the loading state.
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60_000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  )
+
   return (
     <html lang="fr">
       <head>
         <HeadContent />
       </head>
       <body>
-        <LangProvider>
-          <AppShell>{children}</AppShell>
-        </LangProvider>
+        <QueryClientProvider client={queryClient}>
+          <LangProvider>
+            <AppShell>{children}</AppShell>
+          </LangProvider>
+        </QueryClientProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
