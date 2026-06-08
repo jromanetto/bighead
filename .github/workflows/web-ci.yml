@@ -1,0 +1,80 @@
+name: Web CI
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/web-ci.yml'
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/web-ci.yml'
+
+defaults:
+  run:
+    working-directory: apps/web
+
+env:
+  # Public client values (publishable key — safe to expose). Needed at build
+  # time because Vite inlines import.meta.env.VITE_* into the bundle.
+  VITE_SUPABASE_URL: https://dqhhpoxqrtlmhosrsdxp.supabase.co
+  VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_qUEpzxNw_Sn8CGk3EiIaXw_lJiio6rt
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - name: Playwright E2E
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm test:e2e
+
+  # Auto-deploy on push to main. Requires these repo secrets:
+  #   VPS_SSH_KEY  — private key whose public half is in cursor@VPS authorized_keys
+  #   VPS_HOST     — 77.87.110.100
+  #   VPS_USER     — cursor
+  # Until those are set, this job is skipped (guarded by the secret check).
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check deploy secrets
+        id: gate
+        run: |
+          if [ -n "${{ secrets.VPS_SSH_KEY }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::VPS_SSH_KEY not set — skipping deploy."
+          fi
+      - name: Setup SSH
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+      - name: Rsync + rebuild + restart
+        if: steps.gate.outputs.ready == 'true'
+        working-directory: ${{ github.workspace }}
+        run: |
+          rsync -az --delete \
+            --exclude node_modules --exclude dist --exclude .env --exclude e2e \
+            --exclude test-results --exclude playwright-report \
+            apps/web/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/script/bighead-web/"
+          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            'cd /home/script/bighead-web && pnpm install --frozen-lockfile && pnpm build && pm2 restart bighead-web --update-env'
