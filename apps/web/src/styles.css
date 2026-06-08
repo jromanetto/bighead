@@ -1,5 +1,17 @@
-
 @import "tailwindcss";
+
+/* BIGHEAD design tokens — Tailwind v4 CSS-first theme.
+   These map to utilities like bg-primary, text-fg, bg-surface, etc. */
+@theme {
+  --color-primary: #00c2cc;
+  --color-bg: #161a1d;
+  --color-surface: #1e2529;
+  --color-fg: #f5f7f8;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-accent: #d946ef;
+  --color-accent2: #a16eff;
+}
 
 * {
   box-sizing: border-box;
@@ -13,5 +25,6 @@ body,
 
 body {
   margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }
-
