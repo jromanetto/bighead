@@ -14,6 +14,9 @@ import { Route as PlayRouteImport } from './routes/play'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as DuelsRouteImport } from './routes/duels'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PlayIndexRouteImport } from './routes/play.index'
+import { Route as PlayDailyRouteImport } from './routes/play.daily'
+import { Route as PlayChainRouteImport } from './routes/play.chain'
 
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
@@ -40,42 +43,89 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayIndexRoute = PlayIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlayRoute,
+} as any)
+const PlayDailyRoute = PlayDailyRouteImport.update({
+  id: '/daily',
+  path: '/daily',
+  getParentRoute: () => PlayRoute,
+} as any)
+const PlayChainRoute = PlayChainRouteImport.update({
+  id: '/chain',
+  path: '/chain',
+  getParentRoute: () => PlayRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/duels': typeof DuelsRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/play': typeof PlayRoute
+  '/play': typeof PlayRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/play/chain': typeof PlayChainRoute
+  '/play/daily': typeof PlayDailyRoute
+  '/play/': typeof PlayIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/duels': typeof DuelsRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/play/chain': typeof PlayChainRoute
+  '/play/daily': typeof PlayDailyRoute
+  '/play': typeof PlayIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/duels': typeof DuelsRoute
   '/leaderboard': typeof LeaderboardRoute
-  '/play': typeof PlayRoute
+  '/play': typeof PlayRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/play/chain': typeof PlayChainRoute
+  '/play/daily': typeof PlayDailyRoute
+  '/play/': typeof PlayIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/duels' | '/leaderboard' | '/play' | '/profile'
+  fullPaths:
+    | '/'
+    | '/duels'
+    | '/leaderboard'
+    | '/play'
+    | '/profile'
+    | '/play/chain'
+    | '/play/daily'
+    | '/play/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/duels' | '/leaderboard' | '/play' | '/profile'
-  id: '__root__' | '/' | '/duels' | '/leaderboard' | '/play' | '/profile'
+  to:
+    | '/'
+    | '/duels'
+    | '/leaderboard'
+    | '/profile'
+    | '/play/chain'
+    | '/play/daily'
+    | '/play'
+  id:
+    | '__root__'
+    | '/'
+    | '/duels'
+    | '/leaderboard'
+    | '/play'
+    | '/profile'
+    | '/play/chain'
+    | '/play/daily'
+    | '/play/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DuelsRoute: typeof DuelsRoute
   LeaderboardRoute: typeof LeaderboardRoute
-  PlayRoute: typeof PlayRoute
+  PlayRoute: typeof PlayRouteWithChildren
   ProfileRoute: typeof ProfileRoute
 }
 
@@ -116,14 +166,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/play/': {
+      id: '/play/'
+      path: '/'
+      fullPath: '/play/'
+      preLoaderRoute: typeof PlayIndexRouteImport
+      parentRoute: typeof PlayRoute
+    }
+    '/play/daily': {
+      id: '/play/daily'
+      path: '/daily'
+      fullPath: '/play/daily'
+      preLoaderRoute: typeof PlayDailyRouteImport
+      parentRoute: typeof PlayRoute
+    }
+    '/play/chain': {
+      id: '/play/chain'
+      path: '/chain'
+      fullPath: '/play/chain'
+      preLoaderRoute: typeof PlayChainRouteImport
+      parentRoute: typeof PlayRoute
+    }
   }
 }
+
+interface PlayRouteChildren {
+  PlayChainRoute: typeof PlayChainRoute
+  PlayDailyRoute: typeof PlayDailyRoute
+  PlayIndexRoute: typeof PlayIndexRoute
+}
+
+const PlayRouteChildren: PlayRouteChildren = {
+  PlayChainRoute: PlayChainRoute,
+  PlayDailyRoute: PlayDailyRoute,
+  PlayIndexRoute: PlayIndexRoute,
+}
+
+const PlayRouteWithChildren = PlayRoute._addFileChildren(PlayRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DuelsRoute: DuelsRoute,
   LeaderboardRoute: LeaderboardRoute,
-  PlayRoute: PlayRoute,
+  PlayRoute: PlayRouteWithChildren,
   ProfileRoute: ProfileRoute,
 }
 export const routeTree = rootRouteImport

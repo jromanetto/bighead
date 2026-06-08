@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/play')({ component: Play })
+export const Route = createFileRoute('/play')({ component: PlayLayout })
 
-function Play() {
-  return <h1 className="text-3xl font-bold">Play</h1>
+function PlayLayout() {
+  return <Outlet />
 }
