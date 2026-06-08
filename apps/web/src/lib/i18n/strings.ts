@@ -233,6 +233,84 @@ export const strings = {
     en: 'Keep your XP, achievements and chains across all your devices.',
   },
   'profile.anon.cta': { fr: 'Créer mon compte', en: 'Create my account' },
+
+  // Duels route
+  'duels.title': { fr: 'Duels', en: 'Duels' },
+  'duels.subtitle': {
+    fr: 'Défie un joueur en 10 questions. À toi de jouer quand tu veux.',
+    en: 'Challenge a player over 10 questions. Play whenever you like.',
+  },
+  'duels.new': { fr: 'Nouveau duel', en: 'New duel' },
+  'duels.new.title': { fr: 'Choisis une catégorie', en: 'Pick a category' },
+  'duels.new.cancel': { fr: 'Annuler', en: 'Cancel' },
+  'duels.new.creating': { fr: 'Recherche d’un adversaire…', en: 'Finding an opponent…' },
+  'duels.new.random': { fr: 'Aléatoire', en: 'Random' },
+  'duels.noOpponent': {
+    fr: 'Aucun adversaire disponible pour l’instant. Réessaie plus tard.',
+    en: 'No opponent available right now. Try again later.',
+  },
+  'duels.createError': {
+    fr: 'Impossible de créer le duel. Réessaie.',
+    en: 'Could not create the duel. Please try again.',
+  },
+  'duels.section.myTurn': { fr: 'À toi de jouer', en: 'Your turn' },
+  'duels.section.waiting': { fr: 'En attente', en: 'Waiting' },
+  'duels.section.finished': { fr: 'Terminés', en: 'Finished' },
+  'duels.error': {
+    fr: 'Impossible de charger tes duels.',
+    en: 'Could not load your duels.',
+  },
+  'duels.empty.title': { fr: 'Aucun duel pour l’instant', en: 'No duels yet' },
+  'duels.empty.subtitle': {
+    fr: 'Lance un duel et affronte un autre joueur.',
+    en: 'Start a duel and take on another player.',
+  },
+  'duels.empty.cta': { fr: 'Lancer un duel', en: 'Start a duel' },
+  'duels.opponent.anon': { fr: 'Joueur anonyme', en: 'Anonymous player' },
+  'duels.status.awaiting': {
+    fr: 'En attente de l’adversaire',
+    en: 'Waiting for opponent',
+  },
+  'duels.status.yourTurn': { fr: 'À toi de jouer', en: 'Your turn' },
+  'duels.outcome.won': { fr: 'Gagné', en: 'Won' },
+  'duels.outcome.lost': { fr: 'Perdu', en: 'Lost' },
+  'duels.outcome.draw': { fr: 'Nul', en: 'Draw' },
+  'duels.cta.title': {
+    fr: 'Duels en temps réel + tournois dans l’app',
+    en: 'Live duels + tournaments in the app',
+  },
+
+  // Duel play / result
+  'duel.notParticipant.title': {
+    fr: 'Tu ne participes pas à ce duel',
+    en: 'You are not part of this duel',
+  },
+  'duel.notParticipant.back': { fr: 'Retour aux duels', en: 'Back to duels' },
+  'duel.result.title': { fr: 'Duel terminé', en: 'Duel over' },
+  'duel.result.you': { fr: 'Toi', en: 'You' },
+  'duel.result.opponent': { fr: 'Adversaire', en: 'Opponent' },
+  'duel.result.awaiting.title': {
+    fr: 'En attente de l’adversaire',
+    en: 'Waiting for your opponent',
+  },
+  'duel.result.awaiting.subtitle': {
+    fr: 'Tu as joué ta manche. On te préviendra quand l’adversaire aura répondu.',
+    en: 'You’ve played your round. We’ll let you know when your opponent answers.',
+  },
+  'duel.result.back': { fr: 'Retour aux duels', en: 'Back to duels' },
+
+  // Categories
+  'category.general': { fr: 'Culture générale', en: 'General' },
+  'category.history': { fr: 'Histoire', en: 'History' },
+  'category.geography': { fr: 'Géographie', en: 'Geography' },
+  'category.music': { fr: 'Musique', en: 'Music' },
+  'category.science': { fr: 'Sciences', en: 'Science' },
+  'category.literature': { fr: 'Littérature', en: 'Literature' },
+  'category.technology': { fr: 'Technologie', en: 'Technology' },
+  'category.animals': { fr: 'Animaux', en: 'Animals' },
+  'category.sport': { fr: 'Sport', en: 'Sport' },
+  'category.cinema': { fr: 'Cinéma', en: 'Cinema' },
+  'category.nature': { fr: 'Nature', en: 'Nature' },
 } satisfies Record<string, Entry>
 
 export type StringKey = keyof typeof strings

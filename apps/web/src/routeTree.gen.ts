@@ -16,8 +16,10 @@ import { Route as DuelsRouteImport } from './routes/duels'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlayIndexRouteImport } from './routes/play.index'
+import { Route as DuelsIndexRouteImport } from './routes/duels.index'
 import { Route as PlayDailyRouteImport } from './routes/play.daily'
 import { Route as PlayChainRouteImport } from './routes/play.chain'
+import { Route as DuelsIdRouteImport } from './routes/duels.$id'
 
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
@@ -54,6 +56,11 @@ const PlayIndexRoute = PlayIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PlayRoute,
 } as any)
+const DuelsIndexRoute = DuelsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DuelsRoute,
+} as any)
 const PlayDailyRoute = PlayDailyRouteImport.update({
   id: '/daily',
   path: '/daily',
@@ -64,38 +71,48 @@ const PlayChainRoute = PlayChainRouteImport.update({
   path: '/chain',
   getParentRoute: () => PlayRoute,
 } as any)
+const DuelsIdRoute = DuelsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => DuelsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/duels': typeof DuelsRoute
+  '/duels': typeof DuelsRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/play': typeof PlayRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/duels/$id': typeof DuelsIdRoute
   '/play/chain': typeof PlayChainRoute
   '/play/daily': typeof PlayDailyRoute
+  '/duels/': typeof DuelsIndexRoute
   '/play/': typeof PlayIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/duels': typeof DuelsRoute
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
+  '/duels/$id': typeof DuelsIdRoute
   '/play/chain': typeof PlayChainRoute
   '/play/daily': typeof PlayDailyRoute
+  '/duels': typeof DuelsIndexRoute
   '/play': typeof PlayIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/duels': typeof DuelsRoute
+  '/duels': typeof DuelsRouteWithChildren
   '/leaderboard': typeof LeaderboardRoute
   '/play': typeof PlayRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/duels/$id': typeof DuelsIdRoute
   '/play/chain': typeof PlayChainRoute
   '/play/daily': typeof PlayDailyRoute
+  '/duels/': typeof DuelsIndexRoute
   '/play/': typeof PlayIndexRoute
 }
 export interface FileRouteTypes {
@@ -107,18 +124,21 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/play'
     | '/profile'
+    | '/duels/$id'
     | '/play/chain'
     | '/play/daily'
+    | '/duels/'
     | '/play/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/duels'
     | '/leaderboard'
     | '/profile'
+    | '/duels/$id'
     | '/play/chain'
     | '/play/daily'
+    | '/duels'
     | '/play'
   id:
     | '__root__'
@@ -128,15 +148,17 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/play'
     | '/profile'
+    | '/duels/$id'
     | '/play/chain'
     | '/play/daily'
+    | '/duels/'
     | '/play/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  DuelsRoute: typeof DuelsRoute
+  DuelsRoute: typeof DuelsRouteWithChildren
   LeaderboardRoute: typeof LeaderboardRoute
   PlayRoute: typeof PlayRouteWithChildren
   ProfileRoute: typeof ProfileRoute
@@ -193,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayIndexRouteImport
       parentRoute: typeof PlayRoute
     }
+    '/duels/': {
+      id: '/duels/'
+      path: '/'
+      fullPath: '/duels/'
+      preLoaderRoute: typeof DuelsIndexRouteImport
+      parentRoute: typeof DuelsRoute
+    }
     '/play/daily': {
       id: '/play/daily'
       path: '/daily'
@@ -207,8 +236,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayChainRouteImport
       parentRoute: typeof PlayRoute
     }
+    '/duels/$id': {
+      id: '/duels/$id'
+      path: '/$id'
+      fullPath: '/duels/$id'
+      preLoaderRoute: typeof DuelsIdRouteImport
+      parentRoute: typeof DuelsRoute
+    }
   }
 }
+
+interface DuelsRouteChildren {
+  DuelsIdRoute: typeof DuelsIdRoute
+  DuelsIndexRoute: typeof DuelsIndexRoute
+}
+
+const DuelsRouteChildren: DuelsRouteChildren = {
+  DuelsIdRoute: DuelsIdRoute,
+  DuelsIndexRoute: DuelsIndexRoute,
+}
+
+const DuelsRouteWithChildren = DuelsRoute._addFileChildren(DuelsRouteChildren)
 
 interface PlayRouteChildren {
   PlayChainRoute: typeof PlayChainRoute
@@ -227,7 +275,7 @@ const PlayRouteWithChildren = PlayRoute._addFileChildren(PlayRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  DuelsRoute: DuelsRoute,
+  DuelsRoute: DuelsRouteWithChildren,
   LeaderboardRoute: LeaderboardRoute,
   PlayRoute: PlayRouteWithChildren,
   ProfileRoute: ProfileRoute,
