@@ -95,7 +95,6 @@ function Hero() {
         </div>
 
         <Reveal
-          immediate
           delay={0.1}
           className="w-full max-w-md justify-self-center lg:justify-self-end"
         >

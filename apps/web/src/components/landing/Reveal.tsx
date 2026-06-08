@@ -1,40 +1,30 @@
-import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
 
 /**
- * Subtle scroll-reveal wrapper: fades + lifts its children into view once.
+ * Subtle fade/lift-in wrapper for landing content.
  *
- * The content is always present in the (server-rendered) DOM — only the
- * transform/opacity is animated — so the marketing copy stays crawlable.
- * `viewport.once` keeps motion tasteful (no re-trigger on scroll up).
+ * Implemented as a pure CSS animation (`.bh-reveal` in styles.css) that runs on
+ * load with `animation-fill-mode: both`, so the content always ends fully
+ * visible — it can never get stuck hidden the way a JS/IntersectionObserver
+ * animation can (which previously left above-the-fold content at opacity 0).
+ * The content is server-rendered and visible without JS; `prefers-reduced-motion`
+ * disables the motion.
  */
 export function Reveal({
   children,
   delay = 0,
   className = '',
-  immediate = false,
 }: {
   children: ReactNode
   delay?: number
   className?: string
-  /**
-   * Animate on mount instead of on scroll-into-view. Use for above-the-fold
-   * content (e.g. the hero), where `whileInView`'s IntersectionObserver may not
-   * fire without a scroll and would leave the content stuck at `opacity: 0`.
-   */
-  immediate?: boolean
 }) {
-  const reveal = { opacity: 1, y: 0 }
   return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 24 }}
-      {...(immediate
-        ? { animate: reveal }
-        : { whileInView: reveal, viewport: { once: true, amount: 0.2 } })}
-      transition={{ duration: 0.5, ease: 'easeOut', delay }}
+    <div
+      className={`bh-reveal ${className}`}
+      style={delay ? { animationDelay: `${delay}s` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
