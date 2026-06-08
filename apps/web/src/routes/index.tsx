@@ -94,7 +94,11 @@ function Hero() {
           </ul>
         </div>
 
-        <Reveal delay={0.1} className="w-full max-w-md justify-self-center lg:justify-self-end">
+        <Reveal
+          immediate
+          delay={0.1}
+          className="w-full max-w-md justify-self-center lg:justify-self-end"
+        >
           <HeroCard />
         </Reveal>
       </div>
