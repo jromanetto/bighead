@@ -220,7 +220,7 @@ git add apps/web/package.json apps/web/playwright.config.ts apps/web/e2e && git 
 **Step 1: DNS A record** for `play.bighead-quizz.com` → VPS:
 ```bash
 curl -s -X POST "https://api.cloudflare.com/client/v4/zones/044376fb05f97c3113312885ce648966/dns_records" \
- -H "Authorization: Bearer $CF_DNS_TOKEN" \
+ -H "Authorization: Bearer $CF_DNS_TOKEN" \   # cfut_ token from ~/.claude/CLAUDE.md (do NOT commit the literal token)
  -H "Content-Type: application/json" \
  --data '{"type":"A","name":"play","content":"77.87.110.100","ttl":1,"proxied":false}'
 ```
