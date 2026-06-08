@@ -6,18 +6,21 @@ import {
   ScrollView,
   RefreshControl,
   Image,
+  Share,
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useCallback, useMemo, memo } from "react";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { useTranslation } from "../../src/contexts/LanguageContext";
+import { useTranslation, useLanguage } from "../../src/contexts/LanguageContext";
 import {
   getMyDuels,
   categorizeAsyncDuel,
+  buildDuelShareUrl,
   type AsyncDuelInboxItem,
   type AsyncDuelBucket,
 } from "../../src/services/duel";
+import { ensureReferralCode } from "../../src/services/referral";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { BottomNavigation } from "../../src/components/BottomNavigation";
 import { IconButton } from "../../src/components/ui";
@@ -46,14 +49,27 @@ const STATUS_LABEL: Record<AsyncDuelBucket, { emoji: string; tKey: string; color
   invite_sent: { emoji: "📨", tKey: "duelInviteSent", color: COLORS.textMuted, bgKey: "surfaceLight" },
 };
 
+const shareDuelInvite = async (duelId: string, userId: string, lang: string) => {
+  buttonPressFeedback();
+  let refCode: string | null = null;
+  try { refCode = await ensureReferralCode(userId); } catch {}
+  const url = buildDuelShareUrl(duelId, refCode);
+  const isEN = lang === "en";
+  const message = isEN
+    ? `🎯 I just challenged you on BigHead! 10 trivia questions, you have 48h. Accept: ${url}`
+    : `🎯 Je te défie sur BigHead ! 10 questions, t'as 48h pour répondre. Accepte : ${url}`;
+  try { await Share.share({ message, url }); } catch {}
+};
+
 interface DuelCardProps {
   duel: AsyncDuelInboxItem;
   bucket: AsyncDuelBucket;
   myUserId: string;
   t: (k: any) => string;
+  language: string;
 }
 
-const DuelCard = memo(function DuelCard({ duel, bucket, myUserId, t }: DuelCardProps) {
+const DuelCard = memo(function DuelCard({ duel, bucket, myUserId, t, language }: DuelCardProps) {
   const isWinner = duel.winner_id === myUserId;
   const isDraw = duel.status === "completed" && duel.winner_id === null;
   const meta = STATUS_LABEL[bucket];
@@ -128,6 +144,21 @@ const DuelCard = memo(function DuelCard({ duel, bucket, myUserId, t }: DuelCardP
         </View>
       </View>
 
+      {/* Share button — surface when waiting for opponent (most useful nudge moment) */}
+      {bucket === "waiting" && (
+        <Pressable
+          onPress={(e) => {
+            e.stopPropagation?.();
+            shareDuelInvite(duel.duel_id, myUserId, language);
+          }}
+          hitSlop={8}
+          className="w-9 h-9 rounded-full items-center justify-center mr-1"
+          style={{ backgroundColor: COLORS.primaryDim }}
+        >
+          <Text style={{ color: COLORS.primary }} className="text-base">📲</Text>
+        </Pressable>
+      )}
+
       {/* Chevron */}
       <Text style={{ color: COLORS.textMuted }} className="text-lg">
         ›
@@ -143,6 +174,7 @@ interface BucketSectionProps {
   bucket: AsyncDuelBucket;
   myUserId: string;
   t: (k: any) => string;
+  language: string;
   defaultCollapsed?: boolean;
 }
 
@@ -153,6 +185,7 @@ function BucketSection({
   bucket,
   myUserId,
   t,
+  language,
   defaultCollapsed = false,
 }: BucketSectionProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
@@ -186,7 +219,7 @@ function BucketSection({
 
       {!collapsed &&
         items.map((d) => (
-          <DuelCard key={d.duel_id} duel={d} bucket={bucket} myUserId={myUserId} t={t} />
+          <DuelCard key={d.duel_id} duel={d} bucket={bucket} myUserId={myUserId} t={t} language={language} />
         ))}
     </View>
   );
@@ -195,6 +228,7 @@ function BucketSection({
 export default function DuelInboxScreen() {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [duels, setDuels] = useState<AsyncDuelInboxItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -307,6 +341,7 @@ export default function DuelInboxScreen() {
                   bucket="my_turn"
                   myUserId={user?.id || ""}
                   t={t as any}
+                  language={language}
                 />
                 <BucketSection
                   title={t("duelWaiting" as any)}
@@ -315,6 +350,7 @@ export default function DuelInboxScreen() {
                   bucket="waiting"
                   myUserId={user?.id || ""}
                   t={t as any}
+                  language={language}
                 />
                 <BucketSection
                   title={t("duelFinished" as any)}
@@ -323,6 +359,7 @@ export default function DuelInboxScreen() {
                   bucket="finished"
                   myUserId={user?.id || ""}
                   t={t as any}
+                  language={language}
                 />
                 <BucketSection
                   title={t("duelExpired" as any)}
@@ -331,6 +368,7 @@ export default function DuelInboxScreen() {
                   bucket="expired"
                   myUserId={user?.id || ""}
                   t={t as any}
+                  language={language}
                   defaultCollapsed
                 />
               </>

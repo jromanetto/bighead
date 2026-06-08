@@ -171,6 +171,20 @@ export const submitAsyncPlay = async (
   return data as unknown as AsyncDuelPlayResult;
 };
 
+/**
+ * Build the public share URL for a duel invite.
+ * Format: https://bighead.jrmanagement.org/invite/duel/<duelId>?ref=<referralCode>
+ *
+ * The marketing site bridge page auto-opens the app via the `bighead://` scheme
+ * when installed, otherwise shows install CTAs (App Store / Play Store).
+ */
+export const DUEL_INVITE_BASE_URL = "https://bighead.jrmanagement.org/invite/duel";
+
+export const buildDuelShareUrl = (duelId: string, referralCode?: string | null): string => {
+  const base = `${DUEL_INVITE_BASE_URL}/${duelId}`;
+  return referralCode ? `${base}?ref=${encodeURIComponent(referralCode)}` : base;
+};
+
 export interface DuelQuestion {
   round_number: number;
   question_id: string;

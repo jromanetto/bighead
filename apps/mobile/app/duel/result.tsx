@@ -1,7 +1,7 @@
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView, Share } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,10 +9,12 @@ import Animated, {
   withDelay,
 } from "react-native-reanimated";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { useTranslation } from "../../src/contexts/LanguageContext";
-import { getAsyncDuelQuestions, type Duel } from "../../src/services/duel";
+import { useTranslation, useLanguage } from "../../src/contexts/LanguageContext";
+import { getAsyncDuelQuestions, buildDuelShareUrl, type Duel } from "../../src/services/duel";
 import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
+import { ensureReferralCode } from "../../src/services/referral";
+import { buttonPressFeedback } from "../../src/utils/feedback";
 
 const COLORS = {
   bg: "#161a1d",
@@ -33,8 +35,24 @@ export default function DuelResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user, refreshProfile } = useAuth();
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [duel, setDuel] = useState<Duel | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleShare = useCallback(async () => {
+    if (!id || !user) return;
+    buttonPressFeedback();
+    let refCode: string | null = null;
+    try { refCode = await ensureReferralCode(user.id); } catch {}
+    const url = buildDuelShareUrl(id, refCode);
+    const isEN = language === "en";
+    const message = isEN
+      ? `🎯 I just challenged you on BigHead! 10 trivia questions, you have 48h. Accept: ${url}`
+      : `🎯 Je te défie sur BigHead ! 10 questions, t'as 48h pour répondre. Accepte : ${url}`;
+    try {
+      await Share.share({ message, url });
+    } catch {}
+  }, [id, user, language]);
 
   const trophyScale = useSharedValue(0);
   const scoreOpacity = useSharedValue(0);
@@ -280,15 +298,32 @@ export default function DuelResultScreen() {
           </View>
         </Animated.View>
 
+        {/* Share CTA — most useful while waiting for opponent */}
+        {isWaiting && (
+          <Pressable
+            onPress={handleShare}
+            className="rounded-2xl py-4 mb-3 flex-row items-center justify-center"
+            style={{ backgroundColor: COLORS.primary }}
+          >
+            <Text className="text-xl mr-2">📲</Text>
+            <Text
+              className="text-center font-bold text-lg"
+              style={{ color: COLORS.bg }}
+            >
+              {language === "en" ? "Send the link" : "Envoyer le lien"}
+            </Text>
+          </Pressable>
+        )}
+
         {/* Buttons */}
         <Pressable
           onPress={() => router.replace("/duel")}
           className="rounded-2xl py-4 mb-3"
-          style={{ backgroundColor: COLORS.primary }}
+          style={{ backgroundColor: isWaiting ? COLORS.surface : COLORS.primary }}
         >
           <Text
             className="text-center font-bold text-lg"
-            style={{ color: COLORS.bg }}
+            style={{ color: isWaiting ? COLORS.text : COLORS.bg }}
           >
             {t("duelNewDuel" as any)}
           </Text>
