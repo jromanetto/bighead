@@ -3,6 +3,8 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { ensureSession } from '#/lib/auth/ensure-session'
+import { AppShell } from '#/components/AppShell'
+import { LangProvider } from '#/lib/i18n/LangProvider'
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
@@ -40,7 +42,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <LangProvider>
+          <AppShell>{children}</AppShell>
+        </LangProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
