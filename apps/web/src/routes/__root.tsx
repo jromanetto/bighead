@@ -5,13 +5,17 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { ensureSession } from '#/lib/auth/ensure-session'
+import { SessionProvider } from '#/lib/auth/SessionProvider'
 import { AppShell } from '#/components/AppShell'
 import { LangProvider } from '#/lib/i18n/LangProvider'
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
-    const user = await ensureSession()
+    // Reads the existing cookie session for SSR personalization. Never signs in
+    // and never throws (anonymous sign-in is client-side via SessionProvider),
+    // so SSR can't crash into the root error boundary under rate limits.
+    const { user } = await ensureSession()
     return { user }
   },
   head: () => ({
@@ -67,7 +71,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <QueryClientProvider client={queryClient}>
           <LangProvider>
-            <AppShell>{children}</AppShell>
+            <SessionProvider>
+              <AppShell>{children}</AppShell>
+            </SessionProvider>
           </LangProvider>
         </QueryClientProvider>
         <TanStackDevtools

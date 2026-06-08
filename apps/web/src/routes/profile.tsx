@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { getBrowserClient } from '#/lib/supabase/client'
+import { useSession } from '#/lib/auth/SessionProvider'
+import { SessionError } from '#/components/SessionError'
 import { AccountPrompt } from '#/components/funnel/AccountPrompt'
 import {
   fetchAchievements,
@@ -37,9 +39,20 @@ function useIsAnonymous(): boolean | null {
 function Profile() {
   const t = useT()
   const isAnonymous = useIsAnonymous()
+  const { userId, sessionReady, error: sessionFailed } = useSession()
   const [promptOpen, setPromptOpen] = useState(false)
 
-  const profile = useQuery({ queryKey: ['profile'], queryFn: fetchProfile })
+  // Profile data is user-scoped: only fetch once a session exists.
+  const profile = useQuery({
+    queryKey: ['profile'],
+    queryFn: fetchProfile,
+    enabled: Boolean(userId),
+  })
+
+  // Session couldn't be established (e.g. rate limit): offer a retry.
+  if (sessionReady && sessionFailed) {
+    return <SessionError />
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
@@ -218,9 +231,11 @@ function UsernameForm({ initial }: { initial: string }) {
 
 function AchievementsSection() {
   const t = useT()
+  const { userId } = useSession()
   const query = useQuery({
     queryKey: ['achievements'],
     queryFn: fetchAchievements,
+    enabled: Boolean(userId),
   })
 
   return (
@@ -270,9 +285,11 @@ function AchievementsSection() {
 
 function RecentGamesSection() {
   const t = useT()
+  const { userId } = useSession()
   const query = useQuery({
     queryKey: ['recentGames'],
     queryFn: () => fetchRecentGames(10),
+    enabled: Boolean(userId),
   })
 
   return (

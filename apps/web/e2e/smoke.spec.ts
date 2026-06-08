@@ -4,8 +4,9 @@ import { expect, test } from '@playwright/test'
  * End-to-end smoke tests against the production build served on port 4173.
  *
  * These run through the real SSR server, so they prove that the app shell
- * renders and that the silent anonymous Supabase session is created and
- * persisted as an auth cookie on first load.
+ * renders and that the silent anonymous Supabase session is created
+ * client-side (from the user's own IP) and persisted as an auth cookie on
+ * first load.
  */
 
 test('app shell renders brand and Play nav link', async ({ page }) => {
@@ -27,16 +28,19 @@ test('silent anonymous Supabase auth cookie is set on first load', async ({
 }) => {
   await page.goto('/')
 
-  // The root route's beforeLoad creates an anonymous session server-side and
-  // sets `sb-<project-ref>-auth-token`. Assert such a cookie exists.
-  const cookies = await context.cookies()
-  const authCookie = cookies.find((c) => c.name.includes('auth-token'))
-
-  expect(
-    authCookie,
-    `expected an "*-auth-token" cookie, got: ${cookies
-      .map((c) => c.name)
-      .join(', ')}`,
-  ).toBeDefined()
-  expect(authCookie?.value.length).toBeGreaterThan(0)
+  // The client SessionProvider signs in anonymously post-hydration (from the
+  // user's IP) and @supabase/ssr persists `sb-<project-ref>-auth-token`. This
+  // is async, so poll until the cookie appears.
+  await expect
+    .poll(
+      async () => {
+        const cookies = await context.cookies()
+        const authCookie = cookies.find((c) =>
+          c.name.includes('auth-token'),
+        )
+        return authCookie?.value.length ?? 0
+      },
+      { timeout: 30_000 },
+    )
+    .toBeGreaterThan(0)
 })

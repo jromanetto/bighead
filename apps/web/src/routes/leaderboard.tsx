@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 
 import { useT } from '#/lib/i18n/LangProvider'
-import { getBrowserClient } from '#/lib/supabase/client'
+import { useSession } from '#/lib/auth/SessionProvider'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
 import {
   fetchAllTimeLeaderboard,
@@ -16,27 +16,12 @@ export const Route = createFileRoute('/leaderboard')({ component: Leaderboard })
 
 type Tab = 'weekly' | 'allTime'
 
-/** Resolves the current user's id once on the client (for row highlighting). */
-function useCurrentUserId(): string | null {
-  const [uid, setUid] = useState<string | null>(null)
-  useEffect(() => {
-    let cancelled = false
-    void getBrowserClient()
-      .auth.getUser()
-      .then(({ data }) => {
-        if (!cancelled) setUid(data.user?.id ?? null)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-  return uid
-}
-
 function Leaderboard() {
   const t = useT()
   const [tab, setTab] = useState<Tab>('weekly')
-  const currentUserId = useCurrentUserId()
+  // The board itself is a public read; only the "you" row highlight needs the
+  // user id, taken from the centralized session (no extra getUser round-trip).
+  const { userId: currentUserId } = useSession()
 
   const query = useQuery({
     queryKey: ['leaderboard', tab],

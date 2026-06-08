@@ -77,6 +77,14 @@ export const strings = {
     en: 'Could not load the questions.',
   },
   'game.retry': { fr: 'Réessayer', en: 'Retry' },
+  'session.error.title': {
+    fr: 'Connexion impossible',
+    en: 'Could not start session',
+  },
+  'session.error.subtitle': {
+    fr: 'Impossible de démarrer ta session. Réessaie dans un instant.',
+    en: 'We could not start your session. Please try again in a moment.',
+  },
   'game.score': { fr: 'Score', en: 'Score' },
   'game.finish': { fr: 'Terminer la partie', en: 'End game' },
   'game.question': { fr: 'Question', en: 'Question' },

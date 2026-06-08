@@ -3,6 +3,8 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { AnimatePresence } from 'framer-motion'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
+import { useSession } from '#/lib/auth/SessionProvider'
+import { SessionError } from '#/components/SessionError'
 import {
   getDailyQuestions,
   hasPlayedToday,
@@ -38,6 +40,7 @@ function todayISO(): string {
 function DailyScreen() {
   const t = useT()
   const { lang, ready } = useLang()
+  const { userId, sessionReady, error: sessionFailed } = useSession()
 
   const [phase, setPhase] = useState<Phase>('loading')
   const [previousScore, setPreviousScore] = useState<number | undefined>(
@@ -54,9 +57,11 @@ function DailyScreen() {
 
   // Load: skip if already played today, else fetch the 5 daily questions.
   // Wait for the client language to resolve post-hydration so questions are
-  // fetched in the language the UI shows (not the SSR default 'fr').
+  // fetched in the language the UI shows (not the SSR default 'fr'), and for an
+  // anonymous session (`userId`) since daily data is user-scoped.
   useEffect(() => {
     if (!ready) return
+    if (!sessionReady || !userId) return
     let cancelled = false
     // Read through a function so TS does not narrow `cancelled` across awaits.
     const isCancelled = () => cancelled
@@ -86,7 +91,7 @@ function DailyScreen() {
     return () => {
       cancelled = true
     }
-  }, [ready, lang])
+  }, [ready, sessionReady, userId, lang])
 
   // Finalize: submit result + award XP exactly once.
   function finish(finalScore: number) {
@@ -154,6 +159,11 @@ function DailyScreen() {
     // `index` drives a new countdown per question; `resolve`/`score` are
     // intentionally read fresh inside the interval without re-subscribing.
   }, [phase, selectedIndex, index])
+
+  // Session couldn't be established (e.g. rate limit): offer a retry.
+  if (sessionReady && sessionFailed) {
+    return <SessionError />
+  }
 
   if (phase === 'loading') {
     return (

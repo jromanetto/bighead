@@ -4,11 +4,13 @@ import { AnimatePresence } from 'framer-motion'
 
 import { useChainStore } from '#/lib/game/chainStore'
 import { useLang, useT } from '#/lib/i18n/LangProvider'
+import { useSession } from '#/lib/auth/SessionProvider'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
 import { ChainMeter } from '#/components/game/ChainMeter'
 import { ResultScreen } from '#/components/game/ResultScreen'
+import { SessionError } from '#/components/SessionError'
 
 export const Route = createFileRoute('/play/chain')({ component: ChainScreen })
 
@@ -19,6 +21,7 @@ const FEEDBACK_MS = 900
 function ChainScreen() {
   const t = useT()
   const { lang, ready } = useLang()
+  const { userId, sessionReady, error: sessionFailed } = useSession()
 
   const status = useChainStore((s) => s.status)
   const questions = useChainStore((s) => s.questions)
@@ -38,16 +41,18 @@ function ChainScreen() {
   const tick = useChainStore((s) => s.tick)
   const end = useChainStore((s) => s.end)
 
-  // Start a fresh run once the client language is resolved post-hydration, so
-  // questions are fetched in the language the UI actually shows (the SSR default
-  // 'fr' would otherwise win the race). A ref guards against a double-start.
+  // Start a fresh run once both the client language is resolved post-hydration
+  // AND an anonymous session exists (questions are user-scoped). Waiting on
+  // `userId` avoids `getUnseenQuestions` throwing "no authenticated user".
+  // A ref guards against a double-start.
   const startedRef = useRef(false)
   useEffect(() => {
     if (!ready) return
+    if (!sessionReady || !userId) return
     if (startedRef.current) return
     startedRef.current = true
     void start(lang)
-  }, [ready, lang, start])
+  }, [ready, sessionReady, userId, lang, start])
 
   // Countdown: ticks once per second while playing and not in feedback.
   useEffect(() => {
@@ -100,6 +105,12 @@ function ChainScreen() {
         </button>
       </div>
     )
+  }
+
+  // Session couldn't be established (e.g. rate limit): offer a retry instead of
+  // spinning forever or crashing.
+  if (sessionReady && sessionFailed) {
+    return <SessionError />
   }
 
   const currentQ = questions.at(index)

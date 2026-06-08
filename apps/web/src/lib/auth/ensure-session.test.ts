@@ -6,19 +6,22 @@ type FakeUser = { id: string; is_anonymous: boolean }
 
 /**
  * Builds a minimal stub matching the slice of the Supabase client that
- * resolveSession touches: `auth.getUser()` and `auth.signInAnonymously()`.
+ * resolveSession touches on the server: `auth.getUser()`.
+ *
+ * The server resolver must NEVER sign in anonymously (that happens client-side),
+ * so `signInAnonymously` is stubbed only to assert it is never called.
  */
 function makeClient(opts: {
   existingUser: FakeUser | null
-  anonUser?: FakeUser
+  getUserError?: { message: string }
 }) {
   const signInAnonymously = vi.fn(async () => ({
-    data: { user: opts.anonUser ?? null },
+    data: { user: null },
     error: null,
   }))
   const getUser = vi.fn(async () => ({
     data: { user: opts.existingUser },
-    error: null,
+    error: opts.getUserError ?? null,
   }))
 
   return {
@@ -28,7 +31,7 @@ function makeClient(opts: {
   }
 }
 
-describe('resolveSession', () => {
+describe('resolveSession (server)', () => {
   it('returns the existing user without signing in anonymously', async () => {
     const existingUser: FakeUser = { id: 'user-123', is_anonymous: false }
     const { client, getUser, signInAnonymously } = makeClient({ existingUser })
@@ -40,33 +43,36 @@ describe('resolveSession', () => {
     expect(result).toEqual({ id: 'user-123', is_anonymous: false })
   })
 
-  it('signs in anonymously when there is no current user', async () => {
-    const anonUser: FakeUser = { id: 'anon-999', is_anonymous: true }
+  it('returns null when there is no current user (never signs in)', async () => {
     const { client, getUser, signInAnonymously } = makeClient({
       existingUser: null,
-      anonUser,
     })
 
     const result = await resolveSession(client as never)
 
     expect(getUser).toHaveBeenCalledOnce()
-    expect(signInAnonymously).toHaveBeenCalledOnce()
-    expect(result).toEqual({ id: 'anon-999', is_anonymous: true })
+    expect(signInAnonymously).not.toHaveBeenCalled()
+    expect(result).toBeNull()
   })
 
-  it('throws when anonymous sign-in fails', async () => {
-    const signInAnonymously = vi.fn(async () => ({
-      data: { user: null },
-      error: { message: 'Anonymous sign-ins are disabled' },
-    }))
-    const getUser = vi.fn(async () => ({
-      data: { user: null },
-      error: null,
-    }))
-    const client = { auth: { getUser, signInAnonymously } }
+  it('returns null on an auth error instead of throwing', async () => {
+    const { client, signInAnonymously } = makeClient({
+      existingUser: null,
+      getUserError: { message: 'Request rate limit reached' },
+    })
 
-    await expect(resolveSession(client as never)).rejects.toThrow(
-      /Anonymous sign-ins are disabled/,
-    )
+    const result = await resolveSession(client as never)
+
+    expect(signInAnonymously).not.toHaveBeenCalled()
+    expect(result).toBeNull()
+  })
+
+  it('returns null when getUser throws instead of propagating', async () => {
+    const getUser = vi.fn(async () => {
+      throw new Error('network down')
+    })
+    const client = { auth: { getUser } }
+
+    await expect(resolveSession(client as never)).resolves.toBeNull()
   })
 })
