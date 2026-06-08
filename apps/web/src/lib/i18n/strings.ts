@@ -45,6 +45,54 @@ export const strings = {
     fr: 'Disponible sur Google Play',
     en: 'Get it on Google Play',
   },
+
+  // Play hub
+  'play.hub.title': { fr: 'Choisis ton mode', en: 'Pick your mode' },
+  'play.hub.subtitle': {
+    fr: 'Teste ton cerveau, monte ta série, grimpe au classement.',
+    en: 'Test your brain, build your chain, climb the leaderboard.',
+  },
+  'play.chain.title': { fr: 'Chain Reaction', en: 'Chain Reaction' },
+  'play.chain.tagline': {
+    fr: 'Enchaîne les bonnes réponses pour exploser ton multiplicateur.',
+    en: 'Stack correct answers to blow up your multiplier.',
+  },
+  'play.daily.title': { fr: 'Daily Brain', en: 'Daily Brain' },
+  'play.daily.tagline': {
+    fr: '5 questions par jour. Fais un sans-faute.',
+    en: '5 questions a day. Go for a perfect run.',
+  },
+  'play.daily.playedToday': {
+    fr: 'Déjà joué aujourd’hui',
+    en: 'Already played today',
+  },
+  'play.start': { fr: 'Jouer', en: 'Play' },
+  'play.soon': { fr: 'Bientôt', en: 'Soon' },
+
+  // Gameplay states
+  'game.loading': { fr: 'Chargement…', en: 'Loading…' },
+  'game.error.title': { fr: 'Oups, ça a coincé', en: 'Oops, something broke' },
+  'game.error.subtitle': {
+    fr: 'Impossible de charger les questions.',
+    en: 'Could not load the questions.',
+  },
+  'game.retry': { fr: 'Réessayer', en: 'Retry' },
+  'game.score': { fr: 'Score', en: 'Score' },
+  'game.finish': { fr: 'Terminer la partie', en: 'End game' },
+  'game.question': { fr: 'Question', en: 'Question' },
+
+  // Daily already played
+  'daily.alreadyPlayed.title': {
+    fr: 'Reviens demain !',
+    en: 'Come back tomorrow!',
+  },
+  'daily.alreadyPlayed.subtitle': {
+    fr: 'Tu as déjà fait ton Daily Brain aujourd’hui.',
+    en: 'You’ve already done today’s Daily Brain.',
+  },
+  'daily.yourScore': { fr: 'Ton score', en: 'Your score' },
+  'daily.back': { fr: 'Retour au menu', en: 'Back to menu' },
+  'daily.title': { fr: 'Daily Brain', en: 'Daily Brain' },
 } satisfies Record<string, Entry>
 
 export type StringKey = keyof typeof strings
