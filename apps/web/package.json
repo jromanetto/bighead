@@ -32,7 +32,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.18",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
