@@ -6,6 +6,7 @@ import {
   markQuestionSeen,
 } from '#/lib/game/questions'
 import { awardXp, saveGameResult } from '#/lib/game/results'
+import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
 
 import type { Lang } from '#/lib/i18n/strings'
 import type { GameQuestion } from '#/lib/game/questions'
@@ -117,6 +118,11 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
     } catch (err) {
       console.error('chainStore markQuestionSeen failed', err)
     }
+
+    // Count this as one answered question for the free-play gate. Timeouts route
+    // through here too (via answer(-1)); they are a resolved question so they
+    // count. SSR-safe (no-op without a window).
+    recordAnsweredQuestion()
 
     set({
       selectedIndex: index,

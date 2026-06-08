@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
 import { useLang } from '#/lib/i18n/LangProvider'
+import { AppPromoBanner } from '#/components/funnel/AppPromoBanner'
 import type { StringKey } from '#/lib/i18n/strings'
 
 const NAV_ITEMS: Array<{ to: string; key: StringKey }> = [
@@ -55,6 +56,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </nav>
       </header>
+
+      <AppPromoBanner />
 
       <main className="mx-auto w-full max-w-5xl flex-1 bg-bg px-4 py-8">
         {children}

@@ -1,8 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 
 import { useT } from '#/lib/i18n/LangProvider'
+import { consumePromptIfDue } from '#/lib/funnel/freePlay'
+import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { AccountPrompt } from '#/components/funnel/AccountPrompt'
 
 export interface ResultScreenProps {
   title?: string
@@ -52,6 +55,17 @@ export function ResultScreen({
       void fireConfetti()
     }
   }, [perfect])
+
+  // Free-play gate: a finished game is a safe (never mid-question) point to
+  // surface the account prompt. Checked once on mount; opens only when a
+  // threshold is freshly due. Closing keeps the user playing.
+  const [promptOpen, setPromptOpen] = useState(false)
+  const checkedRef = useRef(false)
+  useEffect(() => {
+    if (checkedRef.current) return
+    checkedRef.current = true
+    if (consumePromptIfDue() !== null) setPromptOpen(true)
+  }, [])
 
   return (
     <motion.div
@@ -110,14 +124,14 @@ export function ResultScreen({
         <p className="mt-1 text-sm text-fg/60">{t('result.cta.subtitle')}</p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <a
-            href="#"
+            href={APP_STORE_URL}
             aria-label={t('result.cta.appStore')}
             className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
           >
             {t('result.cta.appStore')}
           </a>
           <a
-            href="#"
+            href={PLAY_STORE_URL}
             aria-label={t('result.cta.googlePlay')}
             className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
           >
@@ -125,6 +139,8 @@ export function ResultScreen({
           </a>
         </div>
       </div>
+
+      <AccountPrompt open={promptOpen} onClose={() => setPromptOpen(false)} />
     </motion.div>
   )
 }

@@ -93,6 +93,62 @@ export const strings = {
   'daily.yourScore': { fr: 'Ton score', en: 'Your score' },
   'daily.back': { fr: 'Retour au menu', en: 'Back to menu' },
   'daily.title': { fr: 'Daily Brain', en: 'Daily Brain' },
+
+  // App promo banner (app-wide, dismissable)
+  'promo.banner.text': {
+    fr: 'Joue partout — télécharge l’app',
+    en: 'Play anywhere — download the app',
+  },
+  'promo.banner.dismiss': { fr: 'Fermer', en: 'Dismiss' },
+  'promo.appStore': { fr: 'App Store', en: 'App Store' },
+  'promo.googlePlay': { fr: 'Google Play', en: 'Google Play' },
+
+  // Account prompt modal (free-play gate)
+  'prompt.title': {
+    fr: 'Sauvegarde ta progression',
+    en: 'Save your progress',
+  },
+  'prompt.subtitle': {
+    fr: 'Crée un compte pour garder ton XP, tes scores et tes séries — sur tous tes appareils.',
+    en: 'Create an account to keep your XP, scores and chains — across all your devices.',
+  },
+  'prompt.close': { fr: 'Fermer', en: 'Close' },
+  'prompt.email': { fr: 'Adresse e-mail', en: 'Email address' },
+  'prompt.password': { fr: 'Mot de passe', en: 'Password' },
+  'prompt.create': { fr: 'Créer mon compte', en: 'Create my account' },
+  'prompt.creating': { fr: 'Création…', en: 'Creating…' },
+  'prompt.success': {
+    fr: 'Compte créé ! Vérifie tes e-mails pour confirmer ton adresse.',
+    en: 'Account created! Check your email to confirm your address.',
+  },
+  'prompt.error': {
+    fr: 'Impossible de créer le compte. Réessaie.',
+    en: 'Could not create the account. Please try again.',
+  },
+  'prompt.download.title': { fr: 'Ou télécharge l’app', en: 'Or get the app' },
+
+  // Auth route
+  'auth.title': { fr: 'Ton compte BIGHEAD', en: 'Your BIGHEAD account' },
+  'auth.create.title': {
+    fr: 'Créer un compte',
+    en: 'Create an account',
+  },
+  'auth.create.subtitle': {
+    fr: 'Ta progression actuelle est conservée.',
+    en: 'Your current progress is kept.',
+  },
+  'auth.signin.title': { fr: 'Déjà un compte ?', en: 'Already have an account?' },
+  'auth.signin.cta': { fr: 'Se connecter', en: 'Sign in' },
+  'auth.signin.success': {
+    fr: 'Connecté ! Bon retour.',
+    en: 'Signed in! Welcome back.',
+  },
+  'auth.signin.loading': { fr: 'Connexion…', en: 'Signing in…' },
+  'auth.error': {
+    fr: 'Une erreur est survenue. Réessaie.',
+    en: 'Something went wrong. Please try again.',
+  },
+  'auth.backToPlay': { fr: 'Retour au jeu', en: 'Back to the game' },
 } satisfies Record<string, Entry>
 
 export type StringKey = keyof typeof strings
