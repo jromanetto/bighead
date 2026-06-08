@@ -75,9 +75,11 @@ export async function getUnseenQuestions(
     throw new Error('getUnseenQuestions: no authenticated user')
   }
 
+  // Omit p_category so the RPC's `p_category IS NULL` branch returns every
+  // category. Passing '' would filter to questions whose category equals the
+  // empty string (none), yielding zero results.
   const { data, error } = await supabase.rpc('get_unseen_questions', {
     p_user_id: user.id,
-    p_category: '',
     p_limit: limit,
     p_language: language,
   })
