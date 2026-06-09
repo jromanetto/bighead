@@ -2332,6 +2332,7 @@ export type Database = {
     Functions: {
       _gen_referral_code: { Args: never; Returns: string }
       activate_due_weekly_challenges: { Args: never; Returns: number }
+      admin_overview: { Args: never; Returns: Json }
       apply_referral: {
         Args: { p_referral_code: string; p_user_id: string }
         Returns: Json
