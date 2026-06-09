@@ -7,6 +7,7 @@ import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { SessionError } from '#/components/SessionError'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
+import { playCorrect, playWrong } from '#/lib/game/sound'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
@@ -215,6 +216,8 @@ function DuelScreen() {
 
   function resolve(chosen: number, currentQ: GameQuestion, nextScore: number) {
     const isCorrect = chosen === currentQ.correctIndex
+    if (isCorrect) playCorrect()
+    else playWrong()
     answersRef.current.push({
       question_id: currentQ.id,
       position: index,

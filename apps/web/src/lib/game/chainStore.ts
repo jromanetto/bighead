@@ -7,6 +7,7 @@ import {
 } from '#/lib/game/questions'
 import { awardXp, saveGameResult } from '#/lib/game/results'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
+import { playCorrect, playWrong } from '#/lib/game/sound'
 
 import type { Lang } from '#/lib/i18n/strings'
 import type { GameQuestion } from '#/lib/game/questions'
@@ -104,6 +105,10 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
 
     const answerMs = Date.now() - state.questionStartedAt
     const isCorrect = index === currentQ.correctIndex
+
+    // Decorative answer feedback (no-op if muted/unsupported; never throws).
+    if (isCorrect) playCorrect()
+    else playWrong()
 
     const { points, newChain, multiplier } = computeChainPoints({
       difficulty: currentQ.difficulty,

@@ -6,6 +6,7 @@ import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { SessionError } from '#/components/SessionError'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
+import { playCorrect, playWrong } from '#/lib/game/sound'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
@@ -162,6 +163,8 @@ function WeeklyScreen() {
     if (selectedIndex !== null) return
     if (!current) return
     const isCorrect = chosen === current.correctIndex
+    if (isCorrect) playCorrect()
+    else playWrong()
     setSelectedIndex(chosen)
     setShowFact(true)
     if (isCorrect) setCorrectSoFar((c) => c + 1)

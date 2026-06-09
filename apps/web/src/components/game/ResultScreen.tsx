@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
 
 import { useT } from '#/lib/i18n/LangProvider'
+import { playFinish } from '#/lib/game/sound'
 import { consumePromptIfDue } from '#/lib/funnel/freePlay'
 import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL } from '#/lib/funnel/appLinks'
 import { AccountPrompt } from '#/components/funnel/AccountPrompt'
@@ -66,10 +67,11 @@ export function ResultScreen({
   const message = shareMessage ?? defaultMessage
 
   useEffect(() => {
-    if (perfect && !firedRef.current) {
-      firedRef.current = true
-      void fireConfetti()
-    }
+    if (firedRef.current) return
+    firedRef.current = true
+    // Little fanfare on every completed game (no-op if muted/unsupported).
+    playFinish()
+    if (perfect) void fireConfetti()
   }, [perfect])
 
   // Free-play gate: a finished game is a safe (never mid-question) point to
