@@ -6,13 +6,28 @@ import { useChainStore } from '#/lib/game/chainStore'
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
+import { getCategory } from '#/lib/game/categories'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
 import { ChainMeter } from '#/components/game/ChainMeter'
 import { ResultScreen } from '#/components/game/ResultScreen'
 import { SessionError } from '#/components/SessionError'
 
-export const Route = createFileRoute('/play/chain')({ component: ChainScreen })
+interface ChainSearch {
+  /** Optional category slug to scope the run; unknown/absent = all categories. */
+  category?: string
+}
+
+export const Route = createFileRoute('/play/chain')({
+  // Keep `?category=<slug>` only when it's a known category; drop anything else
+  // so play.chain stays "all categories" by default and never trusts raw input.
+  validateSearch: (search: Record<string, unknown>): ChainSearch => {
+    const raw = search.category
+    const slug = typeof raw === 'string' && getCategory(raw) ? raw : undefined
+    return slug ? { category: slug } : {}
+  },
+  component: ChainScreen,
+})
 
 const TIMER_SECONDS = Math.round(TIME_PER_QUESTION_MS / 1000)
 /** How long the answer feedback stays on screen before advancing. */
@@ -22,6 +37,9 @@ function ChainScreen() {
   const t = useT()
   const { lang, ready } = useLang()
   const { userId, sessionReady, error: sessionFailed } = useSession()
+  const { category } = Route.useSearch()
+  const categoryMeta = category ? getCategory(category) : undefined
+  const categoryLabel = categoryMeta ? t(categoryMeta.labelKey) : null
 
   const status = useChainStore((s) => s.status)
   const questions = useChainStore((s) => s.questions)
@@ -51,8 +69,8 @@ function ChainScreen() {
     if (!sessionReady || !userId) return
     if (startedRef.current) return
     startedRef.current = true
-    void start(lang)
-  }, [ready, sessionReady, userId, lang, start])
+    void start(lang, category)
+  }, [ready, sessionReady, userId, lang, category, start])
 
   // Countdown: ticks once per second while playing and not in feedback.
   useEffect(() => {
@@ -86,7 +104,7 @@ function ChainScreen() {
         correct={correctCount}
         total={answered}
         maxChain={maxChain}
-        onReplay={() => void start(lang)}
+        onReplay={() => void start(lang, category)}
       />
     )
   }
@@ -98,7 +116,7 @@ function ChainScreen() {
         <p className="text-fg/60">{t('game.error.subtitle')}</p>
         <button
           type="button"
-          onClick={() => void start(lang)}
+          onClick={() => void start(lang, category)}
           className="rounded-xl bg-primary px-5 py-3 font-bold text-bg transition-opacity hover:opacity-90"
         >
           {t('game.retry')}
@@ -124,6 +142,14 @@ function ChainScreen() {
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
+      {categoryLabel ? (
+        <div className="flex items-center justify-center gap-2 text-sm font-semibold text-fg/70">
+          {categoryMeta?.emoji ? (
+            <span aria-hidden="true">{categoryMeta.emoji}</span>
+          ) : null}
+          <span>{categoryLabel}</span>
+        </div>
+      ) : null}
       <div className="flex items-center justify-between gap-4">
         <TimerRing remaining={remaining} total={TIMER_SECONDS} size={72} />
         <div className="flex flex-col items-center">

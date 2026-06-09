@@ -65,6 +65,7 @@ export function formatQuestion(
 export async function getUnseenQuestions(
   limit: number,
   language: 'fr' | 'en',
+  category?: string | null,
 ): Promise<GameQuestion[]> {
   const supabase = getBrowserClient()
 
@@ -75,13 +76,14 @@ export async function getUnseenQuestions(
     throw new Error('getUnseenQuestions: no authenticated user')
   }
 
-  // Omit p_category so the RPC's `p_category IS NULL` branch returns every
-  // category. Passing '' would filter to questions whose category equals the
-  // empty string (none), yielding zero results.
+  // Only pass p_category when a category is requested. Omitting it hits the
+  // RPC's `p_category IS NULL` branch (every category). Passing '' would filter
+  // to questions whose category equals the empty string (none) → zero results.
   const { data, error } = await supabase.rpc('get_unseen_questions', {
     p_user_id: user.id,
     p_limit: limit,
     p_language: language,
+    ...(category ? { p_category: category } : {}),
   })
   if (error) throw error
 

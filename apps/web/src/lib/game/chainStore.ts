@@ -41,7 +41,7 @@ interface ChainState {
 }
 
 interface ChainActions {
-  start: (lang: Lang) => Promise<void>
+  start: (lang: Lang, category?: string | null) => Promise<void>
   answer: (index: number) => void
   next: () => Promise<void>
   tick: () => void
@@ -67,17 +67,20 @@ const INITIAL: ChainState = {
 
 /** Language used to fetch questions; set on start so refills use the same one. */
 let activeLang: Lang = 'fr'
+/** Active category filter (null = all). Set on start so refills stay scoped. */
+let activeCategory: string | null = null
 
 export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
   ...INITIAL,
 
   reset: () => set({ ...INITIAL }),
 
-  start: async (lang) => {
+  start: async (lang, category = null) => {
     activeLang = lang
+    activeCategory = category ?? null
     set({ ...INITIAL, status: 'idle' })
     try {
-      const questions = await getUnseenQuestions(BATCH_SIZE, lang)
+      const questions = await getUnseenQuestions(BATCH_SIZE, lang, activeCategory)
       if (questions.length === 0) {
         set({ status: 'error' })
         return
@@ -152,7 +155,7 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
     // Prefetch another batch when running low so play never stalls.
     if (questions.length - nextIndex < PREFETCH_THRESHOLD) {
       try {
-        const more = await getUnseenQuestions(BATCH_SIZE, activeLang)
+        const more = await getUnseenQuestions(BATCH_SIZE, activeLang, activeCategory)
         const existingIds = new Set(questions.map((q) => q.id))
         const fresh = more.filter((q) => !existingIds.has(q.id))
         if (fresh.length > 0) {
