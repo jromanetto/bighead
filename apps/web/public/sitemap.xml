@@ -28,4 +28,48 @@
     <loc>https://play.bighead-quizz.com/leaderboard</loc>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/general</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/history</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/geography</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/music</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/science</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/literature</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/technology</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/animals</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/sport</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/cinema</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://play.bighead-quizz.com/quiz/nature</loc>
+    <priority>0.6</priority>
+  </url>
 </urlset>

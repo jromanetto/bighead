@@ -598,6 +598,76 @@ export const strings = {
   'category.sport': { fr: 'Sport', en: 'Sport' },
   'category.cinema': { fr: 'Cinéma', en: 'Cinema' },
   'category.nature': { fr: 'Nature', en: 'Nature' },
+
+  // SEO category landing pages (/quiz/$category)
+  'quiz.page.h1': { fr: 'Quiz {cat} — BIGHEAD', en: '{cat} Quiz — BIGHEAD' },
+  'quiz.page.title': {
+    fr: 'Quiz {cat} en ligne — gratuit | BIGHEAD',
+    en: 'Online {cat} Quiz — free | BIGHEAD',
+  },
+  'quiz.page.cta': { fr: 'Jouer le quiz {cat}', en: 'Play the {cat} quiz' },
+  'quiz.page.ctaDuel': {
+    fr: 'Défier un ami sur {cat}',
+    en: 'Challenge a friend on {cat}',
+  },
+  'quiz.page.allTitle': { fr: 'Quiz par thème', en: 'Quizzes by theme' },
+  'quiz.page.allSubtitle': {
+    fr: 'Choisis une catégorie et lance ta série.',
+    en: 'Pick a category and start your chain.',
+  },
+  'quiz.page.modesTitle': { fr: 'Autres façons de jouer', en: 'Other ways to play' },
+  'quiz.page.backHome': { fr: 'Retour à l’accueil', en: 'Back to home' },
+  'quiz.unknown.title': { fr: 'Catégorie inconnue', en: 'Unknown category' },
+  'quiz.unknown.subtitle': {
+    fr: 'Cette catégorie n’existe pas. Choisis-en une ci-dessous :',
+    en: 'This category doesn’t exist. Pick one below:',
+  },
+
+  // SEO descriptions per category (used in body + meta description)
+  'quiz.desc.general': {
+    fr: 'Teste ta culture générale : des milliers de questions de quiz gratuites, du plus facile au plus retors. Enchaîne les bonnes réponses et grimpe au classement.',
+    en: 'Test your general knowledge: thousands of free quiz questions, from easy to fiendish. Chain correct answers and climb the leaderboard.',
+  },
+  'quiz.desc.history': {
+    fr: 'Teste tes connaissances en histoire : de l’Antiquité à nos jours, dates clés, grands personnages et événements marquants. Quiz gratuit, en français et en anglais.',
+    en: 'Test your history knowledge: from antiquity to today, key dates, great figures and landmark events. Free quiz, in French and English.',
+  },
+  'quiz.desc.geography': {
+    fr: 'Teste tes connaissances en géographie : capitales, pays, fleuves, montagnes et drapeaux du monde entier. Quiz gratuit pour explorer la planète.',
+    en: 'Test your geography knowledge: capitals, countries, rivers, mountains and flags from around the world. Free quiz to explore the planet.',
+  },
+  'quiz.desc.music': {
+    fr: 'Teste tes connaissances en musique : artistes, albums, paroles, genres et grandes époques. Quiz gratuit pour les mélomanes et les curieux.',
+    en: 'Test your music knowledge: artists, albums, lyrics, genres and eras. A free quiz for music lovers and the curious.',
+  },
+  'quiz.desc.science': {
+    fr: 'Teste tes connaissances en sciences : physique, chimie, biologie et espace. Des questions claires, de la découverte au défi. Quiz gratuit.',
+    en: 'Test your science knowledge: physics, chemistry, biology and space. Clear questions, from discovery to challenge. Free quiz.',
+  },
+  'quiz.desc.literature': {
+    fr: 'Teste tes connaissances en littérature : auteurs, romans cultes, citations et courants littéraires. Quiz gratuit pour les amoureux des livres.',
+    en: 'Test your literature knowledge: authors, classic novels, quotes and movements. A free quiz for book lovers.',
+  },
+  'quiz.desc.technology': {
+    fr: 'Teste tes connaissances en technologie : informatique, internet, gadgets et innovations. Quiz gratuit pour les geeks et les curieux du numérique.',
+    en: 'Test your technology knowledge: computing, the internet, gadgets and innovations. A free quiz for geeks and the digitally curious.',
+  },
+  'quiz.desc.animals': {
+    fr: 'Teste tes connaissances sur les animaux : espèces, habitats, comportements et records du règne animal. Quiz gratuit pour les passionnés de nature.',
+    en: 'Test your animal knowledge: species, habitats, behaviours and record-breakers of the animal kingdom. A free quiz for nature fans.',
+  },
+  'quiz.desc.sport': {
+    fr: 'Teste tes connaissances en sport : football, JO, records et grands champions de toutes les disciplines. Quiz gratuit pour les fans de sport.',
+    en: 'Test your sports knowledge: football, the Olympics, records and great champions across every discipline. A free quiz for sports fans.',
+  },
+  'quiz.desc.cinema': {
+    fr: 'Teste tes connaissances en cinéma : films cultes, réalisateurs, acteurs et répliques mythiques. Quiz gratuit pour les cinéphiles.',
+    en: 'Test your cinema knowledge: cult films, directors, actors and iconic lines. A free quiz for film buffs.',
+  },
+  'quiz.desc.nature': {
+    fr: 'Teste tes connaissances sur la nature : écosystèmes, climat, plantes et phénomènes naturels. Quiz gratuit pour explorer le vivant.',
+    en: 'Test your nature knowledge: ecosystems, climate, plants and natural phenomena. A free quiz to explore the living world.',
+  },
 } satisfies Record<string, Entry>
 
 export type StringKey = keyof typeof strings

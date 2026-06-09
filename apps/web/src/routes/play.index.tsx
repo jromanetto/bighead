@@ -7,6 +7,7 @@ import { useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { hasPlayedToday } from '#/lib/game/daily'
 import { getMyStreak } from '#/lib/profile/streak'
+import { CATEGORIES } from '#/lib/game/categories'
 
 import type { StringKey } from '#/lib/i18n/strings'
 import type { ReactNode } from 'react'
@@ -87,7 +88,36 @@ function PlayHub() {
           </div>
         </Link>
       </div>
+
+      <ThemeQuizzes />
     </div>
+  )
+}
+
+/** "Quiz par thème" block — entry points to the SEO category pages. */
+function ThemeQuizzes() {
+  const t = useT()
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-col gap-0.5">
+        <h2 className="text-xl font-bold text-fg">{t('quiz.page.allTitle')}</h2>
+        <p className="text-sm text-fg/60">{t('quiz.page.allSubtitle')}</p>
+      </div>
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {CATEGORIES.map((c) => (
+          <li key={c.slug}>
+            <Link
+              to="/quiz/$category"
+              params={{ category: c.slug }}
+              className="flex items-center gap-2 rounded-xl border border-white/10 bg-surface px-3 py-2.5 text-sm font-semibold text-fg transition-colors hover:border-primary/60"
+            >
+              <span aria-hidden="true">{c.emoji}</span>
+              {t(c.labelKey)}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
