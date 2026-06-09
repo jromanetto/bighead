@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useT } from '#/lib/i18n/LangProvider'
 import { upgradeAccount } from '#/lib/funnel/account'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { trackInstall } from '#/lib/analytics'
 
 export interface AccountPromptProps {
   open: boolean
@@ -181,6 +182,7 @@ export function AccountPrompt({ open, onClose }: AccountPromptProps) {
                   href={APP_STORE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackInstall('ios', 'account_prompt')}
                   className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-center text-sm font-semibold text-bg transition-opacity hover:opacity-90"
                 >
                   {t('promo.appStore')}
@@ -189,6 +191,7 @@ export function AccountPrompt({ open, onClose }: AccountPromptProps) {
                   href={PLAY_STORE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackInstall('android', 'account_prompt')}
                   className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-center text-sm font-semibold text-fg transition-colors hover:bg-white/5"
                 >
                   {t('promo.googlePlay')}

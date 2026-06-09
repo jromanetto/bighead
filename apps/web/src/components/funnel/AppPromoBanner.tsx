@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useT } from '#/lib/i18n/LangProvider'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { trackInstall } from '#/lib/analytics'
 
 /** localStorage key persisting the dismissed state. */
 const DISMISSED_KEY = 'bh_banner_dismissed'
@@ -46,6 +47,7 @@ export function AppPromoBanner() {
           href={APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackInstall('ios', 'promo_banner')}
           className="rounded-lg bg-fg px-3 py-1.5 text-xs font-semibold text-bg transition-opacity hover:opacity-90"
         >
           {t('promo.appStore')}
@@ -54,6 +56,7 @@ export function AppPromoBanner() {
           href={PLAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackInstall('android', 'promo_banner')}
           className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-fg transition-colors hover:bg-white/5"
         >
           {t('promo.googlePlay')}

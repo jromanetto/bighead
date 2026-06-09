@@ -3,6 +3,7 @@ import { Check, Share2 } from 'lucide-react'
 
 import { useT } from '#/lib/i18n/LangProvider'
 import { SITE_URL } from '#/lib/funnel/appLinks'
+import { EV, track } from '#/lib/analytics'
 
 export interface ShareScoreProps {
   /** Pre-built, localized share message (no hardcoded copy passed from callers). */
@@ -49,6 +50,7 @@ export function ShareScore({ message, url = DEFAULT_URL }: ShareScoreProps) {
     try {
       // Clipboard may be undefined on insecure contexts; the try/catch covers it.
       await navigator.clipboard.writeText(clipboardText)
+      track(EV.shareClicked, { method: 'copy' })
       flashCopied()
     } catch {
       // Clipboard can be blocked (permissions / insecure context); ignore.
@@ -59,6 +61,7 @@ export function ShareScore({ message, url = DEFAULT_URL }: ShareScoreProps) {
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
         await navigator.share({ text: message, url })
+        track(EV.shareClicked, { method: 'native' })
         return
       } catch {
         // User dismissed or share failed → fall back to copy.
@@ -86,6 +89,7 @@ export function ShareScore({ message, url = DEFAULT_URL }: ShareScoreProps) {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track(EV.shareClicked, { method: 'whatsapp' })}
           className="flex-1 rounded-xl border border-white/15 px-4 py-2 text-center text-sm font-semibold text-fg/80 transition-colors hover:border-primary/60 hover:text-fg"
         >
           {t('share.whatsapp')}
@@ -94,6 +98,7 @@ export function ShareScore({ message, url = DEFAULT_URL }: ShareScoreProps) {
           href={xUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track(EV.shareClicked, { method: 'x' })}
           className="flex-1 rounded-xl border border-white/15 px-4 py-2 text-center text-sm font-semibold text-fg/80 transition-colors hover:border-primary/60 hover:text-fg"
         >
           {t('share.x')}

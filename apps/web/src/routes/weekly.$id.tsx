@@ -6,6 +6,7 @@ import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { SessionError } from '#/components/SessionError'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
+import { EV, track, trackInstall } from '#/lib/analytics'
 import { playCorrect, playWrong } from '#/lib/game/sound'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
@@ -120,6 +121,7 @@ function WeeklyScreen() {
       setIndex(done)
       setCorrectSoFar(progress?.correct_count ?? 0)
       setPhase('playing')
+      track(EV.gameStarted, { mode: 'weekly' })
     })()
     return () => {
       cancelled = true
@@ -233,6 +235,10 @@ function WeeklyScreen() {
   /** Builds the completed view from the freshest progress we can fetch. */
   function finishLocally() {
     const total = challenge?.total_questions || questions.length
+    track(EV.gameFinished, {
+      mode: 'weekly',
+      score: correctSoFar,
+    })
     ;(async () => {
       let progress: WeeklyProgress | null = null
       try {
@@ -471,6 +477,7 @@ function WeeklyComplete({
             href={APP_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackInstall('ios', 'weekly_result')}
             className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
           >
             {t('promo.appStore')}
@@ -479,6 +486,7 @@ function WeeklyComplete({
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackInstall('android', 'weekly_result')}
             className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
           >
             {t('promo.googlePlay')}

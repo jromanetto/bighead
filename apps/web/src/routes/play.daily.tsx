@@ -17,6 +17,7 @@ import {
 import { awardXp } from '#/lib/game/results'
 import { playCorrect, playWrong } from '#/lib/game/sound'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
+import { EV, track } from '#/lib/analytics'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
@@ -88,6 +89,7 @@ function DailyScreen() {
         startedAtRef.current = Date.now()
         setQuestions(qs)
         setPhase('playing')
+        track(EV.gameStarted, { mode: 'daily' })
       } catch (err) {
         console.error('daily load failed', err)
         if (!isCancelled()) setPhase('error')
@@ -108,6 +110,9 @@ function DailyScreen() {
       ? Date.now() - startedAtRef.current
       : 0
     const perfect = finalScore === TOTAL_QUESTIONS
+
+    track(EV.gameFinished, { mode: 'daily', score: finalScore })
+    track(EV.dailyPlayed, { score: finalScore })
 
     void submitDailyResult(finalScore, totalMs).catch((err) =>
       console.error('submitDailyResult failed', err),

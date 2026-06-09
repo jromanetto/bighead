@@ -6,6 +6,7 @@ import { Swords, UserPlus } from 'lucide-react'
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { SessionError } from '#/components/SessionError'
+import { EV, track, trackInstall } from '#/lib/analytics'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
 import {
   DUEL_CATEGORIES,
@@ -68,7 +69,11 @@ function Duels() {
       mode === 'invite'
         ? createOpenDuel(category, lang)
         : createQuickDuel(category, lang),
-    onSuccess: (id) => {
+    onSuccess: (id, variables) => {
+      track(EV.duelCreated, {
+        mode: variables.mode,
+        category: variables.category ?? 'random',
+      })
       setPicking(null)
       void navigate({ to: '/duels/$id', params: { id } })
     },
@@ -413,6 +418,7 @@ function AppCta() {
           href={APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackInstall('ios', 'duels_cta')}
           className="rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
         >
           {t('promo.appStore')}
@@ -421,6 +427,7 @@ function AppCta() {
           href={PLAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackInstall('android', 'duels_cta')}
           className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
         >
           {t('promo.googlePlay')}

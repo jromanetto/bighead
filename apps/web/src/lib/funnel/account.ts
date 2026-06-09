@@ -1,4 +1,5 @@
 import { getBrowserClient } from '#/lib/supabase/client'
+import { EV, track } from '#/lib/analytics'
 
 /**
  * Shared account helpers for the acquisition funnel.
@@ -33,6 +34,7 @@ export async function upgradeAccount(
     const supabase = getBrowserClient()
     const { error } = await supabase.auth.updateUser({ email, password })
     if (error) return { ok: false, error: error.message }
+    track(EV.accountCreated)
     return { ok: true }
   } catch (err) {
     return { ok: false, error: messageFrom(err, 'Something went wrong') }

@@ -10,6 +10,16 @@ import { AppShell } from '#/components/AppShell'
 import { LangProvider } from '#/lib/i18n/LangProvider'
 import appCss from '../styles.css?url'
 
+/**
+ * Umami analytics is opt-in: the script is only injected when `VITE_UMAMI_SRC`
+ * is set (e.g. `https://cloud.umami.is/script.js`). The website id falls back to
+ * the BIGHEAD prod id when its env var is unset.
+ */
+const UMAMI_SRC = import.meta.env.VITE_UMAMI_SRC as string | undefined
+const UMAMI_WEBSITE_ID =
+  (import.meta.env.VITE_UMAMI_WEBSITE_ID as string | undefined) ??
+  '9bb370f8-710f-497b-8df4-430f0095ce10'
+
 export const Route = createRootRoute({
   beforeLoad: async () => {
     // Reads the existing cookie session for SSR personalization. Never signs in
@@ -81,6 +91,17 @@ export const Route = createRootRoute({
         href: 'https://play.bighead-quizz.com',
       },
     ],
+    // Inject the Umami script only when configured. Defer keeps it off the
+    // critical path; the website id is a normal data attribute.
+    scripts: UMAMI_SRC
+      ? [
+          {
+            src: UMAMI_SRC,
+            defer: true,
+            'data-website-id': UMAMI_WEBSITE_ID,
+          },
+        ]
+      : [],
   }),
   shellComponent: RootDocument,
 })

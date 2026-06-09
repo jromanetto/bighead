@@ -6,6 +6,7 @@ import { useT } from '#/lib/i18n/LangProvider'
 import { playFinish } from '#/lib/game/sound'
 import { consumePromptIfDue } from '#/lib/funnel/freePlay'
 import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL } from '#/lib/funnel/appLinks'
+import { trackInstall } from '#/lib/analytics'
 import { AccountPrompt } from '#/components/funnel/AccountPrompt'
 import { ShareScore } from '#/components/funnel/ShareScore'
 
@@ -150,6 +151,7 @@ export function ResultScreen({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('result.cta.appStore')}
+            onClick={() => trackInstall('ios', 'result_screen')}
             className="flex-1 rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
           >
             {t('result.cta.appStore')}
@@ -159,6 +161,7 @@ export function ResultScreen({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('result.cta.googlePlay')}
+            onClick={() => trackInstall('android', 'result_screen')}
             className="flex-1 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
           >
             {t('result.cta.googlePlay')}

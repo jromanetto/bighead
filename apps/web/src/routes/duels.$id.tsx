@@ -7,6 +7,7 @@ import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { SessionError } from '#/components/SessionError'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
+import { EV, track, trackInstall } from '#/lib/analytics'
 import { playCorrect, playWrong } from '#/lib/game/sound'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
@@ -172,6 +173,7 @@ function DuelScreen() {
     questionStartRef.current = Date.now()
     setQuestions(formatted)
     setPhase('playing')
+    track(EV.gameStarted, { mode: 'duel' })
   }, [id, userId])
 
   useEffect(() => {
@@ -190,6 +192,8 @@ function DuelScreen() {
     const totalMs = startedAtRef.current ? Date.now() - startedAtRef.current : 0
     const answers = answersRef.current
     ;(async () => {
+      const localScoreForEvent = answers.filter((a) => a.is_correct).length
+      track(EV.gameFinished, { mode: 'duel', score: localScoreForEvent })
       try {
         const res = await submitDuelPlay(id, answers, totalMs)
         setResult({
@@ -563,6 +567,7 @@ function InviteAccept({
     try {
       const res = await claimOpenDuel(duelId)
       if (res.success) {
+        track(EV.duelClaimed, { category: category ?? 'random' })
         onClaimed()
         return
       }
@@ -732,6 +737,7 @@ function InstallCta() {
           href={APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackInstall('ios', 'duel_invite')}
           className="rounded-xl bg-fg px-4 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
         >
           {t('promo.appStore')}
@@ -740,6 +746,7 @@ function InstallCta() {
           href={PLAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackInstall('android', 'duel_invite')}
           className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-white/5"
         >
           {t('promo.googlePlay')}

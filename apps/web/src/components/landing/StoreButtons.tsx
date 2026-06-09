@@ -2,6 +2,7 @@ import { Apple, Play } from 'lucide-react'
 
 import { useT } from '#/lib/i18n/LangProvider'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { trackInstall } from '#/lib/analytics'
 
 /**
  * The App Store + Google Play download buttons, styled as the familiar
@@ -17,6 +18,7 @@ export function StoreButtons({ className = '' }: { className?: string }) {
         href={APP_STORE_URL}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => trackInstall('ios', 'store_buttons')}
         className="group flex items-center gap-3 rounded-xl border border-white/15 bg-fg px-5 py-3 text-bg transition-transform hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
       >
         <Apple className="h-7 w-7 shrink-0" aria-hidden="true" />
@@ -34,6 +36,7 @@ export function StoreButtons({ className = '' }: { className?: string }) {
         href={PLAY_STORE_URL}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => trackInstall('android', 'store_buttons')}
         className="group flex items-center gap-3 rounded-xl border border-white/20 bg-surface px-5 py-3 text-fg transition-transform hover:-translate-y-0.5 hover:border-primary/60 focus-visible:-translate-y-0.5"
       >
         <Play

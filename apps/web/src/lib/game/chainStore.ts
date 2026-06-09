@@ -8,6 +8,7 @@ import {
 import { awardXp, saveGameResult } from '#/lib/game/results'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
 import { playCorrect, playWrong } from '#/lib/game/sound'
+import { EV, track } from '#/lib/analytics'
 
 import type { Lang } from '#/lib/i18n/strings'
 import type { GameQuestion } from '#/lib/game/questions'
@@ -89,6 +90,7 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
         startedAt: now,
         questionStartedAt: now,
       })
+      track(EV.gameStarted, { mode: 'chain' })
     } catch (err) {
       console.error('chainStore.start failed', err)
       set({ status: 'error' })
@@ -200,6 +202,8 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
       : 0
 
     set({ status: 'finished' })
+
+    track(EV.gameFinished, { mode: 'chain', score: state.score })
 
     const xp = Math.round(state.score * 0.1 + state.correctCount * 10)
 
