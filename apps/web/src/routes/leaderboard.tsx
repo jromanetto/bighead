@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 
 import { useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { msUntilWeeklyReset, formatCountdown } from '#/lib/leaderboard/countdown'
 import {
   fetchAllTimeLeaderboard,
   fetchWeeklyLeaderboard,
@@ -61,6 +62,8 @@ function Leaderboard() {
         ))}
       </div>
 
+      {tab === 'weekly' ? <WeeklyResetCountdown /> : null}
+
       {query.isPending ? (
         <LeaderboardSkeleton />
       ) : query.isError ? (
@@ -75,11 +78,92 @@ function Leaderboard() {
           {t('lb.empty')}
         </p>
       ) : (
-        <LeaderboardList rows={query.data} currentUserId={currentUserId} />
+        <>
+          <FomoBanner rows={query.data} currentUserId={currentUserId} />
+          <LeaderboardList rows={query.data} currentUserId={currentUserId} />
+        </>
       )}
 
       <AppCta />
     </div>
+  )
+}
+
+/**
+ * Rank-gap FOMO banner. If the current user is ranked and not #1, shows how many
+ * points separate them from the player directly above. If they're not in the
+ * fetched list, nudges them to play more to enter the top 100.
+ */
+function FomoBanner({
+  rows,
+  currentUserId,
+}: {
+  rows: Array<LeaderboardEntry>
+  currentUserId: string | null
+}) {
+  const t = useT()
+  if (!currentUserId) return null
+
+  const myIndex = rows.findIndex((r) => r.id === currentUserId)
+
+  if (myIndex === -1) {
+    return (
+      <p className="rounded-xl border border-accent/30 bg-accent/10 p-4 text-center text-sm font-medium text-fg">
+        {t('lb.fomo.notRanked')}
+      </p>
+    )
+  }
+
+  if (myIndex === 0) {
+    return (
+      <p className="rounded-xl border border-primary/30 bg-primary/10 p-4 text-center text-sm font-medium text-fg">
+        {t('lb.fomo.first')}
+      </p>
+    )
+  }
+
+  const me = rows[myIndex]
+  const above = rows[myIndex - 1]
+  const gap = Math.max(0, above.xp - me.xp)
+  const nameAbove =
+    above.username && above.username.trim() ? above.username : t('lb.anon')
+
+  return (
+    <p className="rounded-xl border border-primary/30 bg-primary/10 p-4 text-center text-sm font-medium text-fg">
+      {t('lb.fomo.gap')
+        .replace('{rank}', String(me.rank))
+        .replace('{gap}', gap.toLocaleString())
+        .replace('{name}', nameAbove)}
+    </p>
+  )
+}
+
+/**
+ * Weekly reset countdown. SSR-safe: `now` is read from `Date.now()` only after
+ * mount (initial `null` renders a stable placeholder height), then refreshed
+ * each minute so the "Xj Yh" label stays roughly current without re-rendering
+ * every second.
+ */
+function WeeklyResetCountdown() {
+  const t = useT()
+  const [now, setNow] = useState<number | null>(null)
+
+  useEffect(() => {
+    setNow(Date.now())
+    const id = window.setInterval(() => setNow(Date.now()), 60_000)
+    return () => window.clearInterval(id)
+  }, [])
+
+  // Reserve the row's height before mount to avoid layout shift / mismatch.
+  if (now === null) {
+    return <div className="h-9" aria-hidden="true" />
+  }
+
+  const label = formatCountdown(msUntilWeeklyReset(now))
+  return (
+    <p className="rounded-xl border border-white/10 bg-surface px-4 py-2 text-center text-xs font-medium text-fg/60">
+      {t('lb.weekly.reset').replace('{time}', label)}
+    </p>
   )
 }
 
