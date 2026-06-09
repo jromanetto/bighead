@@ -4,8 +4,9 @@ import { motion } from 'framer-motion'
 
 import { useT } from '#/lib/i18n/LangProvider'
 import { consumePromptIfDue } from '#/lib/funnel/freePlay'
-import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL } from '#/lib/funnel/appLinks'
 import { AccountPrompt } from '#/components/funnel/AccountPrompt'
+import { ShareScore } from '#/components/funnel/ShareScore'
 
 export interface ResultScreenProps {
   title?: string
@@ -15,6 +16,8 @@ export interface ResultScreenProps {
   maxChain?: number
   perfect?: boolean
   onReplay?: () => void
+  /** Optional override for the share message; otherwise derived from the score. */
+  shareMessage?: string
 }
 
 /** Fires a one-shot confetti burst. Dynamically imported so it never runs on the server. */
@@ -45,9 +48,22 @@ export function ResultScreen({
   maxChain,
   perfect = false,
   onReplay,
+  shareMessage,
 }: ResultScreenProps) {
   const t = useT()
   const firedRef = useRef(false)
+
+  // Mode-aware default share message. Chain mode (maxChain present) leads with
+  // points + best chain; everything else uses the correct/total framing.
+  const defaultMessage =
+    maxChain !== undefined
+      ? t('share.message.chain')
+          .replace('{score}', String(score))
+          .replace('{maxChain}', String(maxChain))
+      : t('share.message.quiz')
+          .replace('{correct}', String(correct))
+          .replace('{total}', String(total))
+  const message = shareMessage ?? defaultMessage
 
   useEffect(() => {
     if (perfect && !firedRef.current) {
@@ -101,6 +117,8 @@ export function ResultScreen({
           />
         ) : null}
       </div>
+
+      <ShareScore message={message} url={`${SITE_URL}/play`} />
 
       <div className="flex w-full flex-col gap-3">
         {onReplay ? (

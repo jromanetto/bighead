@@ -150,6 +150,32 @@ export const strings = {
     en: 'Get it on Google Play',
   },
 
+  // Share score (viral loop) — {score}/{maxChain}/{correct}/{total} interpolated
+  'share.cta': { fr: 'Partager mon score', en: 'Share my score' },
+  'share.copied': { fr: 'Copié !', en: 'Copied!' },
+  'share.whatsapp': { fr: 'WhatsApp', en: 'WhatsApp' },
+  'share.x': { fr: 'X', en: 'X' },
+  'share.message.chain': {
+    fr: 'J’ai scoré {score} points (série max {maxChain}) sur BIGHEAD ⚡ Tu fais mieux ?',
+    en: 'I scored {score} points (best chain {maxChain}) on BIGHEAD ⚡ Can you beat me?',
+  },
+  'share.message.quiz': {
+    fr: 'J’ai fait {correct}/{total} au quiz BIGHEAD 🧠 Bats-moi !',
+    en: 'I got {correct}/{total} on the BIGHEAD quiz 🧠 Beat me!',
+  },
+  'share.message.duel.won': {
+    fr: 'J’ai gagné mon duel {myScore}-{oppScore} sur BIGHEAD ⚔️ Défie-moi !',
+    en: 'I won my duel {myScore}-{oppScore} on BIGHEAD ⚔️ Challenge me!',
+  },
+  'share.message.duel.lost': {
+    fr: 'J’ai perdu mon duel {myScore}-{oppScore} sur BIGHEAD ⚔️ Défie-moi !',
+    en: 'I lost my duel {myScore}-{oppScore} on BIGHEAD ⚔️ Challenge me!',
+  },
+  'share.message.duel.draw': {
+    fr: 'Match nul {myScore}-{oppScore} sur BIGHEAD ⚔️ Défie-moi !',
+    en: 'Draw {myScore}-{oppScore} on BIGHEAD ⚔️ Challenge me!',
+  },
+
   // Play hub
   'play.hub.title': { fr: 'Choisis ton mode', en: 'Pick your mode' },
   'play.hub.subtitle': {

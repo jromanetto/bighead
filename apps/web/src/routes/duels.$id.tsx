@@ -11,6 +11,7 @@ import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
 import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { ShareScore } from '#/components/funnel/ShareScore'
 import {
   DUEL_ROUNDS,
   claimOpenDuel,
@@ -329,6 +330,7 @@ function DuelScreen() {
       <DuelResult
         result={result}
         userId={userId}
+        duelId={id}
         // Host whose open duel is still unclaimed → make sharing prominent even
         // after they've played their round (awaiting a friend, not a stranger).
         share={hostShareOpen ? <SharePanel duelId={id} /> : null}
@@ -395,10 +397,12 @@ async function fireConfetti(): Promise<void> {
 function DuelResult({
   result,
   userId,
+  duelId,
   share,
 }: {
   result: ResultState
   userId: string | null
+  duelId: string
   /** Optional share panel rendered on the awaiting view (host open-duel case). */
   share?: React.ReactNode
 }) {
@@ -413,6 +417,16 @@ function DuelResult({
     : draw
       ? 'duels.outcome.draw'
       : 'duels.outcome.lost'
+
+  // Outcome-aware viral share for the completed view.
+  const shareMessageKey = won
+    ? 'share.message.duel.won'
+    : draw
+      ? 'share.message.duel.draw'
+      : 'share.message.duel.lost'
+  const shareMessage = t(shareMessageKey)
+    .replace('{myScore}', String(result.myScore))
+    .replace('{oppScore}', String(result.opponentScore ?? 0))
 
   useEffect(() => {
     if (won && !firedRef.current) {
@@ -500,6 +514,8 @@ function DuelResult({
           </p>
         </div>
       </div>
+
+      <ShareScore message={shareMessage} url={duelShareUrl(duelId)} />
 
       <Link
         to="/duels"
