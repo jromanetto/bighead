@@ -70,7 +70,7 @@ function Hero() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              to="/play"
+              to="/play/chain"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-base font-bold text-bg shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
             >
               <Zap className="h-5 w-5" aria-hidden="true" />
