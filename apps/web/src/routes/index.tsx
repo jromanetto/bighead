@@ -18,7 +18,13 @@ import { StoreButtons } from '#/components/landing/StoreButtons'
 import type { StringKey } from '#/lib/i18n/strings'
 import type { ReactNode } from 'react'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  component: Home,
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://play.bighead-quizz.com' }],
+    meta: [{ property: 'og:url', content: 'https://play.bighead-quizz.com' }],
+  }),
+})
 
 /**
  * Marketing landing page — the SEO entry point and primary funnel asset.

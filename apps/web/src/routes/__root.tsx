@@ -81,14 +81,13 @@ export const Route = createRootRoute({
         content: 'https://play.bighead-quizz.com/og.png',
       },
     ],
+    // No canonical here on purpose: a single hardcoded homepage canonical would
+    // (wrongly) tag every page as the homepage. Each indexable route sets its
+    // own canonical (`/` and `/quiz/$category`); app pages self-canonicalize.
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
-      },
-      {
-        rel: 'canonical',
-        href: 'https://play.bighead-quizz.com',
       },
     ],
     // Inject the Umami script only when configured. Defer keeps it off the
