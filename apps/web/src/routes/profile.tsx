@@ -17,7 +17,10 @@ import {
 import type { StringKey } from '#/lib/i18n/strings'
 import type { ProfileUser, RecentGame } from '#/lib/profile/queries'
 
-export const Route = createFileRoute('/profile')({ component: Profile })
+export const Route = createFileRoute('/profile')({
+  head: () => ({ meta: [{ title: 'Profil · BIGHEAD' }] }),
+  component: Profile,
+})
 
 /** Resolves whether the current session is anonymous (client-only). */
 function useIsAnonymous(): boolean | null {

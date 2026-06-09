@@ -35,11 +35,50 @@ export const Route = createRootRoute({
         content:
           'BIGHEAD : le quiz qui défie ton cerveau. Joue gratuitement, grimpe au classement et défie tes amis. Aussi sur iOS et Android.',
       },
+      { name: 'theme-color', content: '#00c2cc' },
+      // Open Graph
+      { property: 'og:site_name', content: 'BIGHEAD' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://play.bighead-quizz.com' },
+      {
+        property: 'og:title',
+        content: 'BIGHEAD — Le quiz qui défie ton cerveau',
+      },
+      {
+        property: 'og:description',
+        content:
+          'BIGHEAD : le quiz qui défie ton cerveau. Joue gratuitement, grimpe au classement et défie tes amis. Aussi sur iOS et Android.',
+      },
+      {
+        property: 'og:image',
+        content: 'https://play.bighead-quizz.com/og.png',
+      },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      // Twitter card
+      { name: 'twitter:card', content: 'summary_large_image' },
+      {
+        name: 'twitter:title',
+        content: 'BIGHEAD — Le quiz qui défie ton cerveau',
+      },
+      {
+        name: 'twitter:description',
+        content:
+          'BIGHEAD : le quiz qui défie ton cerveau. Joue gratuitement, grimpe au classement et défie tes amis. Aussi sur iOS et Android.',
+      },
+      {
+        name: 'twitter:image',
+        content: 'https://play.bighead-quizz.com/og.png',
+      },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'canonical',
+        href: 'https://play.bighead-quizz.com',
       },
     ],
   }),

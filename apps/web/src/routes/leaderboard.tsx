@@ -12,7 +12,10 @@ import {
 
 import type { LeaderboardEntry } from '#/lib/leaderboard/queries'
 
-export const Route = createFileRoute('/leaderboard')({ component: Leaderboard })
+export const Route = createFileRoute('/leaderboard')({
+  head: () => ({ meta: [{ title: 'Classement · BIGHEAD' }] }),
+  component: Leaderboard,
+})
 
 type Tab = 'weekly' | 'allTime'
 
