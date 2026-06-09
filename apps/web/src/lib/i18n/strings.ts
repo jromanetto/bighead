@@ -198,6 +198,40 @@ export const strings = {
   },
   'play.start': { fr: 'Jouer', en: 'Play' },
   'play.soon': { fr: 'Bientôt', en: 'Soon' },
+  'play.hub.leaderboard.tagline': {
+    fr: 'Vois où tu te situes face aux autres.',
+    en: 'See where you stand against everyone.',
+  },
+
+  // Daily streak + come-back hooks
+  'streak.hub.active': {
+    fr: 'Série de {n} jours — reviens demain pour la garder',
+    en: '{n}-day streak — come back tomorrow to keep it',
+  },
+  'streak.hub.empty': {
+    fr: 'Joue chaque jour pour lancer ta série',
+    en: 'Play every day to start your streak',
+  },
+  'streak.daily.active': {
+    fr: 'Série de {n} jours — reviens demain pour la garder',
+    en: '{n}-day streak — come back tomorrow to keep it',
+  },
+  'streak.daily.empty': {
+    fr: 'Joue chaque jour pour lancer ta série',
+    en: 'Play every day to start your streak',
+  },
+  'daily.comeBack': {
+    fr: 'Reviens demain pour le prochain défi',
+    en: 'Come back tomorrow for the next challenge',
+  },
+  'daily.comeBack.cta': {
+    fr: 'Crée un compte pour ne pas perdre ta série',
+    en: 'Create an account so you don’t lose your streak',
+  },
+  'sound.toggle': {
+    fr: 'Activer / couper le son',
+    en: 'Toggle sound',
+  },
 
   // Gameplay states
   'game.loading': { fr: 'Chargement…', en: 'Loading…' },
@@ -305,6 +339,22 @@ export const strings = {
   'lb.error': {
     fr: 'Impossible de charger le classement.',
     en: 'Could not load the leaderboard.',
+  },
+  'lb.fomo.gap': {
+    fr: 'Tu es #{rank} — encore {gap} pts pour dépasser {name}',
+    en: 'You’re #{rank} — {gap} pts to pass {name}',
+  },
+  'lb.fomo.first': {
+    fr: 'Tu es #1 — défends ta place !',
+    en: 'You’re #1 — defend your spot!',
+  },
+  'lb.fomo.notRanked': {
+    fr: 'Joue plus pour entrer dans le top 100',
+    en: 'Play more to break into the top 100',
+  },
+  'lb.weekly.reset': {
+    fr: 'Le classement hebdo se réinitialise dans {time}',
+    en: 'The weekly leaderboard resets in {time}',
   },
   'lb.cta.title': {
     fr: 'Vois le classement complet + défie tes amis dans l’app',

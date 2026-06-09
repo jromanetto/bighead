@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence } from 'framer-motion'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
+import { getBrowserClient } from '#/lib/supabase/client'
+import { getMyStreak } from '#/lib/profile/streak'
+import { AccountPrompt } from '#/components/funnel/AccountPrompt'
 import { SessionError } from '#/components/SessionError'
 import {
   getDailyQuestions,
@@ -11,6 +15,7 @@ import {
   submitDailyResult,
 } from '#/lib/game/daily'
 import { awardXp } from '#/lib/game/results'
+import { playCorrect, playWrong } from '#/lib/game/sound'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
@@ -137,6 +142,8 @@ function DailyScreen() {
     const currentQ = questions.at(index)
     if (!currentQ) return
     const isCorrect = chosen === currentQ.correctIndex
+    if (isCorrect) playCorrect()
+    else playWrong()
     resolve(chosen, score + (isCorrect ? 1 : 0))
   }
 
@@ -149,6 +156,7 @@ function DailyScreen() {
         if (r <= 1) {
           window.clearInterval(id)
           // Timed out: resolve as wrong (no point), keep current score.
+          playWrong()
           resolve(-1, score)
           return 0
         }
@@ -190,6 +198,7 @@ function DailyScreen() {
             </p>
           </div>
         ) : null}
+        <StreakNudge />
         <Link
           to="/play"
           className="rounded-xl border border-white/15 px-5 py-3 font-medium text-fg/80 transition-colors hover:text-fg"
@@ -217,13 +226,16 @@ function DailyScreen() {
 
   if (phase === 'finished') {
     return (
-      <ResultScreen
-        title={t('daily.title')}
-        score={score}
-        correct={score}
-        total={TOTAL_QUESTIONS}
-        perfect={score === TOTAL_QUESTIONS}
-      />
+      <div className="flex flex-col gap-6">
+        <DailyComeBack />
+        <ResultScreen
+          title={t('daily.title')}
+          score={score}
+          correct={score}
+          total={TOTAL_QUESTIONS}
+          perfect={score === TOTAL_QUESTIONS}
+        />
+      </div>
     )
   }
 
@@ -262,6 +274,94 @@ function DailyScreen() {
           onAnswer={handleAnswer}
         />
       </AnimatePresence>
+    </div>
+  )
+}
+
+/** Resolves whether the current session is anonymous (client-only). */
+function useIsAnonymous(): boolean | null {
+  const [anon, setAnon] = useState<boolean | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    void getBrowserClient()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (!cancelled) setAnon(data.user?.is_anonymous ?? false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+  return anon
+}
+
+/**
+ * "Keep your streak" nudge. Fetches the streak client-side and renders nothing
+ * until resolved (SSR/hydration-safe). Shows the active-streak line when > 0,
+ * else a gentle prompt to start a streak.
+ */
+function StreakNudge() {
+  const t = useT()
+  const { userId, sessionReady } = useSession()
+  const { data: streak } = useQuery({
+    queryKey: ['streak'],
+    queryFn: getMyStreak,
+    enabled: sessionReady && Boolean(userId),
+  })
+
+  if (streak === undefined) return null
+  return (
+    <p className="text-sm text-fg/70">
+      {streak > 0
+        ? `🔥 ${t('streak.daily.active').replace('{n}', String(streak))}`
+        : t('streak.daily.empty')}
+    </p>
+  )
+}
+
+/**
+ * Come-back hook on the daily completed view: a "come back tomorrow" line, the
+ * current streak nudge, and — for anonymous users — a CTA to create an account
+ * so their streak isn't lost. The streak query is refetched here so it reflects
+ * the just-submitted result. Renders only client-resolved data (no hydration
+ * mismatch since this view only ever appears post-mount).
+ */
+function DailyComeBack() {
+  const t = useT()
+  const { userId, sessionReady } = useSession()
+  const isAnonymous = useIsAnonymous()
+  const [promptOpen, setPromptOpen] = useState(false)
+
+  const { data: streak } = useQuery({
+    queryKey: ['streak'],
+    queryFn: getMyStreak,
+    enabled: sessionReady && Boolean(userId),
+  })
+
+  return (
+    <div className="mx-auto w-full max-w-md rounded-2xl border border-primary/30 bg-primary/5 p-5 text-center">
+      {streak !== undefined && streak > 0 ? (
+        <p className="text-sm font-medium text-fg">
+          🔥 {t('streak.daily.active').replace('{n}', String(streak))}
+        </p>
+      ) : streak !== undefined ? (
+        <p className="text-sm text-fg/70">{t('streak.daily.empty')}</p>
+      ) : null}
+
+      <p className="mt-1 text-sm text-fg/70">{t('daily.comeBack')}</p>
+
+      {isAnonymous ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setPromptOpen(true)}
+            className="mt-3 inline-flex rounded-xl bg-primary px-4 py-2 text-sm font-bold text-bg transition-opacity hover:opacity-90"
+          >
+            {t('daily.comeBack.cta')}
+          </button>
+          <AccountPrompt open={promptOpen} onClose={() => setPromptOpen(false)} />
+        </>
+      ) : null}
     </div>
   )
 }
