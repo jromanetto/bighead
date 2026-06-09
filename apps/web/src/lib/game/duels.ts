@@ -74,6 +74,16 @@ export class NoOpponentError extends Error {
 /** Number of rounds in an async duel. */
 export const DUEL_ROUNDS = 10
 
+/** Public base URL where shared duels are opened (the web app). */
+export const DUEL_SHARE_BASE = 'https://play.bighead-quizz.com'
+
+/** Parsed result of `claim_open_duel`. */
+export interface ClaimOpenDuelResult {
+  success: boolean
+  message?: 'not_found' | 'expired' | 'already_taken' | string
+  role?: 'host' | 'guest'
+}
+
 /** Selectable duel categories (matches the backend's allowed values). */
 export const DUEL_CATEGORIES = [
   'general',
@@ -159,6 +169,50 @@ export async function createQuickDuel(
   }
 
   return data
+}
+
+/**
+ * Creates an OPEN async duel (guest unset) that can be shared with a friend.
+ * Pass `category: null` for any category. Returns the new duel id.
+ */
+export async function createOpenDuel(
+  category: string | null,
+  language: string,
+): Promise<string> {
+  const supabase = getBrowserClient()
+
+  // p_category is typed non-null but the function accepts null ("any category").
+  const { data, error } = await supabase.rpc('create_open_duel', {
+    p_category: category,
+    p_language: language,
+  } as unknown as Database['public']['Functions']['create_open_duel']['Args'])
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Claims an open duel as the invited friend (sets guest_id = auth.uid()).
+ * Returns the parsed `{ success, message?, role? }` result. Never throws on a
+ * "soft" failure (not_found / expired / already_taken) — those come back as
+ * `{ success: false, message }`. Network/RLS errors still throw.
+ */
+export async function claimOpenDuel(
+  duelId: string,
+): Promise<ClaimOpenDuelResult> {
+  const supabase = getBrowserClient()
+
+  const { data, error } = await supabase.rpc('claim_open_duel', {
+    p_duel_id: duelId,
+  })
+
+  if (error) throw error
+  return data as unknown as ClaimOpenDuelResult
+}
+
+/** Shareable URL for a duel. SSR-safe (does not read `window`). */
+export function duelShareUrl(duelId: string): string {
+  return `${DUEL_SHARE_BASE}/duels/${duelId}`
 }
 
 /** Loads a single duel by id (RLS restricts this to participants). */

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { categorizeDuel, formatDuelQuestion } from './duels'
+import {
+  DUEL_SHARE_BASE,
+  categorizeDuel,
+  duelShareUrl,
+  formatDuelQuestion,
+} from './duels'
 
 import type { DuelInboxItem, DuelPayloadQuestion } from './duels'
 
@@ -123,5 +128,15 @@ describe('categorizeDuel', () => {
         }),
       ),
     ).toBe('expired')
+  })
+})
+
+describe('duelShareUrl', () => {
+  it('builds a shareable URL from the public base and duel id', () => {
+    expect(duelShareUrl('abc-123')).toBe(`${DUEL_SHARE_BASE}/duels/abc-123`)
+  })
+
+  it('uses the play.bighead-quizz.com base', () => {
+    expect(duelShareUrl('x')).toBe('https://play.bighead-quizz.com/duels/x')
   })
 })

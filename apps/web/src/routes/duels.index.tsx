@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Swords } from 'lucide-react'
+import { Swords, UserPlus } from 'lucide-react'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
@@ -11,6 +11,7 @@ import {
   DUEL_CATEGORIES,
   NoOpponentError,
   categorizeDuel,
+  createOpenDuel,
   createQuickDuel,
   getMyDuels,
 } from '#/lib/game/duels'
@@ -46,7 +47,8 @@ function Duels() {
   const { userId, sessionReady, error: sessionFailed } = useSession()
   const navigate = useNavigate()
 
-  const [picking, setPicking] = useState(false)
+  // `picking` is null when closed, else the mode being created.
+  const [picking, setPicking] = useState<'quick' | 'invite' | null>(null)
   const [createError, setCreateError] = useState<string | null>(null)
 
   const query = useQuery({
@@ -56,9 +58,18 @@ function Duels() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (category: string | null) => createQuickDuel(category, lang),
+    mutationFn: ({
+      category,
+      mode,
+    }: {
+      category: string | null
+      mode: 'quick' | 'invite'
+    }) =>
+      mode === 'invite'
+        ? createOpenDuel(category, lang)
+        : createQuickDuel(category, lang),
     onSuccess: (id) => {
-      setPicking(false)
+      setPicking(null)
       void navigate({ to: '/duels/$id', params: { id } })
     },
     onError: (err) => {
@@ -72,7 +83,7 @@ function Duels() {
 
   function startDuel(category: string | null) {
     setCreateError(null)
-    createMutation.mutate(category)
+    createMutation.mutate({ category, mode: picking ?? 'quick' })
   }
 
   if (sessionReady && sessionFailed) {
@@ -88,17 +99,30 @@ function Duels() {
         <p className="text-fg/60">{t('duels.subtitle')}</p>
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          setCreateError(null)
-          setPicking(true)
-        }}
-        className="inline-flex w-fit items-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-bg transition-opacity hover:opacity-90"
-      >
-        <Swords className="h-5 w-5" aria-hidden="true" />
-        {t('duels.new')}
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            setCreateError(null)
+            setPicking('quick')
+          }}
+          className="inline-flex w-fit items-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-bg transition-opacity hover:opacity-90"
+        >
+          <Swords className="h-5 w-5" aria-hidden="true" />
+          {t('duels.new')}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setCreateError(null)
+            setPicking('invite')
+          }}
+          className="inline-flex w-fit items-center gap-2 rounded-xl border border-primary/60 px-5 py-3 font-bold text-fg transition-colors hover:bg-primary/10"
+        >
+          <UserPlus className="h-5 w-5" aria-hidden="true" />
+          {t('duels.invite')}
+        </button>
+      </div>
 
       {createError ? (
         <p
@@ -122,7 +146,7 @@ function Duels() {
           buckets.waiting.length +
           buckets.finished.length ===
         0 ? (
-        <EmptyState onStart={() => setPicking(true)} />
+        <EmptyState onStart={() => setPicking('quick')} />
       ) : (
         <div className="flex flex-col gap-6">
           <Section
@@ -149,9 +173,10 @@ function Duels() {
 
       {picking ? (
         <CategoryPicker
+          mode={picking}
           pending={createMutation.isPending}
           onPick={startDuel}
-          onClose={() => setPicking(false)}
+          onClose={() => setPicking(null)}
         />
       ) : null}
     </div>
@@ -277,10 +302,12 @@ function DuelRowItem({
 }
 
 function CategoryPicker({
+  mode,
   pending,
   onPick,
   onClose,
 }: {
+  mode: 'quick' | 'invite'
   pending: boolean
   onPick: (category: string | null) => void
   onClose: () => void
@@ -311,7 +338,9 @@ function CategoryPicker({
 
         {pending ? (
           <p className="animate-pulse py-6 text-center text-sm text-fg/60">
-            {t('duels.new.creating')}
+            {mode === 'invite'
+              ? t('duel.invite.accepting')
+              : t('duels.new.creating')}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2">

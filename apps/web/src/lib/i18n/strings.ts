@@ -403,6 +403,60 @@ export const strings = {
   },
   'duel.result.back': { fr: 'Retour aux duels', en: 'Back to duels' },
 
+  // Friend-invite duels (open duel + claim + share)
+  'duels.invite': { fr: 'Inviter un ami', en: 'Invite a friend' },
+  'duel.invite.title': {
+    fr: 'Tu as été défié sur {category} !',
+    en: 'You’ve been challenged on {category}!',
+  },
+  'duel.invite.subtitle': {
+    fr: 'Réponds à 10 questions et bats ton ami. À toi de jouer !',
+    en: 'Answer 10 questions and beat your friend. Game on!',
+  },
+  'duel.invite.accept': { fr: 'Accepter le défi', en: 'Accept the challenge' },
+  'duel.invite.accepting': { fr: 'On prépare ton duel…', en: 'Setting up your duel…' },
+  'duel.invite.alreadyTaken': {
+    fr: 'Ce duel a déjà été accepté par quelqu’un d’autre.',
+    en: 'This duel has already been accepted by someone else.',
+  },
+  'duel.invite.expired': {
+    fr: 'Ce défi a expiré.',
+    en: 'This challenge has expired.',
+  },
+  'duel.invite.notFound': {
+    fr: 'Ce duel est introuvable.',
+    en: 'This duel could not be found.',
+  },
+  'duel.invite.error': {
+    fr: 'Impossible d’accepter le défi. Réessaie.',
+    en: 'Could not accept the challenge. Please try again.',
+  },
+  'duel.invite.quickCta': {
+    fr: 'Lancer un duel rapide',
+    en: 'Start a quick duel',
+  },
+  'duel.invite.installTitle': {
+    fr: 'Joue à BIGHEAD partout',
+    en: 'Play BIGHEAD anywhere',
+  },
+  // Host waiting / share
+  'duel.share.waiting.title': {
+    fr: 'En attente que ton ami accepte',
+    en: 'Waiting for your friend to accept',
+  },
+  'duel.share.waiting.subtitle': {
+    fr: 'Partage le lien ci-dessous. Dès que ton ami joue, on compare vos scores.',
+    en: 'Share the link below. As soon as your friend plays, we compare your scores.',
+  },
+  'duel.share.cta': { fr: 'Partager le défi', en: 'Share the challenge' },
+  'duel.share.copy': { fr: 'Copier le lien', en: 'Copy link' },
+  'duel.share.copied': { fr: 'Lien copié !', en: 'Link copied!' },
+  'duel.share.text': {
+    fr: 'Je te défie sur BIGHEAD ! Réponds à 10 questions :',
+    en: 'I challenge you on BIGHEAD! Answer 10 questions:',
+  },
+  'duel.share.play': { fr: 'Jouer ma manche', en: 'Play my round' },
+
   // Weekly Challenge route
   'nav.weekly': { fr: 'Défi', en: 'Challenge' },
   'weekly.title': { fr: 'Défi de la semaine', en: 'Weekly Challenge' },
