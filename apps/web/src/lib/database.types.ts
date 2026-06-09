@@ -2362,6 +2362,7 @@ export type Database = {
         Returns: Json
       }
       claim_lifeline_use_xp: { Args: never; Returns: Json }
+      claim_open_duel: { Args: { p_duel_id: string }; Returns: Json }
       complete_referral_if_eligible: {
         Args: { p_user_id: string }
         Returns: boolean
@@ -2395,6 +2396,10 @@ export type Database = {
           challenge_id: string
           share_url: string
         }[]
+      }
+      create_open_duel: {
+        Args: { p_category: string; p_language: string }
+        Returns: string
       }
       create_weekly_tournament: { Args: never; Returns: string }
       elo_expected_score: {
