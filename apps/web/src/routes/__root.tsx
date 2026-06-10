@@ -18,7 +18,7 @@ import appCss from '../styles.css?url'
 const UMAMI_SRC = import.meta.env.VITE_UMAMI_SRC as string | undefined
 const UMAMI_WEBSITE_ID =
   (import.meta.env.VITE_UMAMI_WEBSITE_ID as string | undefined) ??
-  '9bb370f8-710f-497b-8df4-430f0095ce10'
+  '5837a06e-06f6-4cd8-b00c-b4777e40cdba'
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
