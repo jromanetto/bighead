@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatWeeklyQuestion, themeDescription, themeLabel } from './weekly'
+import {
+  formatWeeklyQuestion,
+  isReplayable,
+  parseReplayState,
+  themeDescription,
+  themeLabel,
+} from './weekly'
 
 import type { WeeklyChallenge, WeeklyQuestionRow } from './weekly'
 
@@ -115,5 +121,36 @@ describe('themeLabel / themeDescription', () => {
     expect(
       themeDescription({ ...challenge, description_en: null }, 'en'),
     ).toBeNull()
+  })
+})
+
+describe('isReplayable', () => {
+  it('allows archived and closed challenges', () => {
+    expect(isReplayable('archived')).toBe(true)
+    expect(isReplayable('closed')).toBe(true)
+  })
+
+  it('rejects active and upcoming challenges', () => {
+    expect(isReplayable('active')).toBe(false)
+    expect(isReplayable('upcoming')).toBe(false)
+  })
+})
+
+describe('parseReplayState', () => {
+  it('parses a valid jsonb payload', () => {
+    expect(
+      parseReplayState({ current_position: 3, correct_count: 2, completed: false }),
+    ).toEqual({ current_position: 3, correct_count: 2, completed: false })
+  })
+
+  it('throws on null, non-objects and missing fields', () => {
+    expect(() => parseReplayState(null)).toThrow('malformed replay state')
+    expect(() => parseReplayState('nope')).toThrow('malformed replay state')
+    expect(() =>
+      parseReplayState({ current_position: '3', correct_count: 2, completed: false }),
+    ).toThrow('malformed replay state')
+    expect(() =>
+      parseReplayState({ current_position: 3, correct_count: 2 }),
+    ).toThrow('malformed replay state')
   })
 })

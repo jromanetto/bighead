@@ -9,12 +9,16 @@ import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
 import { trackInstall } from '#/lib/analytics'
 import {
   getActiveChallenges,
+  getChallengeHistory,
   getMyProgress,
   themeDescription,
   themeLabel,
 } from '#/lib/game/weekly'
 
-import type { WeeklyChallenge } from '#/lib/game/weekly'
+import type {
+  ChallengeHistoryEntry,
+  WeeklyChallenge,
+} from '#/lib/game/weekly'
 
 export const Route = createFileRoute('/weekly/')({ component: WeeklyList })
 
@@ -41,6 +45,13 @@ function WeeklyList() {
     })),
   })
 
+  // Past challenges (played or not) — the "Plus de quiz hebdo" shelf.
+  const historyQuery = useQuery({
+    queryKey: ['weekly-history'],
+    queryFn: getChallengeHistory,
+    enabled: sessionReady && !!userId,
+  })
+
   if (sessionReady && sessionFailed) {
     return <SessionError />
   }
@@ -64,25 +75,38 @@ function WeeklyList() {
       ) : challenges.length === 0 ? (
         <EmptyState />
       ) : (
-        <ul className="flex flex-col gap-3">
-          {challenges.map((c, i) => {
-            const progress = progressQueries[i]?.data ?? null
-            return (
-              <li key={c.id}>
-                <ChallengeCard
-                  challenge={c}
-                  lang={lang}
-                  done={progress?.current_position ?? 0}
-                  completed={!!progress?.completed_at}
-                  onSelect={() =>
-                    navigate({ to: '/weekly/$id', params: { id: c.id } })
-                  }
-                />
-              </li>
-            )
-          })}
-        </ul>
+        <section className="flex flex-col gap-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-fg/50">
+            {t('weekly.thisWeek.title')}
+          </h2>
+          <ul className="flex flex-col gap-3">
+            {challenges.map((c, i) => {
+              const progress = progressQueries[i]?.data ?? null
+              return (
+                <li key={c.id}>
+                  <ChallengeCard
+                    challenge={c}
+                    lang={lang}
+                    done={progress?.current_position ?? 0}
+                    completed={!!progress?.completed_at}
+                    onSelect={() =>
+                      navigate({ to: '/weekly/$id', params: { id: c.id } })
+                    }
+                  />
+                </li>
+              )
+            })}
+          </ul>
+        </section>
       )}
+
+      <HistorySection
+        entries={historyQuery.data ?? null}
+        ready={sessionReady && !historyQuery.isPending}
+        failed={historyQuery.isError}
+        lang={lang}
+        onSelect={(id) => navigate({ to: '/weekly/$id', params: { id } })}
+      />
 
       <AppCta />
     </div>
@@ -154,6 +178,114 @@ function ChallengeCard({
           ) : null}
         </div>
       </div>
+    </button>
+  )
+}
+
+function HistorySection({
+  entries,
+  ready,
+  failed,
+  lang,
+  onSelect,
+}: {
+  entries: ChallengeHistoryEntry[] | null
+  ready: boolean
+  failed: boolean
+  lang: 'fr' | 'en'
+  onSelect: (id: string) => void
+}) {
+  const t = useT()
+
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-col gap-0.5">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-fg/50">
+          📚 {t('weekly.history.title')}
+        </h2>
+        <p className="text-xs text-fg/40">{t('weekly.history.subtitle')}</p>
+      </div>
+
+      {!ready ? (
+        <WeeklySkeleton />
+      ) : failed ? (
+        <p
+          role="alert"
+          className="rounded-xl border border-error/30 bg-error/10 p-4 text-center text-sm text-fg"
+        >
+          {t('weekly.error')}
+        </p>
+      ) : !entries || entries.length === 0 ? (
+        <p className="rounded-xl border border-white/10 bg-surface p-4 text-sm text-fg/60">
+          {t('weekly.history.empty')}
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {entries.map((e) => (
+            <li key={e.challenge_id}>
+              <HistoryCard entry={e} lang={lang} onSelect={onSelect} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
+function HistoryCard({
+  entry,
+  lang,
+  onSelect,
+}: {
+  entry: ChallengeHistoryEntry
+  lang: 'fr' | 'en'
+  onSelect: (id: string) => void
+}) {
+  const t = useT()
+  const label = lang === 'fr' ? entry.theme_label_fr : entry.theme_label_en
+  // correct_count null = never played (LEFT JOIN server-side).
+  const hasPlayed = entry.correct_count !== null
+  const cta = hasPlayed ? t('weekly.history.replay') : t('weekly.history.play')
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(entry.challenge_id)}
+      className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-surface p-3 text-left transition-colors hover:border-primary/60"
+    >
+      <span
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
+        style={{ backgroundColor: `${entry.color}22` }}
+        aria-hidden="true"
+      >
+        {entry.emoji}
+      </span>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-sm font-bold text-fg">{label}</span>
+        <span className="mt-0.5 text-xs text-fg/50">
+          {hasPlayed ? (
+            <>
+              {t('weekly.history.yourScore')}:{' '}
+              <span className="font-semibold text-fg/80">
+                {entry.correct_count}/{entry.total_questions}
+              </span>
+              {entry.best_replay_score !== null ? (
+                <span className="ml-2 text-primary">
+                  ↻ {t('weekly.history.bestReplay')}: {entry.best_replay_score}
+                  /{entry.total_questions}
+                </span>
+              ) : null}
+            </>
+          ) : (
+            t('weekly.history.notPlayed')
+          )}
+        </span>
+      </div>
+
+      <span className="shrink-0 rounded-xl border border-white/15 px-3 py-1.5 text-xs font-semibold text-fg/80">
+        {hasPlayed ? '↻' : '▶'} {cta}
+      </span>
     </button>
   )
 }

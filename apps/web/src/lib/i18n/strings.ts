@@ -568,6 +568,33 @@ export const strings = {
     fr: 'Défi introuvable',
     en: 'Challenge not found',
   },
+  'weekly.thisWeek.title': { fr: 'Cette semaine', en: 'This week' },
+  'weekly.history.title': {
+    fr: 'Plus de quiz hebdo',
+    en: 'More weekly quizzes',
+  },
+  'weekly.history.subtitle': {
+    fr: 'Rejoue les défis passés, juste pour le fun (sans XP).',
+    en: 'Replay past challenges, just for fun (no XP).',
+  },
+  'weekly.history.notPlayed': { fr: 'Pas encore joué', en: 'Not played yet' },
+  'weekly.history.yourScore': { fr: 'Ton score', en: 'Your score' },
+  'weekly.history.bestReplay': { fr: 'Meilleur replay', en: 'Best replay' },
+  'weekly.history.play': { fr: 'Jouer', en: 'Play' },
+  'weekly.history.replay': { fr: 'Rejouer', en: 'Replay' },
+  'weekly.history.empty': {
+    fr: 'Aucun défi passé pour le moment.',
+    en: 'No past challenges yet.',
+  },
+  'weekly.replay.badge': { fr: 'Replay · sans XP', en: 'Replay · no XP' },
+  'weekly.replay.result.title': {
+    fr: 'Replay terminé !',
+    en: 'Replay complete!',
+  },
+  'weekly.replay.original': {
+    fr: 'Score d’origine',
+    en: 'Original score',
+  },
   'weekly.learn.title': { fr: 'Le savais-tu ?', en: 'Did you know?' },
   'weekly.next': { fr: 'Suivant', en: 'Next' },
   'weekly.result.title': { fr: 'Défi terminé !', en: 'Challenge complete!' },

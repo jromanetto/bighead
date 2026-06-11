@@ -14,10 +14,13 @@ import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
 import {
   formatWeeklyQuestion,
-  getActiveChallenges,
+  getChallengeById,
   getChallengeQuestions,
   getMyProgress,
   getWeeklyLeaderboard,
+  isReplayable,
+  startReplay,
+  submitReplayAnswer,
   submitWeeklyAnswer,
   themeLabel,
 } from '#/lib/game/weekly'
@@ -45,6 +48,10 @@ interface CompleteState {
   total: number
   dayStreak: number
   perfect: boolean
+  /** True when this run was a no-XP replay of a past challenge. */
+  replay: boolean
+  /** The user's original (live) score, when they played the challenge. */
+  originalScore: number | null
 }
 
 function WeeklyScreen() {
@@ -70,6 +77,11 @@ function WeeklyScreen() {
   // SSR stays a pure loading state and Math.random never runs on the server).
   const [current, setCurrent] = useState<WeeklyGameQuestion | null>(null)
 
+  // Replay mode (archived/closed challenge): session id + the user's original
+  // live score for the side-by-side on the result screen. `null` = live play.
+  const [replayId, setReplayId] = useState<string | null>(null)
+  const [originalScore, setOriginalScore] = useState<number | null>(null)
+
   // Positions we've already submitted, to guard against double-submit.
   const submittedRef = useRef<Set<number>>(new Set())
   const advancingRef = useRef(false)
@@ -80,12 +92,12 @@ function WeeklyScreen() {
     let cancelled = false
     const isCancelled = () => cancelled
     ;(async () => {
-      let active: WeeklyChallenge[]
+      let meta: WeeklyChallenge | null
       let rows: WeeklyQuestionRow[]
       let progress: WeeklyProgress | null
       try {
-        ;[active, rows, progress] = await Promise.all([
-          getActiveChallenges(),
+        ;[meta, rows, progress] = await Promise.all([
+          getChallengeById(id),
           getChallengeQuestions(id),
           getMyProgress(id),
         ])
@@ -96,8 +108,7 @@ function WeeklyScreen() {
       }
       if (isCancelled()) return
 
-      const meta = active.find((c) => c.id === id) ?? null
-      if (!meta) {
+      if (!meta || meta.status === 'upcoming') {
         setPhase('notFound')
         return
       }
@@ -110,6 +121,27 @@ function WeeklyScreen() {
       setQuestions(rows)
 
       const total = meta.total_questions || rows.length
+
+      // Past challenge → no-XP replay: open a fresh session and start at Q1.
+      if (isReplayable(meta.status)) {
+        let session: string
+        try {
+          session = await startReplay(id)
+        } catch (err) {
+          console.error('startReplay failed', err)
+          if (!isCancelled()) setPhase('error')
+          return
+        }
+        if (isCancelled()) return
+        setReplayId(session)
+        setOriginalScore(progress?.correct_count ?? null)
+        setIndex(0)
+        setCorrectSoFar(0)
+        setPhase('playing')
+        track(EV.gameStarted, { mode: 'weekly_replay' })
+        return
+      }
+
       const done = progress?.current_position ?? 0
 
       if (progress?.completed_at || done >= total) {
@@ -179,22 +211,27 @@ function WeeklyScreen() {
   /**
    * Submits the answer for `position` (1-based), then advances. On the strict
    * "expected position N, got M" error, refetch progress and resync so a stale
-   * client index self-heals instead of getting stuck.
+   * client index self-heals instead of getting stuck. Replays submit to their
+   * own session RPC and never resync (a replay session can't be resumed).
    */
   async function submitAndAdvance(position: number, isCorrect: boolean) {
     if (!submittedRef.current.has(position)) {
       submittedRef.current.add(position)
       try {
-        await submitWeeklyAnswer(id, position, isCorrect)
+        if (replayId) {
+          await submitReplayAnswer(replayId, position, isCorrect)
+        } else {
+          await submitWeeklyAnswer(id, position, isCorrect)
+        }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
-        if (msg.includes('expected position')) {
+        if (!replayId && msg.includes('expected position')) {
           // Resync from the server's view of progress.
           submittedRef.current.delete(position)
           await resyncFromProgress()
           return
         }
-        console.error('submitWeeklyAnswer failed', err)
+        console.error('weekly submit failed', err)
         // Non-fatal: keep playing locally so the user isn't blocked.
       }
     }
@@ -236,9 +273,24 @@ function WeeklyScreen() {
   function finishLocally() {
     const total = challenge?.total_questions || questions.length
     track(EV.gameFinished, {
-      mode: 'weekly',
+      mode: replayId ? 'weekly_replay' : 'weekly',
       score: correctSoFar,
     })
+
+    // Replays end on local state: no XP, no streak, original score alongside.
+    if (replayId) {
+      setComplete({
+        correctCount: correctSoFar,
+        finalScore: null,
+        total,
+        dayStreak: 0,
+        perfect: total > 0 && correctSoFar >= total,
+        replay: true,
+        originalScore,
+      })
+      setPhase('complete')
+      return
+    }
     ;(async () => {
       let progress: WeeklyProgress | null = null
       try {
@@ -255,6 +307,8 @@ function WeeklyScreen() {
               total,
               dayStreak: 0,
               perfect: correctSoFar >= total,
+              replay: false,
+              originalScore: null,
             },
       )
       setPhase('complete')
@@ -316,9 +370,16 @@ function WeeklyScreen() {
         >
           ← {themeLabel(challenge, lang)}
         </Link>
-        <span className="text-sm font-medium text-fg/60">
-          {index + 1} / {total}
-        </span>
+        <div className="flex items-center gap-2">
+          {replayId ? (
+            <span className="rounded-full bg-accent2/15 px-2.5 py-0.5 text-[11px] font-semibold text-accent2">
+              {t('weekly.replay.badge')}
+            </span>
+          ) : null}
+          <span className="text-sm font-medium text-fg/60">
+            {index + 1} / {total}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-4">
@@ -374,6 +435,8 @@ function buildComplete(
     total,
     dayStreak: progress?.day_streak ?? 0,
     perfect: total > 0 && correctCount >= total,
+    replay: false,
+    originalScore: null,
   }
 }
 
@@ -441,8 +504,13 @@ function WeeklyComplete({
     >
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-2xl font-bold text-fg">
-          {t('weekly.result.title')}
+          {state.replay ? t('weekly.replay.result.title') : t('weekly.result.title')}
         </h1>
+        {state.replay ? (
+          <span className="rounded-full bg-accent2/15 px-3 py-0.5 text-xs font-semibold text-accent2">
+            {t('weekly.replay.badge')}
+          </span>
+        ) : null}
         {state.perfect ? (
           <motion.span
             initial={{ scale: 0.5, rotate: -6 }}
@@ -461,7 +529,16 @@ function WeeklyComplete({
           value={`${state.correctCount} / ${state.total}`}
           highlight
         />
-        {state.finalScore !== null ? (
+        {state.replay ? (
+          <Stat
+            label={t('weekly.replay.original')}
+            value={
+              state.originalScore !== null
+                ? `${state.originalScore} / ${state.total}`
+                : '—'
+            }
+          />
+        ) : state.finalScore !== null ? (
           <Stat label={t('weekly.result.score')} value={state.finalScore} />
         ) : (
           <Stat label={t('weekly.result.streak')} value={state.dayStreak} />

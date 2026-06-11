@@ -122,6 +122,69 @@ export function formatWeeklyQuestion(
   }
 }
 
+/**
+ * One row from `get_my_challenge_history`: every past (archived/closed)
+ * challenge, whether the user played it or not. Progress fields are `null`
+ * when the quiz was never played (LEFT JOIN server-side) — the generated
+ * Supabase types miss that nullability, hence this local shape.
+ */
+export interface ChallengeHistoryEntry {
+  challenge_id: string
+  challenge_type: string
+  theme_slug: string
+  theme_label_fr: string
+  theme_label_en: string
+  description_fr: string | null
+  description_en: string | null
+  emoji: string
+  color: string
+  start_date: string
+  end_date: string
+  total_questions: number
+  final_score: number | null
+  correct_count: number | null
+  badge_earned: string | null
+  completed_at: string | null
+  final_xp_awarded: number | null
+  best_replay_score: number | null
+}
+
+/** Server state of a replay session after each strict-sequential answer. */
+export interface ReplayState {
+  current_position: number
+  correct_count: number
+  completed: boolean
+}
+
+/** Whether a challenge can be replayed (the backend enforces the same rule). */
+export function isReplayable(status: WeeklyChallenge['status']): boolean {
+  return status === 'archived' || status === 'closed'
+}
+
+/**
+ * Parses the `submit_replay_answer` jsonb payload into a typed state.
+ * Throws on malformed payloads so callers fail loudly instead of advancing
+ * on garbage.
+ */
+export function parseReplayState(payload: unknown): ReplayState {
+  if (typeof payload !== 'object' || payload === null) {
+    throw new Error('malformed replay state')
+  }
+  const p = payload as Record<string, unknown>
+  if (
+    typeof p.current_position !== 'number' ||
+    typeof p.correct_count !== 'number' ||
+    typeof p.completed !== 'boolean'
+  ) {
+    throw new Error('malformed replay state')
+  }
+  return {
+    current_position: p.current_position,
+    correct_count: p.correct_count,
+    completed: p.completed,
+  }
+}
+
 /** Lists the currently active weekly challenges (RLS-readable). */
 export async function getActiveChallenges(): Promise<WeeklyChallenge[]> {
   const supabase = getBrowserClient()
@@ -133,6 +196,76 @@ export async function getActiveChallenges(): Promise<WeeklyChallenge[]> {
 
   if (error) throw error
   return data
+}
+
+/**
+ * Loads a single challenge by id whatever its status (RLS exposes
+ * active/closed/archived). Returns `null` when missing or still upcoming.
+ */
+export async function getChallengeById(
+  challengeId: string,
+): Promise<WeeklyChallenge | null> {
+  const supabase = getBrowserClient()
+
+  const { data, error } = await supabase
+    .from('weekly_challenges')
+    .select('*')
+    .eq('id', challengeId)
+    .maybeSingle()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Every past (archived/closed) challenge with the user's progress when it
+ * exists. Sorted by `end_date` DESC server-side — feeds "Plus de quiz hebdo".
+ */
+export async function getChallengeHistory(): Promise<ChallengeHistoryEntry[]> {
+  const supabase = getBrowserClient()
+
+  const { data, error } = await supabase.rpc('get_my_challenge_history')
+
+  if (error) throw error
+  // NB: the generated RPC types miss the LEFT JOIN nullability — the local
+  // `ChallengeHistoryEntry` (wider, nullable) is the truthful shape.
+  return data
+}
+
+/**
+ * Opens a replay session for an archived/closed challenge and returns its id.
+ * Replays never award XP; the backend rejects non-replayable statuses.
+ */
+export async function startReplay(challengeId: string): Promise<string> {
+  const supabase = getBrowserClient()
+
+  const { data, error } = await supabase.rpc('start_weekly_replay', {
+    p_challenge_id: challengeId,
+  })
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Submits one replay answer. Same strict-sequential contract as the live
+ * challenge: `position` is 1-based and must equal `current_position + 1`.
+ */
+export async function submitReplayAnswer(
+  replayId: string,
+  position: number,
+  isCorrect: boolean,
+): Promise<ReplayState> {
+  const supabase = getBrowserClient()
+
+  const { data, error } = await supabase.rpc('submit_replay_answer', {
+    p_replay_id: replayId,
+    p_position: position,
+    p_is_correct: isCorrect,
+  })
+
+  if (error) throw error
+  return parseReplayState(data)
 }
 
 /** Loads a challenge's questions ordered by 1-based position. */
