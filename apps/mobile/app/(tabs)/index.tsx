@@ -13,7 +13,7 @@ import { Icon } from "../../src/components/ui";
 import { WeeklyChallengeBanner } from "../../src/components/WeeklyChallengeBanner";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { SkeletonCard } from "../../src/components/Skeleton";
-import { getRecentChallenges, type WeeklyChallenge } from "../../src/services/weeklyChallenge";
+import { getHomeChallenges, type WeeklyChallenge } from "../../src/services/weeklyChallenge";
 
 // New QuizNext design colors
 const COLORS = {
@@ -85,7 +85,7 @@ export default function HomeScreen() {
 
   const loadRecentChallenges = useCallback(async () => {
     try {
-      const list = await getRecentChallenges(4);
+      const list = await getHomeChallenges();
       setRecentChallenges(list);
     } catch (err) {
       console.warn("[home] recent challenges load failed:", err);

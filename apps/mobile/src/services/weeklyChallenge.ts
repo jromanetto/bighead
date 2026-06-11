@@ -78,11 +78,11 @@ export async function getActiveWeeklyChallenge(
 }
 
 /**
- * Fetches the most recent weekly challenges (any type, any non-upcoming status)
- * sorted by start_date DESC. Used on the home screen to surface the latest defis.
- * Skips challenges that haven't finished generating.
+ * Sélection de la home : la dernière actu de la semaine (news) + les 3
+ * derniers quiz thématiques (le plus récent chasse le plus vieux).
+ * Tout le reste vit dans l'écran "Plus de quiz hebdo" (historique).
  */
-export async function getRecentChallenges(limit: number = 4): Promise<WeeklyChallenge[]> {
+export async function getHomeChallenges(): Promise<WeeklyChallenge[]> {
   const { data, error } = await (supabase as any)
     .from("weekly_challenges")
     .select("*")
@@ -90,12 +90,15 @@ export async function getRecentChallenges(limit: number = 4): Promise<WeeklyChal
     .eq("generation_status", "ready")
     .order("start_date", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .limit(12);
   if (error) {
-    console.warn("[weekly] recent fetch:", error.message);
+    console.warn("[weekly] home fetch:", error.message);
     return [];
   }
-  return (data as WeeklyChallenge[]) ?? [];
+  const list = (data as WeeklyChallenge[]) ?? [];
+  const news = list.find((c) => c.challenge_type === "news");
+  const themed = list.filter((c) => c.challenge_type === "themed").slice(0, 3);
+  return [...(news ? [news] : []), ...themed];
 }
 
 export async function getMyWeeklyProgress(challengeId: string): Promise<WeeklyProgress | null> {
