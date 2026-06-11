@@ -31,7 +31,9 @@ jobs:
           package_json_file: apps/web/package.json
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22+: supabase-js requiert le WebSocket natif (le VPS, lui, reste
+          # en Node 20 avec le polyfill ws de server.mjs).
+          node-version: 22
           cache: pnpm
           cache-dependency-path: apps/web/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
