@@ -180,6 +180,20 @@ export const strings = {
     en: 'Draw {myScore}-{oppScore} on BIGHEAD ⚔️ Challenge me!',
   },
 
+  // Web push (rappel quotidien PWA)
+  'push.title': {
+    fr: 'Active le rappel quotidien',
+    en: 'Turn on the daily reminder',
+  },
+  'push.subtitle': {
+    fr: 'Une notification par jour pour ton défi — garde ta série 🔥',
+    en: 'One notification a day for your challenge — keep your streak 🔥',
+  },
+  'push.disable': {
+    fr: '🔔 Rappel quotidien activé — désactiver',
+    en: '🔔 Daily reminder on — turn off',
+  },
+
   // Play hub
   'play.hub.title': { fr: 'Choisis ton mode', en: 'Pick your mode' },
   'play.hub.subtitle': {

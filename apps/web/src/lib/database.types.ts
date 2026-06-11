@@ -10,7 +10,32 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.1'
+    PostgrestVersion: "14.1"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -80,18 +105,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'activity_events_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "activity_events_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'activity_events_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "activity_events_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -131,11 +156,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'answer_analytics_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "answer_analytics_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -169,18 +194,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'app_feedback_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "app_feedback_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'app_feedback_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "app_feedback_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -292,32 +317,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'challenge_attempts_challenge_id_fkey'
-            columns: ['challenge_id']
+            foreignKeyName: "challenge_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
             isOneToOne: false
-            referencedRelation: 'challenges'
-            referencedColumns: ['id']
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'challenge_attempts_game_id_fkey'
-            columns: ['game_id']
+            foreignKeyName: "challenge_attempts_game_id_fkey"
+            columns: ["game_id"]
             isOneToOne: false
-            referencedRelation: 'games'
-            referencedColumns: ['id']
+            referencedRelation: "games"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'challenge_attempts_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "challenge_attempts_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'challenge_attempts_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "challenge_attempts_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -354,25 +379,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'challenges_creator_id_fkey'
-            columns: ['creator_id']
+            foreignKeyName: "challenges_creator_id_fkey"
+            columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'challenges_creator_id_fkey'
-            columns: ['creator_id']
+            foreignKeyName: "challenges_creator_id_fkey"
+            columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'challenges_game_id_fkey'
-            columns: ['game_id']
+            foreignKeyName: "challenges_game_id_fkey"
+            columns: ["game_id"]
             isOneToOne: false
-            referencedRelation: 'games'
-            referencedColumns: ['id']
+            referencedRelation: "games"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -403,11 +428,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'daily_challenges_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "daily_challenges_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -453,11 +478,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'daily_questions_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "daily_questions_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -533,18 +558,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'duel_rounds_duel_id_fkey'
-            columns: ['duel_id']
+            foreignKeyName: "duel_rounds_duel_id_fkey"
+            columns: ["duel_id"]
             isOneToOne: false
-            referencedRelation: 'duels'
-            referencedColumns: ['id']
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'duel_rounds_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "duel_rounds_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -629,46 +654,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'duels_guest_id_fkey'
-            columns: ['guest_id']
+            foreignKeyName: "duels_guest_id_fkey"
+            columns: ["guest_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'duels_guest_id_fkey'
-            columns: ['guest_id']
+            foreignKeyName: "duels_guest_id_fkey"
+            columns: ["guest_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'duels_host_id_fkey'
-            columns: ['host_id']
+            foreignKeyName: "duels_host_id_fkey"
+            columns: ["host_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'duels_host_id_fkey'
-            columns: ['host_id']
+            foreignKeyName: "duels_host_id_fkey"
+            columns: ["host_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'duels_winner_id_fkey'
-            columns: ['winner_id']
+            foreignKeyName: "duels_winner_id_fkey"
+            columns: ["winner_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'duels_winner_id_fkey'
-            columns: ['winner_id']
+            foreignKeyName: "duels_winner_id_fkey"
+            columns: ["winner_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -705,25 +730,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'friend_challenge_attempts_challenge_id_fkey'
-            columns: ['challenge_id']
+            foreignKeyName: "friend_challenge_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
             isOneToOne: false
-            referencedRelation: 'friend_challenges'
-            referencedColumns: ['id']
+            referencedRelation: "friend_challenges"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'friend_challenge_attempts_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "friend_challenge_attempts_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'friend_challenge_attempts_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "friend_challenge_attempts_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -766,18 +791,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'friend_challenges_creator_id_fkey'
-            columns: ['creator_id']
+            foreignKeyName: "friend_challenges_creator_id_fkey"
+            columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'friend_challenges_creator_id_fkey'
-            columns: ['creator_id']
+            foreignKeyName: "friend_challenges_creator_id_fkey"
+            columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -817,18 +842,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'game_answers_game_id_fkey'
-            columns: ['game_id']
+            foreignKeyName: "game_answers_game_id_fkey"
+            columns: ["game_id"]
             isOneToOne: false
-            referencedRelation: 'games'
-            referencedColumns: ['id']
+            referencedRelation: "games"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'game_answers_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "game_answers_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -904,18 +929,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'games_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "games_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'games_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "games_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -982,18 +1007,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'notification_dedupe_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "notification_dedupe_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notification_dedupe_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "notification_dedupe_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1027,25 +1052,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'notification_logs_daily_question_id_fkey'
-            columns: ['daily_question_id']
+            foreignKeyName: "notification_logs_daily_question_id_fkey"
+            columns: ["daily_question_id"]
             isOneToOne: false
-            referencedRelation: 'daily_questions'
-            referencedColumns: ['id']
+            referencedRelation: "daily_questions"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notification_logs_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "notification_logs_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notification_logs_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "notification_logs_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1073,18 +1098,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'notification_preferences_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notification_preferences_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1256,11 +1281,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'reddit_posts_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "reddit_posts_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1282,18 +1307,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'referral_codes_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "referral_codes_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'referral_codes_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "referral_codes_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1327,32 +1352,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'referrals_referee_user_id_fkey'
-            columns: ['referee_user_id']
+            foreignKeyName: "referrals_referee_user_id_fkey"
+            columns: ["referee_user_id"]
             isOneToOne: true
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'referrals_referee_user_id_fkey'
-            columns: ['referee_user_id']
+            foreignKeyName: "referrals_referee_user_id_fkey"
+            columns: ["referee_user_id"]
             isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'referrals_referrer_user_id_fkey'
-            columns: ['referrer_user_id']
+            foreignKeyName: "referrals_referrer_user_id_fkey"
+            columns: ["referrer_user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'referrals_referrer_user_id_fkey'
-            columns: ['referrer_user_id']
+            foreignKeyName: "referrals_referrer_user_id_fkey"
+            columns: ["referrer_user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1383,18 +1408,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'streak_freezes_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "streak_freezes_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'streak_freezes_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "streak_freezes_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1437,25 +1462,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'tournament_participants_tournament_id_fkey'
-            columns: ['tournament_id']
+            foreignKeyName: "tournament_participants_tournament_id_fkey"
+            columns: ["tournament_id"]
             isOneToOne: false
-            referencedRelation: 'tournaments'
-            referencedColumns: ['id']
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tournament_participants_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "tournament_participants_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tournament_participants_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "tournament_participants_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1480,18 +1505,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'tournament_questions_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "tournament_questions_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tournament_questions_tournament_id_fkey'
-            columns: ['tournament_id']
+            foreignKeyName: "tournament_questions_tournament_id_fkey"
+            columns: ["tournament_id"]
             isOneToOne: false
-            referencedRelation: 'tournaments'
-            referencedColumns: ['id']
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1561,25 +1586,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_achievements_achievement_id_fkey'
-            columns: ['achievement_id']
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
             isOneToOne: false
-            referencedRelation: 'achievements'
-            referencedColumns: ['id']
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_achievements_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_achievements_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1610,18 +1635,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_cached_questions_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_cached_questions_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_cached_questions_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_cached_questions_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1655,18 +1680,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_category_stats_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_category_stats_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_category_stats_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_category_stats_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1697,25 +1722,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_daily_challenges_challenge_id_fkey'
-            columns: ['challenge_id']
+            foreignKeyName: "user_daily_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
             isOneToOne: false
-            referencedRelation: 'daily_challenges'
-            referencedColumns: ['id']
+            referencedRelation: "daily_challenges"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_daily_challenges_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_daily_challenges_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_daily_challenges_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_daily_challenges_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1749,18 +1774,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_lifelines_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_lifelines_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_lifelines_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_lifelines_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1791,25 +1816,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_questions_seen_question_id_fkey'
-            columns: ['question_id']
+            foreignKeyName: "user_questions_seen_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_questions_seen_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_questions_seen_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_questions_seen_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_questions_seen_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1864,18 +1889,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_settings_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'user_settings_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1951,6 +1976,54 @@ export type Database = {
         }
         Relationships: []
       }
+      web_push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string | null
+          endpoint: string
+          id: string
+          lang: string
+          last_notified_at: string | null
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          lang?: string
+          last_notified_at?: string | null
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          lang?: string
+          last_notified_at?: string | null
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "web_push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "web_push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weekly_challenge_progress: {
         Row: {
           badge_earned: string | null
@@ -2002,25 +2075,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'weekly_challenge_progress_challenge_id_fkey'
-            columns: ['challenge_id']
+            foreignKeyName: "weekly_challenge_progress_challenge_id_fkey"
+            columns: ["challenge_id"]
             isOneToOne: false
-            referencedRelation: 'weekly_challenges'
-            referencedColumns: ['id']
+            referencedRelation: "weekly_challenges"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'weekly_challenge_progress_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "weekly_challenge_progress_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'weekly_challenge_progress_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "weekly_challenge_progress_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2084,25 +2157,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'weekly_challenge_questions_archived_question_id_en_fkey'
-            columns: ['archived_question_id_en']
+            foreignKeyName: "weekly_challenge_questions_archived_question_id_en_fkey"
+            columns: ["archived_question_id_en"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'weekly_challenge_questions_archived_question_id_fr_fkey'
-            columns: ['archived_question_id_fr']
+            foreignKeyName: "weekly_challenge_questions_archived_question_id_fr_fkey"
+            columns: ["archived_question_id_fr"]
             isOneToOne: false
-            referencedRelation: 'questions'
-            referencedColumns: ['id']
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'weekly_challenge_questions_challenge_id_fkey'
-            columns: ['challenge_id']
+            foreignKeyName: "weekly_challenge_questions_challenge_id_fkey"
+            columns: ["challenge_id"]
             isOneToOne: false
-            referencedRelation: 'weekly_challenges'
-            referencedColumns: ['id']
+            referencedRelation: "weekly_challenges"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2223,11 +2296,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'weekly_challenges_theme_slug_fkey'
-            columns: ['theme_slug']
+            foreignKeyName: "weekly_challenges_theme_slug_fkey"
+            columns: ["theme_slug"]
             isOneToOne: false
-            referencedRelation: 'weekly_challenge_themes'
-            referencedColumns: ['slug']
+            referencedRelation: "weekly_challenge_themes"
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -2264,25 +2337,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'weekly_replay_results_challenge_id_fkey'
-            columns: ['challenge_id']
+            foreignKeyName: "weekly_replay_results_challenge_id_fkey"
+            columns: ["challenge_id"]
             isOneToOne: false
-            referencedRelation: 'weekly_challenges'
-            referencedColumns: ['id']
+            referencedRelation: "weekly_challenges"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'weekly_replay_results_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "weekly_replay_results_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'leaderboard'
-            referencedColumns: ['id']
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'weekly_replay_results_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "weekly_replay_results_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2616,8 +2689,8 @@ export type Database = {
           user_id: string
         }
         SetofOptions: {
-          from: '*'
-          to: 'user_lifelines'
+          from: "*"
+          to: "user_lifelines"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2766,8 +2839,8 @@ export type Database = {
           user_id: string
         }
         SetofOptions: {
-          from: '*'
-          to: 'user_lifelines'
+          from: "*"
+          to: "user_lifelines"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2846,8 +2919,8 @@ export type Database = {
           target_category: string
         }
         SetofOptions: {
-          from: '*'
-          to: 'weekly_challenge_themes'
+          from: "*"
+          to: "weekly_challenge_themes"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2945,33 +3018,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -2980,23 +3053,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -3005,23 +3078,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -3030,39 +3103,42 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

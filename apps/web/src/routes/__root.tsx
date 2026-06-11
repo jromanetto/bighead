@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -84,6 +84,10 @@ export const Route = createRootRoute({
       // Safari iOS shows a native App Store banner site-wide — free install
       // funnel with zero UI to maintain.
       { name: 'apple-itunes-app', content: 'app-id=6758253365' },
+      // PWA installée depuis l'écran d'accueil iOS (hors App Store funnel).
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-title', content: 'BIGHEAD' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
     ],
     // No canonical here on purpose: a single hardcoded homepage canonical would
     // (wrongly) tag every page as the homepage. Each indexable route sets its
@@ -93,6 +97,8 @@ export const Route = createRootRoute({
         rel: 'stylesheet',
         href: appCss,
       },
+      { rel: 'manifest', href: '/manifest.json' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
     ],
     // Inject the Umami script only when configured. Defer keeps it off the
     // critical path; the website id is a normal data attribute.
@@ -125,6 +131,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         },
       }),
   )
+
+  // PWA service worker — prod uniquement (le SW polluerait dev et e2e). Le SW
+  // est network-first sur le HTML donc jamais d'app périmée servie du cache.
+  useEffect(() => {
+    if (!import.meta.env.PROD) return
+    if (!('serviceWorker' in navigator)) return
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('sw registration failed', err)
+    })
+  }, [])
 
   return (
     <html lang="fr">

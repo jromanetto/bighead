@@ -58,4 +58,6 @@ export const EV = {
   duelCreated: 'duel_created',
   duelClaimed: 'duel_claimed',
   dailyPlayed: 'daily_played',
+  pushSubscribed: 'push_subscribed',
+  pushUnsubscribed: 'push_unsubscribed',
 } as const

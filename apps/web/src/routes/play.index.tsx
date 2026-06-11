@@ -8,6 +8,7 @@ import { useSession } from '#/lib/auth/SessionProvider'
 import { hasPlayedToday } from '#/lib/game/daily'
 import { getMyStreak } from '#/lib/profile/streak'
 import { CATEGORIES } from '#/lib/game/categories'
+import { PushOptIn } from '#/components/funnel/PushOptIn'
 
 import type { StringKey } from '#/lib/i18n/strings'
 import type { ReactNode } from 'react'
@@ -88,6 +89,8 @@ function PlayHub() {
           </div>
         </Link>
       </div>
+
+      <PushOptIn />
 
       <ThemeQuizzes />
     </div>

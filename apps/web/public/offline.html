@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hors ligne · BIGHEAD</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #161a1d;
+        color: #fff;
+        font-family: system-ui, -apple-system, sans-serif;
+        text-align: center;
+      }
+      main { padding: 24px; }
+      img { width: 96px; height: 96px; border-radius: 24px; }
+      h1 { font-size: 1.4rem; margin: 20px 0 8px; }
+      p { color: rgba(255, 255, 255, 0.6); margin: 0 0 24px; }
+      button {
+        background: #00c2cc;
+        color: #161a1d;
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/logo192.png" alt="BIGHEAD" />
+      <h1>Pas de connexion</h1>
+      <p>BIGHEAD a besoin d’Internet pour charger les questions.</p>
+      <button onclick="location.reload()">Réessayer</button>
+    </main>
+  </body>
+</html>
