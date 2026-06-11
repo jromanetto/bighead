@@ -163,6 +163,10 @@ export const strings = {
     fr: 'J’ai fait {correct}/{total} au quiz BIGHEAD 🧠 Bats-moi !',
     en: 'I got {correct}/{total} on the BIGHEAD quiz 🧠 Beat me!',
   },
+  'share.message.weekly': {
+    fr: 'J’ai fait {correct}/{total} au défi « {theme} » sur BIGHEAD 🧠 Tente ta chance !',
+    en: 'I got {correct}/{total} on the "{theme}" challenge on BIGHEAD 🧠 Your turn!',
+  },
   'share.message.duel.won': {
     fr: 'J’ai gagné mon duel {myScore}-{oppScore} sur BIGHEAD ⚔️ Défie-moi !',
     en: 'I won my duel {myScore}-{oppScore} on BIGHEAD ⚔️ Challenge me!',

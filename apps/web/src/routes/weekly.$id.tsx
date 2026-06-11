@@ -8,10 +8,11 @@ import { SessionError } from '#/components/SessionError'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
 import { EV, track, trackInstall } from '#/lib/analytics'
 import { playCorrect, playWrong } from '#/lib/game/sound'
-import { APP_STORE_URL, PLAY_STORE_URL } from '#/lib/funnel/appLinks'
+import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL  } from '#/lib/funnel/appLinks'
 import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
+import { ShareScore } from '#/components/funnel/ShareScore'
 import {
   formatWeeklyQuestion,
   getChallengeById,
@@ -347,7 +348,14 @@ function WeeklyScreen() {
   }
 
   if (phase === 'complete' && complete) {
-    return <WeeklyComplete challengeId={id} state={complete} userId={userId} />
+    return (
+      <WeeklyComplete
+        challengeId={id}
+        state={complete}
+        userId={userId}
+        challengeName={challenge ? themeLabel(challenge, lang) : 'BIGHEAD'}
+      />
+    )
   }
 
   // phase === 'playing'
@@ -460,13 +468,20 @@ function WeeklyComplete({
   challengeId,
   state,
   userId,
+  challengeName,
 }: {
   challengeId: string
   state: CompleteState
   userId: string | null
+  challengeName: string
 }) {
   const t = useT()
   const firedRef = useRef(false)
+
+  const shareMessage = t('share.message.weekly')
+    .replace('{correct}', String(state.correctCount))
+    .replace('{total}', String(state.total))
+    .replace('{theme}', challengeName)
 
   const [board, setBoard] = useState<WeeklyLeaderRow[] | null>(null)
   const [boardError, setBoardError] = useState(false)
@@ -544,6 +559,11 @@ function WeeklyComplete({
           <Stat label={t('weekly.result.streak')} value={state.dayStreak} />
         )}
       </div>
+
+      <ShareScore
+        message={shareMessage}
+        url={`${SITE_URL}/weekly/${challengeId}`}
+      />
 
       <Leaderboard board={board} error={boardError} userId={userId} />
 

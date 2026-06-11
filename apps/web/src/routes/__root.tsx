@@ -80,6 +80,10 @@ export const Route = createRootRoute({
         name: 'twitter:image',
         content: 'https://play.bighead-quizz.com/og.png',
       },
+      { property: 'og:locale', content: 'fr_FR' },
+      // Safari iOS shows a native App Store banner site-wide — free install
+      // funnel with zero UI to maintain.
+      { name: 'apple-itunes-app', content: 'app-id=6758253365' },
     ],
     // No canonical here on purpose: a single hardcoded homepage canonical would
     // (wrongly) tag every page as the homepage. Each indexable route sets its
