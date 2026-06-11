@@ -232,6 +232,19 @@ function HistorySection({
   )
 }
 
+/** "1 – 7 juin" / "Jun 1 – 7" — distinguishes same-label entries (news weeks). */
+function formatDateRange(start: string, end: string, lang: 'fr' | 'en'): string {
+  const locale = lang === 'fr' ? 'fr-FR' : 'en-US'
+  const s = new Date(`${start}T00:00:00Z`)
+  const e = new Date(`${end}T00:00:00Z`)
+  const opts: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  }
+  return `${s.toLocaleDateString(locale, opts)} – ${e.toLocaleDateString(locale, opts)}`
+}
+
 function HistoryCard({
   entry,
   lang,
@@ -262,7 +275,12 @@ function HistoryCard({
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-sm font-bold text-fg">{label}</span>
+        <span className="truncate text-sm font-bold text-fg">
+          {label}
+          <span className="ml-2 font-normal text-fg/40">
+            {formatDateRange(entry.start_date, entry.end_date, lang)}
+          </span>
+        </span>
         <span className="mt-0.5 text-xs text-fg/50">
           {hasPlayed ? (
             <>
