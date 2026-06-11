@@ -14,11 +14,12 @@ export interface HistoryEntry {
   start_date: string;
   end_date: string;
   total_questions: number;
+  // Progress en LEFT JOIN côté RPC : null si le quiz n'a jamais été joué.
   final_score: number | null;
-  correct_count: number;
+  correct_count: number | null;
   badge_earned: string | null;
   completed_at: string | null;
-  final_xp_awarded: number;
+  final_xp_awarded: number | null;
   best_replay_score: number | null;
 }
 

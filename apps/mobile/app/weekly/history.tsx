@@ -105,6 +105,8 @@ export default function WeeklyHistory() {
               labelYourScore={t("weeklyHistoryYourScore")}
               labelBestReplay={t("weeklyHistoryReplayBest")}
               labelReplay={t("weeklyReplayCta")}
+              labelPlay={t("play")}
+              labelNotPlayed={t("weeklyHistoryNotPlayed")}
             />
           )}
         />
@@ -121,6 +123,8 @@ interface HistoryCardProps {
   labelYourScore: string;
   labelBestReplay: string;
   labelReplay: string;
+  labelPlay: string;
+  labelNotPlayed: string;
 }
 
 const HistoryCard = memo(function HistoryCard({
@@ -131,10 +135,14 @@ const HistoryCard = memo(function HistoryCard({
   labelYourScore,
   labelBestReplay,
   labelReplay,
+  labelPlay,
+  labelNotPlayed,
 }: HistoryCardProps) {
   const label = language === "fr" ? entry.theme_label_fr : entry.theme_label_en;
   const score = entry.correct_count;
   const total = entry.total_questions;
+  // correct_count null = quiz passé jamais joué (LEFT JOIN côté RPC)
+  const hasPlayed = score !== null && score !== undefined;
   const hasReplay = entry.best_replay_score !== null && entry.best_replay_score !== undefined;
 
   return (
@@ -166,9 +174,15 @@ const HistoryCard = memo(function HistoryCard({
           {formatDateRange(entry.start_date, entry.end_date)}
         </Text>
         <View className="flex-row items-center mt-1.5 flex-wrap">
-          <Text className="text-white text-xs font-semibold">
-            {labelYourScore}: {score}/{total}
-          </Text>
+          {hasPlayed ? (
+            <Text className="text-white text-xs font-semibold">
+              {labelYourScore}: {score}/{total}
+            </Text>
+          ) : (
+            <Text className="text-gray-400 text-xs font-semibold">
+              {labelNotPlayed}
+            </Text>
+          )}
           {entry.badge_earned && (
             <Text className="text-yellow-400 text-xs font-semibold ml-2">
               {badgeIcon(entry.badge_earned)} {entry.badge_earned}
@@ -192,15 +206,17 @@ const HistoryCard = memo(function HistoryCard({
           opacity: isLoading ? 0.6 : 1,
         }}
         accessibilityRole="button"
-        accessibilityLabel={labelReplay}
+        accessibilityLabel={hasPlayed ? labelReplay : labelPlay}
       >
         {isLoading ? (
           <Skeleton width={20} height={20} rounded={10} />
         ) : (
           <>
-            <Text style={{ fontSize: 22, color: entry.color }}>↻</Text>
+            <Text style={{ fontSize: 22, color: entry.color }}>
+              {hasPlayed ? "↻" : "▶"}
+            </Text>
             <Text className="text-white text-[10px] font-bold mt-0.5 uppercase tracking-wider">
-              {labelReplay}
+              {hasPlayed ? labelReplay : labelPlay}
             </Text>
           </>
         )}
