@@ -55,6 +55,15 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Payload custom optionnel (annonces : nouveau défi, événement...).
+  // Sans body, on envoie le rappel quotidien par défaut.
+  let custom: { title?: string; body?: string; url?: string; tag?: string } = {};
+  try {
+    custom = await req.json();
+  } catch {
+    // pas de body = rappel quotidien
+  }
+
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
   const { data, error } = await supabase
@@ -91,10 +100,10 @@ Deno.serve(async (req) => {
   for (const sub of subs) {
     const msg = MESSAGES[sub.lang] ?? MESSAGES.fr;
     const payload = JSON.stringify({
-      title: msg.title,
-      body: msg.body,
-      url: "/play/daily",
-      tag: "bh-daily",
+      title: custom.title ?? msg.title,
+      body: custom.body ?? msg.body,
+      url: custom.url ?? "/play/daily",
+      tag: custom.tag ?? "bh-daily",
     });
     try {
       const subscriber = appServer.subscribe({

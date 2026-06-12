@@ -188,6 +188,9 @@ function isAuthorized(authHeader: string | null): boolean {
   if (!token) return false;
   if (token === SUPABASE_SERVICE_ROLE_KEY) return true;
   if (CRON_ACCESS_TOKEN && token === CRON_ACCESS_TOKEN) return true;
+  // Aligné sur send-daily-notification & co : le CRON_SECRET des scripts VPS.
+  const cronSecret = Deno.env.get("CRON_SECRET");
+  if (cronSecret && token === cronSecret) return true;
   return false;
 }
 
