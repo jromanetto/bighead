@@ -7,6 +7,9 @@ export const strings = {
   'nav.duels': { fr: 'Duels', en: 'Duels' },
   'nav.leaderboard': { fr: 'Classement', en: 'Leaderboard' },
   'nav.profile': { fr: 'Profil', en: 'Profile' },
+  'footer.privacy': { fr: 'Confidentialité', en: 'Privacy' },
+  'footer.terms': { fr: 'Conditions d’utilisation', en: 'Terms' },
+  'footer.contact': { fr: 'Contact', en: 'Contact' },
   'app.tagline': {
     fr: 'Le quiz qui ne pardonne rien.',
     en: 'The quiz that pulls no punches.',
@@ -661,6 +664,30 @@ export const strings = {
     en: 'Pick a category and start your chain.',
   },
   'quiz.page.modesTitle': { fr: 'Autres façons de jouer', en: 'Other ways to play' },
+  'quiz.page.samplesTitle': {
+    fr: 'Exemples de questions {cat}',
+    en: 'Sample {cat} questions',
+  },
+  'quiz.page.samplesNote': {
+    fr: 'Ces questions sont tirées du jeu. Il y en a des milliers d’autres — chaque partie est différente.',
+    en: 'These questions come straight from the game. There are thousands more — every run is different.',
+  },
+  'quiz.page.statsTitle': {
+    fr: 'Le quiz {cat} en chiffres',
+    en: 'The {cat} quiz in numbers',
+  },
+  'quiz.page.stats.total': { fr: 'questions au total', en: 'total questions' },
+  'quiz.page.stats.easy': { fr: 'niveau facile', en: 'easy level' },
+  'quiz.page.stats.medium': { fr: 'niveau moyen', en: 'medium level' },
+  'quiz.page.stats.hard': { fr: 'niveau difficile', en: 'hard level' },
+  'quiz.page.subtopicsTitle': {
+    fr: 'Ce que tu vas réviser en {cat}',
+    en: 'What you’ll brush up on in {cat}',
+  },
+  'quiz.page.faqTitle': {
+    fr: 'Questions fréquentes',
+    en: 'Frequently asked questions',
+  },
   'quiz.page.backHome': { fr: 'Retour à l’accueil', en: 'Back to home' },
   'quiz.unknown.title': { fr: 'Catégorie inconnue', en: 'Unknown category' },
   'quiz.unknown.subtitle': {

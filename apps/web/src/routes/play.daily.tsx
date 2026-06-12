@@ -25,7 +25,22 @@ import { ResultScreen } from '#/components/game/ResultScreen'
 
 import type { GameQuestion } from '#/lib/game/questions'
 
-export const Route = createFileRoute('/play/daily')({ component: DailyScreen })
+export const Route = createFileRoute('/play/daily')({
+  component: DailyScreen,
+  head: () => ({
+    meta: [
+      { title: 'Daily Brain — 5 questions par jour · BIGHEAD' },
+      {
+        name: 'description',
+        content:
+          '5 questions fraîches chaque jour. Vise le sans-faute, garde ta série et compare-toi au classement. Gratuit.',
+      },
+    ],
+    links: [
+      { rel: 'canonical', href: 'https://play.bighead-quizz.com/play/daily' },
+    ],
+  }),
+})
 
 const TIMER_SECONDS = Math.round(TIME_PER_QUESTION_MS / 1000)
 const TOTAL_QUESTIONS = 5

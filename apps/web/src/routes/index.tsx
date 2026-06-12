@@ -15,6 +15,8 @@ import { HeroCard } from '#/components/landing/HeroCard'
 import { Reveal } from '#/components/landing/Reveal'
 import { StoreButtons } from '#/components/landing/StoreButtons'
 
+import { landingJsonLd } from '#/lib/seo/jsonLd'
+
 import type { StringKey } from '#/lib/i18n/strings'
 import type { ReactNode } from 'react'
 
@@ -23,6 +25,8 @@ export const Route = createFileRoute('/')({
   head: () => ({
     links: [{ rel: 'canonical', href: 'https://play.bighead-quizz.com' }],
     meta: [{ property: 'og:url', content: 'https://play.bighead-quizz.com' }],
+    // Le jeu web + les 2 apps mobiles, reliés à l'Organization du root.
+    scripts: [{ type: 'application/ld+json', children: landingJsonLd() }],
   }),
 })
 
@@ -327,6 +331,24 @@ function Footer() {
         <Link to="/leaderboard" className="transition-colors hover:text-fg">
           {t('landing.footer.leaderboard')}
         </Link>
+        <a
+          href="https://bighead-quizz.com/privacy.html"
+          className="transition-colors hover:text-fg"
+        >
+          {t('footer.privacy')}
+        </a>
+        <a
+          href="https://bighead-quizz.com/terms.html"
+          className="transition-colors hover:text-fg"
+        >
+          {t('footer.terms')}
+        </a>
+        <a
+          href="mailto:support@bighead-app.com"
+          className="transition-colors hover:text-fg"
+        >
+          {t('footer.contact')}
+        </a>
       </nav>
       <p className="text-fg/40">
         © {new Date().getFullYear()} BIGHEAD. {t('landing.footer.rights')}

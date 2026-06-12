@@ -14,7 +14,19 @@ import {
 import type { LeaderboardEntry } from '#/lib/leaderboard/queries'
 
 export const Route = createFileRoute('/leaderboard')({
-  head: () => ({ meta: [{ title: 'Classement · BIGHEAD' }] }),
+  head: () => ({
+    meta: [
+      { title: 'Classement · BIGHEAD' },
+      {
+        name: 'description',
+        content:
+          'Le classement mondial BIGHEAD : XP, séries et meilleurs joueurs de la semaine. Joue gratuitement et grimpe au classement.',
+      },
+    ],
+    links: [
+      { rel: 'canonical', href: 'https://play.bighead-quizz.com/leaderboard' },
+    ],
+  }),
   component: Leaderboard,
 })
 

@@ -2,74 +2,92 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://play.bighead-quizz.com/</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/play</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/play/chain</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/play/daily</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/duels</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/weekly</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/leaderboard</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/general</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/history</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/geography</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/music</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/science</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/literature</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/technology</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/animals</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/sport</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/cinema</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://play.bighead-quizz.com/quiz/nature</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
   </url>
 </urlset>

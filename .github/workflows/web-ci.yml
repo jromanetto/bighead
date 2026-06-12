@@ -82,3 +82,31 @@ jobs:
             apps/web/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/script/bighead-web/"
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
             'cd /home/script/bighead-web && pnpm install --frozen-lockfile && pnpm build && pm2 restart bighead-web --update-env'
+      - name: Ping IndexNow
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          # Notifie Bing/IndexNow que le site a changé (adoption immédiate côté
+          # Bing → alimente aussi ChatGPT search). La clé est servie en statique.
+          curl -fsS -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d '{
+              "host": "play.bighead-quizz.com",
+              "key": "d142c3a1269c444eb339ed150ad832c8",
+              "keyLocation": "https://play.bighead-quizz.com/d142c3a1269c444eb339ed150ad832c8.txt",
+              "urlList": [
+                "https://play.bighead-quizz.com/",
+                "https://play.bighead-quizz.com/play",
+                "https://play.bighead-quizz.com/weekly",
+                "https://play.bighead-quizz.com/quiz/general",
+                "https://play.bighead-quizz.com/quiz/history",
+                "https://play.bighead-quizz.com/quiz/geography",
+                "https://play.bighead-quizz.com/quiz/music",
+                "https://play.bighead-quizz.com/quiz/science",
+                "https://play.bighead-quizz.com/quiz/literature",
+                "https://play.bighead-quizz.com/quiz/technology",
+                "https://play.bighead-quizz.com/quiz/animals",
+                "https://play.bighead-quizz.com/quiz/sport",
+                "https://play.bighead-quizz.com/quiz/cinema",
+                "https://play.bighead-quizz.com/quiz/nature"
+              ]
+            }' || echo "::warning::IndexNow ping failed (non-blocking)"

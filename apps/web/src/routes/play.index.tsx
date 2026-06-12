@@ -13,7 +13,19 @@ import { PushOptIn } from '#/components/funnel/PushOptIn'
 import type { StringKey } from '#/lib/i18n/strings'
 import type { ReactNode } from 'react'
 
-export const Route = createFileRoute('/play/')({ component: PlayHub })
+export const Route = createFileRoute('/play/')({
+  component: PlayHub,
+  head: () => ({
+    meta: [
+      {
+        name: 'description',
+        content:
+          'Choisis ton mode de jeu BIGHEAD : Chain Reaction, Daily Brain, duels et quiz par thème. Gratuit, dans le navigateur.',
+      },
+    ],
+    links: [{ rel: 'canonical', href: 'https://play.bighead-quizz.com/play' }],
+  }),
+})
 
 function PlayHub() {
   const t = useT()

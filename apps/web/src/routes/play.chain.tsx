@@ -19,6 +19,19 @@ interface ChainSearch {
 }
 
 export const Route = createFileRoute('/play/chain')({
+  head: () => ({
+    meta: [
+      { title: 'Chain Reaction — quiz sans fin · BIGHEAD' },
+      {
+        name: 'description',
+        content:
+          'Mode sans fin : enchaîne les bonnes réponses et fais grimper ton multiplicateur de série. Quiz gratuit, 36 000+ questions.',
+      },
+    ],
+    links: [
+      { rel: 'canonical', href: 'https://play.bighead-quizz.com/play/chain' },
+    ],
+  }),
   // Keep `?category=<slug>` only when it's a known category; drop anything else
   // so play.chain stays "all categories" by default and never trusts raw input.
   validateSearch: (search: Record<string, unknown>): ChainSearch => {

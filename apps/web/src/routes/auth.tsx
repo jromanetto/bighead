@@ -4,7 +4,15 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { useT } from '#/lib/i18n/LangProvider'
 import { signIn, upgradeAccount } from '#/lib/funnel/account'
 
-export const Route = createFileRoute('/auth')({ component: AuthScreen })
+export const Route = createFileRoute('/auth')({
+  component: AuthScreen,
+  head: () => ({
+    meta: [
+      { title: 'Mon compte · BIGHEAD' },
+      { name: 'robots', content: 'noindex, follow' },
+    ],
+  }),
+})
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 

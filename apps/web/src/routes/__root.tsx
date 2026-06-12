@@ -8,6 +8,7 @@ import { ensureSession } from '#/lib/auth/ensure-session'
 import { SessionProvider } from '#/lib/auth/SessionProvider'
 import { AppShell } from '#/components/AppShell'
 import { LangProvider } from '#/lib/i18n/LangProvider'
+import { rootJsonLd } from '#/lib/seo/jsonLd'
 import appCss from '../styles.css?url'
 
 /**
@@ -99,18 +100,27 @@ export const Route = createRootRoute({
       },
       { rel: 'manifest', href: '/manifest.json' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      // Origines tierces sollicitées dès l'hydratation (auth + analytics).
+      { rel: 'preconnect', href: 'https://dqhhpoxqrtlmhosrsdxp.supabase.co' },
+      { rel: 'preconnect', href: 'https://cloud.umami.is' },
     ],
-    // Inject the Umami script only when configured. Defer keeps it off the
-    // critical path; the website id is a normal data attribute.
-    scripts: UMAMI_SRC
-      ? [
-          {
-            src: UMAMI_SRC,
-            defer: true,
-            'data-website-id': UMAMI_WEBSITE_ID,
-          },
-        ]
-      : [],
+    // JSON-LD entité (Organization + WebSite) sur toutes les pages, puis
+    // Umami uniquement quand configuré (defer = hors chemin critique).
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: rootJsonLd(),
+      },
+      ...(UMAMI_SRC
+        ? [
+            {
+              src: UMAMI_SRC,
+              defer: true,
+              'data-website-id': UMAMI_WEBSITE_ID,
+            },
+          ]
+        : []),
+    ],
   }),
   shellComponent: RootDocument,
 })

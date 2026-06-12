@@ -18,7 +18,13 @@ import type { StringKey } from '#/lib/i18n/strings'
 import type { ProfileUser, RecentGame } from '#/lib/profile/queries'
 
 export const Route = createFileRoute('/profile')({
-  head: () => ({ meta: [{ title: 'Profil · BIGHEAD' }] }),
+  head: () => ({
+    meta: [
+      { title: 'Profil · BIGHEAD' },
+      // Page user-specific : aucune valeur en SERP, on évite la dilution.
+      { name: 'robots', content: 'noindex, follow' },
+    ],
+  }),
   component: Profile,
 })
 

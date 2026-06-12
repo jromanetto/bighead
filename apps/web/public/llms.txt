@@ -1,0 +1,38 @@
+# BIGHEAD
+
+> BIGHEAD is a free online trivia game with 36,000+ general-knowledge questions across 11 categories, playable in French and English. Play instantly in the browser at play.bighead-quizz.com — no account or payment required — or on the iOS and Android apps. Four game modes: Chain Reaction (endless streak), Daily Brain (5 new questions per day), Duels (asynchronous 1v1), and the Weekly Challenge (themed weekly quiz).
+
+Key facts: 36,000+ questions, 11 categories, fully bilingual (FR/EN), free to play, global XP leaderboard, playable without an account.
+
+## Play
+
+- [Play BIGHEAD](https://play.bighead-quizz.com/play): Choose a game mode and start playing instantly in the browser
+- [Chain Reaction](https://play.bighead-quizz.com/play/chain): Endless mode — chain correct answers to build a streak multiplier
+- [Daily Brain](https://play.bighead-quizz.com/play/daily): 5 fresh questions every day; aim for a perfect score and keep your streak
+- [Duels](https://play.bighead-quizz.com/duels): Asynchronous 1v1 — challenge another player and answer on your own schedule
+- [Weekly Challenge](https://play.bighead-quizz.com/weekly): A new theme each week with exclusive questions
+- [Leaderboard](https://play.bighead-quizz.com/leaderboard): Global ranking by XP and streaks
+
+## Quiz Categories
+
+- [General Knowledge Quiz](https://play.bighead-quizz.com/quiz/general): Free general-knowledge trivia, from easy to expert
+- [History Quiz](https://play.bighead-quizz.com/quiz/history): From antiquity to today — key dates, figures, and events
+- [Geography Quiz](https://play.bighead-quizz.com/quiz/geography): Countries, capitals, flags, and world geography
+- [Music Quiz](https://play.bighead-quizz.com/quiz/music): Artists, songs, and music history
+- [Science Quiz](https://play.bighead-quizz.com/quiz/science): Physics, chemistry, biology, and space
+- [Literature Quiz](https://play.bighead-quizz.com/quiz/literature): Authors, books, and literary classics
+- [Technology Quiz](https://play.bighead-quizz.com/quiz/technology): Computing, internet, and tech history
+- [Animals Quiz](https://play.bighead-quizz.com/quiz/animals): Wildlife and the animal kingdom
+- [Sport Quiz](https://play.bighead-quizz.com/quiz/sport): Football, Olympics, records, and athletes
+- [Cinema Quiz](https://play.bighead-quizz.com/quiz/cinema): Movies, directors, and actors
+- [Nature Quiz](https://play.bighead-quizz.com/quiz/nature): Plants, ecosystems, and the natural world
+
+## Mobile Apps
+
+- [BIGHEAD - Culture Quiz on the App Store](https://apps.apple.com/app/bighead-culture-quiz/id6758253365): iOS app with daily question notifications, offline play, and friend duels
+- [BIGHEAD on Google Play](https://play.google.com/store/apps/details?id=com.jroma51.bighead): Android app, free download
+
+## Optional
+
+- [BIGHEAD website](https://bighead-quizz.com/): Marketing site (English)
+- [Homepage](https://play.bighead-quizz.com/): Game overview, modes, and stats (French)

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Volume2, VolumeX } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import { useLang } from '#/lib/i18n/LangProvider'
+import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
 import { getMyStreak } from '#/lib/profile/streak'
 import { isMuted, setMuted } from '#/lib/game/sound'
@@ -136,6 +136,40 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-5xl flex-1 bg-bg px-4 py-8">
         {children}
       </main>
+      <TrustFooter />
     </div>
+  )
+}
+
+/**
+ * Footer minimal de confiance (E-E-A-T) : mentions légales, confidentialité
+ * et contact vivent sur le domaine marketing — on les rend visibles partout.
+ */
+function TrustFooter() {
+  const t = useT()
+  return (
+    <footer className="mx-auto w-full max-w-5xl border-t border-white/5 px-4 py-5">
+      <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-fg/40">
+        <span>© {new Date().getFullYear()} BIGHEAD</span>
+        <a
+          href="https://bighead-quizz.com/privacy.html"
+          className="transition-colors hover:text-fg/70"
+        >
+          {t('footer.privacy')}
+        </a>
+        <a
+          href="https://bighead-quizz.com/terms.html"
+          className="transition-colors hover:text-fg/70"
+        >
+          {t('footer.terms')}
+        </a>
+        <a
+          href="mailto:support@bighead-app.com"
+          className="transition-colors hover:text-fg/70"
+        >
+          {t('footer.contact')}
+        </a>
+      </nav>
+    </footer>
   )
 }

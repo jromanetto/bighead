@@ -20,7 +20,19 @@ import type {
   WeeklyChallenge,
 } from '#/lib/game/weekly'
 
-export const Route = createFileRoute('/weekly/')({ component: WeeklyList })
+export const Route = createFileRoute('/weekly/')({
+  component: WeeklyList,
+  head: () => ({
+    meta: [
+      {
+        name: 'description',
+        content:
+          'Un thème par semaine + l’actu en quiz. Joue les défis de la semaine et rejoue tous les défis passés, gratuitement.',
+      },
+    ],
+    links: [{ rel: 'canonical', href: 'https://play.bighead-quizz.com/weekly' }],
+  }),
+})
 
 function WeeklyList() {
   const t = useT()
