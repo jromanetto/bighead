@@ -142,21 +142,25 @@ export default function WeeklyPlay() {
     setTimeout(() => setShowLearning(true), 600);
   }, [selected, question, challenge, doubleXpActive, stopTimer]);
 
+  // Déclenché HORS de l'updater du timer : avec React 19, un side effect
+  // dans setX(prev => ...) peut être ré-invoqué → timeouts fantômes qui
+  // auto-répondent la question suivante (cf. fix équivalent côté web).
+  const onTimeUpRef = useRef(handleTimeout);
+  onTimeUpRef.current = handleTimeout;
+  useEffect(() => {
+    if (timeLeft !== 0) return;
+    stopTimer();
+    onTimeUpRef.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft]);
+
   // Reset + start the 20s timer whenever a fresh question is loaded
   useEffect(() => {
     if (loading || !question || selected !== null) return;
     setTimeLeft(QUESTION_TIME_SEC);
     stopTimer();
     tickRef.current = setInterval(() => {
-      setTimeLeft((s) => {
-        if (s <= 1) {
-          stopTimer();
-          // handleTimeout reads latest state via useCallback closure on next render
-          handleTimeout();
-          return 0;
-        }
-        return s - 1;
-      });
+      setTimeLeft((s) => Math.max(0, s - 1));
     }, 1000);
     return stopTimer;
     // eslint-disable-next-line react-hooks/exhaustive-deps

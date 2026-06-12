@@ -62,16 +62,20 @@ export default function TournamentPlayScreen() {
     timerWidth.value = withTiming(0, { duration: 15000 });
 
     timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          // Time's up - auto submit wrong answer
-          handleAnswer("timeout");
-          return 15;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
   };
+
+  // Déclenché HORS de l'updater du timer : avec React 19, un side effect
+  // dans setX(prev => ...) peut être ré-invoqué → timeouts fantômes qui
+  // auto-répondent la question suivante (cf. fix équivalent côté web).
+  const onTimeUpRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    if (timeLeft !== 0) return;
+    stopTimer();
+    onTimeUpRef.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft]);
 
   const stopTimer = () => {
     if (timerRef.current) {
@@ -148,6 +152,8 @@ export default function TournamentPlayScreen() {
     if (option === selectedAnswer && !isCorrect) return "bg-red-500/30 border-red-500";
     return "bg-gray-800 opacity-50";
   };
+
+  onTimeUpRef.current = () => handleAnswer("timeout");
 
   if (loading) {
     return (

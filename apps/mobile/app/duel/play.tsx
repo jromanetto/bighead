@@ -277,18 +277,22 @@ export default function DuelPlayScreen() {
     setTimeout(() => moveToNext(answersRef.current), 1500);
   }, [currentRound, isRevealed, moveToNext, questions, selectedIdx]);
 
+  // Déclenché HORS de l'updater du timer : avec React 19, un side effect
+  // dans setX(prev => ...) peut être ré-invoqué → timeouts fantômes qui
+  // auto-répondent la question suivante (cf. fix équivalent côté web).
+  const onTimeUpRef = useRef(handleTimeout);
+  onTimeUpRef.current = handleTimeout;
+  useEffect(() => {
+    if (timeLeft !== 0) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    onTimeUpRef.current();
+  }, [timeLeft]);
+
   // Timer
   useEffect(() => {
     if (loading || selectedIdx !== null || isRevealed) return;
     timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          handleTimeout();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);

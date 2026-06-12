@@ -723,21 +723,26 @@ export default function AdventurePlayScreen() {
     if (loading || gameOver || showResult) return;
 
     timerRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          // Time's up - count as error
-          handleTimeout();
-          return TIME_PER_QUESTION;
-        }
-        if (prev <= 5) playSound("tick");
-        return prev - 1;
-      });
+      setTimeRemaining((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [loading, gameOver, showResult, currentIndex]);
+
+  // Déclenché HORS de l'updater du timer : avec React 19, un side effect
+  // dans setX(prev => ...) peut être ré-invoqué → timeouts fantômes qui
+  // auto-répondent la question suivante (cf. fix équivalent côté web).
+  const onTimeUpRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    if (timeRemaining > 0 && timeRemaining <= 5) playSound("tick");
+    if (timeRemaining !== 0) return;
+    if (loading || gameOver || showResult) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    onTimeUpRef.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeRemaining]);
 
   const handleTimeout = () => {
     playSound("timeout");
@@ -757,6 +762,7 @@ export default function AdventurePlayScreen() {
 
     checkGameEnd(errors + 1, correctCount);
   };
+  onTimeUpRef.current = handleTimeout;
 
   const handleAnswer = async (index: number) => {
     if (showResult || gameOver) return;

@@ -248,18 +248,7 @@ export default function DailyBrainScreen() {
     }
 
     timerRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-          }
-          // Time's up = treat as wrong answer, auto-advance
-          handleTimeout();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeRemaining((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => {
@@ -345,6 +334,20 @@ export default function DailyBrainScreen() {
     }, FEEDBACK_DELAY_MS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAnswer, currentQuestion, advance]);
+
+  // Déclenché HORS de l'updater du timer : avec React 19, un side effect
+  // dans setX(prev => ...) peut être ré-invoqué → timeouts fantômes qui
+  // auto-répondent la question suivante (cf. fix équivalent côté web).
+  const onTimeUpRef = useRef(handleTimeout);
+  onTimeUpRef.current = handleTimeout;
+  useEffect(() => {
+    if (timeRemaining !== 0) return;
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    onTimeUpRef.current();
+  }, [timeRemaining]);
 
   const handleAnswer = (answerIndex: number) => {
     if (selectedAnswer !== null || !currentQuestion) return;
