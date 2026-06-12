@@ -427,18 +427,15 @@ function WeeklyScreen() {
           la question COURANTE avant toute réponse (spoiler). Montage simple,
           animation d'entrée seulement. */}
       {selectedIndex !== null && showFact && current.learningFact ? (
-        <motion.div
-          key={current.id}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="rounded-2xl border border-accent2/30 bg-accent2/10 p-4"
-        >
+        // NB: pas de key={current.id} ici — la QuizCard sibling l'utilise déjà
+        // et deux siblings avec la même key corrompent la réconciliation
+        // (nœuds dupliqués). Le montage conditionnel suffit à rejouer l'anim.
+        <div className="bh-reveal rounded-2xl border border-accent2/30 bg-accent2/10 p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-accent2">
             {t('weekly.learn.title')}
           </p>
           <p className="mt-1 text-sm text-fg/80">{current.learningFact}</p>
-        </motion.div>
+        </div>
       ) : null}
     </div>
   )

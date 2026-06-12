@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 import { useT } from '#/lib/i18n/LangProvider'
 
@@ -75,13 +74,7 @@ export function QuizCard({
   }, [locked, onAnswer, question.answers.length])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="mx-auto flex w-full max-w-xl flex-col gap-5 rounded-2xl border border-white/10 bg-surface p-5 sm:p-6"
-    >
+    <div className="bh-reveal mx-auto flex w-full max-w-xl flex-col gap-5 rounded-2xl border border-white/10 bg-surface p-5 sm:p-6">
       <div className="flex items-center gap-2 text-xs">
         <span className="rounded-full bg-primary/15 px-2.5 py-1 font-medium text-primary">
           {question.category}
@@ -112,23 +105,21 @@ export function QuizCard({
             locked,
           )
           const isSelected = index === selectedIndex
-          const animate =
+          const feedbackClass =
             isSelected && state === 'wrong'
-              ? { x: [0, -8, 8, -6, 6, 0] }
+              ? ' bh-shake'
               : isSelected && state === 'correct'
-                ? { scale: [1, 1.04, 1] }
-                : {}
+                ? ' bh-pop'
+                : ''
 
           return (
             <li key={index}>
-              <motion.button
+              <button
                 type="button"
                 disabled={locked}
                 onClick={() => onAnswer(index)}
-                animate={animate}
-                transition={{ duration: 0.4 }}
                 aria-label={`${t(ANSWER_LABEL_KEYS[index])}: ${answer}`}
-                className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors disabled:cursor-default ${STATE_CLASS[state]}`}
+                className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors disabled:cursor-default ${STATE_CLASS[state]}${feedbackClass}`}
               >
                 <span
                   className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-black/20 text-xs font-bold"
@@ -137,11 +128,11 @@ export function QuizCard({
                   {LETTERS[index]}
                 </span>
                 <span>{answer}</span>
-              </motion.button>
+              </button>
             </li>
           )
         })}
       </ul>
-    </motion.div>
+    </div>
   )
 }
