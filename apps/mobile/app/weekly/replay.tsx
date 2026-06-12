@@ -377,7 +377,7 @@ export default function WeeklyReplay() {
           })}
         </View>
 
-        {showLearning && question.learning_fact && (
+        {selected !== null && showLearning && question.learning_fact && (
           <View
             className="mt-5 rounded-2xl p-4"
             style={{

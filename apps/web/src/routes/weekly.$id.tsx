@@ -86,6 +86,11 @@ function WeeklyScreen() {
   // Positions we've already submitted, to guard against double-submit.
   const submittedRef = useRef<Set<number>>(new Set())
   const advancingRef = useRef(false)
+  // Mirror of `selectedIndex` readable from stale timer closures: the
+  // interval captures an old `selectedIndex`, so a timeout firing in the
+  // same tick as a click could double-run handleAnswer (and re-show the
+  // learning fact on the NEXT question — the "spoiler box" bug).
+  const selectedRef = useRef<number | null>(null)
 
   // ----- Load: challenge meta + questions + progress, then decide resume -----
   useEffect(() => {
@@ -169,6 +174,7 @@ function WeeklyScreen() {
     setCurrent(
       formatWeeklyQuestion(row, lang, Math.random, challenge?.target_category),
     )
+    selectedRef.current = null
     setSelectedIndex(null)
     setShowFact(false)
     setRemaining(TIMER_SECONDS)
@@ -195,8 +201,9 @@ function WeeklyScreen() {
   }, [phase, selectedIndex, index, current])
 
   function handleAnswer(chosen: number) {
-    if (selectedIndex !== null) return
+    if (selectedIndex !== null || selectedRef.current !== null) return
     if (!current) return
+    selectedRef.current = chosen
     const isCorrect = chosen === current.correctIndex
     if (isCorrect) playCorrect()
     else playWrong()
@@ -412,7 +419,7 @@ function WeeklyScreen() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showFact && current.learningFact ? (
+        {selectedIndex !== null && showFact && current.learningFact ? (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

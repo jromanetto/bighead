@@ -395,7 +395,7 @@ export default function WeeklyPlay() {
           </View>
         )}
 
-        {showLearning && question.learning_fact && (
+        {selected !== null && showLearning && question.learning_fact && (
           <View
             className="mt-5 rounded-2xl p-4"
             style={{ backgroundColor: "rgba(0, 194, 204, 0.08)", borderWidth: 1, borderColor: "rgba(0, 194, 204, 0.3)" }}
