@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { AnimatePresence } from 'framer-motion'
 
 import { useChainStore } from '#/lib/game/chainStore'
 import { useLang, useT } from '#/lib/i18n/LangProvider'
@@ -176,14 +175,12 @@ function ChainScreen() {
         <ChainMeter chain={chain} multiplier={multiplier} />
       </div>
 
-      <AnimatePresence mode="wait">
-        <QuizCard
-          key={currentQ.id}
-          question={currentQ}
-          selectedIndex={selectedIndex}
-          onAnswer={(i) => answer(i)}
-        />
-      </AnimatePresence>
+      <QuizCard
+        key={currentQ.id}
+        question={currentQ}
+        selectedIndex={selectedIndex}
+        onAnswer={(i) => answer(i)}
+      />
 
       <button
         type="button"

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
@@ -422,22 +422,24 @@ function WeeklyScreen() {
         onAnswer={handleAnswer}
       />
 
-      <AnimatePresence>
-        {selectedIndex !== null && showFact && current.learningFact ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="rounded-2xl border border-accent2/30 bg-accent2/10 p-4"
-          >
-            <p className="text-xs font-semibold uppercase tracking-wide text-accent2">
-              {t('weekly.learn.title')}
-            </p>
-            <p className="mt-1 text-sm text-fg/80">{current.learningFact}</p>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      {/* Pas d'AnimatePresence ici : l'exit Framer ne se complète pas (React
+          19) et l'élément "sortant" restait monté à vie, re-rendant le fact de
+          la question COURANTE avant toute réponse (spoiler). Montage simple,
+          animation d'entrée seulement. */}
+      {selectedIndex !== null && showFact && current.learningFact ? (
+        <motion.div
+          key={current.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="rounded-2xl border border-accent2/30 bg-accent2/10 p-4"
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide text-accent2">
+            {t('weekly.learn.title')}
+          </p>
+          <p className="mt-1 text-sm text-fg/80">{current.learningFact}</p>
+        </motion.div>
+      ) : null}
     </div>
   )
 }
