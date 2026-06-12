@@ -167,25 +167,30 @@ function DailyScreen() {
     resolve(chosen, score + (isCorrect ? 1 : 0))
   }
 
-  // Countdown for the current question; timeout counts as wrong.
+  // Countdown for the current question; timeout counts as wrong. The handler
+  // lives in a ref and runs OUTSIDE the state updater — side effects inside
+  // `setRemaining(r => ...)` get re-invoked by React (updaters must be pure)
+  // and fired ghost answers on the next question.
+  const onTimeoutRef = useRef<() => void>(() => {})
+  onTimeoutRef.current = () => {
+    playWrong()
+    resolve(-1, score)
+  }
+
   useEffect(() => {
     if (phase !== 'playing') return
     if (selectedIndex !== null) return
+    const deadline = Date.now() + TIMER_SECONDS * 1000
     const id = window.setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          window.clearInterval(id)
-          // Timed out: resolve as wrong (no point), keep current score.
-          playWrong()
-          resolve(-1, score)
-          return 0
-        }
-        return r - 1
-      })
-    }, 1000)
+      const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
+      setRemaining(left)
+      if (left <= 0) {
+        window.clearInterval(id)
+        onTimeoutRef.current()
+      }
+    }, 250)
     return () => window.clearInterval(id)
-    // `index` drives a new countdown per question; `resolve`/`score` are
-    // intentionally read fresh inside the interval without re-subscribing.
+    // `index` drives a new countdown per question.
   }, [phase, selectedIndex, index])
 
   // Session couldn't be established (e.g. rate limit): offer a retry.

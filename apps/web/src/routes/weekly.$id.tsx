@@ -181,23 +181,29 @@ function WeeklyScreen() {
   }, [phase, index, questions, lang, challenge])
 
   // ----- Per-question countdown; timeout resolves as a wrong answer -----
+  // The timeout handler lives in a ref and is called OUTSIDE any state
+  // updater: calling handleAnswer inside `setRemaining(r => ...)` let React
+  // re-invoke the updater (updaters must be pure) and fire ghost answers on
+  // the NEXT question — auto-answering it and showing its learning fact
+  // before the player touched anything.
+  const onTimeoutRef = useRef<() => void>(() => {})
+  onTimeoutRef.current = () => handleAnswer(-1)
+
   useEffect(() => {
     if (phase !== 'playing') return
     if (selectedIndex !== null) return
     if (!current) return
+    const deadline = Date.now() + TIMER_SECONDS * 1000
     const timer = window.setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          window.clearInterval(timer)
-          handleAnswer(-1)
-          return 0
-        }
-        return r - 1
-      })
-    }, 1000)
+      const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
+      setRemaining(left)
+      if (left <= 0) {
+        window.clearInterval(timer)
+        onTimeoutRef.current()
+      }
+    }, 250)
     return () => window.clearInterval(timer)
-    // `index`/`current` drive a fresh countdown per question; `handleAnswer`
-    // reads fresh state without re-subscribing.
+    // `index`/`current` drive a fresh countdown per question.
   }, [phase, selectedIndex, index, current])
 
   function handleAnswer(chosen: number) {

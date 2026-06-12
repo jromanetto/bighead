@@ -256,23 +256,28 @@ function DuelScreen() {
   }
 
   // Per-question countdown; timeout resolves as a wrong answer (answer_idx -1).
+  // Handler in a ref, called OUTSIDE the state updater — side effects inside
+  // `setRemaining(r => ...)` get re-invoked by React and fired ghost answers.
+  const onTimeoutRef = useRef<() => void>(() => {})
+  onTimeoutRef.current = () => {
+    const currentQ = questions.at(index)
+    if (currentQ) resolve(-1, currentQ, score)
+  }
+
   useEffect(() => {
     if (phase !== 'playing') return
     if (selectedIndex !== null) return
+    const deadline = Date.now() + TIMER_SECONDS * 1000
     const id2 = window.setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          window.clearInterval(id2)
-          const currentQ = questions.at(index)
-          if (currentQ) resolve(-1, currentQ, score)
-          return 0
-        }
-        return r - 1
-      })
-    }, 1000)
+      const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
+      setRemaining(left)
+      if (left <= 0) {
+        window.clearInterval(id2)
+        onTimeoutRef.current()
+      }
+    }, 250)
     return () => window.clearInterval(id2)
-    // `index` drives a fresh countdown per question; `resolve`/`score`/`questions`
-    // are read fresh inside the interval without re-subscribing.
+    // `index` drives a fresh countdown per question.
   }, [phase, selectedIndex, index])
 
   if (sessionReady && sessionFailed) {
