@@ -415,14 +415,12 @@ function WeeklyScreen() {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <QuizCard
-          key={current.id}
-          question={current}
-          selectedIndex={selectedIndex}
-          onAnswer={handleAnswer}
-        />
-      </AnimatePresence>
+      <QuizCard
+        key={current.id}
+        question={current}
+        selectedIndex={selectedIndex}
+        onAnswer={handleAnswer}
+      />
 
       <AnimatePresence>
         {selectedIndex !== null && showFact && current.learningFact ? (

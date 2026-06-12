@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Check, Share2 } from 'lucide-react'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
@@ -378,14 +378,12 @@ function DuelScreen() {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <QuizCard
-          key={currentQ.id}
-          question={currentQ}
-          selectedIndex={selectedIndex}
-          onAnswer={handleAnswer}
-        />
-      </AnimatePresence>
+      <QuizCard
+        key={currentQ.id}
+        question={currentQ}
+        selectedIndex={selectedIndex}
+        onAnswer={handleAnswer}
+      />
     </div>
   )
 }

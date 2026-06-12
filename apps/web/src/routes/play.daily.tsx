@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { AnimatePresence } from 'framer-motion'
 
 import { useLang, useT } from '#/lib/i18n/LangProvider'
 import { useSession } from '#/lib/auth/SessionProvider'
@@ -291,14 +290,12 @@ function DailyScreen() {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <QuizCard
-          key={currentQ.id}
-          question={currentQ}
-          selectedIndex={selectedIndex}
-          onAnswer={handleAnswer}
-        />
-      </AnimatePresence>
+      <QuizCard
+        key={currentQ.id}
+        question={currentQ}
+        selectedIndex={selectedIndex}
+        onAnswer={handleAnswer}
+      />
     </div>
   )
 }
