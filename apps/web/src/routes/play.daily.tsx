@@ -101,7 +101,15 @@ function DailyScreen() {
           return
         }
         startedAtRef.current = Date.now()
+        // Reset run state so a mid-game language switch (this effect also runs
+        // on `lang` change) restarts cleanly from Q1 in the new language,
+        // instead of keeping a stale index/score/selection over fresh questions.
+        submittedRef.current = false
         setQuestions(qs)
+        setIndex(0)
+        setScore(0)
+        setSelectedIndex(null)
+        setRemaining(TIMER_SECONDS)
         setPhase('playing')
         track(EV.gameStarted, { mode: 'daily' })
       } catch (err) {

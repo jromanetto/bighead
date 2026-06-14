@@ -66,6 +66,7 @@ function ChainScreen() {
   const remaining = useChainStore((s) => s.remaining)
 
   const start = useChainStore((s) => s.start)
+  const changeLang = useChainStore((s) => s.changeLang)
   const answer = useChainStore((s) => s.answer)
   const next = useChainStore((s) => s.next)
   const tick = useChainStore((s) => s.tick)
@@ -83,6 +84,20 @@ function ChainScreen() {
     startedRef.current = true
     void start(lang, category)
   }, [ready, sessionReady, userId, lang, category, start])
+
+  // Reload questions in the new language when the user toggles language
+  // mid-run. The very first language resolution is handled by `start` above,
+  // so only react to a *change* once the run is under way.
+  const langRef = useRef(lang)
+  useEffect(() => {
+    if (!startedRef.current) {
+      langRef.current = lang
+      return
+    }
+    if (lang === langRef.current) return
+    langRef.current = lang
+    void changeLang(lang)
+  }, [lang, changeLang])
 
   // Countdown: ticks once per second while playing and not in feedback.
   useEffect(() => {

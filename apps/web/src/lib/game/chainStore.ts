@@ -42,6 +42,12 @@ interface ChainState {
 
 interface ChainActions {
   start: (lang: Lang, category?: string | null) => Promise<void>
+  /**
+   * Switches the question language mid-run. Loads a fresh batch in the new
+   * language and shows a clean question, preserving the accumulated score,
+   * chain and counts. No-op when not playing or the language is unchanged.
+   */
+  changeLang: (lang: Lang) => Promise<void>
   answer: (index: number) => void
   next: () => Promise<void>
   tick: () => void
@@ -97,6 +103,31 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
     } catch (err) {
       console.error('chainStore.start failed', err)
       set({ status: 'error' })
+    }
+  },
+
+  changeLang: async (lang) => {
+    const state = get()
+    if (state.status !== 'playing') return
+    if (lang === activeLang) return
+    activeLang = lang
+    try {
+      const questions = await getUnseenQuestions(
+        BATCH_SIZE,
+        lang,
+        activeCategory,
+      )
+      if (questions.length === 0) return // keep the current run rather than break it
+      // Fresh question in the new language; score and chain carry over.
+      set({
+        questions,
+        index: 0,
+        selectedIndex: null,
+        remaining: TIMER_SECONDS,
+        questionStartedAt: Date.now(),
+      })
+    } catch (err) {
+      console.error('chainStore.changeLang failed', err)
     }
   },
 
