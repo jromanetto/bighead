@@ -318,7 +318,10 @@ export default function WeeklyReplay() {
             className="mb-3 rounded-2xl overflow-hidden"
             style={{ backgroundColor: COLORS.surface }}
           >
-            <QuestionImage uri={question.image_url} />
+            <QuestionImage
+              uri={question.image_url}
+              style={{ width: "100%", height: 180 }}
+            />
           </View>
         )}
 

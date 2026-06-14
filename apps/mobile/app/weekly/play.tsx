@@ -49,6 +49,9 @@ export default function WeeklyPlay() {
   const [showLearning, setShowLearning] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Gate the timer until the question image is on screen (or there is none),
+  // so flag/logo questions are never answered blind while the image loads.
+  const [imageReady, setImageReady] = useState(true);
 
   // Lifelines
   const [lifelines, setLifelines] = useState<Lifelines | null>(null);
@@ -63,6 +66,8 @@ export default function WeeklyPlay() {
       tickRef.current = null;
     }
   }, []);
+
+  const handleImageReady = useCallback(() => setImageReady(true), []);
 
   const refreshLifelines = useCallback(async () => {
     const l = await fetchLifelines();
@@ -109,6 +114,8 @@ export default function WeeklyPlay() {
     }
     setQuestion(q);
     setAnswers(shuffleAnswers(q));
+    // Wait for the image (if any) before the timer starts.
+    setImageReady(!q.image_url);
     setLoading(false);
   }, [language, t, challengeType]);
 
@@ -154,9 +161,11 @@ export default function WeeklyPlay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft]);
 
-  // Reset + start the 20s timer whenever a fresh question is loaded
+  // Reset + start the 20s timer whenever a fresh question is loaded — but only
+  // once its image is on screen (imageReady), so the countdown never runs while
+  // a flag/logo is still loading.
   useEffect(() => {
-    if (loading || !question || selected !== null) return;
+    if (loading || !question || selected !== null || !imageReady) return;
     setTimeLeft(QUESTION_TIME_SEC);
     stopTimer();
     tickRef.current = setInterval(() => {
@@ -164,7 +173,7 @@ export default function WeeklyPlay() {
     }, 1000);
     return stopTimer;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [question?.id, loading]);
+  }, [question?.id, loading, imageReady]);
 
   const goNext = useCallback(async () => {
     buttonPressFeedback();
@@ -328,7 +337,11 @@ export default function WeeklyPlay() {
 
         {question.image_url && (
           <View className="mb-3 rounded-2xl overflow-hidden" style={{ backgroundColor: COLORS.surface }}>
-            <QuestionImage uri={question.image_url} />
+            <QuestionImage
+              uri={question.image_url}
+              style={{ width: "100%", height: 180 }}
+              onReady={handleImageReady}
+            />
           </View>
         )}
 

@@ -197,6 +197,9 @@ export default function DuelPlayScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
   const [score, setScore] = useState(0);
+  // Hold the countdown until the question image is on screen (or there is none).
+  const [imageReady, setImageReady] = useState(true);
+  const handleImageReady = useCallback(() => setImageReady(true), []);
 
   const answersRef = useRef<AsyncDuelAnswer[]>([]);
   const startTimeRef = useRef<number>(Date.now());
@@ -288,16 +291,21 @@ export default function DuelPlayScreen() {
     onTimeUpRef.current();
   }, [timeLeft]);
 
-  // Timer
+  // Reset the image gate when the round changes.
   useEffect(() => {
-    if (loading || selectedIdx !== null || isRevealed) return;
+    setImageReady(!questions[currentRound]?.image_url);
+  }, [currentRound, questions]);
+
+  // Timer — only once the question image (if any) is on screen.
+  useEffect(() => {
+    if (loading || selectedIdx !== null || isRevealed || !imageReady) return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [loading, currentRound, selectedIdx, isRevealed, handleTimeout]);
+  }, [loading, currentRound, selectedIdx, isRevealed, imageReady, handleTimeout]);
 
   const handleAnswer = (idx: number) => {
     if (selectedIdx !== null || isRevealed) return;
@@ -431,6 +439,7 @@ export default function DuelPlayScreen() {
             <QuestionImage
               uri={currentQ.image_url}
               style={{ width: "100%", height: 140, borderRadius: 12, marginBottom: 12 }}
+              onReady={handleImageReady}
             />
           )}
           <Text className="text-xl font-medium text-white leading-7">

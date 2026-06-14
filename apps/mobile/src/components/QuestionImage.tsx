@@ -20,7 +20,17 @@ type QuestionImageProps = {
   category?: string | null;
   /** Network timeout in ms before considering the image broken (default 10s) */
   timeoutMs?: number;
+  /**
+   * Fires exactly once per `uri`, when the image has settled — either it
+   * finished loading (visible) or every fallback failed. Game screens use this
+   * to start the question timer only once the image is on screen, so flag/logo
+   * questions are never answered "blind" while the picture is still loading.
+   */
+  onReady?: () => void;
 };
+
+/** Default box so the image is never zero-sized (a 0-height <Image> is invisible). */
+const DEFAULT_STYLE: ImageStyle = { width: "100%", height: 160 };
 
 const CATEGORY_EMOJI: Record<string, string> = {
   geography: "\u{1F30D}", // 🌍
@@ -74,12 +84,17 @@ function QuestionImageInner({
   correctAnswer,
   category,
   timeoutMs = 10_000,
+  onReady,
 }: QuestionImageProps) {
   const [loading, setLoading] = useState(true);
   const [currentUri, setCurrentUri] = useState(uri);
   const [attemptIndex, setAttemptIndex] = useState(0);
   const [finalError, setFinalError] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Never render a zero-sized box (invisible image / spinner).
+  const boxStyle = style ?? DEFAULT_STYLE;
+  // Fire onReady once per uri, when the image settles (shown or finally failed).
+  const readyFiredRef = useRef(false);
 
   // Generate alternative URLs based on image source
   const getAlternativeUrls = useCallback(
@@ -164,8 +179,19 @@ function QuestionImageInner({
     setAttemptIndex(0);
     setFinalError(false);
     setLoading(true);
+    readyFiredRef.current = false;
     return () => clearTimer();
   }, [uri]);
+
+  // Signal "settled" once: image visible (loading=false, no final error) or
+  // every fallback exhausted. Lets the parent start the timer at the right time.
+  useEffect(() => {
+    if (readyFiredRef.current) return;
+    if (finalError || !loading) {
+      readyFiredRef.current = true;
+      onReady?.();
+    }
+  }, [loading, finalError, onReady]);
 
   // Network timeout: if loading takes longer than timeoutMs, trigger error chain
   useEffect(() => {
@@ -188,7 +214,7 @@ function QuestionImageInner({
     return (
       <View
         style={[
-          style,
+          boxStyle,
           {
             alignItems: "center",
             justifyContent: "center",
@@ -236,7 +262,7 @@ function QuestionImageInner({
       {loading && (
         <View
           style={[
-            style,
+            boxStyle,
             {
               backgroundColor: "rgba(255,255,255,0.05)",
               alignItems: "center",
@@ -251,7 +277,7 @@ function QuestionImageInner({
       )}
       <Image
         source={{ uri: currentUri }}
-        style={style}
+        style={boxStyle}
         resizeMode="contain"
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => {

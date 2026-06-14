@@ -13,8 +13,8 @@ import {
   markQuestionSeen,
   checkAndGenerateQuestions,
 } from "../../src/services/questions";
-import { getSettings } from "../../src/services/settings";
 import { playSound } from "../../src/services/sounds";
+import { useTranslation } from "../../src/contexts/LanguageContext";
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -253,6 +253,10 @@ function LifelineButton({
 
 export default function ChainGameScreen() {
   const { user, isPremium } = useAuth();
+  const { language } = useTranslation();
+  // Always-current language for the (closure-captured) loader.
+  const langRef = useRef(language);
+  langRef.current = language;
   const status = useGameStore((state) => state.status);
   const score = useGameStore((state) => state.score);
   const chain = useGameStore((state) => state.chain);
@@ -273,6 +277,9 @@ export default function ChainGameScreen() {
   const [limitChecked, setLimitChecked] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [level, setLevel] = useState(1);
+  // Hold the countdown until the question image is on screen (or there is none).
+  const [imageReady, setImageReady] = useState(true);
+  const handleImageReady = useCallback(() => setImageReady(true), []);
   // Lifelines state
   const [used50_50, setUsed50_50] = useState(false);
   const [usedSkip, setUsedSkip] = useState(false);
@@ -306,11 +313,14 @@ export default function ChainGameScreen() {
   useEffect(() => {
     setSelectedIndex(null);
     setHiddenAnswers([]);
+    // Wait for the image (if any) before the timer runs.
+    setImageReady(!questions[currentQuestionIndex]?.imageUrl);
     // Clear any pending auto-advance
     if (autoAdvanceRef.current) {
       clearTimeout(autoAdvanceRef.current);
       autoAdvanceRef.current = null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestionIndex]);
 
   // Auto-advance after answering
@@ -343,13 +353,26 @@ export default function ChainGameScreen() {
       }
       useGameStore.getState().reset();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Restart the run in the new language when the user changes the app language
+  // mid-game (skip the initial mount, which already loaded above).
+  const didMountLangRef = useRef(false);
+  useEffect(() => {
+    if (!didMountLangRef.current) {
+      didMountLangRef.current = true;
+      return;
+    }
+    useGameStore.getState().reset();
+    loadQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   const loadQuestions = async () => {
     try {
-      // Get user's language preference from settings
-      const settings = await getSettings(user?.id);
-      const language = settings.language || "fr";
+      // Follow the live app language so a language change reloads the run.
+      const language = langRef.current;
 
       // Check if we need to generate new questions for logged in users
       if (user?.id) {
@@ -409,9 +432,11 @@ export default function ChainGameScreen() {
     }
   }, [status]);
 
-  // Timer effect with tick sound
+  // Timer effect with tick sound — paused until the question image is on
+  // screen (imageReady), so a flag/logo question never counts down while it
+  // is still loading.
   useEffect(() => {
-    if (status === "playing") {
+    if (status === "playing" && imageReady) {
       timerRef.current = setInterval(() => {
         const currentTime = useGameStore.getState().timeRemaining;
         // Play tick sound when time is low
@@ -437,7 +462,7 @@ export default function ChainGameScreen() {
         timerRef.current = null;
       }
     };
-  }, [status]);
+  }, [status, imageReady]);
 
   // Navigate to results when game ends
   useEffect(() => {
@@ -647,6 +672,7 @@ export default function ChainGameScreen() {
                   uri={currentQuestion.imageUrl}
                   style={{ width: '100%', height: 160 }}
                   credit={currentQuestion.imageCredit}
+                  onReady={handleImageReady}
                   onImageBroken={() => {
                     // Skip this question - load next one without penalty
                     useGameStore.getState().nextQuestion();

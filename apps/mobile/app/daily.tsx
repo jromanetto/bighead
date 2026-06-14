@@ -23,7 +23,6 @@ import {
 } from "../src/services/dailyChallenge";
 import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedback";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getSettings } from "../src/services/settings";
 import { IconButton } from "../src/components/ui";
 import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
 import { RatingModal } from "../src/components/RatingModal";
@@ -208,7 +207,7 @@ function AnswerOption({
 
 export default function DailyBrainScreen() {
   const { user, isAnonymous } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [alreadyPlayed, setAlreadyPlayed] = useState(false);
   const [previousScore, setPreviousScore] = useState<number | null>(null);
@@ -224,6 +223,8 @@ export default function DailyBrainScreen() {
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME);
   const [showInvitePrompt, setShowInvitePrompt] = useState(false);
+  // Hold the countdown until the question image is on screen (or there is none).
+  const [imageReady, setImageReady] = useState(true);
   const { showRatingModal, closeRatingModal, checkAndShowRating } = useRatingPrompt();
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -236,16 +237,21 @@ export default function DailyBrainScreen() {
 
   const currentQuestion = questions[currentIndex] || null;
 
+  const handleImageReady = useCallback(() => setImageReady(true), []);
+
+  // Reload (in the chosen language) on mount, and whenever the user changes
+  // the app language — so the daily questions follow the UI language.
   useEffect(() => {
     checkAndLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, language]);
 
-  // Timer: counts down per question
+  // Timer: counts down per question — only once the image (if any) has loaded.
   useEffect(() => {
     if (!currentQuestion || gameOver || alreadyPlayed || selectedAnswer !== null) {
       return;
     }
+    if (!imageReady) return;
 
     timerRef.current = setInterval(() => {
       setTimeRemaining((prev) => Math.max(0, prev - 1));
@@ -258,20 +264,23 @@ export default function DailyBrainScreen() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestion?.id, gameOver, alreadyPlayed, selectedAnswer]);
+  }, [currentQuestion?.id, gameOver, alreadyPlayed, selectedAnswer, imageReady]);
 
-  // Reset timer when question changes
+  // Reset timer + image gate when the question changes.
   useEffect(() => {
     if (currentQuestion && !gameOver && !alreadyPlayed) {
       setTimeRemaining(TOTAL_TIME);
+      setImageReady(!currentQuestion.image_url);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion?.id, gameOver, alreadyPlayed]);
 
   const checkAndLoad = async () => {
     setLoading(true);
     try {
-      const settings = await getSettings(user?.id);
-      userLanguage.current = settings.language || "en";
+      // Use the live app language (context) so a language change reloads the
+      // questions in the new language without a stale-settings race.
+      userLanguage.current = language;
 
       // Check if already played today
       if (user && !isAnonymous) {
@@ -834,6 +843,9 @@ export default function DailyBrainScreen() {
                       <QuestionImage
                         uri={currentQuestion.image_url}
                         style={{ width: 200, height: 150, borderRadius: 12 }}
+                        correctAnswer={currentQuestion.answers[currentQuestion.correctIndex]}
+                        category={currentQuestion.category}
+                        onReady={handleImageReady}
                       />
                     </View>
                   )}
