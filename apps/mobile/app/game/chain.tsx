@@ -11,6 +11,7 @@ import {
   getUnseenQuestions,
   formatQuestionsForGame,
   markQuestionSeen,
+  recordQuestionOutcome,
   checkAndGenerateQuestions,
 } from "../../src/services/questions";
 import { playSound } from "../../src/services/sounds";
@@ -531,6 +532,10 @@ export default function ChainGameScreen() {
     // Track question as seen for logged in users
     if (user?.id && currentQuestion?.id) {
       markQuestionSeen(user.id, currentQuestion.id, isCorrect).catch(console.error);
+    }
+    // Feed the difficulty requalification job (all users, fire-and-forget).
+    if (currentQuestion?.id) {
+      recordQuestionOutcome(currentQuestion.id, isCorrect);
     }
   };
 

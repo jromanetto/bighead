@@ -1163,6 +1163,9 @@ export type Database = {
       }
       questions: {
         Row: {
+          agg_correct: number
+          agg_shown: number
+          ai_difficulty: number | null
           avg_time_ms: number | null
           category: string | null
           category_id: string | null
@@ -1183,12 +1186,16 @@ export type Database = {
           original_image_url: string | null
           player_name: string | null
           question_text: string
+          requalified_at: string | null
           times_correct: number | null
           times_played: number | null
           times_shown: number | null
           wrong_answers: string[]
         }
         Insert: {
+          agg_correct?: number
+          agg_shown?: number
+          ai_difficulty?: number | null
           avg_time_ms?: number | null
           category?: string | null
           category_id?: string | null
@@ -1209,12 +1216,16 @@ export type Database = {
           original_image_url?: string | null
           player_name?: string | null
           question_text: string
+          requalified_at?: string | null
           times_correct?: number | null
           times_played?: number | null
           times_shown?: number | null
           wrong_answers: string[]
         }
         Update: {
+          agg_correct?: number
+          agg_shown?: number
+          ai_difficulty?: number | null
           avg_time_ms?: number | null
           category?: string | null
           category_id?: string | null
@@ -1235,6 +1246,7 @@ export type Database = {
           original_image_url?: string | null
           player_name?: string | null
           question_text?: string
+          requalified_at?: string | null
           times_correct?: number | null
           times_played?: number | null
           times_shown?: number | null
@@ -2616,8 +2628,11 @@ export type Database = {
           correct_answer: string
           difficulty: number
           id: string
+          image_credit: string
+          image_url: string
           min_age: number
           question_text: string
+          wrong_answers: string[]
         }[]
       }
       get_friend_challenge: {
@@ -2867,6 +2882,7 @@ export type Database = {
           success: boolean
         }[]
       }
+      level_to_min_age: { Args: { p_level: number }; Returns: number }
       log_notification_result: {
         Args: {
           p_daily_question_id: string
@@ -2944,7 +2960,18 @@ export type Database = {
         Args: { p_question_id: string; p_was_correct: boolean }
         Returns: undefined
       }
+      record_question_outcome: {
+        Args: { p_question_id: string; p_was_correct: boolean }
+        Returns: undefined
+      }
       redeem_referral_code: { Args: { p_code: string }; Returns: Json }
+      requalify_question_difficulties: {
+        Args: never
+        Returns: {
+          easier: number
+          harder: number
+        }[]
+      }
       scan_friend_overtakes: { Args: never; Returns: undefined }
       scan_streak_warnings: { Args: never; Returns: undefined }
       start_weekly_replay: { Args: { p_challenge_id: string }; Returns: string }

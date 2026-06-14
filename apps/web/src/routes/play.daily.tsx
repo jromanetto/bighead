@@ -22,6 +22,8 @@ import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
 import { ResultScreen } from '#/components/game/ResultScreen'
 
+import { recordQuestionOutcome } from '#/lib/game/questions'
+
 import type { GameQuestion } from '#/lib/game/questions'
 
 export const Route = createFileRoute('/play/daily')({
@@ -171,6 +173,7 @@ function DailyScreen() {
     const isCorrect = chosen === currentQ.correctIndex
     if (isCorrect) playCorrect()
     else playWrong()
+    recordQuestionOutcome(currentQ.id, isCorrect)
     resolve(chosen, score + (isCorrect ? 1 : 0))
   }
 
@@ -181,6 +184,8 @@ function DailyScreen() {
   const onTimeoutRef = useRef<() => void>(() => {})
   onTimeoutRef.current = () => {
     playWrong()
+    const currentQ = questions.at(index)
+    if (currentQ) recordQuestionOutcome(currentQ.id, false) // timeout = wrong
     resolve(-1, score)
   }
 

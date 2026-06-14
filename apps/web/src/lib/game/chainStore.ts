@@ -4,6 +4,7 @@ import { computeChainPoints, TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import {
   getUnseenQuestions,
   markQuestionSeen,
+  recordQuestionOutcome,
 } from '#/lib/game/questions'
 import { awardXp, saveGameResult } from '#/lib/game/results'
 import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
@@ -156,6 +157,7 @@ export const useChainStore = create<ChainState & ChainActions>((set, get) => ({
 
     try {
       markQuestionSeen(currentQ.id, isCorrect)
+      recordQuestionOutcome(currentQ.id, isCorrect)
     } catch (err) {
       console.error('chainStore markQuestionSeen failed', err)
     }

@@ -240,6 +240,7 @@ export interface FamilyGameState {
 }
 
 export const AGE_GROUPS: { value: AgeGroup; label: string; labelEn: string }[] = [
+  { value: 6, label: '6 ans', labelEn: '6 years' },
   { value: 8, label: '8 ans', labelEn: '8 years' },
   { value: 10, label: '10 ans', labelEn: '10 years' },
   { value: 12, label: '12 ans', labelEn: '12 years' },

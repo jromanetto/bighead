@@ -110,3 +110,22 @@ export function markQuestionSeen(questionId: string, wasCorrect: boolean): void 
     .then(() => undefined)
     .catch(() => undefined)
 }
+
+/**
+ * Records an answer outcome into the question's aggregate counters, feeding the
+ * daily difficulty requalification job. Fire-and-forget (never blocks play),
+ * fires for anonymous users too, and is a no-op for ids outside the main
+ * `questions` table.
+ */
+export function recordQuestionOutcome(
+  questionId: string,
+  wasCorrect: boolean,
+): void {
+  const supabase = getBrowserClient()
+  void supabase
+    .rpc('record_question_outcome', {
+      p_question_id: questionId,
+      p_was_correct: wasCorrect,
+    })
+    .then(() => undefined, () => undefined)
+}

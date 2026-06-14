@@ -311,20 +311,10 @@ export async function getFamilyQuestions(
   minAge: number,
   limit: number
 ): Promise<any[]> {
-  // Map age selection to the actual min_age values in database
-  // Database has min_age: 6, 8, 12, 14, 16
-  const ageToMinAge: Record<number, number> = {
-    6: 6,   // Only difficulty 1 questions
-    8: 8,   // Difficulty 1-2 questions
-    10: 8,  // Same as 8
-    12: 12, // Difficulty 1-3 questions
-    14: 14, // Difficulty 1-4 questions
-    16: 16, // All questions
-    18: 16, // All questions (adults)
-    99: 16, // Adults (18+)
-  };
-
-  const effectiveMinAge = ageToMinAge[minAge] || 16;
+  // `min_age` now reflects the AI age-difficulty (level→age: 6/8/10/12/15/18),
+  // so the youngest player's chosen age IS the filter: keep every question
+  // whose min_age <= that age. "Adulte" (99) keeps everything.
+  const effectiveMinAge = minAge;
   const effectiveLimit = limit === Infinity ? 100 : limit;
 
   // Resolve adventure FE category code → DB codes (one FE code can map to several DB codes)

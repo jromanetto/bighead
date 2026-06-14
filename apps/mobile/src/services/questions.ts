@@ -37,6 +37,23 @@ export const markQuestionSeen = async (
 };
 
 /**
+ * Record an answer outcome into the question's aggregate counters, feeding the
+ * daily difficulty requalification job. Fire-and-forget, never blocks gameplay,
+ * and a no-op for ids not in the main `questions` table (e.g. weekly pool).
+ */
+export const recordQuestionOutcome = (
+  questionId: string,
+  wasCorrect: boolean
+): void => {
+  void supabase
+    .rpc("record_question_outcome", {
+      p_question_id: questionId,
+      p_was_correct: wasCorrect,
+    } as any)
+    .then(undefined, () => undefined);
+};
+
+/**
  * Get user's question coverage stats
  */
 export interface QuestionStats {

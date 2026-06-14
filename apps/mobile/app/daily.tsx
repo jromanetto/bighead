@@ -29,6 +29,7 @@ import { RatingModal } from "../src/components/RatingModal";
 import { QuestionImage } from "../src/components/QuestionImage";
 import { ShareScorecard } from "../src/components/ShareScorecard";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
+import { recordQuestionOutcome } from "../src/services/questions";
 import { inviteFriends } from "../src/utils/share";
 import { useTranslation } from "../src/contexts/LanguageContext";
 import { AnimatedNumber } from "../src/components/AnimatedNumber";
@@ -337,6 +338,7 @@ export default function DailyBrainScreen() {
     if (selectedAnswer !== null || !currentQuestion) return;
     setSelectedAnswer(-1); // sentinel: timed out, no selection
     setIsCorrect(false);
+    recordQuestionOutcome(currentQuestion.id, false); // timeout = wrong
     wrongAnswerFeedback();
     setTimeout(() => {
       advance();
@@ -369,6 +371,8 @@ export default function DailyBrainScreen() {
     setSelectedAnswer(answerIndex);
     const correct = answerIndex === currentQuestion.correctIndex;
     setIsCorrect(correct);
+    // Feed the difficulty requalification job (fire-and-forget).
+    recordQuestionOutcome(currentQuestion.id, correct);
 
     if (correct) {
       correctAnswerFeedback();
