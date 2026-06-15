@@ -13,6 +13,21 @@ import handler from './dist/server/server.js'
 const port = Number(process.env.PORT || 3050)
 const hostname = process.env.HOST || '127.0.0.1'
 
-serve({ fetch: (request) => handler.fetch(request), port, hostname }, (info) => {
+// Lightweight liveness probe used by the deploy healthcheck (and any uptime
+// monitor). Answered here directly so it stays green even if SSR rendering
+// throws — it only proves the process is up and serving, which is exactly what
+// the post-deploy gate needs to decide rollback.
+function fetchWithHealth(request) {
+  const { pathname } = new URL(request.url)
+  if (pathname === '/healthz') {
+    return new Response('ok', {
+      status: 200,
+      headers: { 'content-type': 'text/plain', 'cache-control': 'no-store' },
+    })
+  }
+  return handler.fetch(request)
+}
+
+serve({ fetch: fetchWithHealth, port, hostname }, (info) => {
   console.log(`[bighead-web] SSR listening on http://${info.address}:${info.port}`)
 })
