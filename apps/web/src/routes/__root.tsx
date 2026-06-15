@@ -122,8 +122,60 @@ export const Route = createRootRoute({
         : []),
     ],
   }),
+  errorComponent: RootError,
   shellComponent: RootDocument,
 })
+
+/**
+ * Root error boundary. Without one, any uncaught render error in the route tree
+ * blanks the page with no recovery path. Keeps it minimal and on-brand; logs to
+ * the console (Sentry hook point once a web DSN exists) and offers a reload.
+ */
+function RootError({ error }: { error: Error }) {
+  useEffect(() => {
+    console.error('[root error boundary]', error)
+  }, [error])
+
+  return (
+    <div
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+        padding: 24,
+        textAlign: 'center',
+        fontFamily: 'system-ui, sans-serif',
+        background: '#0b1020',
+        color: '#e6e8ef',
+      }}
+    >
+      <div style={{ fontSize: 48 }}>🤯</div>
+      <h1 style={{ fontSize: 22, margin: 0 }}>Oups, un bug nous a pris de court</h1>
+      <p style={{ opacity: 0.7, maxWidth: 420, margin: 0 }}>
+        Une erreur inattendue est survenue. Recharge la page pour repartir.
+      </p>
+      <button
+        onClick={() => window.location.reload()}
+        style={{
+          marginTop: 8,
+          padding: '12px 24px',
+          fontSize: 16,
+          fontWeight: 600,
+          color: '#0b1020',
+          background: '#00c2cc',
+          border: 'none',
+          borderRadius: 12,
+          cursor: 'pointer',
+        }}
+      >
+        Recharger
+      </button>
+    </div>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   // One QueryClient per app instance. `useState` keeps it stable across

@@ -9,7 +9,7 @@ import * as Sentry from "@sentry/react-native";
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
 import { useEffect, useState, useCallback } from "react";
-import { View, LogBox } from "react-native";
+import { View, Text, Pressable, LogBox } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -89,6 +89,7 @@ function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <Sentry.ErrorBoundary fallback={ErrorFallback}>
       <SafeAreaProvider>
         <AuthProvider>
           <NotificationProvider>
@@ -111,7 +112,48 @@ function RootLayout() {
           </NotificationProvider>
         </AuthProvider>
       </SafeAreaProvider>
+      </Sentry.ErrorBoundary>
     </GestureHandlerRootView>
+  );
+}
+
+/**
+ * Branded fallback for the root Sentry.ErrorBoundary. Previously an uncaught
+ * render error left only Sentry.wrap's default (a blank screen in prod). This
+ * gives the user a recovery path; Sentry still captures the error automatically.
+ */
+function ErrorFallback({ resetError }: { error: unknown; resetError: () => void }) {
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 16,
+        padding: 24,
+        backgroundColor: "#111827",
+      }}
+    >
+      <Text style={{ fontSize: 48 }}>🤯</Text>
+      <Text style={{ fontSize: 20, fontWeight: "700", color: "#f9fafb", textAlign: "center" }}>
+        Oups, un bug nous a pris de court
+      </Text>
+      <Text style={{ fontSize: 15, color: "#9ca3af", textAlign: "center", maxWidth: 300 }}>
+        Une erreur inattendue est survenue. Réessaie pour repartir.
+      </Text>
+      <Pressable
+        onPress={resetError}
+        style={{
+          marginTop: 8,
+          paddingVertical: 12,
+          paddingHorizontal: 28,
+          backgroundColor: "#0ea5e9",
+          borderRadius: 14,
+        }}
+      >
+        <Text style={{ fontSize: 16, fontWeight: "600", color: "#fff" }}>Réessayer</Text>
+      </Pressable>
+    </View>
   );
 }
 
