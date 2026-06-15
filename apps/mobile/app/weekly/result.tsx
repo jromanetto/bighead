@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { memo, useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {
-  getActiveWeeklyChallenge,
+  resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
   type WeeklyChallenge,
@@ -29,7 +29,8 @@ function getBadge(correctCount: number): { emoji: string; label: string; color: 
 
 export default function WeeklyResult() {
   const { t, language } = useTranslation();
-  const params = useLocalSearchParams<{ type?: string }>();
+  const params = useLocalSearchParams<{ id?: string; type?: string }>();
+  const challengeId = params.id ?? null;
   const challengeType: WeeklyChallengeType = params.type === "news" ? "news" : "themed";
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
@@ -38,7 +39,7 @@ export default function WeeklyResult() {
 
   useEffect(() => {
     (async () => {
-      const c = await getActiveWeeklyChallenge(challengeType);
+      const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
       setChallenge(c);
       if (c) {
         const [p, lb] = await Promise.all([getMyWeeklyProgress(c.id), getWeeklyLeaderboard(c.id, 20)]);
@@ -47,7 +48,7 @@ export default function WeeklyResult() {
       }
       setLoading(false);
     })();
-  }, [challengeType]);
+  }, [challengeId, challengeType]);
 
   if (loading) {
     return (
@@ -131,7 +132,7 @@ export default function WeeklyResult() {
           </Text>
         ) : (
           <Pressable
-            onPress={() => { buttonPressFeedback(); router.replace({ pathname: "/weekly/play", params: { type: challengeType } } as any); }}
+            onPress={() => { buttonPressFeedback(); router.replace({ pathname: "/weekly/play", params: { id: challenge.id, type: challengeType } } as any); }}
             className="mt-4 rounded-2xl items-center justify-center"
             style={{ backgroundColor: challenge.color, paddingVertical: 14 }}
           >

@@ -6,7 +6,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Skeleton, SkeletonStat } from "../../src/components/Skeleton";
 import {
-  getActiveWeeklyChallenge,
+  resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
   timeUntilEnd,
@@ -28,7 +28,8 @@ const COLORS = {
 
 export default function WeeklyHome() {
   const { t, language } = useTranslation();
-  const params = useLocalSearchParams<{ type?: string }>();
+  const params = useLocalSearchParams<{ id?: string; type?: string }>();
+  const challengeId = params.id ?? null;
   const challengeType: WeeklyChallengeType = params.type === "news" ? "news" : "themed";
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
@@ -36,7 +37,7 @@ export default function WeeklyHome() {
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
-    const c = await getActiveWeeklyChallenge(challengeType);
+    const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
     setChallenge(c);
     if (c) {
       const [p, lb] = await Promise.all([getMyWeeklyProgress(c.id), getWeeklyLeaderboard(c.id, 20)]);
@@ -44,7 +45,7 @@ export default function WeeklyHome() {
       setLeaderboard(lb);
     }
     setLoading(false);
-  }, [challengeType]);
+  }, [challengeId, challengeType]);
 
   useFocusEffect(useCallback(() => { reload(); }, [reload]));
 
@@ -185,7 +186,7 @@ export default function WeeklyHome() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.push({ pathname: "/weekly/result", params: { type: challengeType } } as any);
+                  router.push({ pathname: "/weekly/result", params: { id: challenge.id, type: challengeType } } as any);
                 }}
                 className="mt-5 rounded-2xl items-center justify-center"
                 style={{ backgroundColor: "#22c55e", paddingVertical: 14 }}
@@ -198,7 +199,7 @@ export default function WeeklyHome() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.push({ pathname: "/weekly/play", params: { type: challengeType } } as any);
+                  router.push({ pathname: "/weekly/play", params: { id: challenge.id, type: challengeType } } as any);
                 }}
                 className="mt-5 rounded-2xl items-center justify-center"
                 style={{ backgroundColor: "#fff", paddingVertical: 14 }}

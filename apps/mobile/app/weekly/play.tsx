@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  getActiveWeeklyChallenge,
+  resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getNextWeeklyQuestion,
   submitWeeklyAnswer,
@@ -37,7 +37,8 @@ const QUESTION_TIME_SEC = 20;
 
 export default function WeeklyPlay() {
   const { t, language } = useTranslation();
-  const params = useLocalSearchParams<{ type?: string }>();
+  const params = useLocalSearchParams<{ id?: string; type?: string }>();
+  const challengeId = params.id ?? null;
   const challengeType: WeeklyChallengeType = params.type === "news" ? "news" : "themed";
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [question, setQuestion] = useState<WeeklyQuestion | null>(null);
@@ -91,7 +92,7 @@ export default function WeeklyPlay() {
     setSelected(null);
     setShowLearning(false);
     setHiddenAnswers([]);
-    const c = await getActiveWeeklyChallenge(challengeType);
+    const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
     if (!c) {
       setError(t("weeklyNoneTitle"));
       setLoading(false);
@@ -100,7 +101,7 @@ export default function WeeklyPlay() {
     setChallenge(c);
     const p = await getMyWeeklyProgress(c.id);
     if (p && p.completed_at) {
-      router.replace({ pathname: "/weekly/result", params: { type: challengeType } } as any);
+      router.replace({ pathname: "/weekly/result", params: { id: c.id, type: challengeType } } as any);
       return;
     }
     const nextPos = (p?.current_position ?? 0) + 1;
@@ -117,7 +118,7 @@ export default function WeeklyPlay() {
     // Wait for the image (if any) before the timer starts.
     setImageReady(!q.image_url);
     setLoading(false);
-  }, [language, t, challengeType]);
+  }, [language, t, challengeId, challengeType]);
 
   useEffect(() => { loadCurrent(); }, [loadCurrent]);
 
@@ -180,7 +181,7 @@ export default function WeeklyPlay() {
     if (!challenge) return;
     const p = await getMyWeeklyProgress(challenge.id);
     if (p && p.completed_at) {
-      router.replace({ pathname: "/weekly/result", params: { type: challengeType } } as any);
+      router.replace({ pathname: "/weekly/result", params: { id: challenge.id, type: challengeType } } as any);
       return;
     }
     loadCurrent();

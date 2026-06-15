@@ -77,6 +77,38 @@ export async function getActiveWeeklyChallenge(
   return (data as WeeklyChallenge) ?? null;
 }
 
+export async function getWeeklyChallengeById(
+  id: string,
+): Promise<WeeklyChallenge | null> {
+  const { data, error } = await (supabase as any)
+    .from("weekly_challenges")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) {
+    console.warn("[weekly] byId fetch:", error.message);
+    return null;
+  }
+  return (data as WeeklyChallenge) ?? null;
+}
+
+/**
+ * Résout le défi pour les écrans de jeu. On privilégie l'id explicite (la
+ * carte réellement cliquée) et on retombe sur "l'actif par type" pour les
+ * points d'entrée legacy. Indispensable quand plusieurs défis du même type
+ * sont actifs la même semaine (sinon tous ouvrent le même quiz).
+ */
+export async function resolveWeeklyChallenge(opts: {
+  id?: string | null;
+  type?: WeeklyChallengeType;
+}): Promise<WeeklyChallenge | null> {
+  if (opts.id) {
+    const byId = await getWeeklyChallengeById(opts.id);
+    if (byId) return byId;
+  }
+  return getActiveWeeklyChallenge(opts.type ?? "themed");
+}
+
 /**
  * Sélection de la home : la dernière actu de la semaine (news) + les 3
  * derniers quiz thématiques (le plus récent chasse le plus vieux).

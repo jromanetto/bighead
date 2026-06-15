@@ -97,9 +97,12 @@ function WeeklyChallengeBannerInner({ type, challenge: challengeProp, compact = 
   const onPress = () => {
     buttonPressFeedback();
     if (isActive) {
+      // Carry the clicked challenge's id: several challenges of the same type
+      // can be active the same week, so resolving by type alone opens the wrong
+      // quiz. `type` is kept as a fallback for legacy entry points.
       router.push({
         pathname: "/weekly",
-        params: { type: isNews ? "news" : "themed" },
+        params: { id: challenge.id, type: isNews ? "news" : "themed" },
       } as any);
     } else {
       // closed / archived → history screen handles replay flow
