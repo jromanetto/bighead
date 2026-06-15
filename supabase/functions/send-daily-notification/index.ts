@@ -150,14 +150,14 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     const cronSecret = Deno.env.get("CRON_SECRET");
 
-    // Allow: CRON_SECRET, service role key, or anon key (for testing)
     const token = authHeader?.replace("Bearer ", "");
-    const isValidCronSecret = cronSecret && token === cronSecret;
+    const isValidCronSecret = !!cronSecret && token === cronSecret;
     const isValidServiceRole = token === SUPABASE_SERVICE_ROLE_KEY;
 
-    // If CRON_SECRET is set, require either it or service role key
-    if (cronSecret && !isValidCronSecret && !isValidServiceRole) {
-      console.log("Auth failed. Token:", token?.substring(0, 20) + "...");
+    // Fail CLOSED: always require CRON_SECRET or service role. (Previously the
+    // gate was skipped entirely when CRON_SECRET was unset → open endpoint that
+    // could spam push to every user.)
+    if (!isValidCronSecret && !isValidServiceRole) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

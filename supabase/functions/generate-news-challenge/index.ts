@@ -307,6 +307,21 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Auth gate: only the cron (sends CRON_SECRET) or service role may run this.
+  // Previously relied on URL secrecy (no auth) — a public, guessable endpoint
+  // that could trigger LLM generation / close challenges.
+  {
+    const cronSecret = Deno.env.get("CRON_SECRET");
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    const ok = (cronSecret && token === cronSecret) ||
+      token === Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!ok) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   try {
