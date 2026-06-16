@@ -3,7 +3,7 @@
 // the function only creates new challenges, no destructive operations.
 // Cron sends `Authorization: Bearer ${get_service_role_jwt()}` (sb_secret_*).
 //
-// Picks the least-recently-used active theme, generates 30 bilingual
+// Picks the least-recently-used active theme, generates 20 bilingual
 // (FR + EN) trivia questions via Claude Sonnet 4.6 with educational
 // "learning_fact" cards, and stores them in `weekly_challenges` +
 // `weekly_challenge_questions`.
@@ -62,11 +62,11 @@ function isoDate(d: Date): string {
 }
 
 function buildPrompt(theme: Theme): string {
-  return `You are an expert trivia question writer. Generate exactly 30 bilingual (French + English) multiple-choice trivia questions on the theme: "${theme.label_en}" (FR: "${theme.label_fr}").
+  return `You are an expert trivia question writer. Generate exactly 20 bilingual (French + English) multiple-choice trivia questions on the theme: "${theme.label_en}" (FR: "${theme.label_fr}").
 
 Theme description: ${theme.description_en ?? theme.label_en}
 
-Difficulty distribution: 8 easy (level 1), 14 medium (level 2), 8 hard (level 3).
+Difficulty distribution: 6 easy (level 1), 9 medium (level 2), 5 hard (level 3).
 
 Requirements per question:
 - Each question must have ONE clear correct answer and THREE plausible but unambiguous wrong answers.
@@ -82,7 +82,7 @@ CRITICAL — SELF-CHECK before including each question (real hallucinations have
 3. DATES & RECORDS: be precise. If you can't pin down a year/record with confidence, choose a different angle.
 4. VERIFIABILITY: every fact must be one a knowledgeable human could verify on Wikipedia. If you're guessing, skip.
 5. ANSWER ALIGNMENT: the correct_answer must be the ONLY answer that fits both the question AND the learning_fact.
-If a question fails any check, generate a different one. Quality > quantity, but still output 30.
+If a question fails any check, generate a different one. Quality > quantity, but still output 20.
 
 Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
 
@@ -99,11 +99,11 @@ Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
       "wrong_answers_en": ["...", "...", "..."],
       "learning_fact_en": "..."
     },
-    ... 29 more
+    ... 19 more
   ]
 }
 
-The "questions" array must contain EXACTLY 30 objects.`;
+The "questions" array must contain EXACTLY 20 objects.`;
 }
 
 async function callClaude(prompt: string): Promise<BilingualQuestion[]> {
@@ -134,7 +134,7 @@ async function callClaude(prompt: string): Promise<BilingualQuestion[]> {
 }
 
 function validateQuestions(qs: BilingualQuestion[]): string | null {
-  if (qs.length !== 30) return `expected 30 questions, got ${qs.length}`;
+  if (qs.length !== 20) return `expected 20 questions, got ${qs.length}`;
   for (let i = 0; i < qs.length; i++) {
     const q = qs[i];
     const required = [
@@ -320,9 +320,12 @@ serve(async (req) => {
     const todayStr = isoDate(new Date());
     const finalStatus = challenge.start_date <= todayStr ? "active" : "upcoming";
 
+    // total_questions defaults to 30 in the schema; set it to the real count
+    // (now 20 for themed) so the UI progress bar / "x/total" are correct.
     await supabase.from("weekly_challenges").update({
       generation_status: "ready",
       status: finalStatus,
+      total_questions: rows.length,
     }).eq("id", challenge.id);
 
     // 7. Mark theme as used

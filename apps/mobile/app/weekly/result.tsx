@@ -7,6 +7,7 @@ import {
   resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
+  shareWeeklyChallenge,
   type WeeklyChallenge,
   type WeeklyChallengeType,
   type WeeklyProgress,
@@ -125,6 +126,25 @@ export default function WeeklyResult() {
             </View>
           </LinearGradient>
         </View>
+
+        {/* Défier un ami : partage le quiz (ouvre l'app ou le store). */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); shareWeeklyChallenge(challenge, language); }}
+          className="mt-4 rounded-2xl flex-row items-center justify-center active:opacity-90"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.06)",
+            borderWidth: 1.5,
+            borderColor: challenge.color,
+            paddingVertical: 14,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={language === "fr" ? "Défier un ami" : "Challenge a friend"}
+        >
+          <Text style={{ fontSize: 18, marginRight: 8 }}>📤</Text>
+          <Text className="font-bold text-base" style={{ color: challenge.color }}>
+            {language === "fr" ? "Défier un ami" : "Challenge a friend"}
+          </Text>
+        </Pressable>
 
         {progress.completed_at ? (
           <Text className="text-gray-400 text-center mt-4 text-sm">

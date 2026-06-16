@@ -1,3 +1,4 @@
+import { Share } from "react-native";
 import { supabase } from "./supabase";
 
 export interface WeeklyChallenge {
@@ -248,6 +249,47 @@ export function timeUntilEnd(c: Pick<WeeklyChallenge, "end_date">): {
     hours: Math.floor((totalSec % 86400) / 3600),
     totalMs: Math.max(0, ms),
   };
+}
+
+// Lien de partage d'un défi : pointe vers la bridge page du site marketing, qui
+// ouvre l'app (bighead://weekly?id=...) si installée, sinon propose le store.
+// Même mécanique que les invitations de duel (/invite/duel).
+const QUIZ_INVITE_BASE_URL = "https://bighead.jrmanagement.org/invite/quiz";
+
+export function buildQuizShareUrl(
+  challengeId: string,
+  type: WeeklyChallengeType = "themed",
+): string {
+  return `${QUIZ_INVITE_BASE_URL}/${challengeId}?t=${type}`;
+}
+
+/**
+ * Ouvre la feuille de partage native (WhatsApp, iMessage, etc.) avec un message
+ * localisé + le lien du défi. Le lien renvoie vers le store si l'app n'est pas
+ * installée. Renvoie false si l'utilisateur annule ou en cas d'erreur.
+ */
+export async function shareWeeklyChallenge(
+  challenge: Pick<
+    WeeklyChallenge,
+    "id" | "theme_label_fr" | "theme_label_en" | "emoji" | "challenge_type"
+  >,
+  language: string,
+): Promise<boolean> {
+  const url = buildQuizShareUrl(challenge.id, challenge.challenge_type);
+  const label = language === "fr" ? challenge.theme_label_fr : challenge.theme_label_en;
+  const emoji = challenge.emoji || "🧠";
+  const message =
+    language === "fr"
+      ? `${emoji} Je te défie sur le quiz « ${label} » de BIGHEAD ! Tu arrives à me battre ? 🧠\n\n👉 ${url}`
+      : `${emoji} I challenge you on the "${label}" quiz on BIGHEAD! Can you beat me? 🧠\n\n👉 ${url}`;
+  try {
+    // message porte le lien (Android/WhatsApp), url enrichit la fiche iOS.
+    const res = await Share.share({ message, url }, { dialogTitle: label });
+    return res.action === Share.sharedAction;
+  } catch (e) {
+    console.warn("[weekly] share failed:", e);
+    return false;
+  }
 }
 
 export function shuffleAnswers(question: WeeklyQuestion): string[] {

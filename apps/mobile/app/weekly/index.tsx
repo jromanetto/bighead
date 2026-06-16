@@ -9,6 +9,7 @@ import {
   resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
+  shareWeeklyChallenge,
   timeUntilEnd,
   type WeeklyChallenge,
   type WeeklyChallengeType,
@@ -129,6 +130,11 @@ export default function WeeklyHome() {
   const completed = position >= challenge.total_questions;
   const { days, hours } = timeUntilEnd(challenge);
 
+  const onShare = () => {
+    buttonPressFeedback();
+    shareWeeklyChallenge(challenge, language);
+  };
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <Header />
@@ -182,35 +188,50 @@ export default function WeeklyHome() {
               </View>
             </View>
 
-            {completed ? (
+            <View className="mt-5 flex-row" style={{ gap: 10 }}>
+              {completed ? (
+                <Pressable
+                  onPress={() => {
+                    buttonPressFeedback();
+                    router.push({ pathname: "/weekly/result", params: { id: challenge.id, type: challengeType } } as any);
+                  }}
+                  className="flex-1 rounded-2xl items-center justify-center"
+                  style={{ backgroundColor: "#22c55e", paddingVertical: 14 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("weeklySeeRecap")}
+                >
+                  <Text className="text-white text-base font-bold">✓ {t("weeklySeeRecap")}</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => {
+                    buttonPressFeedback();
+                    router.push({ pathname: "/weekly/play", params: { id: challenge.id, type: challengeType } } as any);
+                  }}
+                  className="flex-1 rounded-2xl items-center justify-center"
+                  style={{ backgroundColor: "#fff", paddingVertical: 14 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={position === 0 ? t("weeklyStart") : t("weeklyContinue")}
+                >
+                  <Text style={{ color: challenge.color, fontSize: 16, fontWeight: "800" }}>
+                    ▶ {position === 0 ? t("weeklyStart") : t("weeklyContinue")}
+                  </Text>
+                </Pressable>
+              )}
               <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push({ pathname: "/weekly/result", params: { id: challenge.id, type: challengeType } } as any);
+                onPress={onShare}
+                className="rounded-2xl items-center justify-center px-4"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.18)",
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.35)",
                 }}
-                className="mt-5 rounded-2xl items-center justify-center"
-                style={{ backgroundColor: "#22c55e", paddingVertical: 14 }}
                 accessibilityRole="button"
-                accessibilityLabel={t("weeklySeeRecap")}
+                accessibilityLabel={language === "fr" ? "Partager le défi" : "Share the challenge"}
               >
-                <Text className="text-white text-base font-bold">✓ {t("weeklySeeRecap")}</Text>
+                <Text style={{ fontSize: 20 }}>📤</Text>
               </Pressable>
-            ) : (
-              <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push({ pathname: "/weekly/play", params: { id: challenge.id, type: challengeType } } as any);
-                }}
-                className="mt-5 rounded-2xl items-center justify-center"
-                style={{ backgroundColor: "#fff", paddingVertical: 14 }}
-                accessibilityRole="button"
-                accessibilityLabel={position === 0 ? t("weeklyStart") : t("weeklyContinue")}
-              >
-                <Text style={{ color: challenge.color, fontSize: 16, fontWeight: "800" }}>
-                  ▶ {position === 0 ? t("weeklyStart") : t("weeklyContinue")}
-                </Text>
-              </Pressable>
-            )}
+            </View>
           </LinearGradient>
         </View>
 
