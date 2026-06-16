@@ -5,8 +5,8 @@ import { useState, useEffect, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
 const LEGAL_URLS = {
-  privacy: "https://bighead.jrmanagement.org/privacy.html",
-  terms: "https://bighead.jrmanagement.org/terms.html",
+  privacy: "https://bighead-quizz.com/privacy.html",
+  terms: "https://bighead-quizz.com/terms.html",
 };
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTranslation } from "../src/contexts/LanguageContext";

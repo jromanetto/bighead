@@ -23,6 +23,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.jroma51.bighead",
       "associatedDomains": [
+        "applinks:bighead-quizz.com",
         "applinks:bighead.jrmanagement.org"
       ],
       "infoPlist": {
@@ -48,6 +49,11 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
+            {
+              "scheme": "https",
+              "host": "bighead-quizz.com",
+              "pathPrefix": "/invite"
+            },
             {
               "scheme": "https",
               "host": "bighead.jrmanagement.org",

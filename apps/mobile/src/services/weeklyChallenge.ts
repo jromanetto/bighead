@@ -251,10 +251,10 @@ export function timeUntilEnd(c: Pick<WeeklyChallenge, "end_date">): {
   };
 }
 
-// Lien de partage d'un défi : pointe vers la bridge page du site marketing, qui
+// Lien de partage d'un défi : pointe vers la bridge page du site dédié, qui
 // ouvre l'app (bighead://weekly?id=...) si installée, sinon propose le store.
 // Même mécanique que les invitations de duel (/invite/duel).
-const QUIZ_INVITE_BASE_URL = "https://bighead.jrmanagement.org/invite/quiz";
+const QUIZ_INVITE_BASE_URL = "https://bighead-quizz.com/invite/quiz";
 
 export function buildQuizShareUrl(
   challengeId: string,

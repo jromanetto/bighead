@@ -91,7 +91,7 @@ async function main() {
         res = await fetch(url, {
           headers: {
             "User-Agent":
-              "BigHeadQuizApp/1.0 (https://bighead.jrmanagement.org; contact@jrmanagement.org)",
+              "BigHeadQuizApp/1.0 (https://bighead-quizz.com; julien@romanetto.com)",
           },
           redirect: "follow",
         });
