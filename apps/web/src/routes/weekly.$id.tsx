@@ -9,7 +9,6 @@ import { recordAnsweredQuestion } from '#/lib/funnel/freePlay'
 import { EV, track, trackInstall } from '#/lib/analytics'
 import { playCorrect, playWrong } from '#/lib/game/sound'
 import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL  } from '#/lib/funnel/appLinks'
-import { TIME_PER_QUESTION_MS } from '#/lib/game/scoring'
 import { QuizCard } from '#/components/game/QuizCard'
 import { TimerRing } from '#/components/game/TimerRing'
 import { ShareScore } from '#/components/funnel/ShareScore'
@@ -36,7 +35,8 @@ import type {
 
 export const Route = createFileRoute('/weekly/$id')({ component: WeeklyScreen })
 
-const TIMER_SECONDS = Math.round(TIME_PER_QUESTION_MS / 1000)
+// Weekly quizzes get a longer 20s per-question timer (other modes use 15s).
+const TIMER_SECONDS = 20
 /** Minimum time the learning fact stays before auto-advancing (ms). */
 const LEARN_MS = 1500
 
