@@ -22,10 +22,6 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.jroma51.bighead",
-      "associatedDomains": [
-        "applinks:bighead-quizz.com",
-        "applinks:bighead.jrmanagement.org"
-      ],
       "infoPlist": {
         "UIBackgroundModes": [
           "remote-notification"
