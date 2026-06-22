@@ -233,6 +233,10 @@ export default function DailyBrainScreen() {
   const userLanguage = useRef<string>("en");
   const finishingRef = useRef<boolean>(false);
   const scoreRef = useRef<number>(0);
+  // Questions the user actively answered (taps, not timeouts). Stays 0 when the
+  // daily is opened then abandoned (timers auto-advance) — we must NOT record or
+  // lock that as a played 0/5.
+  const answeredRef = useRef<number>(0);
 
   const scale = useSharedValue(1);
 
@@ -310,6 +314,8 @@ export default function DailyBrainScreen() {
 
       // Fetch today's 5 questions
       startTime.current = Date.now();
+      answeredRef.current = 0;
+      finishingRef.current = false;
       const daily = await getTodaysDailyQuestions(userLanguage.current);
       setQuestions(daily);
       setCurrentIndex(0);
@@ -368,6 +374,7 @@ export default function DailyBrainScreen() {
       timerRef.current = null;
     }
 
+    answeredRef.current += 1;
     setSelectedAnswer(answerIndex);
     const correct = answerIndex === currentQuestion.correctIndex;
     setIsCorrect(correct);
@@ -396,6 +403,13 @@ export default function DailyBrainScreen() {
 
     const finalScore = scoreRef.current;
     const totalTimeMs = Date.now() - startTime.current;
+
+    // Abandoned: opened then left, all questions auto-timed-out with zero taps.
+    // Do NOT record (DB or local) or lock it as a played 0/5 — this is the bug
+    // that kept users stuck on "Déjà joué aujourd'hui ! 0/5" without playing.
+    if (answeredRef.current === 0) {
+      return;
+    }
 
     if (user && !isAnonymous) {
       try {

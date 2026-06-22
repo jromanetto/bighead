@@ -76,6 +76,10 @@ function DailyScreen() {
 
   const startedAtRef = useRef(0)
   const submittedRef = useRef(false)
+  // How many questions the user actively answered (taps, not timeouts). A daily
+  // where this stays 0 = abandoned (opened then left, timers auto-advanced) and
+  // must NOT be recorded/locked as a played 0/5.
+  const answeredRef = useRef(0)
 
   // Load: skip if already played today, else fetch the 5 daily questions.
   // Wait for the client language to resolve post-hydration so questions are
@@ -107,6 +111,7 @@ function DailyScreen() {
         // on `lang` change) restarts cleanly from Q1 in the new language,
         // instead of keeping a stale index/score/selection over fresh questions.
         submittedRef.current = false
+        answeredRef.current = 0
         setQuestions(qs)
         setIndex(0)
         setScore(0)
@@ -129,6 +134,10 @@ function DailyScreen() {
     if (submittedRef.current) return
     submittedRef.current = true
     setPhase('finished')
+
+    // Abandoned: opened then left, all questions auto-timed-out with zero taps.
+    // Do NOT record or lock it as a played 0/5 — let the user play later.
+    if (answeredRef.current === 0) return
 
     const totalMs = startedAtRef.current
       ? Date.now() - startedAtRef.current
@@ -170,6 +179,7 @@ function DailyScreen() {
     if (selectedIndex !== null) return
     const currentQ = questions.at(index)
     if (!currentQ) return
+    answeredRef.current += 1
     const isCorrect = chosen === currentQ.correctIndex
     if (isCorrect) playCorrect()
     else playWrong()
