@@ -152,7 +152,10 @@ export default function StatsScreen() {
 
       // Calculate stats
       const games = (gameResults || []) as any[];
-      const totalGames = games.length;
+      // "Games Played" uses the canonical server counter (incremented for ALL
+      // modes: chain, daily, weekly, duels...). game_results only holds Chain
+      // games, so its length read 0 for users who only play daily/weekly.
+      const totalGames = (profile as any)?.games_played ?? games.length;
       const totalCorrect = games.reduce((sum, g) => sum + (g.correct_count || 0), 0);
       const totalQuestions = games.reduce((sum, g) => sum + (g.total_questions || 0), 0);
       const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
