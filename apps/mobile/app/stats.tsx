@@ -150,14 +150,34 @@ export default function StatsScreen() {
         `)
         .eq("user_id", user.id);
 
+      // Cross-mode accuracy: Daily Brain + Weekly Challenge also count, not just
+      // Chain games (which is all `game_results` holds).
+      const { data: dailyRows } = await supabase
+        .from("daily_survival_results")
+        .select("score")
+        .eq("user_id", user.id);
+      const { data: weeklyRows } = await supabase
+        .from("weekly_challenge_progress")
+        .select("correct_count, current_position")
+        .eq("user_id", user.id);
+
       // Calculate stats
       const games = (gameResults || []) as any[];
       // "Games Played" uses the canonical server counter (incremented for ALL
       // modes: chain, daily, weekly, duels...). game_results only holds Chain
       // games, so its length read 0 for users who only play daily/weekly.
       const totalGames = (profile as any)?.games_played ?? games.length;
-      const totalCorrect = games.reduce((sum, g) => sum + (g.correct_count || 0), 0);
-      const totalQuestions = games.reduce((sum, g) => sum + (g.total_questions || 0), 0);
+
+      // Accuracy & total questions folded across the three modes.
+      const chainCorrect = games.reduce((sum, g) => sum + (g.correct_count || 0), 0);
+      const chainQuestions = games.reduce((sum, g) => sum + (g.total_questions || 0), 0);
+      const dailyCorrect = ((dailyRows as any[]) || []).reduce((s, d) => s + (d.score || 0), 0);
+      const dailyQuestions = (((dailyRows as any[]) || []).length) * 5; // Daily Brain = 5 questions
+      const weeklyCorrect = ((weeklyRows as any[]) || []).reduce((s, w) => s + (w.correct_count || 0), 0);
+      const weeklyQuestions = ((weeklyRows as any[]) || []).reduce((s, w) => s + (w.current_position || 0), 0);
+
+      const totalCorrect = chainCorrect + dailyCorrect + weeklyCorrect;
+      const totalQuestions = chainQuestions + dailyQuestions + weeklyQuestions;
       const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
       const bestChain = games.reduce((max, g) => Math.max(max, g.max_chain || 0), 0);
 
