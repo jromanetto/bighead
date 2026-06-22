@@ -42,6 +42,10 @@ export async function awardXp(
   metadata: Record<string, unknown>,
   dedupeKey: string,
 ): Promise<void> {
+  // No XP to give (e.g. a 0/5 Daily Brain). The server rejects amount <= 0
+  // ('invalid xp amount'), so skip the call entirely instead of erroring.
+  if (!Number.isFinite(amount) || amount <= 0) return
+
   const supabase = getBrowserClient()
 
   const {
