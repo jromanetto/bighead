@@ -184,7 +184,7 @@ async function fetchDayEvents(
 }
 
 function buildPrompt(digest: string, eventCount: number): string {
-  return `You are an expert trivia question writer creating a "This Week in News" quiz from REAL current events of the past 7 days.
+  return `You are an expert trivia question writer creating an EASY, mainstream "This Week in News" quiz from REAL current events of the past 7 days. The audience is a casual French and American player who only skimmed the headlines — questions must feel easy and recognizable, NOT like an expert news exam.
 
 Below is a curated digest of notable, non-sensitive events from this week (sports results, science & technology, arts & culture, business & economy, elections/appointments, international agreements). Generate multiple-choice trivia questions about THIS WEEK's notable events.
 
@@ -194,15 +194,22 @@ ${digest}
 
 Generate 15 multiple-choice trivia questions about THIS WEEK's notable events.
 
+WHAT TO PICK (most important):
+- STRONGLY PRIORITIZE events from EUROPE (especially France, UK, Germany, Italy, Spain) and the UNITED STATES, plus major global events those audiences actually follow (big international sports finals, famous awards, well-known companies, space milestones).
+- Pick ONLY the MOST WIDELY-KNOWN, headline events — famous people, blockbuster releases, major sports finals/records, big tech & business news, well-known elections. SKIP obscure or purely local news from regions a French/American casual reader wouldn't follow (minor leagues, niche appointments, technical agreements, small-country domestic politics).
+- If the digest is thin on Europe/US mainstream events, generate FEWER questions (minimum 8) rather than padding with obscure ones.
+
+DIFFICULTY — KEEP IT EASY:
+- Aim for about 11 questions at difficulty 1 (easy), 4 at difficulty 2 (medium), and ZERO at difficulty 3. Never make a hard question.
+- Easy = a casual reader recognizes the answer. For these, make the THREE wrong answers clearly less plausible so the right one stands out.
+
 STRICT RULES:
 - Only ask about verifiable facts present in the digest above. Do NOT invent events not in the digest.
 - NEVER make trivia out of deaths, violence, war, disasters, or crime — even if any slipped into the digest, skip them entirely.
-- Focus on: sports results & records, scientific discoveries, space, tech launches, cultural events, awards, elections/appointments, business milestones, international agreements/summits.
-- Each question: ONE correct answer + THREE plausible but unambiguous wrong answers.
+- Each question: ONE correct answer + THREE wrong answers.
 - Do NOT leak the answer in the question text.
 - Add a 1-sentence "learning_fact" giving extra context about the correct answer (not a repeat of the question).
-- Vary difficulty (1 easy, 2 medium, 3 hard). All four options similar in length & form.
-- Proper French (avec accents) and proper English.
+- All four options similar in length & form. Proper French (avec accents) and proper English.
 
 SELF-CHECK before including each question (real hallucinations have shipped, be paranoid):
 1. CONSISTENCY: re-read your own learning_fact. If it implies a different answer than your correct_answer, DISCARD this question.
