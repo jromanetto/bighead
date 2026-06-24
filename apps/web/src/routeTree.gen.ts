@@ -25,6 +25,7 @@ import { Route as QuizCategoryRouteImport } from './routes/quiz.$category'
 import { Route as PlayDailyRouteImport } from './routes/play.daily'
 import { Route as PlayChainRouteImport } from './routes/play.chain'
 import { Route as DuelsIdRouteImport } from './routes/duels.$id'
+import { Route as QuizTSlugRouteImport } from './routes/quiz.t.$slug'
 
 const WeeklyRoute = WeeklyRouteImport.update({
   id: '/weekly',
@@ -106,6 +107,11 @@ const DuelsIdRoute = DuelsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => DuelsRoute,
 } as any)
+const QuizTSlugRoute = QuizTSlugRouteImport.update({
+  id: '/quiz/t/$slug',
+  path: '/quiz/t/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/duels/': typeof DuelsIndexRoute
   '/play/': typeof PlayIndexRoute
   '/weekly/': typeof WeeklyIndexRoute
+  '/quiz/t/$slug': typeof QuizTSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/duels': typeof DuelsIndexRoute
   '/play': typeof PlayIndexRoute
   '/weekly': typeof WeeklyIndexRoute
+  '/quiz/t/$slug': typeof QuizTSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/duels/': typeof DuelsIndexRoute
   '/play/': typeof PlayIndexRoute
   '/weekly/': typeof WeeklyIndexRoute
+  '/quiz/t/$slug': typeof QuizTSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/duels/'
     | '/play/'
     | '/weekly/'
+    | '/quiz/t/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/duels'
     | '/play'
     | '/weekly'
+    | '/quiz/t/$slug'
   id:
     | '__root__'
     | '/'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/duels/'
     | '/play/'
     | '/weekly/'
+    | '/quiz/t/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   WeeklyRoute: typeof WeeklyRouteWithChildren
   QuizCategoryRoute: typeof QuizCategoryRoute
+  QuizTSlugRoute: typeof QuizTSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DuelsIdRouteImport
       parentRoute: typeof DuelsRoute
     }
+    '/quiz/t/$slug': {
+      id: '/quiz/t/$slug'
+      path: '/quiz/t/$slug'
+      fullPath: '/quiz/t/$slug'
+      preLoaderRoute: typeof QuizTSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -391,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   WeeklyRoute: WeeklyRouteWithChildren,
   QuizCategoryRoute: QuizCategoryRoute,
+  QuizTSlugRoute: QuizTSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
