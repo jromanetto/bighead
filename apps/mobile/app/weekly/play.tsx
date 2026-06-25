@@ -12,6 +12,7 @@ import {
   type WeeklyChallengeType,
   type WeeklyQuestion,
 } from "../../src/services/weeklyChallenge";
+import * as Sentry from "@sentry/react-native";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
 import { QuestionImage } from "../../src/components/QuestionImage";
@@ -70,6 +71,13 @@ export default function WeeklyPlay() {
 
   const handleImageReady = useCallback(() => setImageReady(true), []);
 
+  // Le défi est résolu UNE SEULE FOIS et mémorisé ici. Avant, loadCurrent le
+  // re-résolvait à chaque question : si plusieurs défis du même type étaient
+  // actifs la même semaine (start_date à égalité), Postgres pouvait renvoyer un
+  // défi différent d'un appel à l'autre → questions croisées, "Question not
+  // found" à la 20e, et mauvais écran de résultat. On le fige pour toute la session.
+  const challengeRef = useRef<WeeklyChallenge | null>(null);
+
   const refreshLifelines = useCallback(async () => {
     const l = await fetchLifelines();
     setLifelines(l);
@@ -92,7 +100,12 @@ export default function WeeklyPlay() {
     setSelected(null);
     setShowLearning(false);
     setHiddenAnswers([]);
-    const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
+    // Résolution figée : on ne ré-résout jamais en cours de partie.
+    let c = challengeRef.current;
+    if (!c) {
+      c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
+      challengeRef.current = c;
+    }
     if (!c) {
       setError(t("weeklyNoneTitle"));
       setLoading(false);
@@ -100,17 +113,33 @@ export default function WeeklyPlay() {
     }
     setChallenge(c);
     const p = await getMyWeeklyProgress(c.id);
+    const goToResult = () =>
+      router.replace({ pathname: "/weekly/result", params: { id: c!.id, type: challengeType } } as any);
     if (p && p.completed_at) {
-      router.replace({ pathname: "/weekly/result", params: { id: c.id, type: challengeType } } as any);
+      goToResult();
       return;
     }
     const nextPos = (p?.current_position ?? 0) + 1;
+    // Garde-fou : si on est au-delà de la dernière question (dernière réponse
+    // soumise mais completed_at pas encore propagé), on file au récap au lieu
+    // d'afficher une erreur plein écran.
+    if (nextPos > c.total_questions) {
+      goToResult();
+      return;
+    }
     setPosition(nextPos);
     setCorrectSoFar(p?.correct_count ?? 0);
     const q = await getNextWeeklyQuestion(c.id, language as "fr" | "en", nextPos);
     if (!q) {
-      setError("Question not found");
-      setLoading(false);
+      // Trou de données réel (question manquante alors qu'on est dans la plage).
+      // On remonte l'incident à Sentry (pour l'alerting) et on dégrade vers le
+      // récap plutôt que de bloquer le joueur sur un écran d'erreur.
+      Sentry.captureMessage("weekly_play_question_not_found", {
+        level: "error",
+        tags: { feature: "weekly_play", challenge_type: challengeType },
+        extra: { challenge_id: c.id, position: nextPos, total: c.total_questions },
+      });
+      goToResult();
       return;
     }
     setQuestion(q);

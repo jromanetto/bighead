@@ -69,6 +69,11 @@ export async function getActiveWeeklyChallenge(
     .eq("status", "active")
     .eq("challenge_type", type)
     .order("start_date", { ascending: false })
+    // Deterministic tiebreak: si deux défis du même type partagent la même
+    // start_date (ne devrait pas arriver, mais c'est arrivé), on prend le plus
+    // récemment créé — sinon Postgres renvoie une ligne arbitraire et différents
+    // appels peuvent résoudre des défis différents (questions croisées en plein jeu).
+    .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
   if (error) {
