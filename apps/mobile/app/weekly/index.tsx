@@ -16,6 +16,7 @@ import {
   type WeeklyProgress,
   type WeeklyLeaderboardEntry,
 } from "../../src/services/weeklyChallenge";
+import { startReplay } from "../../src/services/weeklyHistory";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { mixHex } from "../../src/utils/colors";
@@ -36,6 +37,19 @@ export default function WeeklyHome() {
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<WeeklyLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [replaying, setReplaying] = useState(false);
+
+  // Replay a finished challenge for fun (no XP). Mirrors the history screen flow.
+  const onReplay = useCallback(async (id: string) => {
+    if (replaying) return;
+    buttonPressFeedback();
+    setReplaying(true);
+    const replayId = await startReplay(id);
+    setReplaying(false);
+    if (replayId) {
+      router.push({ pathname: "/weekly/replay", params: { replay_id: replayId, challenge_id: id } } as any);
+    }
+  }, [replaying]);
 
   const reload = useCallback(async () => {
     const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
@@ -191,16 +205,16 @@ export default function WeeklyHome() {
             <View className="mt-5 flex-row" style={{ gap: 10 }}>
               {completed ? (
                 <Pressable
-                  onPress={() => {
-                    buttonPressFeedback();
-                    router.push({ pathname: "/weekly/result", params: { id: challenge.id, type: challengeType } } as any);
-                  }}
+                  onPress={() => onReplay(challenge.id)}
+                  disabled={replaying}
                   className="flex-1 rounded-2xl items-center justify-center"
-                  style={{ backgroundColor: "#22c55e", paddingVertical: 14 }}
+                  style={{ backgroundColor: "#fff", paddingVertical: 14, opacity: replaying ? 0.6 : 1 }}
                   accessibilityRole="button"
-                  accessibilityLabel={t("weeklySeeRecap")}
+                  accessibilityLabel={t("weeklyReplayCta")}
                 >
-                  <Text className="text-white text-base font-bold">✓ {t("weeklySeeRecap")}</Text>
+                  <Text style={{ color: challenge.color, fontSize: 16, fontWeight: "800" }}>
+                    ↻ {t("weeklyReplayCta")}
+                  </Text>
                 </Pressable>
               ) : (
                 <Pressable
@@ -232,6 +246,21 @@ export default function WeeklyHome() {
                 <Text style={{ fontSize: 20 }}>📤</Text>
               </Pressable>
             </View>
+
+            {completed && (
+              <Pressable
+                onPress={() => {
+                  buttonPressFeedback();
+                  router.push({ pathname: "/weekly/result", params: { id: challenge.id, type: challengeType } } as any);
+                }}
+                className="mt-3 rounded-2xl items-center justify-center"
+                style={{ backgroundColor: "rgba(255,255,255,0.15)", paddingVertical: 12 }}
+                accessibilityRole="button"
+                accessibilityLabel={t("weeklySeeRecap")}
+              >
+                <Text className="text-white/90 text-sm font-semibold">✓ {t("weeklySeeRecap")}</Text>
+              </Pressable>
+            )}
           </LinearGradient>
         </View>
 

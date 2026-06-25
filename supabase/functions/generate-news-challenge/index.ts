@@ -7,7 +7,7 @@
 // Pulls the past 7 daily portal pages, keeps ONLY positive/neutral event
 // categories (sports, science/tech, arts/culture, business, elections,
 // international agreements), explicitly DROPS war/death/disaster/crime/health,
-// then asks Claude Sonnet to generate 8-15 bilingual (FR + EN) trivia
+// then asks Claude Sonnet to generate 12-20 bilingual (FR + EN) trivia
 // questions. Stores them as a challenge_type='news' row.
 //
 // Triggered weekly by pg_cron (Monday 08:00 UTC). Can be invoked manually
@@ -192,15 +192,15 @@ Below is a curated digest of notable, non-sensitive events from this week (sport
 ${digest}
 === END DIGEST ===
 
-Generate 15 multiple-choice trivia questions about THIS WEEK's notable events.
+Generate 20 multiple-choice trivia questions about THIS WEEK's notable events.
 
 WHAT TO PICK (most important):
 - STRONGLY PRIORITIZE events from EUROPE (especially France, UK, Germany, Italy, Spain) and the UNITED STATES, plus major global events those audiences actually follow (big international sports finals, famous awards, well-known companies, space milestones).
 - Pick ONLY the MOST WIDELY-KNOWN, headline events — famous people, blockbuster releases, major sports finals/records, big tech & business news, well-known elections. SKIP obscure or purely local news from regions a French/American casual reader wouldn't follow (minor leagues, niche appointments, technical agreements, small-country domestic politics).
-- If the digest is thin on Europe/US mainstream events, generate FEWER questions (minimum 8) rather than padding with obscure ones.
+- If the digest is thin on Europe/US mainstream events, generate FEWER questions (minimum 12) rather than padding with obscure ones.
 
 DIFFICULTY — KEEP IT EASY:
-- Aim for about 11 questions at difficulty 1 (easy), 4 at difficulty 2 (medium), and ZERO at difficulty 3. Never make a hard question.
+- Aim for about 14 questions at difficulty 1 (easy), 6 at difficulty 2 (medium), and ZERO at difficulty 3. Never make a hard question.
 - Easy = a casual reader recognizes the answer. For these, make the THREE wrong answers clearly less plausible so the right one stands out.
 
 STRICT RULES:
@@ -218,7 +218,7 @@ SELF-CHECK before including each question (real hallucinations have shipped, be 
 4. DATES & NUMBERS: copy them verbatim from the digest. Do not "round" or paraphrase numbers.
 If a question fails any check, generate a different one.
 
-If there aren't enough non-sensitive events for 15 questions, generate fewer (MINIMUM 8). Quality over quantity — never pad with fabricated facts.
+If there aren't enough non-sensitive events for 20 questions, generate fewer (MINIMUM 12). Quality over quantity — never pad with fabricated facts.
 
 Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
 
@@ -238,7 +238,7 @@ Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
   ]
 }
 
-The "questions" array must contain between 8 and 15 objects.`;
+The "questions" array must contain between 12 and 20 objects.`;
 }
 
 async function callClaude(prompt: string): Promise<BilingualQuestion[]> {
@@ -269,8 +269,8 @@ async function callClaude(prompt: string): Promise<BilingualQuestion[]> {
 }
 
 function validateQuestions(qs: BilingualQuestion[]): string | null {
-  if (qs.length < 8 || qs.length > 15) {
-    return `expected 8-15 questions, got ${qs.length}`;
+  if (qs.length < 12 || qs.length > 20) {
+    return `expected 12-20 questions, got ${qs.length}`;
   }
   for (let i = 0; i < qs.length; i++) {
     const q = qs[i];
