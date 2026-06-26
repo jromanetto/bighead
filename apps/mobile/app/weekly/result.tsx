@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   resolveWeeklyChallenge,
@@ -13,6 +13,8 @@ import {
   type WeeklyProgress,
   type WeeklyLeaderboardEntry,
 } from "../../src/services/weeklyChallenge";
+import { shareResultCard } from "../../src/services/shareResult";
+import { WeeklyShareCard } from "../../src/components/WeeklyShareCard";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { mixHex } from "../../src/utils/colors";
@@ -37,6 +39,8 @@ export default function WeeklyResult() {
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<WeeklyLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sharing, setSharing] = useState(false);
+  const cardRef = useRef<View>(null);
 
   useEffect(() => {
     (async () => {
@@ -127,10 +131,32 @@ export default function WeeklyResult() {
           </LinearGradient>
         </View>
 
-        {/* Défier un ami : partage le quiz (ouvre l'app ou le store). */}
+        {/* Partager mon score : capture le visuel et ouvre la feuille native
+            (Story Instagram, WhatsApp en image, etc.). Lien de download imprimé
+            sur l'image. */}
+        <Pressable
+          onPress={async () => {
+            buttonPressFeedback();
+            setSharing(true);
+            await shareResultCard(cardRef, label);
+            setSharing(false);
+          }}
+          disabled={sharing}
+          className="mt-4 rounded-2xl flex-row items-center justify-center active:opacity-90"
+          style={{ backgroundColor: challenge.color, paddingVertical: 16, opacity: sharing ? 0.6 : 1 }}
+          accessibilityRole="button"
+          accessibilityLabel={language === "fr" ? "Partager mon score" : "Share my score"}
+        >
+          <Text style={{ fontSize: 18, marginRight: 8 }}>📸</Text>
+          <Text className="font-bold text-base text-white">
+            {language === "fr" ? "Partager mon score" : "Share my score"}
+          </Text>
+        </Pressable>
+
+        {/* Défier un ami : message + lien cliquable (WhatsApp, iMessage…). */}
         <Pressable
           onPress={() => { buttonPressFeedback(); shareWeeklyChallenge(challenge, language); }}
-          className="mt-4 rounded-2xl flex-row items-center justify-center active:opacity-90"
+          className="mt-3 rounded-2xl flex-row items-center justify-center active:opacity-90"
           style={{
             backgroundColor: "rgba(255,255,255,0.06)",
             borderWidth: 1.5,
@@ -196,6 +222,23 @@ export default function WeeklyResult() {
           <Text className="text-white/80 font-semibold">{t("backToHome")}</Text>
         </Pressable>
       </ScrollView>
+
+      {/* Carte hors-écran, capturée à la demande pour le partage (jamais visible). */}
+      <View style={{ position: "absolute", left: -10000, top: 0 }} pointerEvents="none">
+        <WeeklyShareCard
+          ref={cardRef}
+          data={{
+            color: challenge.color,
+            emoji: badge?.emoji ?? "🎯",
+            score,
+            total,
+            pct,
+            badgeLabel: badge?.label ?? null,
+            themeLabel: label,
+            language,
+          }}
+        />
+      </View>
     </SafeAreaView>
   );
 }
