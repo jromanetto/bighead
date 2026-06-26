@@ -157,44 +157,68 @@ const HistoryCard = memo(function HistoryCard({
       {/* Color stripe */}
       <View style={{ width: 6, backgroundColor: entry.color }} />
 
-      {/* Emoji */}
-      <View
-        className="items-center justify-center"
-        style={{ width: 56 }}
+      {/* Corps cliquable : ouvre le récap (scores + partage) si déjà joué. */}
+      <Pressable
+        onPress={() => {
+          if (!hasPlayed) return;
+          buttonPressFeedback();
+          router.push({
+            pathname: "/weekly/result",
+            params: { id: entry.challenge_id, type: entry.challenge_type },
+          } as any);
+        }}
+        disabled={!hasPlayed}
+        className="flex-1 flex-row active:opacity-80"
+        accessibilityRole="button"
+        accessibilityLabel={
+          hasPlayed
+            ? language === "fr"
+              ? `Voir le récap de ${label} et partager`
+              : `See recap of ${label} and share`
+            : label
+        }
       >
-        <Text style={{ fontSize: 32 }}>{entry.emoji}</Text>
-      </View>
+        {/* Emoji */}
+        <View className="items-center justify-center" style={{ width: 56 }}>
+          <Text style={{ fontSize: 32 }}>{entry.emoji}</Text>
+        </View>
 
-      {/* Middle */}
-      <View className="flex-1 py-3 pr-2">
-        <Text className="text-white text-base font-bold" numberOfLines={1}>
-          {label}
-        </Text>
-        <Text className="text-gray-400 text-[11px] mt-0.5">
-          {formatDateRange(entry.start_date, entry.end_date)}
-        </Text>
-        <View className="flex-row items-center mt-1.5 flex-wrap">
-          {hasPlayed ? (
-            <Text className="text-white text-xs font-semibold">
-              {labelYourScore}: {score}/{total}
-            </Text>
-          ) : (
-            <Text className="text-gray-400 text-xs font-semibold">
-              {labelNotPlayed}
+        {/* Middle */}
+        <View className="flex-1 py-3 pr-2">
+          <Text className="text-white text-base font-bold" numberOfLines={1}>
+            {label}
+          </Text>
+          <Text className="text-gray-400 text-[11px] mt-0.5">
+            {formatDateRange(entry.start_date, entry.end_date)}
+          </Text>
+          <View className="flex-row items-center mt-1.5 flex-wrap">
+            {hasPlayed ? (
+              <Text className="text-white text-xs font-semibold">
+                {labelYourScore}: {score}/{total}
+              </Text>
+            ) : (
+              <Text className="text-gray-400 text-xs font-semibold">
+                {labelNotPlayed}
+              </Text>
+            )}
+            {entry.badge_earned && (
+              <Text className="text-yellow-400 text-xs font-semibold ml-2">
+                {badgeIcon(entry.badge_earned)} {entry.badge_earned}
+              </Text>
+            )}
+          </View>
+          {hasReplay && (
+            <Text className="text-cyan-300 text-[11px] mt-1">
+              ↻ {labelBestReplay}: {entry.best_replay_score}/{total}
             </Text>
           )}
-          {entry.badge_earned && (
-            <Text className="text-yellow-400 text-xs font-semibold ml-2">
-              {badgeIcon(entry.badge_earned)} {entry.badge_earned}
+          {hasPlayed && (
+            <Text className="text-[11px] mt-1 font-semibold" style={{ color: entry.color }}>
+              {language === "fr" ? "Voir le récap & partager ›" : "See recap & share ›"}
             </Text>
           )}
         </View>
-        {hasReplay && (
-          <Text className="text-cyan-300 text-[11px] mt-1">
-            ↻ {labelBestReplay}: {entry.best_replay_score}/{total}
-          </Text>
-        )}
-      </View>
+      </Pressable>
 
       {/* Replay button */}
       <Pressable
