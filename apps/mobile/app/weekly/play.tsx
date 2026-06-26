@@ -13,6 +13,7 @@ import {
   type WeeklyQuestion,
 } from "../../src/services/weeklyChallenge";
 import * as Sentry from "@sentry/react-native";
+import { decideWeeklyNextStep } from "../../src/services/weeklyFlow";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
 import { QuestionImage } from "../../src/components/QuestionImage";
@@ -115,18 +116,15 @@ export default function WeeklyPlay() {
     const p = await getMyWeeklyProgress(c.id);
     const goToResult = () =>
       router.replace({ pathname: "/weekly/result", params: { id: c!.id, type: challengeType } } as any);
-    if (p && p.completed_at) {
+    // Décision pure (testée dans weeklyFlow.test.ts) : terminé ou au-delà de la
+    // dernière question → récap ; sinon on charge la question suivante. Le
+    // garde-fou position>total évite l'écran "Question not found" en fin de quiz.
+    const step = decideWeeklyNextStep(p, c.total_questions);
+    if (step.kind === "result") {
       goToResult();
       return;
     }
-    const nextPos = (p?.current_position ?? 0) + 1;
-    // Garde-fou : si on est au-delà de la dernière question (dernière réponse
-    // soumise mais completed_at pas encore propagé), on file au récap au lieu
-    // d'afficher une erreur plein écran.
-    if (nextPos > c.total_questions) {
-      goToResult();
-      return;
-    }
+    const nextPos = step.position;
     setPosition(nextPos);
     setCorrectSoFar(p?.correct_count ?? 0);
     const q = await getNextWeeklyQuestion(c.id, language as "fr" | "en", nextPos);
