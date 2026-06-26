@@ -12,7 +12,7 @@ import {
   type WeeklyChallengeType,
   type WeeklyQuestion,
 } from "../../src/services/weeklyChallenge";
-import * as Sentry from "@sentry/react-native";
+import { reportErrorScreen } from "../../src/utils/errorReport";
 import { decideWeeklyNextStep } from "../../src/services/weeklyFlow";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
@@ -132,10 +132,11 @@ export default function WeeklyPlay() {
       // Trou de données réel (question manquante alors qu'on est dans la plage).
       // On remonte l'incident à Sentry (pour l'alerting) et on dégrade vers le
       // récap plutôt que de bloquer le joueur sur un écran d'erreur.
-      Sentry.captureMessage("weekly_play_question_not_found", {
-        level: "error",
-        tags: { feature: "weekly_play", challenge_type: challengeType },
-        extra: { challenge_id: c.id, position: nextPos, total: c.total_questions },
+      reportErrorScreen("weekly_play_question_not_found", {
+        challenge_id: c.id,
+        challenge_type: challengeType,
+        position: nextPos,
+        total: c.total_questions,
       });
       goToResult();
       return;

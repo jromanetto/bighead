@@ -13,6 +13,7 @@ import Animated, {
 import { useAuth } from "../src/contexts/AuthContext";
 import { CircularTimer } from "../src/components/CircularTimer";
 import { getTodayIsoDate } from "../src/utils/dates";
+import { reportCaught } from "../src/utils/errorReport";
 import {
   hasPlayedDailySurvivalToday,
   getDailyStreak,
@@ -321,6 +322,7 @@ export default function DailyBrainScreen() {
       setCurrentIndex(0);
     } catch (error) {
       console.error("Error loading daily brain:", error);
+      reportCaught("daily_load", error);
     }
     setLoading(false);
   };

@@ -13,6 +13,7 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { CircularTimer as SharedCircularTimer } from "../../src/components/CircularTimer";
 import { recordPlay } from "../../src/services/dailyLimits";
+import { reportCaught } from "../../src/utils/errorReport";
 import {
   getAsyncDuelQuestions,
   submitAsyncPlay,
@@ -218,6 +219,7 @@ export default function DuelPlayScreen() {
         totalStartRef.current = Date.now();
       } catch (e) {
         console.error("Load duel error", e);
+        reportCaught("duel_load", e, { duel_id: id });
       }
       setLoading(false);
     })();
@@ -241,6 +243,7 @@ export default function DuelPlayScreen() {
         router.replace(`/duel/result?id=${id}`);
       } catch (e) {
         console.error("submit error", e);
+        reportCaught("duel_submit", e, { duel_id: id });
         setSubmitting(false);
       }
     },
