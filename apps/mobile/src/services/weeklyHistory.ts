@@ -11,6 +11,8 @@ export interface HistoryEntry {
   description_en: string | null;
   emoji: string;
   color: string;
+  target_category: string | null;
+  target_difficulty: number | null;
   start_date: string;
   end_date: string;
   total_questions: number;

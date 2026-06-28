@@ -11,6 +11,7 @@ export interface WeeklyChallenge {
   emoji: string;
   color: string;
   target_category: string;
+  target_difficulty: number | null;
   challenge_type: "themed" | "news";
   start_date: string;
   end_date: string;

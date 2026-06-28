@@ -5,6 +5,8 @@ import { memo, useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { categoryMeta } from "../../src/utils/categoryLabel";
+import { difficultyMeta } from "../../src/utils/difficultyLabel";
 import { Skeleton, SkeletonCard } from "../../src/components/Skeleton";
 import { EmptyState } from "../../src/components/EmptyState";
 import {
@@ -139,6 +141,8 @@ const HistoryCard = memo(function HistoryCard({
   labelNotPlayed,
 }: HistoryCardProps) {
   const label = language === "fr" ? entry.theme_label_fr : entry.theme_label_en;
+  const cat = entry.challenge_type === "themed" ? categoryMeta(entry.target_category) : null;
+  const diff = entry.challenge_type === "themed" ? difficultyMeta(entry.target_difficulty) : null;
   const score = entry.correct_count;
   const total = entry.total_questions;
   // correct_count null = quiz passé jamais joué (LEFT JOIN côté RPC)
@@ -191,6 +195,22 @@ const HistoryCard = memo(function HistoryCard({
           <Text className="text-gray-400 text-[11px] mt-0.5">
             {formatDateRange(entry.start_date, entry.end_date)}
           </Text>
+          {(cat || diff) && (
+            <View className="flex-row items-center mt-1" style={{ gap: 6 }}>
+              {cat && (
+                <Text className="text-gray-300 text-[10px] font-semibold">
+                  {cat.emoji} {language === "fr" ? cat.fr : cat.en}
+                </Text>
+              )}
+              {diff && (
+                <View className="px-1.5 py-0.5 rounded" style={{ backgroundColor: diff.color }}>
+                  <Text className="text-white text-[9px] font-black uppercase tracking-wider">
+                    {language === "fr" ? diff.fr : diff.en}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
           <View className="flex-row items-center mt-1.5 flex-wrap">
             {hasPlayed ? (
               <Text className="text-white text-xs font-semibold">

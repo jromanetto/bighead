@@ -65,12 +65,34 @@ function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function buildPrompt(theme: Theme): string {
+const DIFFICULTY_SPEC: Record<number, { name: string; dist: string; tone: string }> = {
+  1: {
+    name: "EASY / ACCESSIBLE",
+    dist: "16 easy (level 1), 4 medium (level 2), 0 hard",
+    tone:
+      "Target a casual player: famous, widely-known facts most people recognize. The three wrong answers should be clearly less plausible so the right one stands out.",
+  },
+  2: {
+    name: "MEDIUM",
+    dist: "5 easy (level 1), 11 medium (level 2), 4 hard (level 3)",
+    tone: "Balanced: a fair amount require genuine familiarity with the theme.",
+  },
+  3: {
+    name: "HARD / EXPERT",
+    dist: "0 easy, 6 medium (level 2), 14 hard (level 3)",
+    tone:
+      "For enthusiasts: precise, deep-cut facts, close distractors. Still 100% verifiable (Wikipedia-grade) — hard, never obscure-to-the-point-of-unknowable.",
+  },
+};
+
+function buildPrompt(theme: Theme, difficulty: number): string {
+  const spec = DIFFICULTY_SPEC[difficulty] ?? DIFFICULTY_SPEC[2];
   return `You are an expert trivia question writer. Generate exactly 20 bilingual (French + English) multiple-choice trivia questions on the theme: "${theme.label_en}" (FR: "${theme.label_fr}").
 
 Theme description: ${theme.description_en ?? theme.label_en}
 
-Difficulty distribution: 6 easy (level 1), 9 medium (level 2), 5 hard (level 3).
+OVERALL DIFFICULTY: ${spec.name}. ${spec.tone}
+Difficulty distribution: ${spec.dist}.
 
 Requirements per question:
 - Each question must have ONE clear correct answer and THREE plausible but unambiguous wrong answers.
@@ -198,14 +220,34 @@ serve(async (req) => {
   try {
     let forcedThemeSlug: string | null = null;
     let forceStartDate: string | null = null;
+    let forcedDifficulty: number | null = null;
     if (req.method === "POST") {
       try {
         const body = await req.json();
         forcedThemeSlug = body?.theme_slug ?? null;
         forceStartDate = body?.start_date ?? null;
+        forcedDifficulty = typeof body?.target_difficulty === "number" ? body.target_difficulty : null;
       } catch (_) {
         // empty body OK
       }
+    }
+
+    // Niveau de difficulté du défi : explicite (body) sinon rotation
+    // facile→moyen→difficile à partir du dernier défi themed généré.
+    let targetDifficulty: number;
+    if (forcedDifficulty && forcedDifficulty >= 1 && forcedDifficulty <= 3) {
+      targetDifficulty = forcedDifficulty;
+    } else {
+      const { data: lastDiff } = await supabase
+        .from("weekly_challenges")
+        .select("target_difficulty")
+        .eq("challenge_type", "themed")
+        .not("target_difficulty", "is", null)
+        .order("start_date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const prev = lastDiff?.target_difficulty ?? 0;
+      targetDifficulty = (prev % 3) + 1; // 1→2→3→1
     }
 
     // 1. Pick theme
@@ -296,6 +338,7 @@ serve(async (req) => {
         emoji: theme.emoji,
         color: theme.color,
         target_category: theme.target_category,
+        target_difficulty: targetDifficulty,
         start_date: isoDate(start),
         end_date: isoDate(end),
         status: "upcoming",
@@ -308,7 +351,7 @@ serve(async (req) => {
     // 4. Generate via Claude
     let questions: BilingualQuestion[];
     try {
-      questions = await callClaude(buildPrompt(theme));
+      questions = await callClaude(buildPrompt(theme, targetDifficulty));
     } catch (e: any) {
       await supabase.from("weekly_challenges").update({
         generation_status: "failed",
