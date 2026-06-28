@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "../contexts/LanguageContext";
 import { buttonPressFeedback } from "../utils/feedback";
 import { mixHex } from "../utils/colors";
+import { categoryMeta } from "../utils/categoryLabel";
 
 type Props = {
   /** Legacy: fetch the active challenge of this type internally. */
@@ -66,6 +67,7 @@ function WeeklyChallengeBannerInner({ type, challenge: challengeProp, compact = 
 
   const isActive = challenge.status === "active";
   const label = language === "fr" ? challenge.theme_label_fr : challenge.theme_label_en;
+  const cat = challenge.challenge_type === "themed" ? categoryMeta(challenge.target_category) : null;
   const description = language === "fr" ? challenge.description_fr : challenge.description_en;
   const position = progress?.current_position ?? 0;
   const correctCount = progress?.correct_count ?? 0;
@@ -177,10 +179,12 @@ function WeeklyChallengeBannerInner({ type, challenge: challengeProp, compact = 
               {timeLabel && (
                 <Text className="text-white/80 text-[11px] font-medium">⏱ {timeLabel}</Text>
               )}
-              {!isActive && (
-                <Text className="text-white/70 text-[11px] font-medium uppercase tracking-wider">
-                  {challenge.status === "closed" ? "·" : "·"}
-                </Text>
+              {cat && (
+                <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
+                  <Text className="text-white text-[10px] font-bold tracking-wider uppercase">
+                    {cat.emoji} {language === "fr" ? cat.fr : cat.en}
+                  </Text>
+                </View>
               )}
             </View>
             <Text className={titleClass} numberOfLines={1}>

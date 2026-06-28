@@ -85,13 +85,18 @@ serve(async (req) => {
       } catch (_) { /* empty body OK */ }
     }
 
-    // 1. Find the challenge(s) to close. There can be BOTH a themed and a news
-    //    challenge active simultaneously, so we process all of them.
+    // 1. Find the challenge(s) to close. With the 2-day cadence this runs daily,
+    //    so we only close challenges whose window has EXPIRED (end_date < today)
+    //    — never one that is still mid-window. Forced id bypasses the date check.
+    const todayStr = new Date().toISOString().slice(0, 10);
     let query = supabase.from("weekly_challenges").select("*");
     if (forcedId) {
       query = query.eq("id", forcedId);
     } else {
-      query = query.eq("status", "active").order("end_date", { ascending: true });
+      query = query
+        .eq("status", "active")
+        .lt("end_date", todayStr)
+        .order("end_date", { ascending: true });
     }
     const { data: challenges, error: selErr } = await query;
     if (selErr) throw new Error(`select active challenge: ${selErr.message}`);

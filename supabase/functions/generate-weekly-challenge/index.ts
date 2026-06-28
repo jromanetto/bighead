@@ -20,6 +20,10 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANTHROPIC_MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-5";
 
+// Cadence : 1 défi tous les 2 jours. On garde au plus QUEUE_BUFFER défis themed
+// "upcoming" d'avance ; le cron quotidien complète après chaque clôture.
+const QUEUE_BUFFER = 3;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -220,11 +224,41 @@ serve(async (req) => {
       theme = data as Theme;
     }
 
-    // 2. Compute dates : start = next Monday, end = following Sunday
+    // 2. Cadence : un nouveau défi tous les 2 jours. La fenêtre fait 2 jours
+    //    (start et start+1). On remplit une file tampon (QUEUE_BUFFER) puis on
+    //    s'arrête, le cron quotidien complète au fur et à mesure des clôtures.
     const now = new Date();
-    const start = forceStartDate ? new Date(forceStartDate + "T00:00:00Z") : getNextMonday(now);
+    let start: Date;
+    if (forceStartDate) {
+      start = new Date(forceStartDate + "T00:00:00Z");
+    } else {
+      // Tampon : ne pas sur-générer. Stop si assez de défis themed à venir.
+      const { data: upcoming } = await supabase
+        .from("weekly_challenges")
+        .select("id")
+        .eq("challenge_type", "themed")
+        .eq("status", "upcoming");
+      if ((upcoming?.length ?? 0) >= QUEUE_BUFFER) {
+        return new Response(
+          JSON.stringify({ success: true, skipped: `queue full (${upcoming?.length} upcoming)` }),
+          { status: 200, headers: { ...corsHeaders, "content-type": "application/json" } },
+        );
+      }
+      // Prochain créneau = lendemain du dernier défi themed programmé, sinon aujourd'hui.
+      const { data: latest } = await supabase
+        .from("weekly_challenges")
+        .select("end_date")
+        .eq("challenge_type", "themed")
+        .in("status", ["active", "upcoming"])
+        .order("end_date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      start = latest?.end_date ? new Date(latest.end_date + "T00:00:00Z") : new Date(now);
+      start.setUTCHours(0, 0, 0, 0);
+      if (latest?.end_date) start.setUTCDate(start.getUTCDate() + 1);
+    }
     const end = new Date(start);
-    end.setUTCDate(end.getUTCDate() + 6);
+    end.setUTCDate(end.getUTCDate() + 1); // fenêtre de 2 jours : start et start+1
     const startStr = isoDate(start);
 
     // 2b. Dedup guard: when triggered by cron (no force* args), skip if a themed

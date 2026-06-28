@@ -20,6 +20,7 @@ import { startReplay } from "../../src/services/weeklyHistory";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { mixHex } from "../../src/utils/colors";
+import { categoryMeta } from "../../src/utils/categoryLabel";
 
 const COLORS = {
   bg: "#161a1d",
@@ -139,6 +140,7 @@ export default function WeeklyHome() {
   }
 
   const label = language === "fr" ? challenge.theme_label_fr : challenge.theme_label_en;
+  const cat = categoryMeta(challenge.target_category);
   const description = language === "fr" ? challenge.description_fr : challenge.description_en;
   const position = progress?.current_position ?? 0;
   const completed = position >= challenge.total_questions;
@@ -170,6 +172,16 @@ export default function WeeklyHome() {
                 {t("weeklyChallenge")}
               </Text>
               <Text className="text-white text-3xl font-extrabold mt-1 text-center">{label}</Text>
+              {challengeType === "themed" && cat && (
+                <View
+                  className="rounded-full px-3 py-1 mt-2"
+                  style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+                >
+                  <Text className="text-white text-[11px] font-bold tracking-wider uppercase">
+                    {cat.emoji} {language === "fr" ? cat.fr : cat.en}
+                  </Text>
+                </View>
+              )}
               {description && (
                 <Text className="text-white/85 text-sm text-center mt-2">{description}</Text>
               )}
