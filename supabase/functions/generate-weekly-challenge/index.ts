@@ -132,7 +132,22 @@ Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
 The "questions" array must contain EXACTLY 20 objects.`;
 }
 
-async function callClaude(prompt: string): Promise<BilingualQuestion[]> {
+// Claude renvoie occasionnellement du JSON légèrement malformé (virgule/quote
+// manquante). On retente quelques fois avant d'abandonner — sinon un créneau
+// reste vide alors qu'on génère tous les 2 jours sans surveillance.
+async function callClaude(prompt: string, attempts = 3): Promise<BilingualQuestion[]> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await callClaudeOnce(prompt);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr;
+}
+
+async function callClaudeOnce(prompt: string): Promise<BilingualQuestion[]> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -279,7 +294,8 @@ serve(async (req) => {
         .from("weekly_challenges")
         .select("id")
         .eq("challenge_type", "themed")
-        .eq("status", "upcoming");
+        .eq("status", "upcoming")
+        .eq("generation_status", "ready");
       if ((upcoming?.length ?? 0) >= QUEUE_BUFFER) {
         return new Response(
           JSON.stringify({ success: true, skipped: `queue full (${upcoming?.length} upcoming)` }),
