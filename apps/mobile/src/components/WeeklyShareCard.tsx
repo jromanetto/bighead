@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 import { forwardRef } from "react";
 import { ShareCardFrame } from "./ShareCardFrame";
+import { difficultyMeta } from "../utils/difficultyLabel";
 
 /**
  * Visuel partageable d'un résultat weekly (story Instagram / WhatsApp). Réutilise
@@ -16,6 +17,7 @@ export interface ShareCardData {
   pct: number;
   badgeLabel?: string | null;
   themeLabel: string;
+  difficulty?: number | null;
   language: string;
 }
 
@@ -81,6 +83,32 @@ export const WeeklyShareCard = forwardRef<View, { data: ShareCardData }>(
         >
           Quiz « {data.themeLabel} »
         </Text>
+        {(() => {
+          const d = difficultyMeta(data.difficulty);
+          return d ? (
+            <View
+              style={{
+                marginTop: 8,
+                borderRadius: 999,
+                paddingHorizontal: 12,
+                paddingVertical: 4,
+                backgroundColor: d.color,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#0d1117",
+                  fontSize: 11,
+                  fontWeight: "900",
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                }}
+              >
+                {fr ? d.fr : d.en}
+              </Text>
+            </View>
+          ) : null;
+        })()}
       </ShareCardFrame>
     );
   },

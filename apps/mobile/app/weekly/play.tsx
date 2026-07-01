@@ -14,6 +14,7 @@ import {
 } from "../../src/services/weeklyChallenge";
 import { reportErrorScreen } from "../../src/utils/errorReport";
 import { decideWeeklyNextStep } from "../../src/services/weeklyFlow";
+import { difficultyMeta } from "../../src/utils/difficultyLabel";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
 import { QuestionImage } from "../../src/components/QuestionImage";
@@ -362,6 +363,14 @@ export default function WeeklyPlay() {
           <Text className="text-gray-400 text-xs">
             {language === "fr" ? challenge.theme_label_fr : challenge.theme_label_en}
           </Text>
+          {(() => {
+            const chDiff = difficultyMeta(challenge.target_difficulty);
+            return chDiff ? (
+              <Text style={{ color: chDiff.color, fontSize: 12, fontWeight: "800" }}>
+                · {language === "fr" ? chDiff.fr : chDiff.en}
+              </Text>
+            ) : null;
+          })()}
         </View>
 
         {question.image_url && (

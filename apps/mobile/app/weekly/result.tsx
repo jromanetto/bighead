@@ -235,6 +235,7 @@ export default function WeeklyResult() {
             pct,
             badgeLabel: badge?.label ?? null,
             themeLabel: label,
+            difficulty: challenge.target_difficulty,
             language,
           }}
         />
