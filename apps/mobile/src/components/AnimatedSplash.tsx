@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { Dimensions, StyleSheet, View, Text, Platform } from "react-native";
+
+// Vrai logo de l'app (cerveau néon) — remplace l'ancien cerveau dessiné à la main.
+const APP_ICON = require("../../assets/icon.png");
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,10 +18,10 @@ const { width, height } = Dimensions.get("window");
 
 // Design colors
 const COLORS = {
-  bg: "#161a1d",
+  bg: "#0d1117", // aligné sur le fond de l'icône (transition sans couture)
   bgDark: "#0d0f10",
-  primary: "#00c2cc",
-  primaryGlow: "#00e5f0",
+  primary: "#22d3ee",
+  primaryGlow: "#a855f7", // violet du logo, pour le halo
   text: "#ffffff",
   textDim: "#9ca3af",
 };
@@ -211,34 +214,8 @@ export function AnimatedSplash({ onAnimationEnd }: AnimatedSplashProps) {
       <Animated.View style={[styles.ring, styles.ring2, ring2Style]} />
       <Animated.View style={[styles.ring, styles.ring1, ring1Style]} />
 
-      {/* Brain Logo */}
-      <Animated.View style={[styles.brainContainer, brainStyle]}>
-        {/* Left hemisphere */}
-        <View style={[styles.brainHalf, styles.brainLeft]}>
-          <View style={[styles.brainLobe, styles.lobeTL]} />
-          <View style={[styles.brainLobe, styles.lobeBL]} />
-          <View style={[styles.brainLobe, styles.lobeML]} />
-        </View>
-        {/* Right hemisphere */}
-        <View style={[styles.brainHalf, styles.brainRight]}>
-          <View style={[styles.brainLobe, styles.lobeTR]} />
-          <View style={[styles.brainLobe, styles.lobeBR]} />
-          <View style={[styles.brainLobe, styles.lobeMR]} />
-        </View>
-        {/* Center stem */}
-        <View style={styles.brainStem} />
-        {/* Neural connections - glowing dots */}
-        <View style={[styles.neuron, { top: 15, left: 25 }]} />
-        <View style={[styles.neuron, { top: 35, left: 15 }]} />
-        <View style={[styles.neuron, { top: 55, left: 28 }]} />
-        <View style={[styles.neuron, { top: 15, right: 25 }]} />
-        <View style={[styles.neuron, { top: 35, right: 15 }]} />
-        <View style={[styles.neuron, { top: 55, right: 28 }]} />
-        <View style={[styles.neuron, { top: 25, left: 45 }]} />
-        <View style={[styles.neuron, { top: 25, right: 45 }]} />
-        {/* Brain glow */}
-        <View style={styles.brainGlow} />
-      </Animated.View>
+      {/* Vrai logo de l'app */}
+      <Animated.Image source={APP_ICON} style={[styles.logo, brainStyle]} resizeMode="cover" />
 
       {/* Particles */}
       {particles.map((particle, index) => (
@@ -345,111 +322,14 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  // Brain styles
-  brainContainer: {
+  // Logo de l'app, centré sur les anneaux
+  logo: {
     position: "absolute",
-    top: height / 2 - 100,
-    left: width / 2 - 45,
-    width: 90,
-    height: 80,
-  },
-  brainGlow: {
-    position: "absolute",
-    width: 70,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: COLORS.primary,
-    opacity: 0.15,
-    top: 10,
-    left: 10,
-    zIndex: -1,
-  },
-  brainHalf: {
-    position: "absolute",
-    width: 40,
-    height: 70,
-    top: 5,
-  },
-  brainLeft: {
-    left: 5,
-  },
-  brainRight: {
-    right: 5,
-  },
-  brainLobe: {
-    position: "absolute",
-    backgroundColor: COLORS.primary,
-    opacity: 0.3,
-  },
-  lobeTL: {
-    width: 32,
-    height: 28,
-    borderRadius: 16,
-    top: 0,
-    left: 4,
-  },
-  lobeBL: {
-    width: 28,
-    height: 24,
-    borderRadius: 14,
-    top: 40,
-    left: 8,
-  },
-  lobeML: {
-    width: 24,
-    height: 20,
-    borderRadius: 12,
-    top: 22,
-    left: 0,
-  },
-  lobeTR: {
-    width: 32,
-    height: 28,
-    borderRadius: 16,
-    top: 0,
-    right: 4,
-  },
-  lobeBR: {
-    width: 28,
-    height: 24,
-    borderRadius: 14,
-    top: 40,
-    right: 8,
-  },
-  lobeMR: {
-    width: 24,
-    height: 20,
-    borderRadius: 12,
-    top: 22,
-    right: 0,
-  },
-  brainStem: {
-    position: "absolute",
-    width: 12,
-    height: 18,
-    backgroundColor: COLORS.primary,
-    opacity: 0.25,
-    borderRadius: 6,
-    bottom: 0,
-    left: 39,
-  },
-  neuron: {
-    position: "absolute",
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: COLORS.primaryGlow,
-    ...Platform.select({
-      web: {
-        boxShadow: `0 0 6px 2px ${COLORS.primaryGlow}`,
-      },
-      default: {
-        shadowColor: COLORS.primaryGlow,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 1,
-        shadowRadius: 4,
-      },
-    }),
+    width: 116,
+    height: 116,
+    borderRadius: 26,
+    top: height / 2 - 118,
+    left: width / 2 - 58,
   },
   particle: {
     position: "absolute",

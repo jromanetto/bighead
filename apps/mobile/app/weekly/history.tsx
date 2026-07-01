@@ -1,4 +1,4 @@
-import { View, Text, Pressable, FlatList } from "react-native";
+import { View, Text, Pressable, SectionList } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { memo, useCallback, useState } from "react";
@@ -53,6 +53,15 @@ export default function WeeklyHistory() {
     }
   }, [replayingId]);
 
+  // Les défis thématiques (le cœur du jeu) d'abord et bien en avant ; l'actu de
+  // la semaine dans sa propre section pour ne pas noyer la visualisation.
+  const themed = (entries ?? []).filter((e) => e.challenge_type === "themed");
+  const news = (entries ?? []).filter((e) => e.challenge_type === "news");
+  const sections = [
+    { title: language === "fr" ? "🏆 Défis passés" : "🏆 Past challenges", data: themed },
+    { title: language === "fr" ? "📰 Actu de la semaine" : "📰 This week in news", data: news },
+  ].filter((s) => s.data.length > 0);
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-row items-center justify-between px-4 pt-2 pb-3">
@@ -93,10 +102,16 @@ export default function WeeklyHistory() {
           />
         </View>
       ) : (
-        <FlatList
-          data={entries}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.challenge_id}
           contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+          stickySectionHeadersEnabled={false}
+          renderSectionHeader={({ section }) => (
+            <Text className="text-white/60 text-xs font-black uppercase tracking-widest mb-2 mt-4">
+              {section.title}
+            </Text>
+          )}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           renderItem={({ item }) => (
             <HistoryCard
