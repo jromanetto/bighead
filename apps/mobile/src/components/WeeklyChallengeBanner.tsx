@@ -181,24 +181,28 @@ function WeeklyChallengeBannerInner({ type, challenge: challengeProp, compact = 
               {timeLabel && (
                 <Text className="text-white/80 text-[11px] font-medium">⏱ {timeLabel}</Text>
               )}
-              {cat && (
-                <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
-                  <Text className="text-white text-[10px] font-bold tracking-wider uppercase">
-                    {cat.emoji} {language === "fr" ? cat.fr : cat.en}
-                  </Text>
-                </View>
-              )}
-              {diff && (
-                <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: diff.color }}>
-                  <Text className="text-white text-[10px] font-black tracking-wider uppercase">
-                    {language === "fr" ? diff.fr : diff.en}
-                  </Text>
-                </View>
-              )}
             </View>
             <Text className={titleClass} numberOfLines={1}>
               {label}
             </Text>
+            {(cat || diff) && (
+              <View className="flex-row items-center mt-1" style={{ gap: 6, flexWrap: "wrap" }}>
+                {cat && (
+                  <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: "rgba(255,255,255,0.18)" }}>
+                    <Text className="text-white text-[10px] font-bold tracking-wider uppercase">
+                      {cat.emoji} {language === "fr" ? cat.fr : cat.en}
+                    </Text>
+                  </View>
+                )}
+                {diff && (
+                  <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: diff.color }}>
+                    <Text className="text-white text-[10px] font-black tracking-wider uppercase">
+                      {language === "fr" ? diff.fr : diff.en}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
             {description && !compact && (
               <Text className="text-white/75 text-xs mt-0.5" numberOfLines={1}>
                 {description}

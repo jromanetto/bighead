@@ -211,7 +211,7 @@ const HistoryCard = memo(function HistoryCard({
             {formatDateRange(entry.start_date, entry.end_date)}
           </Text>
           {(cat || diff) && (
-            <View className="flex-row items-center mt-1" style={{ gap: 6 }}>
+            <View className="flex-row items-center mt-1" style={{ gap: 6, flexWrap: "wrap" }}>
               {cat && (
                 <Text className="text-gray-300 text-[10px] font-semibold">
                   {cat.emoji} {language === "fr" ? cat.fr : cat.en}

@@ -175,7 +175,7 @@ export default function WeeklyHome() {
               </Text>
               <Text className="text-white text-3xl font-extrabold mt-1 text-center">{label}</Text>
               {challengeType === "themed" && (cat || diff) && (
-                <View className="flex-row items-center mt-2" style={{ gap: 6 }}>
+                <View className="flex-row items-center justify-center mt-2" style={{ gap: 6, flexWrap: "wrap" }}>
                   {cat && (
                     <View
                       className="rounded-full px-3 py-1"
