@@ -1053,6 +1053,398 @@ export const THEMES: readonly ThemeContent[] = [
       ],
     },
   },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'geographie',
+    emoji: '🗺️',
+    playCategory: 'geography',
+    aboutName: 'Géographie',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/G%C3%A9ographie',
+    label: { fr: 'Géographie', en: 'Geography' },
+    title: {
+      fr: 'Quiz Géographie — pays, capitales, reliefs du monde | BIGHEAD',
+      en: 'Geography Quiz — countries, capitals, landforms | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz géographie gratuit : pays, capitales, fleuves, montagnes et océans du monde entier. Du facile au piégeux, joue dans ton navigateur.',
+      en: 'Free geography quiz: countries, capitals, rivers, mountains and oceans worldwide. From easy to tricky, play in your browser.',
+    },
+    intro: {
+      fr: "Sais-tu vraiment situer les pays, nommer les capitales et reconnaître les grands reliefs de la planète ? Ce quiz géographie balaie le monde entier : continents, océans, fleuves, montagnes, déserts et frontières. Des questions accessibles pour réviser aux pièges qui font douter les meilleurs (le plus grand pays du monde, le plus long fleuve, la mer sans côte). Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour préparer un contrôle de géo, animer une soirée quiz ou juste voyager par l’esprit. Chaque réponse s’accompagne d’un repère à retenir — de quoi remplir les blancs de ta carte du monde.",
+      en: "Can you really place countries, name capitals and recognise the planet’s great landforms? This geography quiz spans the whole world: continents, oceans, rivers, mountains, deserts and borders. From accessible revision questions to traps that make experts doubt (the biggest country, the longest river). Play free in your browser, no install, in French or English. Perfect to prep a geography test, run a quiz night, or just travel in your head.",
+    },
+    subtopics: {
+      fr: ['Continents & océans', 'Capitales', 'Fleuves & montagnes', 'Pays & frontières', 'Records géographiques', 'Cartes & repères'],
+      en: ['Continents & oceans', 'Capitals', 'Rivers & mountains', 'Countries & borders', 'Geographic records', 'Maps & landmarks'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel est le plus grand pays du monde par superficie ?', answer: 'La Russie', explanation: 'Elle s’étend sur onze fuseaux horaires, loin devant le Canada.' },
+        { question: 'Quel est le plus haut sommet du monde ?', answer: 'L’Everest', explanation: 'Culminant à 8 849 m, dans l’Himalaya, à la frontière Népal-Chine.' },
+        { question: 'Quel est le plus grand océan ?', answer: 'Le Pacifique', explanation: 'Il couvre à lui seul environ un tiers de la surface du globe.' },
+      ],
+      en: [
+        { question: 'What is the largest country by area?', answer: 'Russia', explanation: 'It spans eleven time zones, well ahead of Canada.' },
+        { question: 'What is the highest mountain in the world?', answer: 'Mount Everest', explanation: 'At 8,849 m in the Himalayas, on the Nepal-China border.' },
+        { question: 'What is the largest ocean?', answer: 'The Pacific', explanation: 'It alone covers about a third of the globe’s surface.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz géographie est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Est-ce utile pour réviser ?', a: 'Oui, il couvre capitales, reliefs et pays au programme, avec un repère à chaque réponse.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the geography quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Is it useful for revising?', a: 'Yes, it covers capitals, landforms and countries, with a marker on each answer.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'musique',
+    emoji: '🎵',
+    playCategory: 'music',
+    aboutName: 'Musique',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Musique',
+    label: { fr: 'Musique', en: 'Music' },
+    title: {
+      fr: 'Quiz Musique — artistes, tubes et instruments | BIGHEAD',
+      en: 'Music Quiz — artists, hits and instruments | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz musique gratuit : artistes, groupes, tubes, instruments et genres, du rock au rap. Du facile au piégeux, joue dans ton navigateur.',
+      en: 'Free music quiz: artists, bands, hits, instruments and genres, from rock to rap. From easy to tricky, play in your browser.',
+    },
+    intro: {
+      fr: "De Mozart à Michael Jackson, des Beatles au rap actuel, la musique est un terrain de jeu sans fin. Ce quiz musique teste tes connaissances sur les artistes, les groupes, les albums cultes, les instruments et les genres. Des questions faciles pour tous aux détails qui départagent les vrais mélomanes. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Idéal pour une soirée quiz, un défi entre potes ou juste tester ta culture musicale. Chaque réponse s’accompagne d’une anecdote — de quoi enrichir tes playlists mentales.",
+      en: "From Mozart to Michael Jackson, the Beatles to today’s rap, music is an endless playground. This music quiz tests your knowledge of artists, bands, iconic albums, instruments and genres. From easy questions for everyone to details that sort true music lovers. Play free in your browser, no install, in French or English. Great for a quiz night, a challenge with friends, or just testing your musical knowledge.",
+    },
+    subtopics: {
+      fr: ['Artistes & groupes', 'Tubes & albums', 'Instruments', 'Genres musicaux', 'Musique classique', 'Chanson française'],
+      en: ['Artists & bands', 'Hits & albums', 'Instruments', 'Music genres', 'Classical music', 'French chanson'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel groupe britannique a sorti l’album « Abbey Road » ?', answer: 'Les Beatles', explanation: 'La pochette, avec le passage piéton, est l’une des plus célèbres de l’histoire.' },
+        { question: 'Qui est surnommé le « King of Pop » ?', answer: 'Michael Jackson', explanation: 'Son album « Thriller » (1982) reste l’un des plus vendus de tous les temps.' },
+        { question: 'Combien de cordes possède une guitare classique ?', answer: 'Six', explanation: 'Accordées, du grave à l’aigu : mi, la, ré, sol, si, mi.' },
+      ],
+      en: [
+        { question: 'Which British band released the album “Abbey Road”?', answer: 'The Beatles', explanation: 'Its zebra-crossing cover is one of the most famous in history.' },
+        { question: 'Who is nicknamed the “King of Pop”?', answer: 'Michael Jackson', explanation: 'His album “Thriller” (1982) is still one of the best-selling ever.' },
+        { question: 'How many strings does a classical guitar have?', answer: 'Six', explanation: 'Tuned low to high: E, A, D, G, B, E.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz musique est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Faut-il écouter des extraits ?', a: 'Non, ce quiz porte sur des connaissances (artistes, albums, instruments), pas sur l’écoute d’extraits musicaux.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the music quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Do I need to listen to clips?', a: 'No, this quiz is about knowledge (artists, albums, instruments), not audio clips.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'series-tv',
+    emoji: '📺',
+    playCategory: 'cinema',
+    aboutName: 'Série télévisée',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/S%C3%A9rie_t%C3%A9l%C3%A9vis%C3%A9e',
+    label: { fr: 'Séries TV', en: 'TV Series' },
+    title: {
+      fr: 'Quiz Séries TV — Netflix, cultes et personnages | BIGHEAD',
+      en: 'TV Series Quiz — Netflix, cult shows, characters | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz séries TV gratuit : Netflix, séries cultes, personnages et répliques. De Breaking Bad à Squid Game, joue dans ton navigateur.',
+      en: 'Free TV series quiz: Netflix, cult shows, characters and lines. From Breaking Bad to Squid Game, play in your browser.',
+    },
+    intro: {
+      fr: "On a tous binge-watché une série jusqu’à 3 h du matin. Ce quiz séries TV teste ta mémoire des shows cultes et des cartons Netflix : personnages, intrigues, acteurs et répliques. Des classiques (Breaking Bad, Game of Thrones) aux phénomènes récents (Squid Game, Stranger Things), avec des questions faciles pour les fans et des détails qui piègent les sériephiles. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour une soirée quiz spéciale séries, un défi entre binge-watchers ou juste prouver que tu as tout retenu. Sans spoilers : on ne révèle pas les fins.",
+      en: "We’ve all binged a show until 3 a.m. This TV series quiz tests your memory of cult shows and Netflix hits: characters, plots, actors and lines. From classics (Breaking Bad, Game of Thrones) to recent phenomena (Squid Game, Stranger Things), with easy questions for fans and details that trap the true binge-watchers. Play free in your browser, no install, in French or English. Spoiler-free: we don’t give away endings.",
+    },
+    subtopics: {
+      fr: ['Séries cultes', 'Cartons Netflix', 'Personnages', 'Répliques célèbres', 'Sitcoms', 'Séries françaises'],
+      en: ['Cult shows', 'Netflix hits', 'Characters', 'Famous lines', 'Sitcoms', 'French series'],
+    },
+    samples: {
+      fr: [
+        { question: 'Dans quelle série suit-on le professeur de chimie Walter White ?', answer: 'Breaking Bad', explanation: 'Diffusée de 2008 à 2013, elle est considérée comme l’une des meilleures séries de tous les temps.' },
+        { question: 'Quelle série met en scène la lutte pour le Trône de Fer ?', answer: 'Game of Thrones', explanation: 'Adaptée des romans de George R. R. Martin.' },
+        { question: 'Dans quelle série sud-coréenne joue-t-on à des jeux d’enfants mortels ?', answer: 'Squid Game', explanation: 'Sortie en 2021, elle est devenue la série la plus vue de l’histoire de Netflix.' },
+      ],
+      en: [
+        { question: 'Which series follows chemistry teacher Walter White?', answer: 'Breaking Bad', explanation: 'Aired 2008–2013, widely rated one of the best series ever.' },
+        { question: 'Which series centres on the fight for the Iron Throne?', answer: 'Game of Thrones', explanation: 'Adapted from George R. R. Martin’s novels.' },
+        { question: 'Which South Korean series features deadly children’s games?', answer: 'Squid Game', explanation: 'Released in 2021, it became Netflix’s most-watched series ever.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz séries est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Y a-t-il des spoilers ?', a: 'Non, les questions portent sur des faits connus (personnages, casting, répliques), pas sur les fins.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the TV series quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Are there spoilers?', a: 'No, questions are about known facts (characters, cast, lines), not endings.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'jeux-video',
+    emoji: '🎮',
+    playCategory: 'general',
+    aboutName: 'Jeu vidéo',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Jeu_vid%C3%A9o',
+    label: { fr: 'Jeux vidéo', en: 'Video Games' },
+    title: {
+      fr: 'Quiz Jeux Vidéo — consoles, jeux cultes, personnages | BIGHEAD',
+      en: 'Video Games Quiz — consoles, cult games, characters | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz jeux vidéo gratuit : consoles, jeux cultes, personnages et studios. De Mario à Minecraft, joue dans ton navigateur.',
+      en: 'Free video games quiz: consoles, cult games, characters and studios. From Mario to Minecraft, play in your browser.',
+    },
+    intro: {
+      fr: "Des bornes d’arcade aux jeux en ligne, le jeu vidéo a bercé des générations. Ce quiz jeux vidéo teste ta culture manette en main : consoles mythiques, jeux cultes, personnages emblématiques et studios légendaires. Des questions faciles pour les joueurs occasionnels aux détails qui piègent les hardcore gamers. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour une soirée quiz geek, un défi entre gamers ou juste réviser ta culture G du pixel. Chaque réponse s’accompagne d’une anecdote de l’histoire du jeu vidéo.",
+      en: "From arcade cabinets to online games, video games have shaped generations. This video games quiz tests your controller-in-hand culture: legendary consoles, cult games, iconic characters and legendary studios. From easy questions for casual players to details that trap hardcore gamers. Play free in your browser, no install, in French or English. Great for a geeky quiz night, a challenge with gamers, or just brushing up your pixel trivia.",
+    },
+    subtopics: {
+      fr: ['Consoles', 'Jeux cultes', 'Personnages', 'Studios & éditeurs', 'Esport', 'Rétrogaming'],
+      en: ['Consoles', 'Cult games', 'Characters', 'Studios & publishers', 'Esports', 'Retro gaming'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel plombier moustachu est la mascotte de Nintendo ?', answer: 'Mario', explanation: 'Apparu en 1981 dans Donkey Kong, il s’appelait alors « Jumpman ».' },
+        { question: 'Quel jeu de blocs est le plus vendu de l’histoire ?', answer: 'Minecraft', explanation: 'Plus de 300 millions d’exemplaires écoulés depuis 2011.' },
+        { question: 'Quelle entreprise a créé la PlayStation ?', answer: 'Sony', explanation: 'La première PlayStation est sortie en 1994 au Japon.' },
+      ],
+      en: [
+        { question: 'Which moustached plumber is Nintendo’s mascot?', answer: 'Mario', explanation: 'He debuted in 1981 in Donkey Kong, then called “Jumpman”.' },
+        { question: 'Which block-building game is the best-selling of all time?', answer: 'Minecraft', explanation: 'Over 300 million copies sold since 2011.' },
+        { question: 'Which company created the PlayStation?', answer: 'Sony', explanation: 'The first PlayStation launched in 1994 in Japan.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz jeux vidéo est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Faut-il être un gamer pro ?', a: 'Non, les questions vont des grands classiques grand public aux détails plus pointus.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the video games quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Do I need to be a pro gamer?', a: 'No, questions range from mainstream classics to deeper cuts.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'seconde-guerre-mondiale',
+    emoji: '⚔️',
+    playCategory: 'history',
+    aboutName: 'Seconde Guerre mondiale',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Seconde_Guerre_mondiale',
+    label: { fr: 'Seconde Guerre mondiale', en: 'World War II' },
+    title: {
+      fr: 'Quiz Seconde Guerre mondiale — dates, batailles, chefs | BIGHEAD',
+      en: 'World War II Quiz — dates, battles, leaders | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz Seconde Guerre mondiale gratuit : dates clés, grandes batailles, chefs d’État et tournants du conflit. Idéal pour réviser, joue en ligne.',
+      en: 'Free World War II quiz: key dates, major battles, leaders and turning points. Great for revision, play online.',
+    },
+    intro: {
+      fr: "De l’invasion de la Pologne à la capitulation du Japon, la Seconde Guerre mondiale a redessiné le XXᵉ siècle. Ce quiz teste tes connaissances sur les dates clés, les grandes batailles, les chefs d’État et les tournants du conflit — front de l’Est, débarquement, résistance, alliances. Des questions accessibles pour réviser aux détails qui départagent les passionnés d’histoire. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour préparer un contrôle, réviser le brevet ou le bac, ou combler les trous de la frise. Chaque réponse s’accompagne d’un repère daté pour bien situer les événements. Sujet traité avec sobriété et rigueur historique.",
+      en: "From the invasion of Poland to Japan’s surrender, World War II reshaped the 20th century. This quiz tests your knowledge of key dates, major battles, leaders and turning points — the Eastern Front, D-Day, resistance, alliances. From accessible revision questions to details that sort history buffs. Play free in your browser, no install, in French or English. Perfect to prep a test or exam, or fill the gaps in your timeline. Handled with restraint and historical rigour.",
+    },
+    subtopics: {
+      fr: ['Dates clés', 'Grandes batailles', 'Chefs d’État', 'Front de l’Est', 'Débarquement & Libération', 'Alliances & pays'],
+      en: ['Key dates', 'Major battles', 'Leaders', 'Eastern Front', 'D-Day & Liberation', 'Alliances & nations'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel jour a lieu le Débarquement de Normandie ?', answer: 'Le 6 juin 1944', explanation: 'Le « D-Day » : le plus grand débarquement amphibie de l’histoire.' },
+        { question: 'L’invasion de quel pays déclenche la guerre en septembre 1939 ?', answer: 'La Pologne', explanation: 'Envahie par l’Allemagne le 1ᵉʳ septembre 1939, deux jours avant la déclaration de guerre franco-britannique.' },
+        { question: 'Quelle bataille marque un tournant majeur sur le front de l’Est ?', answer: 'Stalingrad', explanation: 'La défaite allemande (1942-1943) inverse le cours de la guerre à l’Est.' },
+      ],
+      en: [
+        { question: 'On what day did the Normandy landings take place?', answer: '6 June 1944', explanation: '“D-Day”: the largest amphibious landing in history.' },
+        { question: 'The invasion of which country triggered the war in September 1939?', answer: 'Poland', explanation: 'Invaded by Germany on 1 September 1939.' },
+        { question: 'Which battle was a major turning point on the Eastern Front?', answer: 'Stalingrad', explanation: 'The German defeat (1942–1943) reversed the war in the East.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Est-ce utile pour réviser le brevet ou le bac ?', a: 'Oui, il couvre les dates, batailles et acteurs au programme, avec un repère daté à chaque réponse.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Is it useful for exam revision?', a: 'Yes, it covers the dates, battles and figures on the syllabus, with a dated marker on each answer.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'napoleon',
+    emoji: '🎩',
+    playCategory: 'history',
+    aboutName: 'Napoléon Ier',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Napol%C3%A9on_Ier',
+    label: { fr: 'Napoléon', en: 'Napoleon' },
+    title: {
+      fr: 'Quiz Napoléon — batailles, Empire et Sainte-Hélène | BIGHEAD',
+      en: 'Napoleon Quiz — battles, Empire and St Helena | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz Napoléon gratuit : de la Révolution à Waterloo, batailles, réformes et exil. Teste ta connaissance de l’Empereur dans ton navigateur.',
+      en: 'Free Napoleon quiz: from the Revolution to Waterloo, battles, reforms and exile. Test your knowledge of the Emperor in your browser.',
+    },
+    intro: {
+      fr: "Général corse devenu empereur des Français, Napoléon Bonaparte a marqué l’Histoire comme peu d’hommes. Ce quiz Napoléon teste tes connaissances sur son ascension, ses grandes batailles (Austerlitz, Iéna, Waterloo), ses réformes (Code civil, lycées) et ses exils. Des questions accessibles pour réviser aux détails qui piègent les passionnés. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour réviser l’histoire, préparer un contrôle ou juste remettre les dates de l’Empire dans l’ordre. Chaque réponse s’accompagne d’un repère daté — de quoi suivre la trajectoire fulgurante de l’Empereur.",
+      en: "A Corsican general who became Emperor of the French, Napoleon Bonaparte left a mark like few others. This Napoleon quiz tests your knowledge of his rise, his great battles (Austerlitz, Jena, Waterloo), his reforms (Civil Code, lycées) and his exiles. From accessible revision questions to details that trap enthusiasts. Play free in your browser, no install, in French or English. Perfect to revise history, prep a test, or just get the Empire’s dates in order.",
+    },
+    subtopics: {
+      fr: ['De la Révolution au Consulat', 'Grandes batailles', 'Le Premier Empire', 'Réformes & Code civil', 'Waterloo & la chute', 'Exils & Sainte-Hélène'],
+      en: ['From Revolution to Consulate', 'Great battles', 'The First Empire', 'Reforms & Civil Code', 'Waterloo & the fall', 'Exiles & St Helena'],
+    },
+    samples: {
+      fr: [
+        { question: 'Où Napoléon est-il définitivement vaincu en 1815 ?', answer: 'À Waterloo', explanation: 'La défaite face aux coalisés (Wellington, Blücher) met fin aux Cent-Jours.' },
+        { question: 'Sur quelle île Napoléon est-il exilé et meurt-il en 1821 ?', answer: 'Sainte-Hélène', explanation: 'Île britannique isolée de l’Atlantique Sud, choisie pour empêcher toute évasion.' },
+        { question: 'En quelle année Napoléon est-il sacré empereur ?', answer: '1804', explanation: 'Sacré à Notre-Dame de Paris, il se couronne lui-même en présence du pape.' },
+      ],
+      en: [
+        { question: 'Where was Napoleon finally defeated in 1815?', answer: 'At Waterloo', explanation: 'The defeat against the coalition (Wellington, Blücher) ended the Hundred Days.' },
+        { question: 'On which island was Napoleon exiled, dying in 1821?', answer: 'St Helena', explanation: 'A remote British island in the South Atlantic, chosen to prevent escape.' },
+        { question: 'In which year was Napoleon crowned emperor?', answer: '1804', explanation: 'Crowned at Notre-Dame de Paris, he placed the crown on his own head.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz Napoléon est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Est-ce utile pour réviser l’histoire ?', a: 'Oui, il couvre l’Empire, les batailles et les réformes, avec un repère daté à chaque réponse.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the Napoleon quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Is it useful for revising history?', a: 'Yes, it covers the Empire, battles and reforms, with a dated marker on each answer.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'pokemon',
+    emoji: '⚡',
+    playCategory: 'general',
+    aboutName: 'Pokémon',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Pok%C3%A9mon',
+    label: { fr: 'Pokémon', en: 'Pokémon' },
+    title: {
+      fr: 'Quiz Pokémon — Pokédex, types et générations | BIGHEAD',
+      en: 'Pokémon Quiz — Pokédex, types and generations | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz Pokémon gratuit : Pokédex, types, évolutions et générations. De Pikachu aux légendaires, joue tout de suite dans ton navigateur.',
+      en: 'Free Pokémon quiz: Pokédex, types, evolutions and generations. From Pikachu to legendaries, play instantly in your browser.',
+    },
+    intro: {
+      fr: "« Attrapez-les tous ! » Depuis 1996, Pokémon est un phénomène mondial — jeux, dessin animé, cartes. Ce quiz Pokémon teste ta connaissance du Pokédex : types, évolutions, légendaires, générations et attaques. Des questions faciles pour les dresseurs occasionnels aux détails qui piègent les vrais maîtres Pokémon. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour un défi entre fans, une soirée quiz ou juste replonger dans ton enfance. Chaque réponse s’accompagne d’une anecdote sur l’univers Pokémon — de quoi compléter ton Pokédex mental.",
+      en: "“Gotta catch ’em all!” Since 1996, Pokémon has been a global phenomenon — games, anime, cards. This Pokémon quiz tests your Pokédex knowledge: types, evolutions, legendaries, generations and moves. From easy questions for casual trainers to details that trap true Pokémon masters. Play free in your browser, no install, in French or English. Great for a challenge among fans, a quiz night, or just diving back into your childhood.",
+    },
+    subtopics: {
+      fr: ['Pokédex 1ʳᵉ génération', 'Types & faiblesses', 'Évolutions', 'Pokémon légendaires', 'Générations', 'Dresseurs & régions'],
+      en: ['Gen 1 Pokédex', 'Types & weaknesses', 'Evolutions', 'Legendary Pokémon', 'Generations', 'Trainers & regions'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel est le Pokémon numéro 1 du Pokédex national ?', answer: 'Bulbizarre', explanation: 'Pokémon de type Plante/Poison, il évolue en Herbizarre puis Florizarre.' },
+        { question: 'Combien de Pokémon compte la première génération ?', answer: '151', explanation: 'De Bulbizarre (n°1) à Mew (n°151).' },
+        { question: 'À quel type l’eau est-elle efficace ?', answer: 'Le feu', explanation: 'L’eau est super efficace contre Feu, Sol et Roche.' },
+      ],
+      en: [
+        { question: 'Which Pokémon is number 1 in the National Pokédex?', answer: 'Bulbasaur', explanation: 'A Grass/Poison type, it evolves into Ivysaur then Venusaur.' },
+        { question: 'How many Pokémon are in the first generation?', answer: '151', explanation: 'From Bulbasaur (No. 1) to Mew (No. 151).' },
+        { question: 'Which type is Water strong against?', answer: 'Fire', explanation: 'Water is super effective against Fire, Ground and Rock.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz Pokémon est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Ça couvre quelles générations ?', a: 'Surtout les classiques (1ʳᵉ génération et suivantes), des plus connus aux légendaires.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the Pokémon quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Which generations does it cover?', a: 'Mostly the classics (Gen 1 and onwards), from the famous ones to legendaries.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'seigneur-des-anneaux',
+    emoji: '💍',
+    playCategory: 'cinema',
+    aboutName: 'Le Seigneur des anneaux',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Le_Seigneur_des_anneaux',
+    label: { fr: 'Le Seigneur des Anneaux', en: 'The Lord of the Rings' },
+    title: {
+      fr: 'Quiz Seigneur des Anneaux — Terre du Milieu & héros | BIGHEAD',
+      en: 'Lord of the Rings Quiz — Middle-earth & heroes | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz Seigneur des Anneaux gratuit : Terre du Milieu, personnages, lieux et intrigue, livres et films. Joue tout de suite dans ton navigateur.',
+      en: 'Free Lord of the Rings quiz: Middle-earth, characters, places and plot, books and films. Play instantly in your browser.',
+    },
+    intro: {
+      fr: "Un anneau pour les gouverner tous… De la Comté au Mordor, Le Seigneur des Anneaux est une saga culte, en livres comme au cinéma. Ce quiz teste ta connaissance de la Terre du Milieu : personnages (Frodon, Gandalf, Aragorn), lieux, races, intrigue et créatures. Des questions faciles pour les fans aux détails qui piègent les vrais connaisseurs de Tolkien. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour une soirée quiz fantasy, un défi entre fans ou juste revivre la quête de l’Anneau. Sans spoilers inutiles, chaque réponse s’accompagne d’une anecdote sur l’univers.",
+      en: "One ring to rule them all… From the Shire to Mordor, The Lord of the Rings is a cult saga, in books and on screen. This quiz tests your Middle-earth knowledge: characters (Frodo, Gandalf, Aragorn), places, races, plot and creatures. From easy questions for fans to details that trap true Tolkien connoisseurs. Play free in your browser, no install, in French or English. Great for a fantasy quiz night, a challenge among fans, or just reliving the quest for the Ring.",
+    },
+    subtopics: {
+      fr: ['La Communauté de l’Anneau', 'Personnages', 'Lieux de la Terre du Milieu', 'Races & créatures', 'L’intrigue', 'Tolkien & l’univers'],
+      en: ['The Fellowship', 'Characters', 'Middle-earth places', 'Races & creatures', 'The plot', 'Tolkien & the world'],
+    },
+    samples: {
+      fr: [
+        { question: 'Qui a écrit Le Seigneur des Anneaux ?', answer: 'J. R. R. Tolkien', explanation: 'Publié dans les années 1950, il est l’un des piliers de la fantasy moderne.' },
+        { question: 'Quel hobbit est chargé de détruire l’Anneau unique ?', answer: 'Frodon Sacquet', explanation: 'Accompagné de son fidèle jardinier Sam jusqu’au Mont Destin.' },
+        { question: 'Comment s’appelle le royaume des Hommes défendu à Minas Tirith ?', answer: 'Le Gondor', explanation: 'Sa capitale Minas Tirith est le théâtre de la bataille des champs du Pelennor.' },
+      ],
+      en: [
+        { question: 'Who wrote The Lord of the Rings?', answer: 'J. R. R. Tolkien', explanation: 'Published in the 1950s, it is a cornerstone of modern fantasy.' },
+        { question: 'Which hobbit is tasked with destroying the One Ring?', answer: 'Frodo Baggins', explanation: 'Accompanied by his faithful gardener Sam to Mount Doom.' },
+        { question: 'What is the realm of Men defended at Minas Tirith?', answer: 'Gondor', explanation: 'Its capital Minas Tirith is the setting of the Battle of the Pelennor Fields.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Livres ou films ?', a: 'Les deux : les questions portent sur l’univers commun (personnages, lieux, intrigue), connus des lecteurs comme des spectateurs.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Books or films?', a: 'Both: the questions are about the shared world (characters, places, plot) known to readers and viewers alike.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
 ] as const
 
 /** Returns the theme for a slug, or `undefined` for unknown slugs. */
