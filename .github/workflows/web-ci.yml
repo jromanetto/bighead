@@ -90,7 +90,14 @@ jobs:
           rm -rf dist.prev
           [ -d dist ] && cp -a dist dist.prev || true
           pnpm build
-          pm2 restart bighead-web --update-env
+          # start-or-restart: if the pm2 process is missing (e.g. after a VPS
+          # reboot without resurrect), `pm2 restart` alone fails and the origin
+          # stays DOWN behind Cloudflare cache. Start it instead of failing.
+          if pm2 describe bighead-web >/dev/null 2>&1; then
+            pm2 restart bighead-web --update-env
+          else
+            pm2 start server.mjs --name bighead-web --update-env
+          fi
           ok=0
           for i in $(seq 1 15); do
             if curl -fsS -m 3 http://127.0.0.1:3050/healthz >/dev/null 2>&1; then ok=1; break; fi
@@ -100,11 +107,12 @@ jobs:
             echo "::error::healthcheck failed — rolling back to previous dist"
             if [ -d dist.prev ]; then
               rm -rf dist && mv dist.prev dist
-              pm2 restart bighead-web --update-env
+              pm2 restart bighead-web --update-env || pm2 start server.mjs --name bighead-web --update-env
             fi
             exit 1
           fi
           rm -rf dist.prev
+          pm2 save   # persist the process list so a reboot resurrects it
           echo "deploy healthy"
           DEPLOY
       - name: Ping IndexNow
