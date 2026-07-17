@@ -759,6 +759,300 @@ export const THEMES: readonly ThemeContent[] = [
       ],
     },
   },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'culture-generale',
+    emoji: '🧠',
+    playCategory: 'general',
+    aboutName: 'Culture générale',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Culture_g%C3%A9n%C3%A9rale',
+    label: { fr: 'Culture générale', en: 'General Knowledge' },
+    title: {
+      fr: 'Quiz Culture Générale — teste tes connaissances | BIGHEAD',
+      en: 'General Knowledge Quiz — test yourself | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz de culture générale gratuit : histoire, géographie, sciences, sport, cinéma… Des questions faciles aux pièges, joue tout de suite dans ton navigateur.',
+      en: 'Free general knowledge quiz: history, geography, science, sport, cinema… From easy to tricky, play instantly in your browser.',
+    },
+    intro: {
+      fr: "Le grand quiz de culture générale de BIGHEAD balaie tous les domaines : histoire, géographie, sciences, cinéma, sport, musique, art… De la question que tout le monde connaît (la capitale de la France) au piège qui départage les vrais cracks (la capitale de l’Australie, ce n’est ni Sydney ni Melbourne). Chaque partie mélange les thèmes et monte en difficulté, façon 10 faciles puis quelques costauds, pour que ça reste fun sans jamais être frustrant. Tu joues gratuitement dans le navigateur, sans installer quoi que ce soit, en français ou en anglais. Parfait pour t’entraîner avant un blind test entre amis, réviser en s’amusant, ou simplement voir jusqu’où va ta culture G. Et chaque réponse s’accompagne d’un petit fait à retenir : tu ressors du quiz un peu plus malin qu’en entrant.",
+      en: "BIGHEAD’s big general knowledge quiz spans every field: history, geography, science, cinema, sport, music, art. From the question everyone knows (the capital of France) to the trap that sorts the real pros (Australia’s capital is neither Sydney nor Melbourne). Each round mixes topics and ramps up gently — a batch of easy ones, then a few tough ones — so it stays fun and never frustrating. Play free in your browser, nothing to install, in French or English. Perfect to warm up before a quiz night, revise the fun way, or just see how far your general knowledge goes.",
+    },
+    subtopics: {
+      fr: ['Histoire', 'Géographie', 'Sciences', 'Cinéma & séries', 'Sport', 'Arts & musique'],
+      en: ['History', 'Geography', 'Science', 'Cinema & TV', 'Sport', 'Arts & music'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quelle est la capitale de l’Australie ?', answer: 'Canberra', explanation: 'Piège classique : ni Sydney ni Melbourne, mais Canberra, ville créée pour être capitale.' },
+        { question: 'Qui a peint la Joconde ?', answer: 'Léonard de Vinci', explanation: 'Peinte au début du XVIᵉ siècle, elle est exposée au Louvre à Paris.' },
+        { question: 'Combien de côtés a un hexagone ?', answer: 'Six', explanation: '« Hexa » vient du grec « six » — d’où le surnom de l’Hexagone pour la France.' },
+      ],
+      en: [
+        { question: 'What is the capital of Australia?', answer: 'Canberra', explanation: 'Classic trap: not Sydney or Melbourne, but Canberra, a city built to be the capital.' },
+        { question: 'Who painted the Mona Lisa?', answer: 'Leonardo da Vinci', explanation: 'Painted in the early 16th century, it hangs in the Louvre in Paris.' },
+        { question: 'How many sides does a hexagon have?', answer: 'Six', explanation: '“Hexa” is Greek for six.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz de culture générale est-il gratuit ?', a: 'Oui, entièrement gratuit et sans compte obligatoire. Tu joues directement dans le navigateur.' },
+        { q: 'Les questions sont-elles trop dures ?', a: 'Non : chaque partie commence par des questions faciles et monte progressivement, avec seulement quelques pièges à la fin.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur. Une app iOS et Android existe aussi pour jouer hors-ligne et garder ta série.' },
+      ],
+      en: [
+        { q: 'Is the general knowledge quiz free?', a: 'Yes, completely free and no account required. Play straight in your browser.' },
+        { q: 'Are the questions too hard?', a: 'No: each round starts easy and ramps up gently, with only a few traps at the end.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop. There is also an iOS and Android app to play offline and keep your streak.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'logos',
+    emoji: '🏷️',
+    playCategory: 'general',
+    aboutName: 'Logotype',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Logotype',
+    label: { fr: 'Logos de marques', en: 'Brand Logos' },
+    title: {
+      fr: 'Quiz Logos — reconnais les marques à leur logo | BIGHEAD',
+      en: 'Logo Quiz — name the brand from its logo | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz logos gratuit : reconnais les grandes marques (tech, auto, sport, food) à leur logo. Du plus évident au plus piégeux, joue dans ton navigateur.',
+      en: 'Free logo quiz: recognize big brands (tech, cars, sport, food) from their logo. From obvious to tricky, play in your browser.',
+    },
+    intro: {
+      fr: "On voit des milliers de logos par jour — mais saurais-tu les nommer sans le texte à côté ? Ce quiz logos te met au défi sur les marques les plus connues : tech (la pomme croquée, les quatre anneaux, la virgule), automobile, sport, alimentaire, luxe. Certains sont évidents, d’autres cachent une histoire surprenante : pourquoi Audi a quatre anneaux, ce que représente vraiment le swoosh de Nike, ou d’où vient le nom d’une marque à son symbole. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Idéal pour une soirée quiz, un défi entre collègues, ou juste tester ta mémoire visuelle. Chaque réponse t’apprend l’anecdote derrière le logo — de quoi briller à la prochaine pause café.",
+      en: "We see thousands of logos a day — but could you name them without the text next to them? This logo quiz challenges you on the most famous brands: tech (the bitten apple, the four rings, the swoosh), cars, sport, food, luxury. Some are obvious, others hide a surprising story: why Audi has four rings, what Nike’s swoosh really means, or where a brand’s name comes from. Play free in your browser, no install, in French or English. Great for a quiz night, a challenge with colleagues, or just testing your visual memory.",
+    },
+    subtopics: {
+      fr: ['Logos tech', 'Logos automobiles', 'Logos de sport', 'Logos food & boissons', 'Logos de luxe', 'Anecdotes de marques'],
+      en: ['Tech logos', 'Car logos', 'Sport logos', 'Food & drink logos', 'Luxury logos', 'Brand trivia'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel constructeur automobile a quatre anneaux entrelacés ?', answer: 'Audi', explanation: 'Les 4 anneaux symbolisent la fusion de quatre marques en 1932 (Auto Union).' },
+        { question: 'Quelle marque de sport a une simple virgule (« swoosh ») ?', answer: 'Nike', explanation: 'Le swoosh évoque l’aile de Niké, déesse grecque de la victoire.' },
+        { question: 'Quelle marque tech a une pomme croquée ?', answer: 'Apple', explanation: 'La morsure sert surtout à ne pas confondre la pomme avec une cerise.' },
+      ],
+      en: [
+        { question: 'Which carmaker uses four interlocking rings?', answer: 'Audi', explanation: 'The four rings mark the 1932 merger of four brands (Auto Union).' },
+        { question: 'Which sport brand uses a simple “swoosh”?', answer: 'Nike', explanation: 'The swoosh evokes the wing of Nike, Greek goddess of victory.' },
+        { question: 'Which tech brand has a bitten apple?', answer: 'Apple', explanation: 'The bite mainly stops the apple from looking like a cherry.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz logos est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Quelles marques sont couvertes ?', a: 'Tech, automobile, sport, alimentaire, luxe — des plus évidentes aux plus piégeuses.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the logo quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Which brands are covered?', a: 'Tech, cars, sport, food and luxury — from the obvious to the truly tricky.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'cinema',
+    emoji: '🎬',
+    playCategory: 'cinema',
+    aboutName: 'Cinéma',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Cin%C3%A9ma',
+    label: { fr: 'Cinéma', en: 'Cinema' },
+    title: {
+      fr: 'Quiz Cinéma — films, acteurs, répliques cultes | BIGHEAD',
+      en: 'Cinema Quiz — films, actors, iconic lines | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz cinéma gratuit : réalisateurs, acteurs, répliques cultes et grands classiques. Du blockbuster au film d’auteur, joue dans ton navigateur.',
+      en: 'Free cinema quiz: directors, actors, iconic lines and classics. From blockbusters to arthouse, play in your browser.',
+    },
+    intro: {
+      fr: "Combien de films peux-tu reconnaître à une réplique, un réalisateur ou un acteur ? Ce quiz cinéma passe en revue un siècle de septième art : blockbusters (Titanic, Star Wars, Le Seigneur des Anneaux), films cultes, réalisateurs mythiques (Tarantino, Spielberg, Nolan) et répliques que tout le monde cite… souvent de travers. Des questions faciles pour les amateurs aux détails qui piègent les cinéphiles. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour une soirée quiz spéciale ciné, réviser tes classiques ou régler un débat entre amis. Chaque réponse s’accompagne d’une anecdote de tournage ou d’un fait à retenir — de quoi voir tes films préférés autrement.",
+      en: "How many films can you name from a line, a director or an actor? This cinema quiz covers a century of film: blockbusters (Titanic, Star Wars, The Lord of the Rings), cult classics, legendary directors (Tarantino, Spielberg, Nolan) and the lines everyone quotes… often wrong. From easy questions for casual fans to details that trap cinephiles. Play free in your browser, no install, in French or English. Perfect for a movie quiz night, revising the classics, or settling a debate with friends.",
+    },
+    subtopics: {
+      fr: ['Réalisateurs cultes', 'Acteurs & actrices', 'Répliques célèbres', 'Sagas & franchises', 'Oscars & récompenses', 'Films d’animation'],
+      en: ['Iconic directors', 'Actors & actresses', 'Famous lines', 'Sagas & franchises', 'Oscars & awards', 'Animated films'],
+    },
+    samples: {
+      fr: [
+        { question: 'Qui a réalisé Pulp Fiction ?', answer: 'Quentin Tarantino', explanation: 'Palme d’or à Cannes en 1994, le film relance la carrière de John Travolta.' },
+        { question: 'De quel film vient la réplique « Je suis ton père » ?', answer: 'Star Wars, épisode V', explanation: 'La vraie réplique est « Non, je suis ton père » — l’une des plus mal citées du cinéma.' },
+        { question: 'Quel acteur incarne Jack dans Titanic ?', answer: 'Leonardo DiCaprio', explanation: 'Le film de James Cameron (1997) a longtemps détenu le record du box-office mondial.' },
+      ],
+      en: [
+        { question: 'Who directed Pulp Fiction?', answer: 'Quentin Tarantino', explanation: 'It won the Palme d’Or at Cannes in 1994 and revived John Travolta’s career.' },
+        { question: 'Which film has the line “I am your father”?', answer: 'Star Wars: Episode V', explanation: 'The real line is “No, I am your father” — one of the most misquoted in cinema.' },
+        { question: 'Which actor plays Jack in Titanic?', answer: 'Leonardo DiCaprio', explanation: 'James Cameron’s 1997 film long held the worldwide box-office record.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz cinéma est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Y a-t-il des spoilers ?', a: 'Non, les questions portent sur des faits connus (réalisateurs, répliques, casting), pas sur des fins de films.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the cinema quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Are there spoilers?', a: 'No, the questions are about known facts (directors, lines, cast), not film endings.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'animaux',
+    emoji: '🐾',
+    playCategory: 'animals',
+    aboutName: 'Animal',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Animal',
+    label: { fr: 'Animaux', en: 'Animals' },
+    title: {
+      fr: 'Quiz Animaux — records, espèces et faits étonnants | BIGHEAD',
+      en: 'Animals Quiz — records, species and amazing facts | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz animaux gratuit : records du monde animal, espèces, habitats et faits étonnants. Pour petits et grands, joue dans ton navigateur.',
+      en: 'Free animals quiz: animal kingdom records, species, habitats and amazing facts. For all ages, play in your browser.',
+    },
+    intro: {
+      fr: "Le monde animal est plein de records et de surprises : quel est l’animal le plus rapide, le plus grand, celui qui a trois cœurs ? Ce quiz animaux teste tes connaissances sur les mammifères, oiseaux, poissons, insectes et reptiles — leurs habitats, leurs comportements et les faits qui étonnent tout le monde. Des questions accessibles aux enfants aux détails qui piègent les passionnés de nature. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Idéal en famille, pour réviser les sciences en s’amusant, ou pour épater la galerie avec des faits improbables. Chaque réponse s’accompagne d’une explication : tu ressors du quiz avec quelques anecdotes à raconter.",
+      en: "The animal kingdom is full of records and surprises: which animal is the fastest, the biggest, the one with three hearts? This animals quiz tests your knowledge of mammals, birds, fish, insects and reptiles — their habitats, behaviours and the facts that amaze everyone. From questions kids can answer to details that trap nature buffs. Play free in your browser, no install, in French or English. Great for the family, revising science the fun way, or wowing friends with unlikely facts.",
+    },
+    subtopics: {
+      fr: ['Mammifères', 'Oiseaux', 'Océans & poissons', 'Insectes', 'Reptiles & amphibiens', 'Records du monde animal'],
+      en: ['Mammals', 'Birds', 'Oceans & fish', 'Insects', 'Reptiles & amphibians', 'Animal world records'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel est l’animal terrestre le plus rapide ?', answer: 'Le guépard', explanation: 'Il atteint environ 110 km/h, mais seulement sur de très courtes distances.' },
+        { question: 'Quel est le plus grand animal ayant jamais existé ?', answer: 'La baleine bleue', explanation: 'Jusqu’à 30 m de long — plus grande que n’importe quel dinosaure connu.' },
+        { question: 'Combien de cœurs a une pieuvre ?', answer: 'Trois', explanation: 'Deux pompent le sang vers les branchies, un vers le reste du corps.' },
+      ],
+      en: [
+        { question: 'What is the fastest land animal?', answer: 'The cheetah', explanation: 'It reaches about 110 km/h, but only over very short distances.' },
+        { question: 'What is the largest animal that has ever lived?', answer: 'The blue whale', explanation: 'Up to 30 m long — bigger than any known dinosaur.' },
+        { question: 'How many hearts does an octopus have?', answer: 'Three', explanation: 'Two pump blood to the gills, one to the rest of the body.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz animaux est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Est-ce adapté aux enfants ?', a: 'Oui, beaucoup de questions sont accessibles dès l’enfance, avec des faits simples à retenir.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the animals quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Is it suitable for kids?', a: 'Yes, many questions are child-friendly, with simple facts to remember.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'annees-2000',
+    emoji: '📀',
+    playCategory: 'music',
+    aboutName: 'Années 2000',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Ann%C3%A9es_2000',
+    label: { fr: 'Années 2000', en: 'The 2000s' },
+    title: {
+      fr: 'Quiz Années 2000 — musique, séries, tech de la déca | BIGHEAD',
+      en: '2000s Quiz — music, TV and tech of the decade | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz années 2000 gratuit : musique, séries, tech et pop culture de la décennie. Nostalgie garantie, joue dans ton navigateur.',
+      en: 'Free 2000s quiz: music, TV shows, tech and pop culture of the decade. Pure nostalgia, play in your browser.',
+    },
+    intro: {
+      fr: "iPod, MSN, clapets, Wii, Facebook naissant : les années 2000 ont une saveur bien à elles. Ce quiz années 2000 réveille tes souvenirs de la décennie — tubes qui passaient en boucle, séries cultes, gadgets tech, jeux vidéo et grands moments de pop culture. Des questions faciles pour ceux qui ont vécu l’époque aux détails qui piègent même les nostalgiques. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour une soirée rétro entre amis, un défi générationnel, ou juste replonger dans tes années collège-lycée. Chaque réponse rappelle un fait marquant : garanti, tu vas dire « ah oui, c’est vrai ! » plus d’une fois.",
+      en: "iPod, MSN, flip phones, the Wii, a brand-new Facebook: the 2000s have a flavour all their own. This 2000s quiz revives your memories of the decade — the songs on repeat, cult TV shows, tech gadgets, video games and big pop-culture moments. From easy questions for those who lived it to details that trap even the nostalgic. Play free in your browser, no install, in French or English. Perfect for a retro night with friends, a generational challenge, or just diving back into your school years.",
+    },
+    subtopics: {
+      fr: ['Tubes des années 2000', 'Séries cultes', 'Tech & gadgets', 'Jeux vidéo', 'Cinéma de la déca', 'Pop culture & web'],
+      en: ['2000s hits', 'Cult TV shows', 'Tech & gadgets', 'Video games', 'Films of the decade', 'Pop culture & web'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel réseau social lancé en 2004 par Mark Zuckerberg ?', answer: 'Facebook', explanation: 'Né à Harvard, il devient mondial à la fin de la décennie.' },
+        { question: 'Quelle console Nintendo à détection de mouvement sort en 2006 ?', answer: 'La Wii', explanation: 'Sa manette (Wiimote) a fait jouer toute la famille debout dans le salon.' },
+        { question: 'Quelle chanteuse sort le tube « Umbrella » en 2007 ?', answer: 'Rihanna', explanation: 'Le « ella-ella » est resté dans toutes les têtes cet été-là.' },
+      ],
+      en: [
+        { question: 'Which social network did Mark Zuckerberg launch in 2004?', answer: 'Facebook', explanation: 'Born at Harvard, it went global by the end of the decade.' },
+        { question: 'Which motion-controlled Nintendo console launched in 2006?', answer: 'The Wii', explanation: 'Its Wiimote got whole families playing on their feet in the living room.' },
+        { question: 'Which singer released the hit “Umbrella” in 2007?', answer: 'Rihanna', explanation: 'The “ella-ella” hook was everywhere that summer.' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz années 2000 est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Faut-il avoir vécu les années 2000 ?', a: 'Non, mais la nostalgie aide ! Les questions vont des tubes grand public aux détails plus pointus.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the 2000s quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Do I need to have lived through the 2000s?', a: 'No, but nostalgia helps! Questions range from mainstream hits to deeper cuts.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    slug: 'rois-de-france',
+    emoji: '👑',
+    playCategory: 'history',
+    aboutName: 'Liste des monarques de France',
+    aboutWikipedia: 'https://fr.wikipedia.org/wiki/Liste_des_monarques_de_France',
+    label: { fr: 'Rois de France', en: 'Kings of France' },
+    title: {
+      fr: 'Quiz Rois de France — de Clovis à Louis-Philippe | BIGHEAD',
+      en: 'Kings of France Quiz — from Clovis to Louis-Philippe | BIGHEAD',
+    },
+    description: {
+      fr: 'Quiz rois de France gratuit : dynasties, règnes, surnoms et grands événements. De Clovis à Louis-Philippe, joue dans ton navigateur.',
+      en: 'Free Kings of France quiz: dynasties, reigns, nicknames and key events. From Clovis to Louis-Philippe, play in your browser.',
+    },
+    intro: {
+      fr: "Des Mérovingiens à la Monarchie de Juillet, quinze siècles de rois ont façonné la France. Ce quiz rois de France teste tes connaissances sur les grandes dynasties (Capétiens, Valois, Bourbons), les surnoms restés célèbres (le Roi-Soleil, le Bien-Aimé), les règnes marquants et les événements qui ont fait basculer l’Histoire. Des questions accessibles pour réviser à celles qui piègent les passionnés d’histoire. Tu joues gratuitement dans le navigateur, sans installation, en français ou en anglais. Parfait pour réviser le programme d’histoire, préparer un contrôle ou juste combler les trous de la frise chronologique. Chaque réponse s’accompagne d’un repère daté — de quoi remettre les rois dans l’ordre une bonne fois pour toutes.",
+      en: "From the Merovingians to the July Monarchy, fifteen centuries of kings shaped France. This Kings of France quiz tests your knowledge of the great dynasties (Capetians, Valois, Bourbons), the famous nicknames (the Sun King, the Beloved), the landmark reigns and the events that turned history. From accessible revision questions to ones that trap history buffs. Play free in your browser, no install, in French or English. Perfect to revise your history syllabus, prep for a test, or just fill the gaps in the timeline.",
+    },
+    subtopics: {
+      fr: ['Mérovingiens & Carolingiens', 'Les Capétiens', 'Valois & guerre de Cent Ans', 'Bourbons & Ancien Régime', 'Surnoms des rois', 'Grands événements'],
+      en: ['Merovingians & Carolingians', 'The Capetians', 'Valois & Hundred Years’ War', 'Bourbons & Ancien Régime', 'Royal nicknames', 'Key events'],
+    },
+    samples: {
+      fr: [
+        { question: 'Quel roi est surnommé le « Roi-Soleil » ?', answer: 'Louis XIV', explanation: 'Son règne de 72 ans est le plus long de l’histoire de France.' },
+        { question: 'Quel roi signe l’édit de Nantes en 1598 ?', answer: 'Henri IV', explanation: 'L’édit accorde une tolérance religieuse aux protestants et met fin aux guerres de Religion.' },
+        { question: 'Qui est le dernier roi des Français ?', answer: 'Louis-Philippe Iᵉʳ', explanation: 'Renversé par la révolution de 1848 ; après lui, la France devient une république (puis un empire).' },
+      ],
+      en: [
+        { question: 'Which king is nicknamed the “Sun King”?', answer: 'Louis XIV', explanation: 'His 72-year reign is the longest in French history.' },
+        { question: 'Which king signed the Edict of Nantes in 1598?', answer: 'Henry IV', explanation: 'It granted religious tolerance to Protestants and ended the Wars of Religion.' },
+        { question: 'Who was the last King of the French?', answer: 'Louis-Philippe I', explanation: 'Overthrown by the 1848 revolution; France then became a republic (later an empire).' },
+      ],
+    },
+    faq: {
+      fr: [
+        { q: 'Le quiz rois de France est-il gratuit ?', a: 'Oui, gratuit et sans compte obligatoire, directement dans le navigateur.' },
+        { q: 'Est-ce utile pour réviser l’histoire ?', a: 'Oui, il couvre les dynasties et les grands règnes au programme, avec un repère daté à chaque réponse.' },
+        { q: 'Puis-je jouer sur mobile ?', a: 'Oui, sur téléphone, tablette et ordinateur, plus une app iOS/Android pour jouer hors-ligne.' },
+      ],
+      en: [
+        { q: 'Is the Kings of France quiz free?', a: 'Yes, free and no account required, right in your browser.' },
+        { q: 'Is it useful for revising history?', a: 'Yes, it covers the dynasties and major reigns on the syllabus, with a dated marker on each answer.' },
+        { q: 'Can I play on mobile?', a: 'Yes, on phone, tablet and desktop, plus an iOS/Android app to play offline.' },
+      ],
+    },
+  },
 ] as const
 
 /** Returns the theme for a slug, or `undefined` for unknown slugs. */
