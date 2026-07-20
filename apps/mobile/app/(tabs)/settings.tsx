@@ -13,6 +13,7 @@ import {
   type NotificationPreferences,
 } from "../../src/services/notificationPreferences";
 import { playHaptic, buttonPressFeedback } from "../../src/utils/feedback";
+import { logEvent } from "../../src/services/analytics";
 import { IconButton, Icon } from "../../src/components/ui";
 import { RatingModal } from "../../src/components/RatingModal";
 import { ContactModal } from "../../src/components/ContactModal";
@@ -82,6 +83,7 @@ export default function SettingsScreen() {
   const {
     requestPermission,
     cancelAllNotifications,
+    scheduleDailyReminder,
   } = useNotificationContext();
   const { showRatingModal, openRatingModal, closeRatingModal } = useRatingPrompt();
   const [showContactModal, setShowContactModal] = useState(false);
@@ -147,7 +149,11 @@ export default function SettingsScreen() {
       if (key === "notifications_enabled") {
         if (value) {
           const granted = await requestPermission();
+          logEvent(granted ? "notif_permission_granted" : "notif_permission_denied", { source: "settings_toggle" }, user?.id);
           if (granted) {
+            // Rappel local garanti à 19h en plus du cron serveur (si le push
+            // serveur rate ou n'arrive pas, l'utilisateur a quand même un rappel).
+            await scheduleDailyReminder(19, 0);
             Alert.alert(
               t("notifications"),
               language === "fr"

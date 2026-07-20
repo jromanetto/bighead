@@ -1,8 +1,11 @@
-import { useEffect } from "react";
-import { Tabs } from "expo-router";
+import { useEffect, useRef } from "react";
+import { Tabs, router } from "expo-router";
 import { View, Text, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buttonPressFeedback } from "../../src/utils/feedback";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { isOnboardingCompleted } from "../../src/services/settings";
+import { logEvent } from "../../src/services/analytics";
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -124,6 +127,27 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 }
 
 export default function TabsLayout() {
+  const { user, isInitialized } = useAuth();
+  const onboardingChecked = useRef(false);
+
+  // Gate onboarding: envoie les nouveaux users vers /onboarding (capture username
+  // + saisie code parrain). Les users ayant déjà fini l'onboarding passent direct.
+  useEffect(() => {
+    if (!isInitialized || onboardingChecked.current) return;
+    onboardingChecked.current = true;
+    (async () => {
+      try {
+        const done = await isOnboardingCompleted(user?.id);
+        if (!done) {
+          logEvent("onboarding_started", {}, user?.id);
+          router.replace("/onboarding");
+        }
+      } catch {
+        // ne jamais bloquer l'accès à l'app si le check échoue
+      }
+    })();
+  }, [isInitialized, user?.id]);
+
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}

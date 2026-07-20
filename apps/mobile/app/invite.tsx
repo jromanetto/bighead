@@ -13,6 +13,7 @@ import {
   getShareMessageV2,
   ReferralStatsV2,
 } from "../src/services/referral";
+import { logEvent } from "../src/services/analytics";
 
 // Design colors
 const COLORS = {
@@ -65,6 +66,7 @@ export default function InviteScreen() {
     const message = getShareMessageV2(stats.code, language);
     try {
       await Share.share({ message });
+      logEvent("referral_shared", { code: stats.code }, user?.id);
     } catch (error) {
       console.error("Error sharing:", error);
     }

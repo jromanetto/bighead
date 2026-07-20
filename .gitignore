@@ -2,3 +2,6 @@
 .worktrees/
 marketing/
 .DS_Store
+
+# Sortie du skill graphify (knowledge graph généré, non versionné)
+graphify-out/

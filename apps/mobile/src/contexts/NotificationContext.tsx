@@ -49,8 +49,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const responseListener = useRef<Notifications.EventSubscription | null>(null);
   const { user, isInitialized: authInitialized } = useAuth();
 
-  // Register for push notifications
-  const registerForPushNotifications = async (): Promise<string | null> => {
+  // Register for push notifications.
+  // `requestIfNeeded=false` = ne demande PAS la permission (juste récupère le token
+  // si déjà accordée). Utilisé au lancement pour ne pas cramer la permission iOS
+  // par un prompt à froid. Le prompt est déclenché plus tard, après engagement.
+  const registerForPushNotifications = async (
+    requestIfNeeded: boolean = true,
+  ): Promise<string | null> => {
     // Skip on web or non-device
     if (Platform.OS === "web") {
       console.log("Push notifications not supported on web");
@@ -68,8 +73,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       let finalStatus = existingStatus;
       setPermissionStatus(existingStatus);
 
-      // Request if not granted
+      // Request only if allowed to (never at cold launch)
       if (existingStatus !== "granted") {
+        if (!requestIfNeeded) {
+          return null;
+        }
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
         setPermissionStatus(status);
@@ -216,7 +224,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
 
     const init = async () => {
-      const token = await registerForPushNotifications();
+      // Ne demande PAS la permission au lancement : on récupère juste le token si
+      // elle est déjà accordée. Le prompt est déclenché après engagement (Home 2e
+      // session) ou via le toggle des réglages.
+      const token = await registerForPushNotifications(false);
       if (token) {
         setExpoPushToken(token);
 
