@@ -109,7 +109,7 @@ function LeaderboardRow({
 }
 
 export default function LeaderboardScreen() {
-  const { user, profile, isAnonymous } = useAuth();
+  const { user, profile } = useAuth();
   const { t } = useTranslation();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,10 +121,12 @@ export default function LeaderboardScreen() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (user && !isAnonymous) {
+    // Les users anonymes sont dans la vue leaderboard s'ils ont de l'XP : on charge
+    // donc leur rang aussi, sinon ils ne voient jamais leur propre position.
+    if (user?.id) {
       loadUserRank();
     }
-  }, [user, isAnonymous]);
+  }, [user?.id]);
 
   const loadLeaderboard = async () => {
     setLoading(true);
