@@ -6,8 +6,13 @@ import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/dailyChallenge";
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
+import { timeUntilDailyReset } from "../../src/utils/dailyReset";
+import { logEvent } from "../../src/services/analytics";
+import { useNotificationContext } from "../../src/contexts/NotificationContext";
+import { getSettings } from "../../src/services/settings";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
 import { Icon } from "../../src/components/ui";
 import { WeeklyChallengeBanner } from "../../src/components/WeeklyChallengeBanner";
@@ -71,17 +76,52 @@ const StatsPill = memo(function StatsPill({ icon, value, color }: { icon: string
 });
 
 export default function HomeScreen() {
-  const { user, profile, isAnonymous } = useAuth();
+  const { user, profile } = useAuth();
   const { t } = useTranslation();
+  const { permissionStatus, requestPermission } = useNotificationContext();
   const [dailyStreak, setDailyStreak] = useState(0);
   const [dailyCompleted, setDailyCompleted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState("12m");
+  const [timeLeft, setTimeLeft] = useState(timeUntilDailyReset());
   const [recentChallenges, setRecentChallenges] = useState<WeeklyChallenge[] | null>(null);
 
   useEffect(() => {
     loadFeedbackSettings(user?.id);
     loadDailyStatus();
   }, [user]);
+
+  // Vrai compte à rebours jusqu'au reset de la daily (remplace le "12m" hardcodé).
+  useEffect(() => {
+    setTimeLeft(timeUntilDailyReset());
+    const id = setInterval(() => setTimeLeft(timeUntilDailyReset()), 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Une fois: log app_open + soft-prompt notifications à partir de la 2e session
+  // (jamais au tout premier lancement — ça crame la permission iOS à froid).
+  useEffect(() => {
+    (async () => {
+      try {
+        logEvent("app_open");
+        const raw = await AsyncStorage.getItem("@bighead_home_sessions");
+        const count = (parseInt(raw ?? "0", 10) || 0) + 1;
+        await AsyncStorage.setItem("@bighead_home_sessions", String(count));
+
+        if (count < 2) return; // pas au tout premier lancement
+        if (await AsyncStorage.getItem("@bighead_notif_prompted")) return;
+        if (permissionStatus && permissionStatus !== "undetermined") return;
+
+        const settings = await getSettings(user?.id);
+        if (!settings.notifications_enabled) return;
+
+        await AsyncStorage.setItem("@bighead_notif_prompted", "1");
+        const granted = await requestPermission();
+        logEvent(granted ? "notif_permission_granted" : "notif_permission_denied", { source: "soft_prompt" });
+      } catch {
+        // ne jamais casser Home
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadRecentChallenges = useCallback(async () => {
     try {
@@ -100,7 +140,10 @@ export default function HomeScreen() {
   );
 
   const loadDailyStatus = async () => {
-    if (user && !isAnonymous) {
+    // Le streak est écrit en base même pour les users anonymes (login auto-anonyme
+    // au lancement). On l'affiche donc pour tout user, sinon la pastille 🔥 reste
+    // bloquée à 0 pour la quasi-totalité des joueurs.
+    if (user?.id) {
       try {
         const [streak, completed] = await Promise.all([
           getDailyStreak(user.id),

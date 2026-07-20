@@ -542,6 +542,38 @@ export default function ProfileScreen() {
           ))}
         </View>
 
+        {/* Invite friends CTA — both players get 500 XP + 1 month premium */}
+        <Pressable
+          onPress={() => {
+            buttonPressFeedback();
+            router.push("/invite");
+          }}
+          className="mx-6 mb-4 rounded-2xl p-5 active:opacity-80"
+          style={{
+            backgroundColor: COLORS.primaryDim,
+            borderWidth: 1,
+            borderColor: 'rgba(0, 194, 204, 0.3)',
+          }}
+        >
+          <View className="flex-row items-center">
+            <View
+              className="w-14 h-14 rounded-xl items-center justify-center mr-4"
+              style={{ backgroundColor: 'rgba(0, 194, 204, 0.2)' }}
+            >
+              <Text className="text-3xl">🎁</Text>
+            </View>
+            <View className="flex-1">
+              <Text style={{ color: COLORS.primary }} className="font-bold text-lg">
+                {t("inviteFriends")}
+              </Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                {t("referralReward")}
+              </Text>
+            </View>
+            <Icon name="ChevronRight" size={20} color={COLORS.primary} />
+          </View>
+        </Pressable>
+
         {/* Premium CTA */}
         {!isPremium && (
           <Pressable
