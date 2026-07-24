@@ -4,7 +4,7 @@ import { View, Text, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { isOnboardingCompleted } from "../../src/services/settings";
+import { isOnboardingCompleted, completeOnboarding } from "../../src/services/settings";
 import { logEvent } from "../../src/services/analytics";
 import Animated, {
   useAnimatedStyle,
@@ -127,26 +127,42 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 }
 
 export default function TabsLayout() {
-  const { user, isInitialized } = useAuth();
+  const { user, profile, isInitialized } = useAuth();
   const onboardingChecked = useRef(false);
 
-  // Gate onboarding: envoie les nouveaux users vers /onboarding (capture username
-  // + saisie code parrain). Les users ayant déjà fini l'onboarding passent direct.
+  // Gate onboarding: envoie UNIQUEMENT les users sans ambiguïté nouveaux vers
+  // /onboarding. Un user existant (pseudo, ou XP, ou parties jouées) ne doit JAMAIS
+  // se faire redemander son nom — on le marque "fait" et on passe direct.
+  // `isInitialized` garantit que `profile` est déjà chargé (cf. AuthContext).
   useEffect(() => {
     if (!isInitialized || onboardingChecked.current) return;
     onboardingChecked.current = true;
     (async () => {
       try {
         const done = await isOnboardingCompleted(user?.id);
-        if (!done) {
-          logEvent("onboarding_started", {}, user?.id);
-          router.replace("/onboarding");
+        if (done) return;
+
+        // Fail-safe : sans profil chargé, on ne force rien (ne jamais harceler).
+        if (!profile) return;
+
+        const isBrandNew =
+          !profile.username &&
+          (profile.total_xp ?? 0) === 0 &&
+          (profile.games_played ?? 0) === 0;
+
+        if (!isBrandNew) {
+          // User existant : marquer l'onboarding fait pour ne plus jamais demander.
+          completeOnboarding(user?.id).catch(() => {});
+          return;
         }
+
+        logEvent("onboarding_started", {}, user?.id);
+        router.replace("/onboarding");
       } catch {
         // ne jamais bloquer l'accès à l'app si le check échoue
       }
     })();
-  }, [isInitialized, user?.id]);
+  }, [isInitialized, user?.id, profile]);
 
   return (
     <Tabs
