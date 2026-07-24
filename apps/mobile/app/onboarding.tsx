@@ -149,11 +149,17 @@ export default function OnboardingScreen() {
 
   const finishOnboarding = async () => {
     playHaptic("success");
-    await completeOnboarding(user?.id);
-    logEvent("onboarding_completed", { username_set: username.trim().length >= 2, referral_redeemed: referralSuccess }, user?.id);
-    // Reward onboarding XP — fire and forget, server enforces lifetime dedupe
-    claimMilestone("onboarding_complete").catch(() => {});
-    router.replace("/");
+    try {
+      await completeOnboarding(user?.id);
+      logEvent("onboarding_completed", { username_set: username.trim().length >= 2, referral_redeemed: referralSuccess }, user?.id);
+      // Reward onboarding XP — fire and forget, server enforces lifetime dedupe
+      claimMilestone("onboarding_complete").catch(() => {});
+    } catch (error) {
+      console.error("Error finishing onboarding:", error);
+    } finally {
+      // Toujours sortir vers Home — ne jamais piéger l'utilisateur sur l'onboarding.
+      router.replace("/");
+    }
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
