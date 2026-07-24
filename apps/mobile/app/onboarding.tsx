@@ -105,6 +105,9 @@ export default function OnboardingScreen() {
         console.error("Error saving username:", error);
       }
     }
+    // Éteindre l'étape pseudo, sinon le rendu (qui teste showUsernameStep en
+    // premier) reste bloqué dessus et le bouton "Let's go" semble ne rien faire.
+    setShowUsernameStep(false);
     setShowReferralStep(true);
   };
 
