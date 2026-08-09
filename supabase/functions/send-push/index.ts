@@ -95,6 +95,11 @@ const TEMPLATES: Record<string, { title: string; body: string; data?: Record<str
     body: "Joue avant minuit pour garder ta série de {days} jours",
     data: { screen: "home" },
   },
+  comeback: {
+    title: "🧠 On t'a gardé une place !",
+    body: "De nouvelles questions t'attendent. Reviens tester ta culture G !",
+    data: { screen: "daily" },
+  },
   friend_overtake: {
     title: "🚨 Tu es dépassé !",
     body: "{username} t'a battu de {xp_diff} XP cette semaine. Reprends la tête !",
