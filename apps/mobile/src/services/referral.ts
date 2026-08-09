@@ -9,7 +9,7 @@
  */
 
 import { supabase } from "./supabase";
-import { Platform } from "react-native";
+import { Platform, Share } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { claimMilestone } from "./universalXp";
 
@@ -180,7 +180,13 @@ export const getShareMessage = (referralCode: string, lang: "fr" | "en" | "es" |
 export const shareReferralCode = async (referralCode: string): Promise<boolean> => {
   try {
     const message = getShareMessage(referralCode);
-    await Clipboard.setStringAsync(message);
+    // Feuille de partage native (le presse-papier ne "partage" pas vraiment).
+    try {
+      await Share.share({ message });
+    } catch {
+      // Fallback presse-papier si le partage natif échoue/annulé.
+      await Clipboard.setStringAsync(message);
+    }
     // Reward first_share milestone (server enforces lifetime dedupe)
     claimMilestone("first_share").catch(() => {});
     return true;
