@@ -1,6 +1,9 @@
 /**
  * Helpers pour le compte à rebours de la Daily Brain.
- * La question du jour se réinitialise à minuit (heure locale).
+ * La question du jour + le streak se réinitialisent à minuit UTC (c'est la
+ * frontière de jour utilisée partout côté serveur : dedupe `daily_brain_<date>`,
+ * `last_daily_challenge`). On aligne le compte à rebours dessus pour ne pas
+ * afficher "reset !" alors que la daily n'a pas encore tourné (bug de fuseau).
  */
 
 /** Formatte une durée en ms en "Xh Ym" (ou "Ym" si < 1h). */
@@ -11,10 +14,10 @@ export function formatShortDuration(ms: number): string {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-/** Millisecondes restantes avant le prochain minuit local (reset de la daily). */
+/** Millisecondes restantes avant le prochain minuit UTC (reset de la daily). */
 export function msUntilDailyReset(now: Date = new Date()): number {
   const next = new Date(now);
-  next.setHours(24, 0, 0, 0); // minuit prochain, heure locale
+  next.setUTCHours(24, 0, 0, 0); // minuit UTC prochain (= reset serveur)
   return next.getTime() - now.getTime();
 }
 

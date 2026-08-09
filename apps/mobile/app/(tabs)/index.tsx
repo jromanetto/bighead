@@ -11,6 +11,7 @@ import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/d
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { timeUntilDailyReset } from "../../src/utils/dailyReset";
 import { logEvent } from "../../src/services/analytics";
+import { getLevelTitle } from "../../src/utils/progression";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings } from "../../src/services/settings";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
@@ -77,7 +78,7 @@ const StatsPill = memo(function StatsPill({ icon, value, color }: { icon: string
 
 export default function HomeScreen() {
   const { user, profile } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { permissionStatus, requestPermission } = useNotificationContext();
   const [dailyStreak, setDailyStreak] = useState(0);
   const [dailyCompleted, setDailyCompleted] = useState(false);
@@ -663,7 +664,9 @@ export default function HomeScreen() {
                       />
                     </View>
                     <View>
-                      <Text className="text-white font-bold text-lg">{t("level")} {levelData.level}</Text>
+                      <Text className="text-white font-bold text-lg">
+                        {getLevelTitle(levelData.level, language === "fr" ? "fr" : "en")} · {t("level")} {levelData.level}
+                      </Text>
                       <Text className="text-amber-200/80 text-sm">{totalXP.toLocaleString()} XP {t("totalXP")}</Text>
                     </View>
                   </View>
