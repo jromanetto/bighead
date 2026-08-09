@@ -55,6 +55,11 @@ export function AudioPlayer({
   const [isLoading, setIsLoading] = useState(false);
   // Ensures onPlaybackStart fires only once per question (not on replays)
   const startNotifiedRef = useRef(false);
+  // Latest callbacks in refs so the playback-status closure never goes stale.
+  const onStartRef = useRef(onPlaybackStart);
+  onStartRef.current = onPlaybackStart;
+  const onErrorRef = useRef(onLoadError);
+  onErrorRef.current = onLoadError;
 
   const pulse = useSharedValue(1);
   const opacity = useSharedValue(0.7);
@@ -123,6 +128,15 @@ export function AudioPlayer({
 
   const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     if (!status.isLoaded) return;
+    // "Playback actually started" = loaded AND playing AND done buffering, i.e.
+    // the sound is truly audible now. Only THEN do we tell the parent to start
+    // the question timer — so download/buffer time is never deducted and the
+    // player always hears the clip before the countdown begins.
+    if (!startNotifiedRef.current && status.isPlaying && !status.isBuffering) {
+      startNotifiedRef.current = true;
+      setIsPlaying(true);
+      onStartRef.current?.();
+    }
     if (status.didJustFinish) {
       setIsPlaying(false);
     }
@@ -144,8 +158,9 @@ export function AudioPlayer({
         shouldDuckAndroid: true,
       });
 
-      // createAsync resolves once the sound is loaded; with shouldPlay:true
-      // playback has begun at this point.
+      // NOTE: createAsync may resolve while a remote clip is still buffering,
+      // so we do NOT signal "started" here. onPlaybackStart is fired from
+      // onPlaybackStatusUpdate once the audio is genuinely playing (audible).
       const { sound } = await Audio.Sound.createAsync(
         { uri: audioUrl },
         { shouldPlay: true, volume: 1.0 },
@@ -154,18 +169,13 @@ export function AudioPlayer({
       soundRef.current = sound;
       setIsPlaying(true);
       setPlaysUsed((n) => n + 1);
-      // Notify parent that playback actually started (once per question)
-      if (!startNotifiedRef.current) {
-        startNotifiedRef.current = true;
-        onPlaybackStart?.();
-      }
     } catch (e) {
       console.warn("[AudioPlayer] play error:", e);
       setIsPlaying(false);
       // Let the parent start the timer anyway so the user isn't stuck
       if (!startNotifiedRef.current) {
         startNotifiedRef.current = true;
-        onLoadError?.();
+        onErrorRef.current?.();
       }
     } finally {
       setIsLoading(false);
