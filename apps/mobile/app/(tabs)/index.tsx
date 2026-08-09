@@ -11,6 +11,7 @@ import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/d
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { timeUntilDailyReset } from "../../src/utils/dailyReset";
 import { logEvent } from "../../src/services/analytics";
+import { getLevelTitle } from "../../src/utils/progression";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings } from "../../src/services/settings";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
@@ -77,7 +78,7 @@ const StatsPill = memo(function StatsPill({ icon, value, color }: { icon: string
 
 export default function HomeScreen() {
   const { user, profile } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { permissionStatus, requestPermission } = useNotificationContext();
   const [dailyStreak, setDailyStreak] = useState(0);
   const [dailyCompleted, setDailyCompleted] = useState(false);
@@ -96,8 +97,7 @@ export default function HomeScreen() {
     return () => clearInterval(id);
   }, []);
 
-  // Une fois: log app_open + soft-prompt notifications à partir de la 2e session
-  // (jamais au tout premier lancement — ça crame la permission iOS à froid).
+  // Une fois par montage: log app_open + incrément du compteur de sessions.
   useEffect(() => {
     (async () => {
       try {
@@ -105,23 +105,41 @@ export default function HomeScreen() {
         const raw = await AsyncStorage.getItem("@bighead_home_sessions");
         const count = (parseInt(raw ?? "0", 10) || 0) + 1;
         await AsyncStorage.setItem("@bighead_home_sessions", String(count));
+      } catch {
+        // ne jamais casser Home
+      }
+    })();
+  }, []);
 
-        if (count < 2) return; // pas au tout premier lancement
+  // Soft-prompt notifications : dès que le joueur a joué ≥1 partie OU à la 2e
+  // session — plus tôt = on capte le canal de rappel avant que le one-and-done
+  // ne ferme l'app. Jamais au tout 1er lancement à froid.
+  useEffect(() => {
+    (async () => {
+      try {
         if (await AsyncStorage.getItem("@bighead_notif_prompted")) return;
         if (permissionStatus && permissionStatus !== "undetermined") return;
+
+        const raw = await AsyncStorage.getItem("@bighead_home_sessions");
+        const sessions = parseInt(raw ?? "0", 10) || 0;
+        const hasPlayed = (profile?.games_played ?? 0) >= 1;
+        if (!hasPlayed && sessions < 2) return;
 
         const settings = await getSettings(user?.id);
         if (!settings.notifications_enabled) return;
 
         await AsyncStorage.setItem("@bighead_notif_prompted", "1");
         const granted = await requestPermission();
-        logEvent(granted ? "notif_permission_granted" : "notif_permission_denied", { source: "soft_prompt" });
+        logEvent(
+          granted ? "notif_permission_granted" : "notif_permission_denied",
+          { source: hasPlayed ? "after_first_game" : "soft_prompt" },
+        );
       } catch {
         // ne jamais casser Home
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [profile?.games_played, permissionStatus, user?.id]);
 
   const loadRecentChallenges = useCallback(async () => {
     try {
@@ -646,7 +664,9 @@ export default function HomeScreen() {
                       />
                     </View>
                     <View>
-                      <Text className="text-white font-bold text-lg">{t("level")} {levelData.level}</Text>
+                      <Text className="text-white font-bold text-lg">
+                        {getLevelTitle(levelData.level, language === "fr" ? "fr" : "en")} · {t("level")} {levelData.level}
+                      </Text>
                       <Text className="text-amber-200/80 text-sm">{totalXP.toLocaleString()} XP {t("totalXP")}</Text>
                     </View>
                   </View>

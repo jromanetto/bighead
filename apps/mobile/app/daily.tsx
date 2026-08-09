@@ -35,6 +35,7 @@ import { inviteFriends } from "../src/utils/share";
 import { useTranslation } from "../src/contexts/LanguageContext";
 import { AnimatedNumber } from "../src/components/AnimatedNumber";
 import { ConfettiEffect } from "../src/components/effects/ConfettiEffect";
+import { isStreakMilestone } from "../src/utils/progression";
 
 const DAILY_SURVIVAL_KEY = "@bighead_daily_survival";
 
@@ -525,7 +526,7 @@ export default function DailyBrainScreen() {
         : t("dailyResultMeh");
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-        <ConfettiEffect trigger={perfect} />
+        <ConfettiEffect trigger={perfect || isStreakMilestone(streak)} />
         <View className="absolute inset-0 pointer-events-none">
           <View
             className="absolute -top-10 -left-10 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
@@ -628,6 +629,23 @@ export default function DailyBrainScreen() {
                     </Text>
                   </View>
                 </View>
+              </View>
+            )}
+
+            {isStreakMilestone(streak) && (
+              <View
+                className="rounded-xl px-6 py-4 mb-8 items-center"
+                style={{ backgroundColor: 'rgba(251, 191, 36, 0.18)', borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.4)' }}
+              >
+                <Text className="text-4xl mb-1">🏆</Text>
+                <Text style={{ color: '#fbbf24' }} className="font-extrabold text-lg text-center">
+                  {language === "fr"
+                    ? `Palier ${streak} jours atteint !`
+                    : `${streak}-day milestone reached!`}
+                </Text>
+                <Text style={{ color: '#fbbf24', opacity: 0.7 }} className="text-sm text-center">
+                  {language === "fr" ? "Bonus XP débloqué 🎉" : "XP bonus unlocked 🎉"}
+                </Text>
               </View>
             )}
 

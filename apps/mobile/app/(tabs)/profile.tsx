@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView, Alert, Modal, TextInput } from "react-native";
 import { router, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { ProfileAvatar } from "../../src/components/ProfileAvatar";
@@ -15,6 +15,7 @@ import { Icon } from "../../src/components/ui";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { Skeleton } from "../../src/components/Skeleton";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
+import { AuthModal, AuthModalRef } from "../../src/components/AuthModal";
 
 // New QuizNext design colors
 const COLORS = {
@@ -120,7 +121,8 @@ function CategoryProgress({
 
 export default function ProfileScreen() {
   const { user, profile, isAnonymous, isPremium, isLoading, refreshProfile, updateAvatar, updateUsername } = useAuth();
-  const { t } = useTranslation();
+  const authModalRef = useRef<AuthModalRef>(null);
+  const { t, language } = useTranslation();
 
   const [stats, setStats] = useState({
     totalGames: 0,
@@ -542,6 +544,44 @@ export default function ProfileScreen() {
           ))}
         </View>
 
+        {/* Sauvegarde de progression — convertit l'anonyme en compte email
+            (canal de récupération: sans ça, un réinstall = progression perdue
+            et aucun moyen de recontacter le joueur). */}
+        {isAnonymous && (
+          <Pressable
+            onPress={() => {
+              buttonPressFeedback();
+              authModalRef.current?.open("signup");
+            }}
+            className="mx-6 mb-4 rounded-2xl p-5 active:opacity-80"
+            style={{
+              backgroundColor: 'rgba(0, 194, 204, 0.12)',
+              borderWidth: 1,
+              borderColor: 'rgba(0, 194, 204, 0.35)',
+            }}
+          >
+            <View className="flex-row items-center">
+              <View
+                className="w-14 h-14 rounded-xl items-center justify-center mr-4"
+                style={{ backgroundColor: 'rgba(0, 194, 204, 0.2)' }}
+              >
+                <Text className="text-3xl">💾</Text>
+              </View>
+              <View className="flex-1">
+                <Text style={{ color: COLORS.primary }} className="font-bold text-lg">
+                  {language === "fr" ? "Sauvegarde ta progression" : "Save your progress"}
+                </Text>
+                <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                  {language === "fr"
+                    ? "Crée un compte pour ne rien perdre et jouer sur tous tes appareils"
+                    : "Create an account so you never lose it and can play across devices"}
+                </Text>
+              </View>
+              <Icon name="ChevronRight" size={20} color={COLORS.primary} />
+            </View>
+          </Pressable>
+        )}
+
         {/* Invite friends CTA — both players get 500 XP + 1 month premium */}
         <Pressable
           onPress={() => {
@@ -670,6 +710,8 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      <AuthModal ref={authModalRef} onSuccess={refreshProfile} />
     </SafeAreaView>
   );
 }

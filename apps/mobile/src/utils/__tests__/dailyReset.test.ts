@@ -27,9 +27,9 @@ describe("msUntilDailyReset", () => {
     expect(ms).toBeLessThanOrEqual(24 * 60 * 60000);
   });
 
-  it("counts down to the next local midnight", () => {
-    const at2230 = new Date(2026, 6, 20, 22, 30, 0, 0); // 20 juil 22:30 local
-    expect(msUntilDailyReset(at2230)).toBe(90 * 60000); // 1h30 jusqu'à minuit
-    expect(timeUntilDailyReset(at2230)).toBe("1h 30m");
+  it("counts down to the next UTC midnight (server reset boundary)", () => {
+    const at2230utc = new Date(Date.UTC(2026, 6, 20, 22, 30, 0, 0)); // 20 juil 22:30 UTC
+    expect(msUntilDailyReset(at2230utc)).toBe(90 * 60000); // 1h30 jusqu'à minuit UTC
+    expect(timeUntilDailyReset(at2230utc)).toBe("1h 30m");
   });
 });

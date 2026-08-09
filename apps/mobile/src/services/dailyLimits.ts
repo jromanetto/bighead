@@ -7,6 +7,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getTodayIsoDate } from "../utils/dates";
 
 const STORAGE_KEY = "daily_usage";
+const FIRST_SEEN_KEY = "first_seen_at"; // epoch ms du 1er lancement, pour la période de grâce
+
+// Période de grâce "nouveau joueur" : pas de plafond gratuit pendant les
+// premiers jours après l'install. On ne colle JAMAIS un paywall le jour de
+// l'installation — avant qu'une habitude existe, le mur tue la rétention.
+export const GRACE_DAYS = 7;
 
 // Limits per mode for free users
 export const DAILY_LIMITS = {
@@ -16,6 +22,41 @@ export const DAILY_LIMITS = {
   party: 2,
   versus: 3,
 } as const;
+
+/**
+ * Pure & testable : le joueur est-il encore dans sa période de grâce ?
+ */
+export const isWithinGracePeriod = (
+  firstSeenMs: number,
+  nowMs: number,
+  graceDays: number = GRACE_DAYS,
+): boolean => nowMs - firstSeenMs < graceDays * 24 * 60 * 60 * 1000;
+
+/**
+ * Récupère (et pose au 1er appel) l'horodatage du premier lancement.
+ */
+const ensureFirstSeen = async (): Promise<number> => {
+  try {
+    const stored = await AsyncStorage.getItem(FIRST_SEEN_KEY);
+    if (stored) {
+      const n = parseInt(stored, 10);
+      if (!Number.isNaN(n)) return n;
+    }
+    const now = Date.now();
+    await AsyncStorage.setItem(FIRST_SEEN_KEY, String(now));
+    return now;
+  } catch {
+    return Date.now();
+  }
+};
+
+/**
+ * Le joueur bénéficie-t-il encore de la grâce nouveau-joueur ?
+ */
+export const inGracePeriod = async (): Promise<boolean> => {
+  const firstSeen = await ensureFirstSeen();
+  return isWithinGracePeriod(firstSeen, Date.now());
+};
 
 export type GameMode = keyof typeof DAILY_LIMITS;
 
@@ -86,6 +127,7 @@ const saveUsage = async (usage: DailyUsage): Promise<void> => {
  * Check if user can play a specific mode (has remaining plays)
  */
 export const canPlay = async (mode: GameMode): Promise<boolean> => {
+  if (await inGracePeriod()) return true; // nouveau joueur : illimité
   const usage = await loadUsage();
   const used = usage[mode];
   const limit = DAILY_LIMITS[mode];
@@ -96,6 +138,7 @@ export const canPlay = async (mode: GameMode): Promise<boolean> => {
  * Get remaining plays for a specific mode
  */
 export const getRemainingPlays = async (mode: GameMode): Promise<number> => {
+  if (await inGracePeriod()) return 99; // grâce nouveau-joueur : "illimité"
   const usage = await loadUsage();
   const used = usage[mode];
   const limit = DAILY_LIMITS[mode];
@@ -120,33 +163,16 @@ export const getAllLimits = async (): Promise<
   Record<GameMode, { used: number; max: number; remaining: number }>
 > => {
   const usage = await loadUsage();
+  const grace = await inGracePeriod();
+  const rem = (mode: GameMode) =>
+    grace ? 99 : Math.max(0, DAILY_LIMITS[mode] - usage[mode]);
 
   return {
-    adventure: {
-      used: usage.adventure,
-      max: DAILY_LIMITS.adventure,
-      remaining: Math.max(0, DAILY_LIMITS.adventure - usage.adventure),
-    },
-    solo_run: {
-      used: usage.solo_run,
-      max: DAILY_LIMITS.solo_run,
-      remaining: Math.max(0, DAILY_LIMITS.solo_run - usage.solo_run),
-    },
-    family: {
-      used: usage.family,
-      max: DAILY_LIMITS.family,
-      remaining: Math.max(0, DAILY_LIMITS.family - usage.family),
-    },
-    party: {
-      used: usage.party,
-      max: DAILY_LIMITS.party,
-      remaining: Math.max(0, DAILY_LIMITS.party - usage.party),
-    },
-    versus: {
-      used: usage.versus,
-      max: DAILY_LIMITS.versus,
-      remaining: Math.max(0, DAILY_LIMITS.versus - usage.versus),
-    },
+    adventure: { used: usage.adventure, max: DAILY_LIMITS.adventure, remaining: rem("adventure") },
+    solo_run: { used: usage.solo_run, max: DAILY_LIMITS.solo_run, remaining: rem("solo_run") },
+    family: { used: usage.family, max: DAILY_LIMITS.family, remaining: rem("family") },
+    party: { used: usage.party, max: DAILY_LIMITS.party, remaining: rem("party") },
+    versus: { used: usage.versus, max: DAILY_LIMITS.versus, remaining: rem("versus") },
   };
 };
 

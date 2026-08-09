@@ -435,18 +435,18 @@ export const translations = {
     referralStatsCompleted: "Completed",
     referralStatsPending: "Pending",
     referralHowItWorks: "How it works",
-    referralReward: "When your friend reaches level 5, you both get 500 XP + 1 month Premium.",
+    referralReward: "When your friend plays their first game, you both get 500 XP + 1 month Premium.",
     referralEnterCode: "Got a code? (optional)",
     referralEnterPlaceholder: "BH-XXXXXX",
     referralRedeem: "Apply code",
     referralSkip: "Skip",
-    referralApplied: "Code applied! Reach level 5 to unlock the reward.",
+    referralApplied: "Code applied! Play your first game to unlock the reward.",
     referralErrorInvalid: "This code is invalid.",
     referralErrorSelf: "You can't use your own code.",
     referralErrorAlready: "You already used a referral code.",
     referralErrorUnknown: "Something went wrong, try again.",
     referralShareMessage:
-      "🎯 Join me on BigHead with my code {code}! We both get 500 XP + 1 month premium when you reach level 5. Download the app: https://bighead.app",
+      "🎯 Join me on BigHead with my code {code}! We both get 500 XP + 1 month premium when you play your first game. Download the app: https://bighead.app",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Question {current}/{total}",
@@ -950,7 +950,7 @@ export const translations = {
     streakFreezeAutoDesc: "Protège ta série automatiquement quand tu rates un jour.",
     streakFreezeContinue: "Continuer",
 
-    // Referral v2 (récompenses au niveau 5)
+    // Referral v2 (récompense dès la 1re partie du filleul)
     referralYourCode: "Ton code d'invitation",
     referralShare: "Partager mon code",
     referralCopy: "Copier",
@@ -959,18 +959,18 @@ export const translations = {
     referralStatsCompleted: "Validés",
     referralStatsPending: "En attente",
     referralHowItWorks: "Comment ça marche",
-    referralReward: "Quand ton pote atteint le niveau 5, vous gagnez 500 XP + 1 mois Premium chacun.",
+    referralReward: "Quand ton pote joue sa première partie, vous gagnez 500 XP + 1 mois Premium chacun.",
     referralEnterCode: "Tu as un code ? (optionnel)",
     referralEnterPlaceholder: "BH-XXXXXX",
     referralRedeem: "Valider le code",
     referralSkip: "Passer",
-    referralApplied: "Code validé ! Atteins le niveau 5 pour débloquer la récompense.",
+    referralApplied: "Code validé ! Joue ta première partie pour débloquer la récompense.",
     referralErrorInvalid: "Ce code est invalide.",
     referralErrorSelf: "Tu ne peux pas utiliser ton propre code.",
     referralErrorAlready: "Tu as déjà utilisé un code de parrainage.",
     referralErrorUnknown: "Une erreur est survenue, réessaie.",
     referralShareMessage:
-      "🎯 Rejoins-moi sur BigHead avec mon code {code} ! On gagne 500 XP + 1 mois premium chacun quand t'atteins le niveau 5. Télécharge l'app : https://bighead.app",
+      "🎯 Rejoins-moi sur BigHead avec mon code {code} ! On gagne 500 XP + 1 mois premium chacun quand tu joues ta première partie. Télécharge l'app : https://bighead.app",
 
     // Daily Brain (5 questions/jour)
     dailyProgress: "Question {current}/{total}",
@@ -1483,18 +1483,18 @@ export const translations = {
     referralStatsCompleted: "Validados",
     referralStatsPending: "Pendientes",
     referralHowItWorks: "Cómo funciona",
-    referralReward: "Cuando tu amigo llega al nivel 5, ganáis 500 XP y 1 mes de Premium cada uno.",
+    referralReward: "Cuando tu amigo juega su primera partida, ganáis 500 XP y 1 mes de Premium cada uno.",
     referralEnterCode: "¿Tienes un código? (opcional)",
     referralEnterPlaceholder: "BH-XXXXXX",
     referralRedeem: "Aplicar código",
     referralSkip: "Saltar",
-    referralApplied: "¡Código aplicado! Alcanza el nivel 5 para desbloquear la recompensa.",
+    referralApplied: "¡Código aplicado! Juega tu primera partida para desbloquear la recompensa.",
     referralErrorInvalid: "Este código no es válido.",
     referralErrorSelf: "No puedes usar tu propio código.",
     referralErrorAlready: "Ya has usado un código de invitación.",
     referralErrorUnknown: "Algo ha salido mal, inténtalo de nuevo.",
     referralShareMessage:
-      "🎯 ¡Únete a BigHead con mi código {code}! Cuando llegues al nivel 5, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: https://bighead.app",
+      "🎯 ¡Únete a BigHead con mi código {code}! Cuando juegues tu primera partida, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: https://bighead.app",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Pregunta {current}/{total}",
@@ -2007,18 +2007,18 @@ export const translations = {
     referralStatsCompleted: "Abgeschlossen",
     referralStatsPending: "Ausstehend",
     referralHowItWorks: "So funktioniert's",
-    referralReward: "Wenn dein Freund Level 5 erreicht, bekommt ihr beide 500 XP + 1 Monat Premium.",
+    referralReward: "Wenn dein Freund sein erstes Spiel spielt, bekommt ihr beide 500 XP + 1 Monat Premium.",
     referralEnterCode: "Hast du einen Code? (optional)",
     referralEnterPlaceholder: "BH-XXXXXX",
     referralRedeem: "Code einlösen",
     referralSkip: "Überspringen",
-    referralApplied: "Code eingelöst! Erreiche Level 5, um die Belohnung freizuschalten.",
+    referralApplied: "Code eingelöst! Spiele dein erstes Spiel, um die Belohnung freizuschalten.",
     referralErrorInvalid: "Dieser Code ist ungültig.",
     referralErrorSelf: "Du kannst deinen eigenen Code nicht nutzen.",
     referralErrorAlready: "Du hast bereits einen Einladungscode genutzt.",
     referralErrorUnknown: "Etwas ist schiefgelaufen, versuch es nochmal.",
     referralShareMessage:
-      "🎯 Komm mit meinem Code {code} zu BigHead! Wenn du Level 5 erreichst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: https://bighead.app",
+      "🎯 Komm mit meinem Code {code} zu BigHead! Wenn du dein erstes Spiel spielst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: https://bighead.app",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Frage {current}/{total}",

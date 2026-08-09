@@ -157,8 +157,9 @@ export default function OnboardingScreen() {
     } catch (error) {
       console.error("Error finishing onboarding:", error);
     } finally {
-      // Toujours sortir vers Home — ne jamais piéger l'utilisateur sur l'onboarding.
-      router.replace("/");
+      // Activation : on lâche le nouveau joueur DANS une partie (Daily Brain),
+      // pas sur le Home-buffet. Time-to-first-question = 0. Ne jamais le piéger.
+      router.replace("/daily");
     }
   };
 
