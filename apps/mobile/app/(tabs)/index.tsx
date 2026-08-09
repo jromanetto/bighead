@@ -96,8 +96,7 @@ export default function HomeScreen() {
     return () => clearInterval(id);
   }, []);
 
-  // Une fois: log app_open + soft-prompt notifications à partir de la 2e session
-  // (jamais au tout premier lancement — ça crame la permission iOS à froid).
+  // Une fois par montage: log app_open + incrément du compteur de sessions.
   useEffect(() => {
     (async () => {
       try {
@@ -105,23 +104,41 @@ export default function HomeScreen() {
         const raw = await AsyncStorage.getItem("@bighead_home_sessions");
         const count = (parseInt(raw ?? "0", 10) || 0) + 1;
         await AsyncStorage.setItem("@bighead_home_sessions", String(count));
+      } catch {
+        // ne jamais casser Home
+      }
+    })();
+  }, []);
 
-        if (count < 2) return; // pas au tout premier lancement
+  // Soft-prompt notifications : dès que le joueur a joué ≥1 partie OU à la 2e
+  // session — plus tôt = on capte le canal de rappel avant que le one-and-done
+  // ne ferme l'app. Jamais au tout 1er lancement à froid.
+  useEffect(() => {
+    (async () => {
+      try {
         if (await AsyncStorage.getItem("@bighead_notif_prompted")) return;
         if (permissionStatus && permissionStatus !== "undetermined") return;
+
+        const raw = await AsyncStorage.getItem("@bighead_home_sessions");
+        const sessions = parseInt(raw ?? "0", 10) || 0;
+        const hasPlayed = (profile?.games_played ?? 0) >= 1;
+        if (!hasPlayed && sessions < 2) return;
 
         const settings = await getSettings(user?.id);
         if (!settings.notifications_enabled) return;
 
         await AsyncStorage.setItem("@bighead_notif_prompted", "1");
         const granted = await requestPermission();
-        logEvent(granted ? "notif_permission_granted" : "notif_permission_denied", { source: "soft_prompt" });
+        logEvent(
+          granted ? "notif_permission_granted" : "notif_permission_denied",
+          { source: hasPlayed ? "after_first_game" : "soft_prompt" },
+        );
       } catch {
         // ne jamais casser Home
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [profile?.games_played, permissionStatus, user?.id]);
 
   const loadRecentChallenges = useCallback(async () => {
     try {
