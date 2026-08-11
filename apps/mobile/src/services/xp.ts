@@ -30,7 +30,8 @@ export type XPSource =
   | "activity_feed_open"
   | "friend_added"
   | "streak_milestone"
-  | "referral_bonus";
+  | "referral_bonus"
+  | "geography";
 
 export interface XPGain {
   base: number;
