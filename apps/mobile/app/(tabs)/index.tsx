@@ -625,6 +625,40 @@ export default function HomeScreen() {
               </LinearGradient>
             </Pressable>
 
+            {/* Geography Section Card (always present) */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/geography" as any);
+              }}
+              className="rounded-xl overflow-hidden active:opacity-95 mt-3"
+              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(34, 197, 94, 0.25)' }}
+              accessibilityRole="button"
+              accessibilityLabel={t("geoSectionTitle")}
+            >
+              <LinearGradient
+                colors={['#166534', '#15803d', '#22c55e']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <View className="flex-col justify-center flex-1">
+                  <Text className="text-xl font-black tracking-tight text-white">
+                    🌍 {t("geoSectionTitle")}
+                  </Text>
+                  <Text className="text-green-100 text-xs mt-0.5">
+                    {t("geoSectionSubtitle")}
+                  </Text>
+                </View>
+                <View
+                  className="w-14 h-14 rounded-2xl items-center justify-center"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
+                >
+                  <Text className="text-3xl">🚩</Text>
+                </View>
+              </LinearGradient>
+            </Pressable>
+
             {/* Level & Achievements Card */}
             <Pressable
               onPress={() => {
