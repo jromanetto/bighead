@@ -9,6 +9,9 @@ import {
   countryName,
   capitalName,
 } from "../data/geography";
+import { shuffle } from "./shuffle";
+
+export { shuffle };
 
 export type GeoMode = "flags" | "capitals";
 export type Lang = "fr" | "en";
@@ -23,16 +26,6 @@ export interface GeoQuestion {
 }
 
 const OPTIONS_PER_QUESTION = 4;
-
-/** Fisher-Yates shuffle with an injectable RNG (default Math.random). */
-export function shuffle<T>(arr: T[], rng: () => number = Math.random): T[] {
-  const out = arr.slice();
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
 
 /** Pick up to `n` distractor countries from `pool`, excluding `correct`. */
 export function pickDistractors(

@@ -47,7 +47,9 @@ export default function GeographyQuizScreen() {
   const { t, language } = useTranslation();
   const params = useLocalSearchParams<{ mode?: string; continent?: string }>();
   const mode: GeoMode = params.mode === "capitals" ? "capitals" : "flags";
-  const continent = (params.continent as ContinentId) || null;
+  const continentParam = (params.continent as string) || "world";
+  const isWorld = continentParam === "world";
+  const continent: ContinentId | null = isWorld ? null : (continentParam as ContinentId);
   const lang = language === "fr" ? "fr" : "en";
 
   const [questions] = useState<GeoQuestion[]>(() => {
@@ -150,7 +152,7 @@ export default function GeographyQuizScreen() {
     if (user && total > 0) {
       awardXP(user.id, total, "geography", {
         mode,
-        continent,
+        continent: continentParam,
         correct: correctCount,
         total: questions.length,
       })
@@ -220,7 +222,7 @@ export default function GeographyQuizScreen() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.replace({ pathname: "/geography/quiz", params: { mode, continent: continent ?? "" } } as any);
+                  router.replace({ pathname: "/geography/quiz", params: { mode, continent: continentParam } } as any);
                 }}
                 className="flex-1 items-center justify-center py-3 rounded-xl active:opacity-90"
                 style={{ backgroundColor: COLORS.primary }}
@@ -257,11 +259,13 @@ export default function GeographyQuizScreen() {
         </Pressable>
         <View className="items-center">
           <Text style={{ color: COLORS.text, fontWeight: "700" }}>{idx + 1} / {questions.length}</Text>
-          {continentLabel && (
+          {isWorld ? (
+            <Text style={{ color: COLORS.textMuted, fontSize: 11 }}>🌐 {t("geoWorld")}</Text>
+          ) : continentLabel ? (
             <Text style={{ color: COLORS.textMuted, fontSize: 11 }}>
               {continentLabel.emoji} {lang === "fr" ? continentLabel.fr : continentLabel.en}
             </Text>
-          )}
+          ) : null}
         </View>
         <View style={{ width: 56, height: 56, alignItems: "center", justifyContent: "center" }}>
           <Svg width={56} height={56}>

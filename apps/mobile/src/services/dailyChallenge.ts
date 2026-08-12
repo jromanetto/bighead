@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react-native";
+import { shuffle } from "../utils/shuffle";
 import { supabase } from "./supabase";
 import type { Question } from "../types/database";
 import { useFreeze as useStreakFreezeRpc } from "./streakFreeze";
@@ -124,10 +125,10 @@ export const getDailySurvivalQuestions = async (
   if (error) throw error;
 
   // Shuffle and format questions
-  const shuffled = (data || []).sort(() => Math.random() - 0.5);
+  const shuffled = shuffle(data || []);
   return shuffled.slice(0, count).map((q: Question) => {
     const allAnswers = [q.correct_answer, ...q.wrong_answers];
-    const shuffledAnswers = allAnswers.sort(() => Math.random() - 0.5);
+    const shuffledAnswers = shuffle(allAnswers);
     const correctIndex = shuffledAnswers.indexOf(q.correct_answer);
 
     return {
@@ -429,7 +430,7 @@ export const getNextSurvivalQuestion = async (
   const q = data[Math.floor(Math.random() * data.length)] as Question;
 
   const allAnswers = [q.correct_answer, ...q.wrong_answers];
-  const shuffledAnswers = allAnswers.sort(() => Math.random() - 0.5);
+  const shuffledAnswers = shuffle(allAnswers);
   const correctIndex = shuffledAnswers.indexOf(q.correct_answer);
 
   return {
@@ -479,7 +480,7 @@ export const getTodaysDailyQuestion = async (language: string = "en"): Promise<D
 
   // Options is a JSONB array with correct answer first, then wrong answers
   const options = q.options as string[];
-  const shuffledAnswers = [...options].sort(() => Math.random() - 0.5);
+  const shuffledAnswers = shuffle(options);
   const correctIndex = shuffledAnswers.indexOf(q.correct_answer);
 
   return {
@@ -536,7 +537,7 @@ export const getTodaysDailyQuestions = async (
 
   return results.map((q) => {
     const options = q.out_options as string[];
-    const shuffledAnswers = [...options].sort(() => Math.random() - 0.5);
+    const shuffledAnswers = shuffle(options);
     const correctIndex = shuffledAnswers.indexOf(q.out_correct_answer);
     return {
       id: q.out_question_id,

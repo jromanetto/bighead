@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { shuffle } from "../../src/utils/shuffle";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -562,7 +563,7 @@ export default function ChainGameScreen() {
       .filter(idx => idx !== currentQuestion.correctIndex);
 
     // Randomly select 2 wrong answers to hide
-    const shuffled = wrongIndices.sort(() => Math.random() - 0.5);
+    const shuffled = shuffle(wrongIndices);
     const toHide = shuffled.slice(0, 2);
 
     setHiddenAnswers(toHide);

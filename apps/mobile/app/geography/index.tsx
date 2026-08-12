@@ -26,7 +26,7 @@ export default function GeographyHomeScreen() {
   const { t, language } = useTranslation();
   const [mode, setMode] = useState<GeoMode>("flags");
 
-  const start = (continent: ContinentId) => {
+  const start = (continent: ContinentId | "world") => {
     buttonPressFeedback();
     router.push({ pathname: "/geography/quiz", params: { mode, continent } } as any);
   };
@@ -73,6 +73,22 @@ export default function GeographyHomeScreen() {
         <Text className="text-white font-bold mb-1">{t("geoContinentLabel")}</Text>
         <Text style={{ color: COLORS.textMuted }} className="text-sm mb-4">{t("geoContinentHint")}</Text>
         <View className="gap-3">
+          {/* World mode — all countries mixed */}
+          <Pressable
+            onPress={() => start("world")}
+            className="flex-row items-center p-5 rounded-2xl active:opacity-80"
+            style={{ backgroundColor: COLORS.primaryDim, borderWidth: 1, borderColor: "rgba(0, 194, 204, 0.3)" }}
+          >
+            <View className="w-14 h-14 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: "rgba(0, 194, 204, 0.2)" }}>
+              <Text className="text-3xl">🌐</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-white font-bold text-lg">{t("geoWorld")}</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-xs">{t("geoWorldDesc")}</Text>
+            </View>
+            <Text style={{ color: COLORS.primary, fontSize: 22 }}>›</Text>
+          </Pressable>
+
           {CONTINENTS.map((c) => (
             <Pressable
               key={c.id}

@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { shuffle } from "../utils/shuffle";
 import NetInfo from "@react-native-community/netinfo";
 import { getQuestions, formatQuestionsForGame, FormattedQuestion } from "./questions";
 import type { Question } from "../types/database";
@@ -162,7 +163,7 @@ class OfflineCacheService {
     }
 
     // Shuffle
-    const shuffled = filtered.sort(() => Math.random() - 0.5);
+    const shuffled = shuffle(filtered);
 
     return formatQuestionsForGame(shuffled.slice(0, count));
   }

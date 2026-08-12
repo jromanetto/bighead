@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { shuffle } from "../../src/utils/shuffle";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -230,7 +231,7 @@ export default function WeeklyPlay() {
       if (type === "fifty_fifty") {
         const wrong = answers.filter((a) => a !== question.correct_answer && !hiddenAnswers.includes(a));
         // pick 2 wrong answers to hide (random)
-        const shuffled = [...wrong].sort(() => Math.random() - 0.5);
+        const shuffled = shuffle(wrong);
         const toHide = shuffled.slice(0, 2);
         setHiddenAnswers((prev) => [...prev, ...toHide]);
         return;
