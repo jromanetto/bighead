@@ -7,13 +7,13 @@
  *   BIGHEAD Daily 🧠 4/5
  *   🟩🟩🟥🟩🟩
  *   🔥 3
- *   https://bighead.app
+ *   https://bighead.jrmanagement.org
  */
 export function buildDailyShareText(
   results: boolean[],
   streak: number,
   lang: "fr" | "en" = "fr",
-  appUrl = "https://bighead.app",
+  appUrl = "https://bighead.jrmanagement.org",
 ): string {
   const correct = results.filter(Boolean).length;
   const total = results.length;

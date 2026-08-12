@@ -16,7 +16,7 @@ import { claimMilestone } from "./universalXp";
 const REFERRAL_REWARD_HINTS = 1;
 const APP_STORE_URL = "https://apps.apple.com/app/bighead-quiz-culture/id6758253365";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.jroma51.bighead";
-const SHARE_URL = "https://bighead.app";
+const SHARE_URL = "https://bighead.jrmanagement.org";
 
 export interface ReferralStats {
   referralCode: string;

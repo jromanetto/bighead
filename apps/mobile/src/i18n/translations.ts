@@ -472,7 +472,7 @@ export const translations = {
     referralErrorAlready: "You already used a referral code.",
     referralErrorUnknown: "Something went wrong, try again.",
     referralShareMessage:
-      "🎯 Join me on BigHead with my code {code}! We both get 500 XP + 1 month premium when you play your first game. Download the app: https://bighead.app",
+      "🎯 Join me on BigHead with my code {code}! We both get 500 XP + 1 month premium when you play your first game. Download the app: https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Question {current}/{total}",
@@ -1022,7 +1022,7 @@ export const translations = {
     referralErrorAlready: "Tu as déjà utilisé un code de parrainage.",
     referralErrorUnknown: "Une erreur est survenue, réessaie.",
     referralShareMessage:
-      "🎯 Rejoins-moi sur BigHead avec mon code {code} ! On gagne 500 XP + 1 mois premium chacun quand tu joues ta première partie. Télécharge l'app : https://bighead.app",
+      "🎯 Rejoins-moi sur BigHead avec mon code {code} ! On gagne 500 XP + 1 mois premium chacun quand tu joues ta première partie. Télécharge l'app : https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/jour)
     dailyProgress: "Question {current}/{total}",
@@ -1572,7 +1572,7 @@ export const translations = {
     referralErrorAlready: "Ya has usado un código de invitación.",
     referralErrorUnknown: "Algo ha salido mal, inténtalo de nuevo.",
     referralShareMessage:
-      "🎯 ¡Únete a BigHead con mi código {code}! Cuando juegues tu primera partida, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: https://bighead.app",
+      "🎯 ¡Únete a BigHead con mi código {code}! Cuando juegues tu primera partida, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Pregunta {current}/{total}",
@@ -2122,7 +2122,7 @@ export const translations = {
     referralErrorAlready: "Du hast bereits einen Einladungscode genutzt.",
     referralErrorUnknown: "Etwas ist schiefgelaufen, versuch es nochmal.",
     referralShareMessage:
-      "🎯 Komm mit meinem Code {code} zu BigHead! Wenn du dein erstes Spiel spielst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: https://bighead.app",
+      "🎯 Komm mit meinem Code {code} zu BigHead! Wenn du dein erstes Spiel spielst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Frage {current}/{total}",
