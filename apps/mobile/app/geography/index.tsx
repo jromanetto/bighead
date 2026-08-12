@@ -6,7 +6,14 @@ import { buttonPressFeedback } from "../../src/utils/feedback";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import { IconButton } from "../../src/components/ui";
 import { CONTINENTS, ContinentId } from "../../src/data/geography";
+import { GeoDifficulty } from "../../src/data/geographyDifficulty";
 import { GeoMode } from "../../src/utils/geographyQuiz";
+
+const DIFFICULTIES: { id: GeoDifficulty; labelKey: string }[] = [
+  { id: "easy", labelKey: "geoDiffEasy" },
+  { id: "medium", labelKey: "geoDiffMedium" },
+  { id: "hard", labelKey: "geoDiffHard" },
+];
 
 const COLORS = {
   bg: "#161a1d",
@@ -25,10 +32,11 @@ const MODES: { id: GeoMode; emoji: string; titleKey: string; descKey: string }[]
 export default function GeographyHomeScreen() {
   const { t, language } = useTranslation();
   const [mode, setMode] = useState<GeoMode>("flags");
+  const [difficulty, setDifficulty] = useState<GeoDifficulty>("medium");
 
   const start = (continent: ContinentId | "world") => {
     buttonPressFeedback();
-    router.push({ pathname: "/geography/quiz", params: { mode, continent } } as any);
+    router.push({ pathname: "/geography/quiz", params: { mode, continent, difficulty } } as any);
   };
 
   return (
@@ -64,6 +72,30 @@ export default function GeographyHomeScreen() {
                   {t(m.titleKey as any)}
                 </Text>
                 <Text style={{ color: COLORS.textMuted }} className="text-xs mt-1">{t(m.descKey as any)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Difficulty selector */}
+        <Text className="text-white font-bold mb-3">{t("geoDifficultyLabel")}</Text>
+        <View className="flex-row gap-2 mb-8">
+          {DIFFICULTIES.map((d) => {
+            const active = difficulty === d.id;
+            return (
+              <Pressable
+                key={d.id}
+                onPress={() => { buttonPressFeedback(); setDifficulty(d.id); }}
+                className="flex-1 py-3 rounded-xl items-center"
+                style={{
+                  backgroundColor: active ? COLORS.primary : COLORS.surface,
+                  borderWidth: 1,
+                  borderColor: active ? COLORS.primary : "rgba(255,255,255,0.1)",
+                }}
+              >
+                <Text className="font-bold" style={{ color: active ? COLORS.bg : COLORS.text }}>
+                  {t(d.labelKey as any)}
+                </Text>
               </Pressable>
             );
           })}

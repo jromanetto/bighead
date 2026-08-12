@@ -18,6 +18,7 @@ import { EmptyState } from "../../src/components/EmptyState";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
 import { COUNTRIES, countriesByContinent, flagUrl, CONTINENTS, ContinentId } from "../../src/data/geography";
+import { filterByDifficulty, GeoDifficulty } from "../../src/data/geographyDifficulty";
 import { buildGeoQuiz, GeoMode, GeoQuestion } from "../../src/utils/geographyQuiz";
 import { awardXP, type XPGain } from "../../src/services/xp";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
@@ -45,15 +46,18 @@ type Phase = "playing" | "feedback" | "done" | "empty";
 export default function GeographyQuizScreen() {
   const { user, refreshProfile } = useAuth();
   const { t, language } = useTranslation();
-  const params = useLocalSearchParams<{ mode?: string; continent?: string }>();
+  const params = useLocalSearchParams<{ mode?: string; continent?: string; difficulty?: string }>();
   const mode: GeoMode = params.mode === "capitals" ? "capitals" : "flags";
   const continentParam = (params.continent as string) || "world";
   const isWorld = continentParam === "world";
   const continent: ContinentId | null = isWorld ? null : (continentParam as ContinentId);
+  const difficulty: GeoDifficulty =
+    params.difficulty === "easy" || params.difficulty === "hard" ? params.difficulty : "medium";
   const lang = language === "fr" ? "fr" : "en";
 
   const [questions] = useState<GeoQuestion[]>(() => {
-    const pool = continent ? countriesByContinent(continent) : COUNTRIES;
+    const base = continent ? countriesByContinent(continent) : COUNTRIES;
+    const pool = filterByDifficulty(base, difficulty);
     if (pool.length < 4) return [];
     return buildGeoQuiz(mode, pool, lang, TOTAL_QUESTIONS);
   });
@@ -222,7 +226,7 @@ export default function GeographyQuizScreen() {
               <Pressable
                 onPress={() => {
                   buttonPressFeedback();
-                  router.replace({ pathname: "/geography/quiz", params: { mode, continent: continentParam } } as any);
+                  router.replace({ pathname: "/geography/quiz", params: { mode, continent: continentParam, difficulty } } as any);
                 }}
                 className="flex-1 items-center justify-center py-3 rounded-xl active:opacity-90"
                 style={{ backgroundColor: COLORS.primary }}
