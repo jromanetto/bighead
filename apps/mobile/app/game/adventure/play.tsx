@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator, Image, ImageStyle, StyleProp } from "react-native";
+import { shuffle } from "../../../src/utils/shuffle";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -620,7 +621,7 @@ export default function AdventurePlayScreen() {
     return dbQuestions.map((q) => {
       const allAnswers = [q.correct_answer, ...q.wrong_answers];
       // Shuffle answers
-      const shuffled = allAnswers.sort(() => Math.random() - 0.5);
+      const shuffled = shuffle(allAnswers);
       const correctIndex = shuffled.indexOf(q.correct_answer);
 
       return {
@@ -682,14 +683,14 @@ export default function AdventurePlayScreen() {
 
         if (categoryQuestions && categoryQuestions.length > 0) {
           // Shuffle and limit to questions needed for this tier
-          const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
+          const shuffled = shuffle(categoryQuestions);
           const limited = shuffled.slice(0, questionsNeeded);
           const formatted = formatQuestions(limited);
           setQuestions(formatted);
         } else {
           // Ultimate fallback
           const fallbackQuestions = MOCK_QUESTIONS.culture_generale;
-          const shuffled = [...fallbackQuestions].sort(() => Math.random() - 0.5);
+          const shuffled = shuffle(fallbackQuestions);
           const limited = shuffled.slice(0, questionsNeeded);
           const formatted = formatQuestions(limited);
           setQuestions(formatted);
@@ -699,7 +700,7 @@ export default function AdventurePlayScreen() {
         // Use mock questions as fallback
         const questionsNeeded = getQuestionsForLevel(level);
         const categoryQuestions = MOCK_QUESTIONS[category as string] || MOCK_QUESTIONS.culture_generale;
-        const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
+        const shuffled = shuffle(categoryQuestions);
         const limited = shuffled.slice(0, questionsNeeded);
         const formatted = formatQuestions(limited);
         setQuestions(formatted);

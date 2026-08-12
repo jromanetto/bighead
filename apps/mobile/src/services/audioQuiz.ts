@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { shuffle } from "../utils/shuffle";
 
 /**
  * Audio Quiz service — wraps RPC calls for the music/sound mode.
@@ -63,7 +64,7 @@ export async function getRandomAudioQuestions(
  */
 export function formatAudioQuestion(q: AudioQuestion): FormattedAudioQuestion {
   const all = [q.correct_answer, ...q.wrong_answers];
-  const shuffled = all.sort(() => Math.random() - 0.5);
+  const shuffled = shuffle(all);
   const correctIndex = shuffled.indexOf(q.correct_answer);
   return {
     id: q.id,

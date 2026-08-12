@@ -197,11 +197,13 @@ export default function ResultScreen() {
     saveResult();
   }, [user, saved]);
 
-  const getPerformanceTitle = () => {
-    if (accuracy >= 90) return "Legendary!";
-    if (accuracy >= 70) return "Stellar Job!";
-    if (accuracy >= 50) return "Well played!";
-    return "Keep going!";
+  // Titre de résultat qui reflète VRAIMENT la perf (avant : toujours "Stellar Job!"
+  // en dur, même à 10 % — chaque partie se ressentait pareil).
+  const getPerformanceTitleKey = (): string => {
+    if (accuracy >= 90) return "resultLegendary";
+    if (accuracy >= 70) return "stellarJob";
+    if (accuracy >= 50) return "resultWellPlayed";
+    return "resultKeepGoing";
   };
 
   const handleShare = async () => {
@@ -261,7 +263,7 @@ export default function ResultScreen() {
         {/* Title */}
         <View className="items-center mt-4 mb-6">
           <Text className="text-4xl font-black" style={{ color: COLORS.primary }}>
-            {t("stellarJob" as any)}
+            {t(getPerformanceTitleKey() as any)}
           </Text>
         </View>
 

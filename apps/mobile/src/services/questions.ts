@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { shuffle } from "../utils/shuffle";
 import type { Question, Category } from "../types/database";
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
@@ -197,7 +198,7 @@ export const getQuestions = async ({
   if (error) throw error;
 
   // Shuffle and return requested count
-  const shuffled = (data || []).sort(() => Math.random() - 0.5);
+  const shuffled = shuffle(data || []);
   return shuffled.slice(0, count);
 };
 
@@ -238,7 +239,7 @@ export const formatQuestionForGame = (question: Question): FormattedQuestion => 
   const allAnswers = [question.correct_answer, ...question.wrong_answers];
 
   // Shuffle answers
-  const shuffledAnswers = allAnswers.sort(() => Math.random() - 0.5);
+  const shuffledAnswers = shuffle(allAnswers);
 
   // Find new index of correct answer
   const correctIndex = shuffledAnswers.indexOf(question.correct_answer);
