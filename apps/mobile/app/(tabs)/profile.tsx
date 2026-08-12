@@ -582,6 +582,26 @@ export default function ProfileScreen() {
           </Pressable>
         )}
 
+        {/* Mastery entry */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); router.push("/mastery" as any); }}
+          className="mx-6 mb-4 rounded-2xl p-5 active:opacity-80"
+          style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+        >
+          <View className="flex-row items-center">
+            <View className="w-14 h-14 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: "rgba(0, 194, 204, 0.15)" }}>
+              <Text className="text-3xl">🏅</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-white font-bold text-lg">{language === "fr" ? "Maîtrise" : "Mastery"}</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                {language === "fr" ? "Ta progression par catégorie" : "Your per-category progress"}
+              </Text>
+            </View>
+            <Icon name="ChevronRight" size={20} color={COLORS.primary} />
+          </View>
+        </Pressable>
+
         {/* Invite friends CTA — both players get 500 XP + 1 month premium */}
         <Pressable
           onPress={() => {
