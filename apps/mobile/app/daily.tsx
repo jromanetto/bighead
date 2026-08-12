@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ScrollView, Share } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -29,6 +29,7 @@ import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
 import { RatingModal } from "../src/components/RatingModal";
 import { QuestionImage } from "../src/components/QuestionImage";
 import { ShareScorecard } from "../src/components/ShareScorecard";
+import { buildDailyShareText } from "../src/utils/dailyShare";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
 import { recordQuestionOutcome } from "../src/services/questions";
 import { inviteFriends } from "../src/utils/share";
@@ -224,6 +225,7 @@ export default function DailyBrainScreen() {
   const [xpEarned, setXpEarned] = useState(0);
   const [perfect, setPerfect] = useState(false);
   const [isNewRecord, setIsNewRecord] = useState(false);
+  const [results, setResults] = useState<boolean[]>([]); // per-question correctness for the Wordle grid
   const [timeRemaining, setTimeRemaining] = useState(TOTAL_TIME);
   const [showInvitePrompt, setShowInvitePrompt] = useState(false);
   // Hold the countdown until the question image is on screen (or there is none).
@@ -347,6 +349,7 @@ export default function DailyBrainScreen() {
     if (selectedAnswer !== null || !currentQuestion) return;
     setSelectedAnswer(-1); // sentinel: timed out, no selection
     setIsCorrect(false);
+    setResults((r) => [...r, false]);
     recordQuestionOutcome(currentQuestion.id, false); // timeout = wrong
     wrongAnswerFeedback();
     setTimeout(() => {
@@ -381,6 +384,7 @@ export default function DailyBrainScreen() {
     setSelectedAnswer(answerIndex);
     const correct = answerIndex === currentQuestion.correctIndex;
     setIsCorrect(correct);
+    setResults((r) => [...r, correct]);
     // Feed the difficulty requalification job (fire-and-forget).
     recordQuestionOutcome(currentQuestion.id, correct);
 
@@ -649,12 +653,35 @@ export default function DailyBrainScreen() {
               </View>
             )}
 
+            {/* Wordle-style grid + text share — the viral loop */}
+            {results.length > 0 && (
+              <View className="mb-5 items-center">
+                <Text style={{ fontSize: 26, letterSpacing: 2 }}>
+                  {results.map((r) => (r ? "🟩" : "🟥")).join("")}
+                </Text>
+                <Pressable
+                  onPress={() =>
+                    Share.share({
+                      message: buildDailyShareText(results, streak, language === "fr" ? "fr" : "en"),
+                    })
+                  }
+                  className="mt-3 px-6 py-3 rounded-xl active:opacity-80"
+                  style={{ backgroundColor: "#22c55e" }}
+                >
+                  <Text className="font-bold" style={{ color: "#0d1117" }}>
+                    {language === "fr" ? "🟩 Partager ma grille" : "🟩 Share my grid"}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+
             <View className="mb-6">
               <ShareScorecard
                 score={finalScore}
                 streak={streak}
                 questionsAnswered={TOTAL_QUESTIONS}
                 isNewRecord={isNewRecord}
+                lang={language === "fr" ? "fr" : "en"}
               />
             </View>
 
