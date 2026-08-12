@@ -20,6 +20,7 @@ import { Skeleton } from "../../src/components/Skeleton";
 import { EmptyState } from "../../src/components/EmptyState";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
+import { ComboBadge } from "../../src/components/ComboBadge";
 import {
   getRandomAudioQuestions,
   formatAudioQuestions,
@@ -65,6 +66,7 @@ export default function AudioQuizPlayScreen() {
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
+  const [combo, setCombo] = useState(0);
   const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION_SEC);
   const [xpGain, setXpGain] = useState<XPGain | null>(null);
   const xpAwardedRef = useRef(false);
@@ -170,6 +172,7 @@ export default function AudioQuizPlayScreen() {
   const handleTimeout = () => {
     if (phase !== "playing") return;
     setSelected(-1);
+    setCombo(0);
     setPhase("feedback");
     void wrongAnswerFeedback();
     const q = questions[idx];
@@ -185,8 +188,10 @@ export default function AudioQuizPlayScreen() {
     const isCorrect = answerIdx === q.correctIndex;
     if (isCorrect) {
       setCorrectCount((n) => n + 1);
+      setCombo((c) => c + 1);
       void correctAnswerFeedback();
     } else {
+      setCombo(0);
       void wrongAnswerFeedback();
     }
     void recordAudioQuestionResult(q.id, isCorrect);
@@ -423,6 +428,7 @@ export default function AudioQuizPlayScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}>
+        <ComboBadge combo={combo} />
         {/* Audio player card */}
         <View
           className="rounded-2xl py-6 mb-6 items-center"

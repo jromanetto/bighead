@@ -110,6 +110,10 @@ export const translations = {
     geoContinentHint: "10 questions, 15s each",
     geoWorld: "World",
     geoWorldDesc: "All countries mixed",
+    geoDifficultyLabel: "Difficulty",
+    geoDiffEasy: "Easy",
+    geoDiffMedium: "Medium",
+    geoDiffHard: "Expert",
     geoFlagsTitle: "Flags",
     geoCapitalsTitle: "Capitals",
     geoWhichCountry: "Which country is this?",
@@ -468,7 +472,7 @@ export const translations = {
     referralErrorAlready: "You already used a referral code.",
     referralErrorUnknown: "Something went wrong, try again.",
     referralShareMessage:
-      "🎯 Join me on BigHead with my code {code}! We both get 500 XP + 1 month premium when you play your first game. Download the app: https://bighead.app",
+      "🎯 Join me on BigHead with my code {code}! We both get 500 XP + 1 month premium when you play your first game. Download the app: https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Question {current}/{total}",
@@ -656,6 +660,10 @@ export const translations = {
     geoContinentHint: "10 questions, 15s chacune",
     geoWorld: "Monde",
     geoWorldDesc: "Tous les pays mélangés",
+    geoDifficultyLabel: "Difficulté",
+    geoDiffEasy: "Facile",
+    geoDiffMedium: "Moyen",
+    geoDiffHard: "Expert",
     geoFlagsTitle: "Drapeaux",
     geoCapitalsTitle: "Capitales",
     geoWhichCountry: "Quel est ce pays ?",
@@ -1014,7 +1022,7 @@ export const translations = {
     referralErrorAlready: "Tu as déjà utilisé un code de parrainage.",
     referralErrorUnknown: "Une erreur est survenue, réessaie.",
     referralShareMessage:
-      "🎯 Rejoins-moi sur BigHead avec mon code {code} ! On gagne 500 XP + 1 mois premium chacun quand tu joues ta première partie. Télécharge l'app : https://bighead.app",
+      "🎯 Rejoins-moi sur BigHead avec mon code {code} ! On gagne 500 XP + 1 mois premium chacun quand tu joues ta première partie. Télécharge l'app : https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/jour)
     dailyProgress: "Question {current}/{total}",
@@ -1202,6 +1210,10 @@ export const translations = {
     geoContinentHint: "10 preguntas, 15s cada una",
     geoWorld: "Mundo",
     geoWorldDesc: "Todos los países mezclados",
+    geoDifficultyLabel: "Dificultad",
+    geoDiffEasy: "Fácil",
+    geoDiffMedium: "Medio",
+    geoDiffHard: "Experto",
     geoFlagsTitle: "Banderas",
     geoCapitalsTitle: "Capitales",
     geoWhichCountry: "¿Qué país es este?",
@@ -1560,7 +1572,7 @@ export const translations = {
     referralErrorAlready: "Ya has usado un código de invitación.",
     referralErrorUnknown: "Algo ha salido mal, inténtalo de nuevo.",
     referralShareMessage:
-      "🎯 ¡Únete a BigHead con mi código {code}! Cuando juegues tu primera partida, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: https://bighead.app",
+      "🎯 ¡Únete a BigHead con mi código {code}! Cuando juegues tu primera partida, los dos ganamos 500 XP y 1 mes de Premium. Descárgala aquí: https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Pregunta {current}/{total}",
@@ -1748,6 +1760,10 @@ export const translations = {
     geoContinentHint: "10 Fragen, je 15s",
     geoWorld: "Welt",
     geoWorldDesc: "Alle Länder gemischt",
+    geoDifficultyLabel: "Schwierigkeit",
+    geoDiffEasy: "Einfach",
+    geoDiffMedium: "Mittel",
+    geoDiffHard: "Experte",
     geoFlagsTitle: "Flaggen",
     geoCapitalsTitle: "Hauptstädte",
     geoWhichCountry: "Welches Land ist das?",
@@ -2106,7 +2122,7 @@ export const translations = {
     referralErrorAlready: "Du hast bereits einen Einladungscode genutzt.",
     referralErrorUnknown: "Etwas ist schiefgelaufen, versuch es nochmal.",
     referralShareMessage:
-      "🎯 Komm mit meinem Code {code} zu BigHead! Wenn du dein erstes Spiel spielst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: https://bighead.app",
+      "🎯 Komm mit meinem Code {code} zu BigHead! Wenn du dein erstes Spiel spielst, bekommen wir beide 500 XP + 1 Monat Premium. App laden: https://bighead.jrmanagement.org",
 
     // Daily Brain (5 questions/day)
     dailyProgress: "Frage {current}/{total}",

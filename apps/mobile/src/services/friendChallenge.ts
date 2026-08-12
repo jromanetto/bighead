@@ -162,7 +162,7 @@ export const shareChallenge = async (
 ): Promise<boolean> => {
   try {
     const deepLink = Linking.createURL(`challenge/${code}`);
-    const webLink = `https://bighead.app/challenge/${code}`;
+    const webLink = `https://bighead.jrmanagement.org/challenge/${code}`;
 
     const message = `🧠 ${creatorName} challenges you to a quiz!
 
