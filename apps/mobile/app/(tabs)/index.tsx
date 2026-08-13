@@ -659,6 +659,40 @@ export default function HomeScreen() {
               </LinearGradient>
             </Pressable>
 
+            {/* League Card (always present) */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/league" as any);
+              }}
+              className="rounded-xl overflow-hidden active:opacity-95 mt-3"
+              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.25)' }}
+              accessibilityRole="button"
+              accessibilityLabel={language === "fr" ? "Ta ligue" : "Your league"}
+            >
+              <LinearGradient
+                colors={['#78350f', '#b45309', '#f59e0b']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <View className="flex-col justify-center flex-1">
+                  <Text className="text-xl font-black tracking-tight text-white">
+                    🏆 {language === "fr" ? "Ta ligue" : "Your league"}
+                  </Text>
+                  <Text className="text-amber-100 text-xs mt-0.5">
+                    {language === "fr" ? "Grimpe dans ta division cette semaine" : "Climb your division this week"}
+                  </Text>
+                </View>
+                <View
+                  className="w-14 h-14 rounded-2xl items-center justify-center"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
+                >
+                  <Text className="text-3xl">💎</Text>
+                </View>
+              </LinearGradient>
+            </Pressable>
+
             {/* Level & Achievements Card */}
             <Pressable
               onPress={() => {
