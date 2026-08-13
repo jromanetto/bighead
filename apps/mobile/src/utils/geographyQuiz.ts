@@ -19,6 +19,7 @@ export type Lang = "fr" | "en";
 export interface GeoQuestion {
   id: string;
   mode: GeoMode;
+  countryCode: string; // the target country's ISO code (for the collection)
   flagCode?: string; // flags mode: the flag to display
   promptText?: string; // capitals mode: the country name shown
   answers: string[]; // options (correct + distractors), already shuffled
@@ -60,6 +61,7 @@ export function buildGeoQuestion(
   return {
     id: `${mode}-${country.code}`,
     mode,
+    countryCode: country.code,
     flagCode: mode === "flags" ? country.code : undefined,
     promptText: mode === "capitals" ? countryName(country, lang) : undefined,
     answers,
