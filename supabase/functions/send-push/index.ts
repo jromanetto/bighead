@@ -100,6 +100,11 @@ const TEMPLATES: Record<string, { title: string; body: string; data?: Record<str
     body: "De nouvelles questions t'attendent. Reviens tester ta culture G !",
     data: { screen: "daily" },
   },
+  geo_almost: {
+    title: "🗺️ Presque !",
+    body: "Plus que {remaining} drapeau(x) pour compléter un continent. Reviens finir ta collection !",
+    data: { screen: "geography" },
+  },
   friend_overtake: {
     title: "🚨 Tu es dépassé !",
     body: "{username} t'a battu de {xp_diff} XP cette semaine. Reprends la tête !",
