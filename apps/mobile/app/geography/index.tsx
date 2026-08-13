@@ -51,6 +51,22 @@ export default function GeographyHomeScreen() {
       </View>
 
       <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        {/* Collection entry */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); router.push("/geography/collection" as any); }}
+          className="flex-row items-center p-4 rounded-2xl mb-6 active:opacity-80"
+          style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+        >
+          <Text className="text-2xl mr-3">🗺️</Text>
+          <View className="flex-1">
+            <Text className="text-white font-bold">{language === "fr" ? "Ma collection" : "My collection"}</Text>
+            <Text style={{ color: COLORS.textMuted }} className="text-xs">
+              {language === "fr" ? "Attrape tous les drapeaux du monde" : "Catch every flag in the world"}
+            </Text>
+          </View>
+          <Text style={{ color: COLORS.primary, fontSize: 20 }}>›</Text>
+        </Pressable>
+
         {/* Mode selector */}
         <Text className="text-white font-bold mb-3">{t("geoModeLabel")}</Text>
         <View className="flex-row gap-3 mb-8">

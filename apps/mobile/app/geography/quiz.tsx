@@ -22,6 +22,7 @@ import { COUNTRIES, countriesByContinent, flagUrl, CONTINENTS, ContinentId } fro
 import { filterByDifficulty, GeoDifficulty } from "../../src/data/geographyDifficulty";
 import { buildGeoQuiz, GeoMode, GeoQuestion } from "../../src/utils/geographyQuiz";
 import { awardXP, type XPGain } from "../../src/services/xp";
+import { catchCountry } from "../../src/services/geoCollection";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
 
 const COLORS = {
@@ -128,6 +129,7 @@ export default function GeographyQuizScreen() {
     if (answerIdx === q.correctIndex) {
       setCorrectCount((n) => n + 1);
       setCombo((c) => c + 1);
+      if (user?.id) void catchCountry(user.id, q.countryCode); // add to collection
       void correctAnswerFeedback();
     } else {
       setCombo(0);
