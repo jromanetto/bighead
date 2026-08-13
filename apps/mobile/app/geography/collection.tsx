@@ -7,8 +7,8 @@ import { useTranslation } from "../../src/contexts/LanguageContext";
 import { IconButton } from "../../src/components/ui";
 import { Skeleton } from "../../src/components/Skeleton";
 import { COUNTRIES, CONTINENTS } from "../../src/data/geography";
-import { collectionByContinent, totalCaught } from "../../src/utils/geoCollectionStats";
-import { getCaughtCodes } from "../../src/services/geoCollection";
+import { collectionByContinent, totalCaught, completedContinents } from "../../src/utils/geoCollectionStats";
+import { getCaughtCodes, awardContinentCompletions } from "../../src/services/geoCollection";
 
 const COLORS = { bg: "#161a1d", surface: "#1E2529", primary: "#00c2cc", text: "#ffffff", textMuted: "#9ca3af" };
 const flagSmall = (code: string) => `https://flagcdn.com/w160/${code}.png`;
@@ -23,7 +23,11 @@ export default function GeoCollectionScreen() {
   useEffect(() => {
     (async () => {
       if (!user?.id) { setLoading(false); return; }
-      setCaught(await getCaughtCodes(user.id));
+      const codes = await getCaughtCodes(user.id);
+      setCaught(codes);
+      // Pay the one-time bonus for any completed continent (idempotent).
+      const done = completedContinents(codes);
+      if (done.length) void awardContinentCompletions(user.id, done);
       setLoading(false);
     })();
   }, [user?.id]);
@@ -31,6 +35,7 @@ export default function GeoCollectionScreen() {
   const overall = totalCaught(caught);
   const byCont = collectionByContinent(caught);
   const pct = overall.total ? Math.round((overall.caught / overall.total) * 100) : 0;
+  const completedCount = completedContinents(caught).length;
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
@@ -59,6 +64,9 @@ export default function GeoCollectionScreen() {
             <View className="w-full h-2 rounded-full mt-2" style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
               <View style={{ width: `${pct}%`, height: "100%", borderRadius: 999, backgroundColor: COLORS.primary }} />
             </View>
+            <Text style={{ color: completedCount > 0 ? "#22c55e" : COLORS.textMuted, marginTop: 8, fontSize: 12, fontWeight: "700" }}>
+              🏆 {completedCount}/{CONTINENTS.length} {fr ? "continents complétés" : "continents completed"}
+            </Text>
           </View>
 
           {CONTINENTS.map((cont) => {

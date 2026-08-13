@@ -23,3 +23,10 @@ export function totalCaught(caught: Set<string>): { caught: number; total: numbe
   const n = COUNTRIES.filter((k) => caught.has(k.code)).length;
   return { caught: n, total: COUNTRIES.length };
 }
+
+/** Continents the user has 100% caught. */
+export function completedContinents(caught: Set<string>): ContinentId[] {
+  return collectionByContinent(caught)
+    .filter((c) => c.total > 0 && c.caught === c.total)
+    .map((c) => c.id);
+}

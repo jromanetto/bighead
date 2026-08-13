@@ -1,4 +1,7 @@
 import { supabase } from "./supabase";
+import { awardXP } from "./xp";
+
+export const CONTINENT_BONUS_XP = 200;
 
 /** Record a country as "caught" (correct geography answer). Fire-and-forget. */
 export async function catchCountry(userId: string, code: string): Promise<void> {
@@ -9,6 +12,21 @@ export async function catchCountry(userId: string, code: string): Promise<void> 
     );
   } catch {
     // ignore (offline / dup)
+  }
+}
+
+/**
+ * Award the one-time completion bonus for each fully-collected continent.
+ * Idempotent: award_xp dedupes on `geo_continent_<id>`, so calling this on every
+ * collection view only ever pays out once per continent.
+ */
+export async function awardContinentCompletions(userId: string, completed: string[]): Promise<void> {
+  for (const id of completed) {
+    try {
+      await awardXP(userId, CONTINENT_BONUS_XP, "geography", { reason: "continent_complete", continent: id }, `geo_continent_${id}`);
+    } catch {
+      // ignore
+    }
   }
 }
 
