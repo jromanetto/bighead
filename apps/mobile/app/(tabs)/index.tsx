@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, ImageBackground } from "react-native";
+import { View, Text, Pressable, ScrollView, ImageBackground, Alert } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedb
 import { timeUntilDailyReset } from "../../src/utils/dailyReset";
 import { logEvent } from "../../src/services/analytics";
 import { getLevelTitle } from "../../src/utils/progression";
+import { checkAchievements } from "../../src/services/achievements";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings } from "../../src/services/settings";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
@@ -77,7 +78,7 @@ const StatsPill = memo(function StatsPill({ icon, value, color }: { icon: string
 });
 
 export default function HomeScreen() {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { t, language } = useTranslation();
   const { permissionStatus, requestPermission } = useNotificationContext();
   const [dailyStreak, setDailyStreak] = useState(0);
@@ -110,6 +111,29 @@ export default function HomeScreen() {
       }
     })();
   }, []);
+
+  // Attribue les succès en attente (le système n'était jamais appelé) et fête
+  // le premier débloqué. Fire-and-forget, ne casse jamais Home.
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      try {
+        const earned = await checkAchievements(user.id);
+        if (earned && earned.length) {
+          const a = earned[0];
+          const more = earned.length > 1 ? ` (+${earned.length - 1})` : "";
+          Alert.alert(
+            `🎖️ ${language === "fr" ? "Succès débloqué" : "Achievement unlocked"} !`,
+            `${a.achievement_icon || "🏅"} ${a.achievement_name}${more}  ·  +${a.xp_reward} XP`,
+          );
+          refreshProfile?.();
+        }
+      } catch {
+        // silencieux
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   // Soft-prompt notifications : dès que le joueur a joué ≥1 partie OU à la 2e
   // session — plus tôt = on capte le canal de rappel avant que le one-and-done
