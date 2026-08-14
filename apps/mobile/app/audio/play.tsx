@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
   Easing,
   runOnJS,
+  cancelAnimation,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import { useAuth } from "../../src/contexts/AuthContext";
@@ -158,6 +159,7 @@ export default function AudioQuizPlayScreen() {
     }
     if (phase !== "playing") {
       stopTimer();
+      cancelAnimation(progress); // prevent the ring finishing later and firing handleTimeout on feedback
     }
     return () => {
       if (fallbackTimerRef.current) {
