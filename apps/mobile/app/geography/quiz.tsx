@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
   Easing,
   runOnJS,
+  cancelAnimation,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import { useAuth } from "../../src/contexts/AuthContext";
@@ -88,6 +89,7 @@ export default function GeographyQuizScreen() {
   useEffect(() => {
     if (phase !== "playing") {
       stopTimer();
+      cancelAnimation(progress); // stop the ring so its finished-callback can't fire handleTimeout on feedback
       return;
     }
     setTimeLeft(QUESTION_DURATION_SEC);
