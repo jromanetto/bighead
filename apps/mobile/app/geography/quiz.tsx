@@ -23,6 +23,7 @@ import { filterByDifficulty, GeoDifficulty } from "../../src/data/geographyDiffi
 import { buildGeoQuiz, GeoMode, GeoQuestion } from "../../src/utils/geographyQuiz";
 import { awardXP, type XPGain } from "../../src/services/xp";
 import { catchCountry } from "../../src/services/geoCollection";
+import { checkAchievements } from "../../src/services/achievements";
 import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../../src/utils/feedback";
 
 const COLORS = {
@@ -171,6 +172,8 @@ export default function GeographyQuizScreen() {
           if (newTotal !== null) await refreshProfile();
         })
         .catch(() => undefined);
+      // Award any collection achievements just crossed (celebration shows on Home).
+      checkAchievements(user.id).catch(() => undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
