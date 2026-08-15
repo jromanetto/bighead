@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import * as Sentry from "@sentry/react-native";
 import { supabase } from "../services/supabase";
 import { claimDailyLoginBonus } from "../services/universalXp";
+import { monetization } from "../services/monetization";
 import { isUserPremium } from "../utils/premium";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -12,6 +13,19 @@ const tryClaimDailyLogin = (userId: string) => {
   // Run on next tick so we never block auth init
   setTimeout(() => {
     claimDailyLoginBonus().catch(() => {
+      // never throw
+    });
+  }, 0);
+};
+
+// Initialize RevenueCat at launch with the user id (was only ever initialized
+// when the Premium screen opened → a renewed/reinstalled sub wouldn't reflect
+// until then). setUserId lazily configures + logs in + refreshes entitlements.
+// Fire-and-forget, guarded — payments must never crash auth.
+const tryInitRevenueCat = (userId: string) => {
+  if (!userId) return;
+  setTimeout(() => {
+    monetization.setUserId(userId).catch(() => {
       // never throw
     });
   }, 0);
@@ -192,6 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
           syncSentryUser(session.user, profile);
           tryClaimDailyLogin(session.user.id);
+          tryInitRevenueCat(session.user.id);
         } else {
           // No session - create anonymous session
           await signInAnonymouslyInternal();
@@ -226,6 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
           syncSentryUser(session.user, profile);
           tryClaimDailyLogin(session.user.id);
+          tryInitRevenueCat(session.user.id);
         } else if (event === "SIGNED_OUT") {
           setState({
             user: null,

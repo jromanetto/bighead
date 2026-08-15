@@ -10,7 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { getFriendChallenge, submitChallengeAttempt, FriendChallenge } from "../../src/services/friendChallenge";
-import { getQuestions, formatQuestionsForGame, FormattedQuestion } from "../../src/services/questions";
+import { getQuestions, getQuestionsByIds, formatQuestionsForGame, FormattedQuestion } from "../../src/services/questions";
 import { getSettings } from "../../src/services/settings";
 import { correctAnswerFeedback, wrongAnswerFeedback, playHaptic } from "../../src/utils/feedback";
 import { playSound } from "../../src/services/sounds";
@@ -71,13 +71,22 @@ export default function ChallengePlayScreen() {
       const settings = await getSettings(user?.id);
       const language = settings.language || "fr";
 
-      // Load questions for this challenge
-      const fetchedQuestions = await getQuestions({
-        count: challengeData.question_count,
-        categoryId: challengeData.category,
-        language,
-      });
-      const formatted = formatQuestionsForGame(fetchedQuestions);
+      // Load the challenge's FROZEN questions in their exact order, so every
+      // player answers the same quiz (fairness). Fall back to random only for
+      // legacy challenges that stored no question_ids.
+      const frozenIds = challengeData.question_ids || [];
+      let ordered;
+      if (frozenIds.length) {
+        const byId = new Map((await getQuestionsByIds(frozenIds)).map((q) => [q.id, q]));
+        ordered = frozenIds.map((id) => byId.get(id)).filter(Boolean) as any[];
+      } else {
+        ordered = await getQuestions({
+          count: challengeData.question_count,
+          categoryId: challengeData.category,
+          language,
+        });
+      }
+      const formatted = formatQuestionsForGame(ordered);
       setQuestions(formatted);
 
       // If user is logged in, use their username
