@@ -289,9 +289,10 @@ export const grantPremiumToUser = async (
       console.log("RPC grant_premium not available, using direct update");
     }
 
-    // Fallback: Direct update to profiles table
+    // Fallback: Direct update to the users table (premium lives on `users`;
+    // there is no `profiles` table — the old fallback silently wrote nowhere).
     const { error: updateError } = await (supabase
-      .from("profiles") as any)
+      .from("users") as any)
       .update({
         is_premium: true,
         premium_expires_at: expiresAt,
