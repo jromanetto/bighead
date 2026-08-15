@@ -602,6 +602,46 @@ export default function ProfileScreen() {
           </View>
         </Pressable>
 
+        {/* Tournament entry */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); router.push("/tournament" as any); }}
+          className="mx-6 mb-4 rounded-2xl p-5 active:opacity-80"
+          style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+        >
+          <View className="flex-row items-center">
+            <View className="w-14 h-14 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: "rgba(245, 158, 11, 0.15)" }}>
+              <Text className="text-3xl">🏆</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-white font-bold text-lg">{language === "fr" ? "Tournoi" : "Tournament"}</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                {language === "fr" ? "Compétition hebdo — grimpe dans le classement" : "Weekly competition — climb the ranking"}
+              </Text>
+            </View>
+            <Icon name="ChevronRight" size={20} color={COLORS.primary} />
+          </View>
+        </Pressable>
+
+        {/* Friend Challenge entry */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); router.push("/challenge" as any); }}
+          className="mx-6 mb-4 rounded-2xl p-5 active:opacity-80"
+          style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+        >
+          <View className="flex-row items-center">
+            <View className="w-14 h-14 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: "rgba(161, 110, 255, 0.15)" }}>
+              <Text className="text-3xl">🎯</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-white font-bold text-lg">{language === "fr" ? "Défi entre amis" : "Friend challenge"}</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                {language === "fr" ? "Crée un quiz et défie tes amis avec un code" : "Create a quiz and challenge friends with a code"}
+              </Text>
+            </View>
+            <Icon name="ChevronRight" size={20} color={COLORS.primary} />
+          </View>
+        </Pressable>
+
         {/* Invite friends CTA — both players get 500 XP + 1 month premium */}
         <Pressable
           onPress={() => {
