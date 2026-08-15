@@ -131,6 +131,7 @@ function ImageWithFallback({
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../src/contexts/AuthContext";
 import { getAdventureQuestions } from "../../../src/services/adventure";
+import { awardXP } from "../../../src/services/xp";
 import { markQuestionSeen } from "../../../src/services/questions";
 import { playSound } from "../../../src/services/sounds";
 import { recordAnswer, updateLocalSkill } from "../../../src/services/difficulty";
@@ -594,7 +595,8 @@ function AnswerOption({
 
 export default function AdventurePlayScreen() {
   const { category, tier, level: levelParam } = useLocalSearchParams<{ category: Category; tier: Tier; level: string }>();
-  const { user, isPremium } = useAuth();
+  const { user, isPremium, refreshProfile } = useAuth();
+  const xpAwardedRef = useRef(false);
   const level = (parseInt(levelParam || "1", 10) as 1 | 2 | 3) || 1;
 
   const [loading, setLoading] = useState(true);
@@ -820,6 +822,23 @@ export default function AdventurePlayScreen() {
       setGameOver(true);
       setSuccess(true);
       playSound("levelUp", 1500); // Limit to 1.5 seconds
+      // Award XP — Adventure previously gave ZERO XP (no awardXP call at all).
+      // Formula matches xp.ts 'adventure': 8/correct + 50 perfect. Daily-limit
+      // gated, so no farming. Ref-guarded against a double fire.
+      if (user && !xpAwardedRef.current) {
+        xpAwardedRef.current = true;
+        const amount = currentCorrect * 8 + (currentErrors === 0 ? 50 : 0);
+        if (amount > 0) {
+          awardXP(user.id, amount, "adventure", {
+            category,
+            correct: currentCorrect,
+            errors: currentErrors,
+            perfect: currentErrors === 0,
+          })
+            .then(async (n) => { if (n !== null) await refreshProfile(); })
+            .catch(() => undefined);
+        }
+      }
       // Record the play using daily limits service
       if (!isPremium) {
         try {

@@ -31,7 +31,7 @@ const DUEL_CATEGORIES = [
   { id: "history", nameKey: "historyCategory", icon: "🏛️", color: "#8B5CF6" },
   { id: "geography", nameKey: "geographyCategory", icon: "🌍", color: "#10B981" },
   { id: "science", nameKey: "scienceCategory", icon: "🔬", color: "#3B82F6" },
-  { id: "sports", nameKey: "sportsCategory", icon: "⚽", color: "#F59E0B" },
+  { id: "sport", nameKey: "sportsCategory", icon: "⚽", color: "#F59E0B" },
   { id: "pop-culture", nameKey: "popCulture", icon: "🎬", color: "#EC4899" },
 ] as const;
 
