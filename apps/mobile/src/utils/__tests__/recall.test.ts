@@ -1,4 +1,24 @@
 import { normalizeAnswer, gradeRecall, levenshtein, recallProgress } from "../recall";
+import { RECALL_QUESTIONS } from "../../data/recallQuestions";
+
+describe("recall data (real questions) grades correctly", () => {
+  it("accepts every canonical label of every question", () => {
+    for (const q of RECALL_QUESTIONS) {
+      const pool = q.items.flatMap((it) => [it.label, ...it.accepted]);
+      for (const it of q.items) {
+        expect(gradeRecall(it.label, pool).correct).toBe(true);
+      }
+    }
+  });
+
+  it("grades 'mars' correct against the planets question (device-repro)", () => {
+    const planets = RECALL_QUESTIONS.find((q) => q.id === "planets")!;
+    const pool = planets.items.flatMap((it) => [it.label, ...it.accepted]);
+    expect(gradeRecall("mars", pool).correct).toBe(true);
+    expect(gradeRecall("Vénus", pool).correct).toBe(true);
+    expect(gradeRecall("venus", pool).correct).toBe(true);
+  });
+});
 
 describe("normalizeAnswer", () => {
   it("strips accents, case and leading articles", () => {

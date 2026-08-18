@@ -8,7 +8,9 @@ import {
   isPrimeTimeLive,
   msUntilNextPrimeTime,
   primeTimeLabel,
+  formatParticipants,
 } from "../utils/primeTime";
+import { fetchPrimeTimeStats, type PrimeTimeStats } from "../services/primeTimeStats";
 
 /**
  * Prime Time — l'événement quotidien synchronisé (Vague 2).
@@ -32,6 +34,7 @@ export function PrimeTimeBanner() {
   const { language } = useTranslation();
   const lang = language === "fr" ? "fr" : "en";
   const [now, setNow] = useState(() => new Date());
+  const [stats, setStats] = useState<PrimeTimeStats | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30_000);
@@ -40,6 +43,18 @@ export function PrimeTimeBanner() {
 
   const live = isPrimeTimeLive(now);
   const untilMs = msUntilNextPrimeTime(now);
+
+  // Récupère participants + percentile quand le Prime Time est en cours.
+  useEffect(() => {
+    if (!live) return;
+    let alive = true;
+    fetchPrimeTimeStats().then((s) => {
+      if (alive) setStats(s);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [live]);
 
   // On ne montre le compte à rebours qu'à l'approche (≤ 3h avant), pour ne pas
   // encombrer l'accueil le reste de la journée. Toujours visible si live.
@@ -71,7 +86,9 @@ export function PrimeTimeBanner() {
           </Text>
           <Text className="text-[11px]" style={{ color: live ? "#fca5a5" : COLORS.textMuted }}>
             {live
-              ? lang === "fr" ? "Même question, tout le monde maintenant" : "Same question, everyone now"
+              ? stats && stats.participants > 0
+                ? `${formatParticipants(stats.participants, lang)} · ${lang === "fr" ? `tu bats ${stats.percentile}%` : `you beat ${stats.percentile}%`}`
+                : lang === "fr" ? "Même question, tout le monde maintenant" : "Same question, everyone now"
               : formatCountdown(untilMs, lang)}
           </Text>
         </View>

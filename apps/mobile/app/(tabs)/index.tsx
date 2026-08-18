@@ -700,6 +700,37 @@ export default function HomeScreen() {
               </LinearGradient>
             </Pressable>
 
+            {/* Club / Teams Card (Vague 4) */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/teams" as any);
+              }}
+              className="rounded-xl overflow-hidden active:opacity-95 mt-3"
+              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(0, 194, 204, 0.25)' }}
+              accessibilityRole="button"
+              accessibilityLabel={language === "fr" ? "Mon club" : "My club"}
+            >
+              <LinearGradient
+                colors={['#0e7490', '#0891b2', '#06b6d4']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <View className="flex-col justify-center flex-1">
+                  <Text className="text-xl font-black tracking-tight text-white">
+                    🛡️ {language === "fr" ? "Ton club" : "Your club"}
+                  </Text>
+                  <Text className="text-cyan-100 text-xs mt-0.5">
+                    {language === "fr" ? "Joue en équipe, visez l'objectif hebdo" : "Team up, hit the weekly goal"}
+                  </Text>
+                </View>
+                <View className="w-14 h-14 rounded-2xl items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}>
+                  <Text className="text-3xl">👥</Text>
+                </View>
+              </LinearGradient>
+            </Pressable>
+
             {/* Level & Achievements Card */}
             <Pressable
               onPress={() => {
