@@ -11,7 +11,8 @@ import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/d
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { timeUntilDailyReset } from "../../src/utils/dailyReset";
 import { logEvent } from "../../src/services/analytics";
-import { getLevelTitle } from "../../src/utils/progression";
+import { getLevelTitle, calculateLevel } from "../../src/utils/progression";
+import { COLORS } from "../../src/theme/colors";
 import { checkAchievements } from "../../src/services/achievements";
 import { useNotificationContext } from "../../src/contexts/NotificationContext";
 import { getSettings } from "../../src/services/settings";
@@ -21,48 +22,12 @@ import { WeeklyChallengeBanner } from "../../src/components/WeeklyChallengeBanne
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { SkeletonCard } from "../../src/components/Skeleton";
 import { getHomeChallenges, type WeeklyChallenge } from "../../src/services/weeklyChallenge";
+import { StreakFreezeModal } from "../../src/components/StreakFreezeModal";
+import { PrimeTimeBanner } from "../../src/components/PrimeTimeBanner";
+import { wasStreakRescuedRecently } from "../../src/services/streakFreeze";
 
-// New QuizNext design colors
-const COLORS = {
-  bg: "#161a1d",
-  surface: "#1E2529",
-  surfaceActive: "#252e33",
-  primary: "#00c2cc",
-  primaryDim: "rgba(0, 194, 204, 0.15)",
-  coral: "#FF6B6B",
-  coralDim: "rgba(255, 107, 107, 0.15)",
-  purple: "#A16EFF",
-  purpleDim: "rgba(161, 110, 255, 0.15)",
-  yellow: "#FFD100",
-  yellowDim: "rgba(255, 209, 0, 0.15)",
-  gold: "#fbbf24",
-  goldDim: "rgba(251, 191, 36, 0.15)",
-  teal: "#134e4a",
-  red: "#450a0a",
-  text: "#ffffff",
-  textMuted: "#9ca3af",
-};
-
-// XP required for each level (exponential growth)
-const getXPForLevel = (level: number): number => {
-  return Math.floor(100 * Math.pow(1.5, level - 1));
-};
-
-// Calculate level from total XP
-const calculateLevel = (totalXP: number): { level: number; currentXP: number; nextLevelXP: number; progress: number } => {
-  let level = 1;
-  let xpRemaining = totalXP;
-
-  while (xpRemaining >= getXPForLevel(level)) {
-    xpRemaining -= getXPForLevel(level);
-    level++;
-  }
-
-  const nextLevelXP = getXPForLevel(level);
-  const progress = (xpRemaining / nextLevelXP) * 100;
-
-  return { level, currentXP: xpRemaining, nextLevelXP, progress };
-};
+// Palette + courbe de niveau : désormais importées des modules partagés
+// (src/theme/colors, src/utils/progression) — plus de duplication locale.
 
 // Stats Pill component — memoized: re-renders only when icon/value/color change.
 const StatsPill = memo(function StatsPill({ icon, value, color }: { icon: string; value: string | number; color: string }) {
@@ -85,6 +50,7 @@ export default function HomeScreen() {
   const [dailyCompleted, setDailyCompleted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(timeUntilDailyReset());
   const [recentChallenges, setRecentChallenges] = useState<WeeklyChallenge[] | null>(null);
+  const [streakRescued, setStreakRescued] = useState(false);
 
   useEffect(() => {
     loadFeedbackSettings(user?.id);
@@ -164,6 +130,26 @@ export default function HomeScreen() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.games_played, permissionStatus, user?.id]);
+
+  // Surface "ta série a été sauvée" quand un streak-freeze a été consommé
+  // récemment (le service existait mais n'était jamais affiché). Dédupe par id
+  // du freeze pour ne montrer le modal qu'une fois. (Vague 2 — finir le freeze)
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      try {
+        const rescue = await wasStreakRescuedRecently(user.id);
+        if (!rescue) return;
+        const seenKey = `@bighead_streak_rescue_seen_${rescue.id}`;
+        if (await AsyncStorage.getItem(seenKey)) return;
+        await AsyncStorage.setItem(seenKey, "1");
+        setStreakRescued(true);
+      } catch {
+        // ne jamais casser Home
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const loadRecentChallenges = useCallback(async () => {
     try {
@@ -275,6 +261,67 @@ export default function HomeScreen() {
 
         {/* Main Content */}
         <View className="px-4 flex-col gap-6">
+          {/* ================= HERO : la question du jour ================= */}
+          {/* Le geste central de l'app est au sommet, jouable en un tap. Les    */}
+          {/* modes descendent plus bas. (Vague 1 — refonte "loop héros")        */}
+          <View className="flex-col gap-3">
+            {/* Status strip : 3 chiffres, pas 7 cartes */}
+            <View className="flex-row gap-2">
+              <View className="flex-1 rounded-xl items-center py-2.5" style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+                <Text className="text-lg font-black" style={{ color: COLORS.streak }}>🔥 {dailyStreak || 0}</Text>
+                <Text className="text-[10px] uppercase tracking-wider" style={{ color: COLORS.textMuted }}>{language === "fr" ? "Série" : "Streak"}</Text>
+              </View>
+              <View className="flex-1 rounded-xl items-center py-2.5" style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+                <Text className="text-lg font-black" style={{ color: COLORS.gold }}>{getLevelTitle(levelData.level, language === "fr" ? "fr" : "en")}</Text>
+                <Text className="text-[10px] uppercase tracking-wider" style={{ color: COLORS.textMuted }}>{t("level")} {levelData.level}</Text>
+              </View>
+              <View className="flex-1 rounded-xl items-center py-2.5" style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}>
+                <Text className="text-lg font-black" style={{ color: dailyCompleted ? COLORS.success : COLORS.primary }}>{dailyCompleted ? '✓' : '▶'}</Text>
+                <Text className="text-[10px] uppercase tracking-wider" style={{ color: COLORS.textMuted }}>{dailyCompleted ? (language === "fr" ? "Fait" : "Done") : (language === "fr" ? "À faire" : "To do")}</Text>
+              </View>
+            </View>
+
+            {/* Hero CTA : Question du jour */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/daily");
+              }}
+              className="rounded-2xl overflow-hidden active:opacity-95"
+              accessibilityRole="button"
+              accessibilityLabel={t("dailyBrain")}
+              style={{ height: 176, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 20 }}
+            >
+              <LinearGradient colors={['#3b82f6', '#8b5cf6', '#ec4899', '#f97316']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                <View style={{ position: 'absolute', top: 16, right: 16, width: 96, height: 96, borderRadius: 48, backgroundColor: '#fbbf24', opacity: 0.4 }} />
+                <View style={{ position: 'absolute', top: 64, right: 80, width: 64, height: 64, borderRadius: 32, backgroundColor: '#ec4899', opacity: 0.5 }} />
+                <View style={{ position: 'absolute', bottom: 32, left: 32, width: 80, height: 80, borderRadius: 40, backgroundColor: '#3b82f6', opacity: 0.4 }} />
+              </LinearGradient>
+              <LinearGradient colors={['transparent', 'rgba(30, 37, 41, 0.72)']} locations={[0.3, 1]} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+              <View className="absolute bottom-0 left-0 right-0 p-5">
+                <View className="flex-row justify-between items-end">
+                  <View className="flex-col gap-1">
+                    <View className="flex-row items-center gap-2 mb-1">
+                      <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: dailyCompleted ? COLORS.success : COLORS.purple }}>
+                        <Text className="text-white text-[10px] font-bold tracking-wider uppercase">{dailyCompleted ? t("done") : (language === "fr" ? "Aujourd'hui" : "Today")}</Text>
+                      </View>
+                      <Text className="text-gray-300 text-xs font-medium">⏱ {timeLeft} {t("left")}</Text>
+                    </View>
+                    <Text className="text-3xl font-black text-white leading-tight">
+                      {language === "fr" ? "Question\ndu jour" : "Question\nof the day"}
+                    </Text>
+                  </View>
+                  <View className="w-14 h-14 rounded-full items-center justify-center" style={{ backgroundColor: dailyCompleted ? COLORS.success : COLORS.primary, shadowColor: dailyCompleted ? COLORS.success : COLORS.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 12 }}>
+                    <Text className="text-2xl" style={{ color: COLORS.bg }}>{dailyCompleted ? '✓' : '▶'}</Text>
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+          </View>
+
+          {/* Prime Time : événement quotidien synchronisé (Vague 2) */}
+          <PrimeTimeBanner />
+
           {/* Weekly Challenges: 4 most recent (any type/status) + history link */}
           <View className="flex-col gap-2">
             <View className="flex-row items-baseline justify-between px-1">
@@ -329,11 +376,11 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Featured Section */}
+          {/* Game Modes Section (la daily est le hero en tête ; ici les modes) */}
           <View className="flex-col gap-3">
             <View className="flex-row items-baseline justify-between px-1">
               <Text className="text-base font-bold text-gray-100 tracking-wide uppercase">
-                {t("featured")}
+                {t("gameModes")}
               </Text>
               <Pressable
                 onPress={() => {
@@ -350,93 +397,6 @@ export default function HomeScreen() {
                 </Text>
               </Pressable>
             </View>
-
-            {/* Featured Card - Daily Brain */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/daily");
-              }}
-              className="rounded-2xl overflow-hidden active:opacity-95"
-              accessibilityRole="button"
-              accessibilityLabel={t("dailyBrain")}
-              style={{
-                height: 176,
-                backgroundColor: COLORS.surface,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.05)',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.4,
-                shadowRadius: 20,
-              }}
-            >
-              {/* Full Background Gradient */}
-              <LinearGradient
-                colors={['#3b82f6', '#8b5cf6', '#ec4899', '#f97316']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-              >
-                {/* Decorative circles for depth */}
-                <View style={{ position: 'absolute', top: 16, right: 16, width: 96, height: 96, borderRadius: 48, backgroundColor: '#fbbf24', opacity: 0.4 }} />
-                <View style={{ position: 'absolute', top: 64, right: 80, width: 64, height: 64, borderRadius: 32, backgroundColor: '#ec4899', opacity: 0.5 }} />
-                <View style={{ position: 'absolute', bottom: 32, left: 32, width: 80, height: 80, borderRadius: 40, backgroundColor: '#3b82f6', opacity: 0.4 }} />
-              </LinearGradient>
-
-              {/* Bottom Gradient Overlay for readability */}
-              <LinearGradient
-                colors={['transparent', 'rgba(30, 37, 41, 0.7)']}
-                locations={[0.3, 1]}
-                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-              />
-
-              {/* Card Content - positioned at bottom */}
-              <View className="absolute bottom-0 left-0 right-0 p-5">
-                <View className="flex-row justify-between items-end">
-                  <View className="flex-col gap-1">
-                    <View className="flex-row items-center gap-2 mb-1">
-                      <View
-                        className="px-2 py-0.5 rounded-sm"
-                        style={{ backgroundColor: COLORS.purple }}
-                      >
-                        <Text className="text-white text-[10px] font-bold tracking-wider uppercase">
-                          {dailyCompleted ? t("done") : t("hard")}
-                        </Text>
-                      </View>
-                      <Text className="text-gray-400 text-xs font-medium">
-                        ⏱ {timeLeft} {t("left")}
-                      </Text>
-                    </View>
-                    <Text className="text-3xl font-extrabold text-white leading-tight drop-shadow-lg">
-                      {t("dailyBrain").split(' ').join('\n')}
-                    </Text>
-                  </View>
-
-                  <View
-                    className="w-14 h-14 rounded-full items-center justify-center"
-                    style={{
-                      backgroundColor: dailyCompleted ? '#22c55e' : COLORS.primary,
-                      shadowColor: dailyCompleted ? '#22c55e' : COLORS.primary,
-                      shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 12,
-                    }}
-                  >
-                    <Text className="text-2xl" style={{ color: COLORS.bg }}>
-                      {dailyCompleted ? '✓' : '▶'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </Pressable>
-          </View>
-
-          {/* Game Modes Section */}
-          <View className="flex-col gap-3">
-            <Text className="text-base font-bold text-gray-100 tracking-wide uppercase px-1">
-              {t("gameModes")}
-            </Text>
 
             {/* Adventure Mode - Main Feature Card */}
             <Pressable
@@ -647,6 +607,29 @@ export default function HomeScreen() {
                   <Text className="text-3xl">🎧</Text>
                 </View>
               </LinearGradient>
+            </Pressable>
+
+            {/* Plus de modes : câble le hub mode-select (avant orphelin) qui
+                donne accès à Traître & Enchères — 2 modes complets qui étaient
+                injouables faute de navigation entrante. (Vague 1 — un-orphelin) */}
+            <Pressable
+              onPress={() => {
+                buttonPressFeedback();
+                router.push("/game/mode-select" as any);
+              }}
+              className="rounded-xl flex-row items-center justify-between px-4 py-3 active:opacity-90"
+              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' }}
+              accessibilityRole="button"
+              accessibilityLabel={language === "fr" ? "Plus de modes" : "More modes"}
+            >
+              <View className="flex-row items-center gap-3">
+                <Text className="text-xl">🎭</Text>
+                <View>
+                  <Text className="font-bold text-white">{language === "fr" ? "Plus de modes" : "More modes"}</Text>
+                  <Text className="text-[11px]" style={{ color: COLORS.textMuted }}>{language === "fr" ? "Traître, Enchères…" : "Traitor, Auction…"}</Text>
+                </View>
+              </View>
+              <Icon name="ChevronRight" size={18} color={COLORS.textMuted} />
             </Pressable>
 
             {/* Geography Section Card (always present) */}
@@ -881,6 +864,8 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </ScrollView>
+
+      <StreakFreezeModal visible={streakRescued} onClose={() => setStreakRescued(false)} />
     </SafeAreaView>
   );
 }
