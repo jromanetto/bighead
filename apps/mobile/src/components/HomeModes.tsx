@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { useTranslation } from "../contexts/LanguageContext";
 import { COLORS } from "../theme/colors";
 import { buttonPressFeedback } from "../utils/feedback";
+import { ModeIcon, type ModeIconName } from "./icons/ModeIcon";
 
 /** Applique une opacité à une couleur hex #RRGGBB (pour teinter les icônes). */
 function alpha(hex: string, a: number): string {
@@ -21,7 +22,7 @@ function alpha(hex: string, a: number): string {
 
 interface ModeDef {
   route: string;
-  icon: string;
+  icon: ModeIconName;
   title: { fr: string; en: string };
   sub: { fr: string; en: string };
   accent: string; // couleur d'accent de l'icône
@@ -29,15 +30,15 @@ interface ModeDef {
 }
 
 const MODES: ModeDef[] = [
-  { route: "/game/adventure", icon: "🏔️", title: { fr: "Aventure", en: "Adventure" }, sub: { fr: "Grimpe la montagne", en: "Climb the mountain" }, accent: "#3b82f6" },
-  { route: "/game/chain", icon: "⚡", title: { fr: "Solo Run", en: "Solo Run" }, sub: { fr: "Mode infini", en: "Endless" }, accent: "#5eead4" },
-  { route: "/recall/play", icon: "⌨️", title: { fr: "Cite tout", en: "Name them all" }, sub: { fr: "Format saisie", en: "Typed format" }, accent: "#00c2cc", badge: "NEW" },
-  { route: "/duel", icon: "⚔️", title: { fr: "Duel", en: "Versus" }, sub: { fr: "1 v 1", en: "1 v 1" }, accent: "#ff6b6b" },
-  { route: "/party/setup", icon: "🎉", title: { fr: "Party", en: "Party" }, sub: { fr: "Multi local", en: "Local multi" }, accent: "#a880ff" },
-  { route: "/game/family", icon: "👨‍👩‍👧‍👦", title: { fr: "Famille", en: "Family" }, sub: { fr: "En groupe", en: "In a group" }, accent: "#fb923c" },
-  { route: "/audio/play", icon: "🎧", title: { fr: "Audio", en: "Audio" }, sub: { fr: "Devine le son", en: "Guess the sound" }, accent: "#06b6d4" },
-  { route: "/geography", icon: "🌍", title: { fr: "Géographie", en: "Geography" }, sub: { fr: "Collection drapeaux", en: "Flag collection" }, accent: "#22c55e" },
-  { route: "/game/mode-select", icon: "🎭", title: { fr: "Plus de modes", en: "More modes" }, sub: { fr: "Traître, Enchères…", en: "Traitor, Auction…" }, accent: "#94a2a8" },
+  { route: "/game/adventure", icon: "adventure", title: { fr: "Aventure", en: "Adventure" }, sub: { fr: "Grimpe la montagne", en: "Climb the mountain" }, accent: "#3b82f6" },
+  { route: "/game/chain", icon: "solo", title: { fr: "Solo Run", en: "Solo Run" }, sub: { fr: "Mode infini", en: "Endless" }, accent: "#2dd4bf" },
+  { route: "/recall/play", icon: "recall", title: { fr: "Cite tout", en: "Name them all" }, sub: { fr: "Format saisie", en: "Typed format" }, accent: "#00c2cc", badge: "NEW" },
+  { route: "/duel", icon: "duel", title: { fr: "Duel", en: "Versus" }, sub: { fr: "1 v 1", en: "1 v 1" }, accent: "#ff6b6b" },
+  { route: "/party/setup", icon: "party", title: { fr: "Party", en: "Party" }, sub: { fr: "Multi local", en: "Local multi" }, accent: "#a880ff" },
+  { route: "/game/family", icon: "family", title: { fr: "Famille", en: "Family" }, sub: { fr: "En groupe", en: "In a group" }, accent: "#fb923c" },
+  { route: "/audio/play", icon: "audio", title: { fr: "Audio", en: "Audio" }, sub: { fr: "Devine le son", en: "Guess the sound" }, accent: "#22b8cf" },
+  { route: "/geography", icon: "geo", title: { fr: "Géographie", en: "Geography" }, sub: { fr: "Collection drapeaux", en: "Flag collection" }, accent: "#22c55e" },
+  { route: "/game/mode-select", icon: "more", title: { fr: "Plus de modes", en: "More modes" }, sub: { fr: "Traître, Enchères…", en: "Traitor, Auction…" }, accent: "#94a2a8" },
 ];
 
 export function HomeModes() {
@@ -60,7 +61,7 @@ export function HomeModes() {
         >
           <View className="flex-row items-center justify-between mb-2">
             <View className="rounded-xl items-center justify-center" style={{ width: 40, height: 40, backgroundColor: alpha(m.accent, 0.16) }}>
-              <Text style={{ fontSize: 20 }}>{m.icon}</Text>
+              <ModeIcon name={m.icon} color={m.accent} size={22} />
             </View>
             {m.badge ? (
               <View className="rounded-md px-1.5 py-0.5" style={{ backgroundColor: alpha(m.accent, 0.2) }}>

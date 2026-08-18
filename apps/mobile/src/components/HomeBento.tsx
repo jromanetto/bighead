@@ -6,6 +6,7 @@ import { COLORS } from "../theme/colors";
 import { buttonPressFeedback } from "../utils/feedback";
 import { isPrimeTimeLive, msUntilNextPrimeTime, primeTimeLabel } from "../utils/primeTime";
 import { getMyTeam, type Team } from "../services/teams";
+import { ModeIcon, type ModeIconName } from "./icons/ModeIcon";
 
 /**
  * Tuiles bento de l'accueil (direction Mix) — série, ligue, club, Prime Time.
@@ -16,7 +17,7 @@ import { getMyTeam, type Team } from "../services/teams";
 function Tile({
   onPress,
   label,
-  icon,
+  iconName,
   value,
   sub,
   accent,
@@ -24,7 +25,7 @@ function Tile({
 }: {
   onPress: () => void;
   label: string;
-  icon: string;
+  iconName: ModeIconName;
   value: string;
   sub?: string;
   accent: string;
@@ -49,9 +50,12 @@ function Tile({
       accessibilityRole="button"
       accessibilityLabel={`${label} ${value}`}
     >
-      <Text className="text-[10px] uppercase tracking-wider" style={{ color: COLORS.textMuted }}>
-        {icon} {label}
-      </Text>
+      <View className="flex-row items-center" style={{ gap: 5 }}>
+        <ModeIcon name={iconName} color={live ? COLORS.coral : accent} size={14} />
+        <Text className="text-[10px] uppercase tracking-wider" style={{ color: COLORS.textMuted }}>
+          {label}
+        </Text>
+      </View>
       <View>
         <Text className="text-lg font-black" style={{ color: accent, fontVariant: ["tabular-nums"] }} numberOfLines={1}>
           {value}
@@ -97,7 +101,7 @@ export function HomeBento({ streak }: { streak: number }) {
       <Tile
         onPress={() => router.push("/league" as any)}
         label={lang === "fr" ? "Série" : "Streak"}
-        icon="🔥"
+        iconName="streak"
         value={`${streak || 0} ${lang === "fr" ? "j" : "d"}`}
         sub={lang === "fr" ? "Ne la casse pas" : "Keep it alive"}
         accent={COLORS.streak}
@@ -105,7 +109,7 @@ export function HomeBento({ streak }: { streak: number }) {
       <Tile
         onPress={() => router.push("/league" as any)}
         label={lang === "fr" ? "Ligue" : "League"}
-        icon="💎"
+        iconName="league"
         value={lang === "fr" ? "Ta ligue" : "Your league"}
         sub={lang === "fr" ? "Grimpe cette semaine" : "Climb this week"}
         accent={COLORS.gold}
@@ -113,7 +117,7 @@ export function HomeBento({ streak }: { streak: number }) {
       <Tile
         onPress={() => router.push("/teams" as any)}
         label={lang === "fr" ? "Club" : "Club"}
-        icon="👥"
+        iconName="club"
         value={team ? team.name : lang === "fr" ? "Rejoins" : "Join"}
         sub={team ? `${team.member_count} ${lang === "fr" ? "membres" : "members"}` : lang === "fr" ? "Joue en équipe" : "Team up"}
         accent={COLORS.primary}
@@ -121,7 +125,7 @@ export function HomeBento({ streak }: { streak: number }) {
       <Tile
         onPress={() => router.push("/daily")}
         label={lang === "fr" ? "Prime Time" : "Prime Time"}
-        icon={live ? "🔴" : "⏰"}
+        iconName="prime"
         value={ptValue}
         sub={ptSub}
         accent={live ? COLORS.coral : COLORS.text}
