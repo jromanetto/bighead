@@ -59,7 +59,7 @@ export function HomeHeroDaily({
         <Text className="text-3xl font-black text-white mt-1.5">
           {dailyCompleted
             ? lang === "fr" ? "Bien joué !" : "Nice one!"
-            : lang === "fr" ? "On y va ?" : "Let's go?"}
+            : lang === "fr" ? "On y va ?" : "Ready?"}
         </Text>
         <Text className="text-sm mt-1" style={{ color: COLORS.textMuted }}>
           {dailyCompleted

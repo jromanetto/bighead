@@ -30,6 +30,7 @@ import { RatingModal } from "../src/components/RatingModal";
 import { QuestionImage } from "../src/components/QuestionImage";
 import { ShareScorecard } from "../src/components/ShareScorecard";
 import { buildDailyShareText } from "../src/utils/dailyShare";
+import { DayTwoBridge } from "../src/components/DayTwoBridge";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
 import { recordQuestionOutcome } from "../src/services/questions";
 import { inviteFriends } from "../src/utils/share";
@@ -635,6 +636,9 @@ export default function DailyBrainScreen() {
                 </View>
               </View>
             )}
+
+            {/* Pont jour-1 → jour-2 : rendez-vous demain + teaser + notif */}
+            <DayTwoBridge streak={streak} />
 
             {isStreakMilestone(streak) && (
               <View
