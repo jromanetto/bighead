@@ -39,12 +39,14 @@ export default function ChallengeLeaderboardScreen() {
     }
 
     try {
-      const [challengeData, leaderboardData] = await Promise.all([
-        getFriendChallenge(code),
-        getChallengeLeaderboard(code),
-      ]);
-
+      // Bugfix : le leaderboard filtre sur challenge_id (UUID), pas sur le code
+      // 6-car. On résout d'abord le défi, puis on interroge avec son id — sinon
+      // la liste revenait toujours vide.
+      const challengeData = await getFriendChallenge(code);
       setChallenge(challengeData);
+      const leaderboardData = challengeData
+        ? await getChallengeLeaderboard(challengeData.id)
+        : [];
       setLeaderboard(leaderboardData);
     } catch (error) {
       console.error("Error loading leaderboard:", error);
