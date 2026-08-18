@@ -25,6 +25,7 @@ import { getHomeChallenges, type WeeklyChallenge } from "../../src/services/week
 import { StreakFreezeModal } from "../../src/components/StreakFreezeModal";
 import { HomeHeroDaily } from "../../src/components/HomeHeroDaily";
 import { HomeBento } from "../../src/components/HomeBento";
+import { HomeModes } from "../../src/components/HomeModes";
 import { wasStreakRescuedRecently } from "../../src/services/streakFreeze";
 
 // Palette + courbe de niveau : désormais importées des modules partagés
@@ -313,362 +314,26 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Game Modes Section (la daily est le hero en tête ; ici les modes) */}
+          {/* ===== Modes (alleges) : grille de tuiles plates coherentes ===== */}
           <View className="flex-col gap-3">
             <View className="flex-row items-baseline justify-between px-1">
               <Text className="text-base font-bold text-gray-100 tracking-wide uppercase">
                 {t("gameModes")}
               </Text>
               <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push("/activity" as any);
-                }}
+                onPress={() => { buttonPressFeedback(); router.push("/activity" as any); }}
                 className="px-2.5 py-1 rounded-full active:opacity-80"
                 style={{ backgroundColor: `${COLORS.primary}15`, borderWidth: 1, borderColor: `${COLORS.primary}30` }}
                 accessibilityRole="button"
                 accessibilityLabel={t("activityHomeLink")}
               >
-                <Text className="text-xs font-medium" style={{ color: COLORS.primary }}>
-                  👥 {t("activityHomeLink")}
-                </Text>
+                <Text className="text-xs font-medium" style={{ color: COLORS.primary }}>👥 {t("activityHomeLink")}</Text>
               </Pressable>
             </View>
+            <HomeModes />
+          </View>
 
-            {/* Adventure Mode - Main Feature Card */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/game/adventure");
-              }}
-              className="rounded-xl overflow-hidden active:opacity-95"
-              style={{ height: 140, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-              accessibilityRole="button"
-              accessibilityLabel={t("adventure")}
-            >
-              <LinearGradient
-                colors={['#1e3a5f', '#2d5a87', '#3b82f6']}
-                start={{ x: 0, y: 1 }}
-                end={{ x: 1, y: 0 }}
-                style={{ flex: 1, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <View className="flex-col justify-center flex-1">
-                  <View className="flex-row items-center gap-2 mb-1">
-                    <View
-                      className="px-2 py-0.5 rounded-sm"
-                      style={{ backgroundColor: '#FFD700' }}
-                    >
-                      <Text className="text-[10px] font-bold tracking-wider uppercase" style={{ color: '#1e3a5f' }}>
-                        {t("new").toUpperCase()}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text className="text-2xl font-black tracking-tight text-white">
-                    🏔️ {t("adventure").toUpperCase()}
-                  </Text>
-                  <Text className="text-blue-200 text-sm font-medium mt-1">
-                    {t("climbMountain")}
-                  </Text>
-                </View>
-                <View className="w-16 h-16 rounded-2xl items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                  <Text className="text-4xl">🧗</Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
-
-            {/* Two cards row: Solo Run + Family */}
-            <View className="flex-row gap-3">
-              {/* Solo Run Card */}
-              <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push("/game/chain");
-                }}
-                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
-                style={{ height: 120, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-                accessibilityRole="button"
-                accessibilityLabel={t("soloRun")}
-              >
-                <LinearGradient
-                  colors={['#134e4a', '#0f766e']}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 0, y: 0 }}
-                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
-                >
-                  <View
-                    className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: 'rgba(94, 234, 212, 0.2)' }}
-                  >
-                    <Text className="text-xl font-black" style={{ color: '#5eead4' }}>⚡</Text>
-                  </View>
-                  <View>
-                    <Text className="text-lg font-bold tracking-tight text-white">{t("soloRun").toUpperCase()}</Text>
-                    <Text className="text-teal-200 text-xs mt-0.5">{t("infiniteMode")}</Text>
-                  </View>
-                </LinearGradient>
-              </Pressable>
-
-              {/* Family Mode Card */}
-              <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push("/game/family");
-                }}
-                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
-                style={{ height: 120, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-                accessibilityRole="button"
-                accessibilityLabel={t("family")}
-              >
-                <LinearGradient
-                  colors={['#7c2d12', '#c2410c']}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 0, y: 0 }}
-                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
-                >
-                  <View
-                    className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: 'rgba(251, 146, 60, 0.2)' }}
-                  >
-                    <Text className="text-xl">👨‍👩‍👧‍👦</Text>
-                  </View>
-                  <View>
-                    <Text className="text-lg font-bold tracking-tight text-white">{t("family").toUpperCase()}</Text>
-                    <Text className="text-orange-200 text-xs mt-0.5">{t("familyQuiz")}</Text>
-                  </View>
-                </LinearGradient>
-              </Pressable>
-            </View>
-
-            {/* Small Cards Row */}
-            <View className="flex-row gap-3">
-              {/* Versus Card */}
-              <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push("/duel");
-                }}
-                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
-                style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-                accessibilityRole="button"
-                accessibilityLabel={t("versus")}
-              >
-                <LinearGradient
-                  colors={['#450a0a', '#7f1d1d']}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 0, y: 0 }}
-                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
-                >
-                  <View
-                    className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: `${COLORS.coral}20` }}
-                  >
-                    <Text className="text-xl font-black" style={{ color: COLORS.coral }}>×</Text>
-                  </View>
-                  <View>
-                    <Text className="text-xl font-bold tracking-tight text-white">{t("versus").toUpperCase()}</Text>
-                    <Text className="text-red-200 text-xs mt-0.5">{t("pvpLive")}</Text>
-                  </View>
-                </LinearGradient>
-              </Pressable>
-
-              {/* Party Card */}
-              <Pressable
-                onPress={() => {
-                  buttonPressFeedback();
-                  router.push("/party/setup");
-                }}
-                className="flex-1 rounded-xl overflow-hidden active:opacity-95"
-                style={{ height: 144, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' }}
-                accessibilityRole="button"
-                accessibilityLabel={t("party")}
-              >
-                <LinearGradient
-                  colors={['#3b0764', '#7c3aed']}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 0, y: 0 }}
-                  style={{ flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' }}
-                >
-                  <View
-                    className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: `${COLORS.purple}20` }}
-                  >
-                    <Text className="text-xl">🎉</Text>
-                  </View>
-                  <View>
-                    <Text className="text-xl font-bold tracking-tight text-white">{t("party").toUpperCase()}</Text>
-                    <Text className="text-purple-200 text-xs mt-0.5">{t("localMultiplayer")}</Text>
-                  </View>
-                </LinearGradient>
-              </Pressable>
-            </View>
-
-            {/* Audio Quiz Card */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/audio/play" as any);
-              }}
-              className="rounded-xl overflow-hidden active:opacity-95"
-              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(0, 194, 204, 0.2)' }}
-              accessibilityRole="button"
-              accessibilityLabel={t("audioQuizCta")}
-            >
-              <LinearGradient
-                colors={['#0e7490', '#0891b2', '#06b6d4']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <View className="flex-col justify-center flex-1">
-                  <View className="flex-row items-center gap-2 mb-1">
-                    <View
-                      className="px-2 py-0.5 rounded-sm"
-                      style={{ backgroundColor: '#FFD700' }}
-                    >
-                      <Text className="text-[10px] font-bold tracking-wider uppercase" style={{ color: '#0e7490' }}>
-                        {t("new").toUpperCase()}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text className="text-xl font-black tracking-tight text-white">
-                    {t("audioQuizCta")}
-                  </Text>
-                  <Text className="text-cyan-100 text-xs mt-0.5">
-                    {t("audioQuizSubtitle")}
-                  </Text>
-                </View>
-                <View
-                  className="w-14 h-14 rounded-2xl items-center justify-center"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
-                >
-                  <Text className="text-3xl">🎧</Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
-
-            {/* Plus de modes : câble le hub mode-select (avant orphelin) qui
-                donne accès à Traître & Enchères — 2 modes complets qui étaient
-                injouables faute de navigation entrante. (Vague 1 — un-orphelin) */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/game/mode-select" as any);
-              }}
-              className="rounded-xl flex-row items-center justify-between px-4 py-3 active:opacity-90"
-              style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' }}
-              accessibilityRole="button"
-              accessibilityLabel={language === "fr" ? "Plus de modes" : "More modes"}
-            >
-              <View className="flex-row items-center gap-3">
-                <Text className="text-xl">🎭</Text>
-                <View>
-                  <Text className="font-bold text-white">{language === "fr" ? "Plus de modes" : "More modes"}</Text>
-                  <Text className="text-[11px]" style={{ color: COLORS.textMuted }}>{language === "fr" ? "Traître, Enchères…" : "Traitor, Auction…"}</Text>
-                </View>
-              </View>
-              <Icon name="ChevronRight" size={18} color={COLORS.textMuted} />
-            </Pressable>
-
-            {/* Geography Section Card (always present) */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/geography" as any);
-              }}
-              className="rounded-xl overflow-hidden active:opacity-95 mt-3"
-              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(34, 197, 94, 0.25)' }}
-              accessibilityRole="button"
-              accessibilityLabel={t("geoSectionTitle")}
-            >
-              <LinearGradient
-                colors={['#166534', '#15803d', '#22c55e']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <View className="flex-col justify-center flex-1">
-                  <Text className="text-xl font-black tracking-tight text-white">
-                    🌍 {t("geoSectionTitle")}
-                  </Text>
-                  <Text className="text-green-100 text-xs mt-0.5">
-                    {t("geoSectionSubtitle")}
-                  </Text>
-                </View>
-                <View
-                  className="w-14 h-14 rounded-2xl items-center justify-center"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
-                >
-                  <Text className="text-3xl">🚩</Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
-
-            {/* League Card (always present) */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/league" as any);
-              }}
-              className="rounded-xl overflow-hidden active:opacity-95 mt-3"
-              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.25)' }}
-              accessibilityRole="button"
-              accessibilityLabel={language === "fr" ? "Ta ligue" : "Your league"}
-            >
-              <LinearGradient
-                colors={['#78350f', '#b45309', '#f59e0b']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <View className="flex-col justify-center flex-1">
-                  <Text className="text-xl font-black tracking-tight text-white">
-                    🏆 {language === "fr" ? "Ta ligue" : "Your league"}
-                  </Text>
-                  <Text className="text-amber-100 text-xs mt-0.5">
-                    {language === "fr" ? "Grimpe dans ta division cette semaine" : "Climb your division this week"}
-                  </Text>
-                </View>
-                <View
-                  className="w-14 h-14 rounded-2xl items-center justify-center"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
-                >
-                  <Text className="text-3xl">💎</Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
-
-            {/* Club / Teams Card (Vague 4) */}
-            <Pressable
-              onPress={() => {
-                buttonPressFeedback();
-                router.push("/teams" as any);
-              }}
-              className="rounded-xl overflow-hidden active:opacity-95 mt-3"
-              style={{ height: 96, borderWidth: 1, borderColor: 'rgba(0, 194, 204, 0.25)' }}
-              accessibilityRole="button"
-              accessibilityLabel={language === "fr" ? "Mon club" : "My club"}
-            >
-              <LinearGradient
-                colors={['#0e7490', '#0891b2', '#06b6d4']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ flex: 1, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <View className="flex-col justify-center flex-1">
-                  <Text className="text-xl font-black tracking-tight text-white">
-                    🛡️ {language === "fr" ? "Ton club" : "Your club"}
-                  </Text>
-                  <Text className="text-cyan-100 text-xs mt-0.5">
-                    {language === "fr" ? "Joue en équipe, visez l'objectif hebdo" : "Team up, hit the weekly goal"}
-                  </Text>
-                </View>
-                <View className="w-14 h-14 rounded-2xl items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}>
-                  <Text className="text-3xl">👥</Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
-
-            {/* Level & Achievements Card */}
+          {/* Level & Achievements Card */}
             <Pressable
               onPress={() => {
                 buttonPressFeedback();
@@ -680,7 +345,7 @@ export default function HomeScreen() {
               accessibilityLabel={t("viewAchievementsBadges")}
             >
               <LinearGradient
-                colors={['#451a03', '#78350f', '#92400e']}
+                colors={['#241f16', '#1E2529']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{ padding: 20 }}
@@ -749,7 +414,6 @@ export default function HomeScreen() {
                 </View>
               </LinearGradient>
             </Pressable>
-          </View>
 
           {/* Quick Actions Row */}
           <View className="flex-row gap-3">
@@ -810,7 +474,7 @@ export default function HomeScreen() {
             accessibilityLabel={t("goPremium")}
           >
             <LinearGradient
-              colors={['#7c3aed', '#c026d3', '#f59e0b']}
+              colors={['#241d3a', '#1E2529']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={{ paddingVertical: 16, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
