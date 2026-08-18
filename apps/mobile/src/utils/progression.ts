@@ -39,6 +39,41 @@ export function getLevelTitle(level: number, lang: "fr" | "en" = "fr"): string {
   return lang === "en" ? rank.en : rank.fr;
 }
 
+/**
+ * Courbe de niveau UNIQUE de l'app.
+ *
+ * Avant : 3 formules divergentes (Home + Achievements en `100·1.5^(n-1)`,
+ * Stats en `xp % 1000`). Ici on canonise la croissance exponentielle et on
+ * expose un seul `calculateLevel` que tous les écrans doivent utiliser.
+ */
+export function getXPForLevel(level: number): number {
+  const n = Math.max(1, Math.floor(level));
+  return Math.floor(100 * Math.pow(1.5, n - 1));
+}
+
+export interface LevelInfo {
+  level: number;
+  currentXP: number; // XP accumulée dans le niveau courant
+  nextLevelXP: number; // XP nécessaire pour finir le niveau courant
+  progress: number; // 0–100 (%)
+}
+
+/** Niveau + progression à partir de l'XP totale. */
+export function calculateLevel(totalXP: number): LevelInfo {
+  let level = 1;
+  let xpRemaining = Math.max(0, Math.floor(totalXP || 0));
+
+  while (xpRemaining >= getXPForLevel(level)) {
+    xpRemaining -= getXPForLevel(level);
+    level++;
+  }
+
+  const nextLevelXP = getXPForLevel(level);
+  const progress = nextLevelXP > 0 ? (xpRemaining / nextLevelXP) * 100 : 0;
+
+  return { level, currentXP: xpRemaining, nextLevelXP, progress };
+}
+
 // Paliers de série (mêmes seuils que la récompense XP serveur).
 export const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100] as const;
 

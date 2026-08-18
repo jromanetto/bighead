@@ -62,6 +62,34 @@ export default function ModeSelectScreen() {
             </Pressable>
           </Link>
 
+          {/* Recall — format saisie (Vague 3) */}
+          <Link href={"/recall/play" as any} asChild>
+            <Pressable
+              onPress={() => buttonPressFeedback()}
+              className="rounded-2xl p-6 active:opacity-80"
+              style={{ backgroundColor: COLORS.primary }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Text className="text-3xl mr-3">⌨️</Text>
+                <Text style={{ color: COLORS.bg }} className="text-2xl font-bold">Cite tout</Text>
+                <View className="ml-2 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                  <Text style={{ color: COLORS.bg }} className="text-xs font-bold">NEW</Text>
+                </View>
+              </View>
+              <Text style={{ color: 'rgba(0,0,0,0.7)' }}>
+                Tape toutes les réponses — pas de QCM. Le compteur se remplit.
+              </Text>
+              <View className="flex-row mt-4 gap-2">
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} className="rounded-full px-3 py-1">
+                  <Text style={{ color: COLORS.bg }} className="text-sm">Solo</Text>
+                </View>
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} className="rounded-full px-3 py-1">
+                  <Text style={{ color: COLORS.bg }} className="text-sm">Saisie</Text>
+                </View>
+              </View>
+            </Pressable>
+          </Link>
+
           {/* Traitor Mode - NOW AVAILABLE */}
           <Link href="/traitor" asChild>
             <Pressable
