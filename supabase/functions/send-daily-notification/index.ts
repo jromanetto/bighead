@@ -139,6 +139,22 @@ function getCategoryEmoji(category: string): string {
   return emojis[category] || "🧠";
 }
 
+// Titre personnalisé selon la série (loss aversion — le levier #1 de rétention).
+// Streak >= 2 : on menace de perdre l'actif. Streak 1 : on le protège. Sinon,
+// titre standard « 5 questions du jour ». Le corps garde le teaser de la vraie
+// question (valeur concrète).
+function buildTitle(streak: number, isEn: boolean, emoji: string): string {
+  if (streak >= 2) {
+    return isEn
+      ? `🔥 Don't break your ${streak}-day streak!`
+      : `🔥 Ne casse pas ta série de ${streak} jours !`;
+  }
+  if (streak === 1) {
+    return isEn ? "🔥 Keep your streak alive!" : "🔥 Garde ta série en vie !";
+  }
+  return isEn ? `${emoji} 5 daily questions!` : `${emoji} 5 questions du jour !`;
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -191,7 +207,7 @@ serve(async (req) => {
       console.log(`EN daily question: ${enQuestion.question_text}`);
     }
 
-    // 2. Get all active push tokens with user language preference
+    // 2. Get all active push tokens with user language preference + streak
     console.log("Fetching active push tokens...");
     const { data: tokens, error: tokensError } = await supabase.rpc(
       "get_active_push_tokens_with_language"
@@ -223,19 +239,18 @@ serve(async (req) => {
 
     console.log(`Found ${tokens.length} active push tokens`);
 
-    // 3. Prepare notification messages (language-aware)
+    // 3. Prepare notification messages (language-aware + streak-aware title)
     // Note: Daily Brain is now 5 questions/day. We tease only the first one in the
     // notification body so the user is enticed to open the app for the full set.
     const messages: ExpoPushMessage[] = tokens.map(
-      (t: { user_id: string; push_token: string; language?: string }) => {
+      (t: { user_id: string; push_token: string; language?: string; daily_streak?: number }) => {
         const userLang = t.language || 'fr';
         const isEn = userLang === 'en' && enQuestion;
         const question = isEn ? enQuestion : frQuestion;
+        const streak = t.daily_streak || 0;
 
         const emoji = getCategoryEmoji(question.category);
-        const title = isEn
-          ? `${emoji} 5 Daily Questions!`
-          : `${emoji} 5 questions du jour !`;
+        const title = buildTitle(streak, isEn, emoji);
         const tease = truncateQuestion(question.question_text, 70);
         const body = isEn
           ? `5 questions today. Starter: ${tease}`
