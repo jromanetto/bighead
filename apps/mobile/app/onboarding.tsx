@@ -16,6 +16,8 @@ import { logEvent } from "../src/services/analytics";
 import { playHaptic } from "../src/utils/feedback";
 import { COLORS } from "../src/theme/colors";
 import { THEME_OPTIONS, saveFavThemes } from "../src/utils/favThemes";
+import { ModeIcon, type ModeIconName } from "../src/components/icons/ModeIcon";
+import { ResultIcon } from "../src/components/icons/ResultIcon";
 
 const { width } = Dimensions.get("window");
 
@@ -36,10 +38,10 @@ export default function OnboardingScreen() {
   const translateX = useSharedValue(0);
 
   // Slides value-first : la valeur, l'habitude quotidienne (série), le social.
-  const slides = [
-    { icon: "🧠", color: "#00c2cc", title: L("Bienvenue sur BigHead", "Welcome to BigHead"), description: L("Une question de culture générale par jour. Deviens incollable, un jour à la fois.", "One general-knowledge question a day. Get sharper, one day at a time.") },
-    { icon: "🔥", color: "#f97316", title: L("Une question par jour", "One question a day"), description: L("Réponds chaque jour, garde ta série 🔥 et grimpe dans ta ligue.", "Answer daily, keep your streak 🔥 and climb your league.") },
-    { icon: "⚔️", color: "#a880ff", title: L("Défie tes amis", "Challenge your friends"), description: L("Duels, clubs, party entre potes — la culture G devient un jeu.", "Duels, clubs, party with friends — trivia becomes a game.") },
+  const slides: { iconSet: "result" | "mode"; iconName: string; color: string; title: string; description: string }[] = [
+    { iconSet: "result", iconName: "brain", color: "#00c2cc", title: L("Bienvenue sur BigHead", "Welcome to BigHead"), description: L("Une question de culture générale par jour. Deviens incollable, un jour à la fois.", "One general-knowledge question a day. Get sharper, one day at a time.") },
+    { iconSet: "mode", iconName: "streak", color: "#f97316", title: L("Une question par jour", "One question a day"), description: L("Réponds chaque jour, garde ta série et grimpe dans ta ligue.", "Answer daily, keep your streak and climb your league.") },
+    { iconSet: "mode", iconName: "duel", color: "#a880ff", title: L("Défie tes amis", "Challenge your friends"), description: L("Duels, clubs, party entre potes — la culture G devient un jeu.", "Duels, clubs, party with friends — trivia becomes a game.") },
   ];
 
   const goToSlide = (index: number) => {
@@ -135,7 +137,7 @@ export default function OnboardingScreen() {
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
         <View className="flex-1 px-6">
           <View className="items-center mt-8 mb-6">
-            <Text className="text-5xl mb-4">✨</Text>
+            <View className="mb-4"><ResultIcon name="sparkle" color={COLORS.primary} size={48} /></View>
             <Text className="text-white text-2xl font-black text-center mb-2">
               {L("Qu'est-ce qui te branche ?", "What are you into?")}
             </Text>
@@ -184,7 +186,7 @@ export default function OnboardingScreen() {
         <View className="flex-1 px-8 justify-center">
           <View className="items-center mb-8">
             <View className="w-24 h-24 rounded-full items-center justify-center mb-6" style={{ backgroundColor: COLORS.primaryDim }}>
-              <Text className="text-5xl">👤</Text>
+              <ResultIcon name="person" color={COLORS.primary} size={44} />
             </View>
             <Text className="text-white text-2xl font-bold text-center mb-2">
               {L("Comment on t'appelle ?", "What's your name?")}
@@ -228,7 +230,7 @@ export default function OnboardingScreen() {
         <View className="flex-1 px-8 justify-center">
           <View className="items-center mb-8">
             <View className="w-24 h-24 rounded-full items-center justify-center mb-6" style={{ backgroundColor: COLORS.primaryDim }}>
-              <Text className="text-5xl">🎁</Text>
+              <ResultIcon name="gift" color={COLORS.primary} size={44} />
             </View>
             <Text className="text-white text-2xl font-bold text-center mb-2">{t("referralEnterCode")}</Text>
             <Text className="text-gray-400 text-center px-4">{t("referralReward")}</Text>
@@ -290,7 +292,9 @@ export default function OnboardingScreen() {
             {slides.map((slide, index) => (
               <View key={index} style={{ width }} className="flex-1 items-center justify-center px-8">
                 <View className="w-32 h-32 rounded-full items-center justify-center mb-8" style={{ backgroundColor: `${slide.color}20` }}>
-                  <Text className="text-6xl">{slide.icon}</Text>
+                  {slide.iconSet === "result"
+                    ? <ResultIcon name={slide.iconName as any} color={slide.color} size={60} />
+                    : <ModeIcon name={slide.iconName as ModeIconName} color={slide.color} size={56} />}
                 </View>
                 <Text className="text-white text-2xl font-black text-center mb-4">{slide.title}</Text>
                 <Text className="text-gray-400 text-center text-lg leading-7">{slide.description}</Text>

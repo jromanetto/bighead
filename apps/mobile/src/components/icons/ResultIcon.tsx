@@ -1,11 +1,11 @@
-import Svg, { Path, Circle } from "react-native-svg";
+import Svg, { Path, Circle, Rect } from "react-native-svg";
 
 /**
  * Icônes d'écran de résultat — même langage que ModeIcon (grille 24, trait 2
  * arrondi, duotone). Remplacent les emoji "de base" (🏆/💪/🧠) par un set propre
  * et cohérent, recolorable.
  */
-export type ResultIconName = "trophy" | "medal" | "idea" | "gameover" | "brain";
+export type ResultIconName = "trophy" | "medal" | "idea" | "gameover" | "brain" | "sparkle" | "person" | "gift";
 
 export function ResultIcon({ name, color, size = 56 }: { name: ResultIconName; color: string; size?: number }) {
   const s = { width: size, height: size };
@@ -47,6 +47,28 @@ export function ResultIcon({ name, color, size = 56 }: { name: ResultIconName; c
           <Path d="M11 5 a3 3 0 0 0 -3 2.8 a2.6 2.6 0 0 0 -1.2 4.9 A3 3 0 0 0 8.4 18 H11 Z" fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} strokeLinejoin="round" />
           <Path d="M13 5 a3 3 0 0 1 3 2.8 a2.6 2.6 0 0 1 1.2 4.9 A3 3 0 0 1 15.6 18 H13 Z" fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} strokeLinejoin="round" />
           <Path d="M12 5 V18" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+        </Svg>
+      );
+    case "sparkle":
+      return (
+        <Svg {...s} viewBox="0 0 24 24" fill="none">
+          <Path d="M12 3 C12.6 7.5 14.5 9.4 19 10 C14.5 10.6 12.6 12.5 12 17 C11.4 12.5 9.5 10.6 5 10 C9.5 9.4 11.4 7.5 12 3 Z" fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} strokeLinejoin="round" />
+          <Path d="M18.5 15 C18.7 16.6 19.4 17.3 21 17.5 C19.4 17.7 18.7 18.4 18.5 20 C18.3 18.4 17.6 17.7 16 17.5 C17.6 17.3 18.3 16.6 18.5 15 Z" fill={color} stroke={color} strokeWidth={1} strokeLinejoin="round" />
+        </Svg>
+      );
+    case "person":
+      return (
+        <Svg {...s} viewBox="0 0 24 24" fill="none">
+          <Circle cx={12} cy={8} r={3.6} fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} />
+          <Path d="M5 20 a7 7 0 0 1 14 0" fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} strokeLinecap="round" />
+        </Svg>
+      );
+    case "gift":
+      return (
+        <Svg {...s} viewBox="0 0 24 24" fill="none">
+          <Rect x={4} y={9} width={16} height={11} rx={2} fill={color} fillOpacity={0.16} stroke={color} strokeWidth={2} />
+          <Path d="M3 9 H21 M12 9 V20" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M12 9 C10 5 6.5 5 6.5 7 C6.5 8.5 9 9 12 9 M12 9 C14 5 17.5 5 17.5 7 C17.5 8.5 15 9 12 9" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       );
   }
