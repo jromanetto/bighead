@@ -32,6 +32,7 @@ import { ShareScorecard } from "../src/components/ShareScorecard";
 import { buildDailyShareText } from "../src/utils/dailyShare";
 import { DayTwoBridge } from "../src/components/DayTwoBridge";
 import { ResultIcon } from "../src/components/icons/ResultIcon";
+import { ModeIcon } from "../src/components/icons/ModeIcon";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
 import { recordQuestionOutcome } from "../src/services/questions";
 import { inviteFriends } from "../src/utils/share";
@@ -509,7 +510,7 @@ export default function DailyBrainScreen() {
               style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)' }}
             >
               <View className="flex-row items-center">
-                <Text className="text-3xl mr-3">🔥</Text>
+                <View className="mr-3"><ModeIcon name="streak" color={COLORS.orange} size={30} /></View>
                 <View>
                   <Text style={{ color: COLORS.orange }} className="font-bold text-xl">
                     {fmt(t("dailyStreakDays"), { count: streak })}
@@ -650,7 +651,7 @@ export default function DailyBrainScreen() {
                 style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)' }}
               >
                 <View className="flex-row items-center">
-                  <Text className="text-3xl mr-3">🔥</Text>
+                  <View className="mr-3"><ModeIcon name="streak" color={COLORS.orange} size={30} /></View>
                   <View>
                     <Text style={{ color: COLORS.orange }} className="font-bold text-xl">
                       {fmt(t("dailyStreakDays"), { count: streak })}
@@ -836,7 +837,7 @@ export default function DailyBrainScreen() {
               borderColor: 'rgba(255,255,255,0.08)',
             }}
           >
-            <Text className="text-xl">🧠</Text>
+            <ResultIcon name="brain" color={COLORS.primary} size={20} />
             <Text className="text-sm font-bold tracking-wide text-white">DAILY BRAIN</Text>
           </View>
 
@@ -848,7 +849,7 @@ export default function DailyBrainScreen() {
               borderColor: 'rgba(255,255,255,0.08)',
             }}
           >
-            <Text className="text-xl" style={{ color: COLORS.primary }}>🏆</Text>
+            <ResultIcon name="trophy" color={COLORS.primary} size={18} />
             <Text className="text-sm font-bold tracking-wide text-white">{score}/{TOTAL_QUESTIONS}</Text>
             <Text className="text-sm tracking-tight" accessibilityLabel={`${Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors)} vies`}>
               {"❤️".repeat(Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors))}{"🤍".repeat(Math.min(MAX_ERRORS_ALLOWED + 1, errors))}

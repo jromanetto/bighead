@@ -5,7 +5,7 @@ import Svg, { Path, Circle } from "react-native-svg";
  * arrondi, duotone). Remplacent les emoji "de base" (🏆/💪/🧠) par un set propre
  * et cohérent, recolorable.
  */
-export type ResultIconName = "trophy" | "medal" | "idea" | "gameover";
+export type ResultIconName = "trophy" | "medal" | "idea" | "gameover" | "brain";
 
 export function ResultIcon({ name, color, size = 56 }: { name: ResultIconName; color: string; size?: number }) {
   const s = { width: size, height: size };
@@ -39,6 +39,14 @@ export function ResultIcon({ name, color, size = 56 }: { name: ResultIconName; c
         <Svg {...s} viewBox="0 0 24 24" fill="none">
           <Circle cx={12} cy={12} r={9} fill={color} fillOpacity={0.15} stroke={color} strokeWidth={2} />
           <Path d="M9 9 L15 15 M15 9 L9 15" stroke={color} strokeWidth={2} strokeLinecap="round" />
+        </Svg>
+      );
+    case "brain":
+      return (
+        <Svg {...s} viewBox="0 0 24 24" fill="none">
+          <Path d="M11 5 a3 3 0 0 0 -3 2.8 a2.6 2.6 0 0 0 -1.2 4.9 A3 3 0 0 0 8.4 18 H11 Z" fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} strokeLinejoin="round" />
+          <Path d="M13 5 a3 3 0 0 1 3 2.8 a2.6 2.6 0 0 1 1.2 4.9 A3 3 0 0 1 15.6 18 H13 Z" fill={color} fillOpacity={0.18} stroke={color} strokeWidth={2} strokeLinejoin="round" />
+          <Path d="M12 5 V18" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
         </Svg>
       );
   }
