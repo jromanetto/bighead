@@ -497,7 +497,7 @@ export const getTodaysDailyQuestion = async (language: string = "en"): Promise<D
 /**
  * Number of questions in a single Daily Brain session
  */
-export const DAILY_BRAIN_QUESTION_COUNT = 5;
+export const DAILY_BRAIN_QUESTION_COUNT = 10;
 
 interface DailyQuestionsV2RPC {
   out_id: string;

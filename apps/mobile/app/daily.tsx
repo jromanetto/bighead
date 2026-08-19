@@ -31,6 +31,7 @@ import { QuestionImage } from "../src/components/QuestionImage";
 import { ShareScorecard } from "../src/components/ShareScorecard";
 import { buildDailyShareText } from "../src/utils/dailyShare";
 import { DayTwoBridge } from "../src/components/DayTwoBridge";
+import { ResultIcon } from "../src/components/icons/ResultIcon";
 import { incrementWins, shouldShowInvitePrompt, markInviteShown, markInviteDismissed } from "../src/services/invite-prompt";
 import { recordQuestionOutcome } from "../src/services/questions";
 import { inviteFriends } from "../src/utils/share";
@@ -62,6 +63,8 @@ const COLORS = {
 const LETTER_OPTIONS = ['A', 'B', 'C', 'D'];
 const TOTAL_TIME = 15; // 15 seconds per question
 const TOTAL_QUESTIONS = DAILY_BRAIN_QUESTION_COUNT;
+// Survival : on tolère 1 erreur ; la 2e termine la partie.
+const MAX_ERRORS_ALLOWED = 1;
 const FEEDBACK_DELAY_MS = 1200;
 
 // Format helper for templated translations
@@ -242,6 +245,8 @@ export default function DailyBrainScreen() {
   // daily is opened then abandoned (timers auto-advance) — we must NOT record or
   // lock that as a played 0/5.
   const answeredRef = useRef<number>(0);
+  const errorsRef = useRef<number>(0);
+  const [errors, setErrors] = useState(0);
 
   const scale = useSharedValue(1);
 
@@ -320,6 +325,8 @@ export default function DailyBrainScreen() {
       // Fetch today's 5 questions
       startTime.current = Date.now();
       answeredRef.current = 0;
+      errorsRef.current = 0;
+      setErrors(0);
       finishingRef.current = false;
       const daily = await getTodaysDailyQuestions(userLanguage.current);
       setQuestions(daily);
@@ -332,6 +339,11 @@ export default function DailyBrainScreen() {
   };
 
   const advance = useCallback(() => {
+    // Survival : au-delà de l'erreur tolérée, la partie s'arrête net.
+    if (errorsRef.current > MAX_ERRORS_ALLOWED) {
+      finishSession();
+      return;
+    }
     setCurrentIndex((prevIdx) => {
       const nextIdx = prevIdx + 1;
       if (nextIdx >= TOTAL_QUESTIONS || nextIdx >= questions.length) {
@@ -351,6 +363,8 @@ export default function DailyBrainScreen() {
     setSelectedAnswer(-1); // sentinel: timed out, no selection
     setIsCorrect(false);
     setResults((r) => [...r, false]);
+    errorsRef.current += 1; // timeout = erreur (survival)
+    setErrors(errorsRef.current);
     recordQuestionOutcome(currentQuestion.id, false); // timeout = wrong
     wrongAnswerFeedback();
     setTimeout(() => {
@@ -396,6 +410,8 @@ export default function DailyBrainScreen() {
       scoreRef.current = newScore;
       setScore(newScore);
     } else {
+      errorsRef.current += 1; // survival : erreur
+      setErrors(errorsRef.current);
       wrongAnswerFeedback();
     }
 
@@ -523,8 +539,10 @@ export default function DailyBrainScreen() {
   // Game Over screen — show summary
   if (gameOver) {
     const finalScore = scoreRef.current;
-    const headline =
-      finalScore >= TOTAL_QUESTIONS
+    const eliminated = errorsRef.current > MAX_ERRORS_ALLOWED && finalScore < TOTAL_QUESTIONS;
+    const headline = eliminated
+      ? (language === "fr" ? "Éliminé !" : "Game over!")
+      : finalScore >= TOTAL_QUESTIONS
         ? t("dailyResultGreat")
         : finalScore >= 3
         ? t("dailyResultGood")
@@ -551,10 +569,18 @@ export default function DailyBrainScreen() {
             <View
               className="w-28 h-28 rounded-full items-center justify-center mb-6"
               style={{
-                backgroundColor: perfect ? 'rgba(255, 209, 0, 0.2)' : COLORS.primaryDim,
+                backgroundColor: eliminated
+                  ? 'rgba(255,107,107,0.18)'
+                  : perfect
+                    ? 'rgba(255, 209, 0, 0.2)'
+                    : COLORS.primaryDim,
               }}
             >
-              <Text className="text-6xl">{perfect ? "🏆" : finalScore >= 3 ? "💪" : "🧠"}</Text>
+              <ResultIcon
+                name={eliminated ? "gameover" : perfect ? "trophy" : finalScore >= 3 ? "medal" : "idea"}
+                color={eliminated ? "#FF6B6B" : perfect ? COLORS.yellow : COLORS.primary}
+                size={58}
+              />
             </View>
 
             <Text className="text-white text-3xl font-bold text-center mb-2">
@@ -824,6 +850,9 @@ export default function DailyBrainScreen() {
           >
             <Text className="text-xl" style={{ color: COLORS.primary }}>🏆</Text>
             <Text className="text-sm font-bold tracking-wide text-white">{score}/{TOTAL_QUESTIONS}</Text>
+            <Text className="text-sm tracking-tight" accessibilityLabel={`${Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors)} vies`}>
+              {"❤️".repeat(Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors))}{"🤍".repeat(Math.min(MAX_ERRORS_ALLOWED + 1, errors))}
+            </Text>
           </View>
         </View>
 
