@@ -215,7 +215,10 @@ function AnswerOption({
 }
 
 export default function DailyBrainScreen() {
-  const { user, isAnonymous } = useAuth();
+  const { user, isAnonymous, profile } = useAuth();
+  // 1ʳᵉ session de la vie du joueur : pas d'élimination (la 1ʳᵉ expérience doit
+  // être une victoire, pas un game over). Le survival s'active dès la 2e partie.
+  const firstSession = (profile?.games_played ?? 0) === 0;
   const { t, language } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [alreadyPlayed, setAlreadyPlayed] = useState(false);
@@ -340,8 +343,9 @@ export default function DailyBrainScreen() {
   };
 
   const advance = useCallback(() => {
-    // Survival : au-delà de l'erreur tolérée, la partie s'arrête net.
-    if (errorsRef.current > MAX_ERRORS_ALLOWED) {
+    // Survival : au-delà de l'erreur tolérée, la partie s'arrête net —
+    // SAUF à la toute 1ʳᵉ session (on garantit une 1ʳᵉ expérience positive).
+    if (!firstSession && errorsRef.current > MAX_ERRORS_ALLOWED) {
       finishSession();
       return;
     }
@@ -540,7 +544,7 @@ export default function DailyBrainScreen() {
   // Game Over screen — show summary
   if (gameOver) {
     const finalScore = scoreRef.current;
-    const eliminated = errorsRef.current > MAX_ERRORS_ALLOWED && finalScore < TOTAL_QUESTIONS;
+    const eliminated = !firstSession && errorsRef.current > MAX_ERRORS_ALLOWED && finalScore < TOTAL_QUESTIONS;
     const headline = eliminated
       ? (language === "fr" ? "Éliminé !" : "Game over!")
       : finalScore >= TOTAL_QUESTIONS
@@ -851,9 +855,11 @@ export default function DailyBrainScreen() {
           >
             <ResultIcon name="trophy" color={COLORS.primary} size={18} />
             <Text className="text-sm font-bold tracking-wide text-white">{score}/{TOTAL_QUESTIONS}</Text>
-            <Text className="text-sm tracking-tight" accessibilityLabel={`${Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors)} vies`}>
-              {"❤️".repeat(Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors))}{"🤍".repeat(Math.min(MAX_ERRORS_ALLOWED + 1, errors))}
-            </Text>
+            {!firstSession && (
+              <Text className="text-sm tracking-tight" accessibilityLabel={`${Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors)} vies`}>
+                {"❤️".repeat(Math.max(0, MAX_ERRORS_ALLOWED + 1 - errors))}{"🤍".repeat(Math.min(MAX_ERRORS_ALLOWED + 1, errors))}
+              </Text>
+            )}
           </View>
         </View>
 

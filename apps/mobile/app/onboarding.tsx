@@ -41,7 +41,6 @@ export default function OnboardingScreen() {
   const slides: { iconSet: "result" | "mode"; iconName: string; color: string; title: string; description: string }[] = [
     { iconSet: "result", iconName: "brain", color: "#00c2cc", title: L("Bienvenue sur BigHead", "Welcome to BigHead"), description: L("Une question de culture générale par jour. Deviens incollable, un jour à la fois.", "One general-knowledge question a day. Get sharper, one day at a time.") },
     { iconSet: "mode", iconName: "streak", color: "#f97316", title: L("Une question par jour", "One question a day"), description: L("Réponds chaque jour, garde ta série et grimpe dans ta ligue.", "Answer daily, keep your streak and climb your league.") },
-    { iconSet: "mode", iconName: "duel", color: "#a880ff", title: L("Défie tes amis", "Challenge your friends"), description: L("Duels, clubs, party entre potes — la culture G devient un jeu.", "Duels, clubs, party with friends — trivia becomes a game.") },
   ];
 
   const goToSlide = (index: number) => {
@@ -76,7 +75,9 @@ export default function OnboardingScreen() {
         console.error("Error saving username:", error);
       }
     }
-    setStep("referral");
+    // Activation : on lâche direct dans la question du jour après le pseudo —
+    // le parrainage (rare, friction) sort du tunnel obligatoire.
+    finishOnboarding();
   };
 
   const mapRedeemError = (err: string): string => {
@@ -135,6 +136,11 @@ export default function OnboardingScreen() {
   if (step === "themes") {
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+        <View className="flex-row justify-end px-6 pt-2">
+          <Pressable onPress={finishOnboarding} className="p-2" accessibilityRole="button">
+            <Text className="text-gray-400">{L("Passer", "Skip")}</Text>
+          </Pressable>
+        </View>
         <View className="flex-1 px-6">
           <View className="items-center mt-8 mb-6">
             <View className="mb-4"><ResultIcon name="sparkle" color={COLORS.primary} size={48} /></View>
@@ -282,7 +288,7 @@ export default function OnboardingScreen() {
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <View className="flex-1">
         <View className="flex-row justify-end px-6 pt-4">
-          <Pressable onPress={() => setStep("themes")} className="p-2">
+          <Pressable onPress={finishOnboarding} className="p-2" accessibilityRole="button">
             <Text className="text-gray-400">{L("Passer", "Skip")}</Text>
           </Pressable>
         </View>
