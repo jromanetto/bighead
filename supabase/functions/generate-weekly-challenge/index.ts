@@ -3,14 +3,16 @@
 // the function only creates new challenges, no destructive operations.
 // Cron sends `Authorization: Bearer ${get_service_role_jwt()}` (sb_secret_*).
 //
-// Picks the least-recently-used active theme, generates 20 bilingual
-// (FR + EN) trivia questions via Claude Sonnet 4.6 with educational
-// "learning_fact" cards, and stores them in `weekly_challenges` +
-// `weekly_challenge_questions`.
+// Picks the least-recently-used active theme, generates ~20 bilingual
+// (FR + EN) trivia questions via Claude with educational "learning_fact"
+// cards, and stores them in `weekly_challenges` + `weekly_challenge_questions`.
 //
-// Triggered weekly by pg_cron (Sunday 23:30 UTC). Can also be invoked
-// manually for testing : POST /generate-weekly-challenge with optional
-// {"theme_slug": "..."} body to force a specific theme.
+// Robustesse (fix août 2026) : le validateur ÉCARTE les questions fautives
+// (fuite de réponse, champ manquant) au lieu de rejeter tout le lot — un seul
+// mauvais item ne fait plus échouer un créneau entier. On garde >= MIN_QUESTIONS.
+//
+// Triggered every 2 days by pg_cron. Can also be invoked manually for testing:
+// POST with optional {"theme_slug": "...", "start_date": "..."}.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -23,6 +25,9 @@ const ANTHROPIC_MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-5";
 // Cadence : 1 défi tous les 2 jours. On garde au plus QUEUE_BUFFER défis themed
 // "upcoming" d'avance ; le cron quotidien complète après chaque clôture.
 const QUEUE_BUFFER = 3;
+// On demande 20 questions mais on accepte de shipper le lot si au moins
+// MIN_QUESTIONS survivent au nettoyage (fuite/champ manquant écartés).
+const MIN_QUESTIONS = 15;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,15 +57,6 @@ interface BilingualQuestion {
   learning_fact_en: string;
 }
 
-function getNextMonday(from: Date): Date {
-  const d = new Date(from);
-  const day = d.getUTCDay();
-  const daysUntilMonday = day === 0 ? 1 : (8 - day) % 7 || 7;
-  d.setUTCDate(d.getUTCDate() + daysUntilMonday);
-  d.setUTCHours(0, 0, 0, 0);
-  return d;
-}
-
 function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
@@ -78,18 +74,19 @@ Output them IN THIS ORDER: the 10 easy first, then the 7 medium, then the 3 hard
 
 Requirements per question:
 - Each question must have ONE clear correct answer and THREE plausible but unambiguous wrong answers.
-- DO NOT reveal the answer in the question text (no "Which is the largest planet, Jupiter or Mars?").
+- DO NOT reveal the answer in the question text (no "Which is the largest planet, Jupiter or Mars?"). The correct answer word/phrase must NOT appear anywhere in the question text, in EITHER language.
 - Cover diverse sub-topics within the theme — avoid clustering on one aspect.
 - The "learning_fact" is a short (1-2 sentence) interesting educational fact about the correct answer, NOT a repetition of the question. It teaches the user something new.
 - All four answer options should be of similar length and grammatical form so the correct one is not obvious by shape alone.
 - Use proper French (avec accents) and proper English.
 
 CRITICAL — SELF-CHECK before including each question (real hallucinations have shipped — be paranoid):
-1. CONSISTENCY: re-read your own learning_fact. If it implies a different answer than your correct_answer, DISCARD this question (real example: Q said "Korean brand named after Seoul → Kia" while the fact said "Kia means 'rising out of Asia'" — contradiction).
-2. ETYMOLOGY: only generate name-origin / etymology questions when the etymology is well-documented (Wikipedia-grade). If unsure, skip (real example: "Volvo = Latin for iron → Volvo" is wrong; volvo means "I roll" from volvere, iron is ferrum).
+1. CONSISTENCY: re-read your own learning_fact. If it implies a different answer than your correct_answer, DISCARD this question.
+2. ETYMOLOGY: only generate name-origin / etymology questions when the etymology is well-documented (Wikipedia-grade). If unsure, skip.
 3. DATES & RECORDS: be precise. If you can't pin down a year/record with confidence, choose a different angle.
 4. VERIFIABILITY: every fact must be one a knowledgeable human could verify on Wikipedia. If you're guessing, skip.
 5. ANSWER ALIGNMENT: the correct_answer must be the ONLY answer that fits both the question AND the learning_fact.
+6. NO LEAK: the correct answer must never appear in the question text (FR or EN).
 If a question fails any check, generate a different one. Quality > quantity, but still output 20.
 
 Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
@@ -114,9 +111,6 @@ Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
 The "questions" array must contain EXACTLY 20 objects.`;
 }
 
-// Claude renvoie occasionnellement du JSON légèrement malformé (virgule/quote
-// manquante). On retente quelques fois avant d'abandonner — sinon un créneau
-// reste vide alors qu'on génère tous les 2 jours sans surveillance.
 async function callClaude(prompt: string, attempts = 3): Promise<BilingualQuestion[]> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
@@ -156,40 +150,36 @@ async function callClaudeOnce(prompt: string): Promise<BilingualQuestion[]> {
   return parsed.questions;
 }
 
-function validateQuestions(qs: BilingualQuestion[]): string | null {
-  if (qs.length !== 20) return `expected 20 questions, got ${qs.length}`;
-  for (let i = 0; i < qs.length; i++) {
-    const q = qs[i];
+// Nettoie un lot : ÉCARTE (n'échoue pas sur) les questions fautives — champ
+// manquant, mauvais nombre de distracteurs, difficulté invalide, ou fuite de la
+// réponse dans l'énoncé (FR ou EN). Retourne les questions valides.
+function sanitizeQuestions(qs: BilingualQuestion[]): BilingualQuestion[] {
+  if (!Array.isArray(qs)) return [];
+  const valid: BilingualQuestion[] = [];
+  for (const q of qs) {
+    if (!q) continue;
     const required = [
-      "question_fr",
-      "correct_answer_fr",
-      "wrong_answers_fr",
-      "question_en",
-      "correct_answer_en",
-      "wrong_answers_en",
+      "question_fr", "correct_answer_fr", "wrong_answers_fr",
+      "question_en", "correct_answer_en", "wrong_answers_en",
     ];
+    let ok = true;
     for (const key of required) {
       // @ts-ignore dynamic field check
-      if (!q[key] || (Array.isArray(q[key]) && q[key].length === 0)) {
-        return `question ${i + 1}: missing or empty field "${key}"`;
-      }
+      const v = q[key];
+      if (!v || (Array.isArray(v) && v.length === 0)) { ok = false; break; }
     }
-    if (!Array.isArray(q.wrong_answers_fr) || q.wrong_answers_fr.length !== 3) {
-      return `question ${i + 1}: wrong_answers_fr must have exactly 3 items`;
-    }
-    if (!Array.isArray(q.wrong_answers_en) || q.wrong_answers_en.length !== 3) {
-      return `question ${i + 1}: wrong_answers_en must have exactly 3 items`;
-    }
-    if (![1, 2, 3].includes(q.difficulty)) {
-      return `question ${i + 1}: invalid difficulty ${q.difficulty}`;
-    }
-    // Light leak check : correct answer should not appear in question text
-    const lowerQFr = (q.question_fr || "").toLowerCase();
-    if (lowerQFr.includes((q.correct_answer_fr || "").toLowerCase()) && q.correct_answer_fr.length > 3) {
-      return `question ${i + 1}: French answer leaks into the question`;
-    }
+    if (!ok) continue;
+    if (!Array.isArray(q.wrong_answers_fr) || q.wrong_answers_fr.length !== 3) continue;
+    if (!Array.isArray(q.wrong_answers_en) || q.wrong_answers_en.length !== 3) continue;
+    if (![1, 2, 3].includes(q.difficulty)) continue;
+    // Fuite : la réponse correcte ne doit pas apparaître dans l'énoncé (FR/EN).
+    const caFr = (q.correct_answer_fr || "").toLowerCase();
+    if (caFr.length > 3 && (q.question_fr || "").toLowerCase().includes(caFr)) continue;
+    const caEn = (q.correct_answer_en || "").toLowerCase();
+    if (caEn.length > 3 && (q.question_en || "").toLowerCase().includes(caEn)) continue;
+    valid.push(q);
   }
-  return null;
+  return valid;
 }
 
 serve(async (req) => {
@@ -197,9 +187,6 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  // Auth gate: only the cron (sends CRON_SECRET) or service role may run this.
-  // Previously relied on URL secrecy (no auth) — a public, guessable endpoint
-  // that could trigger LLM generation / close challenges.
   {
     const cronSecret = Deno.env.get("CRON_SECRET");
     const token = req.headers.get("authorization")?.replace("Bearer ", "");
@@ -213,6 +200,16 @@ serve(async (req) => {
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+  // Marque un défi en échec SANS le laisser bloquer son créneau : status='failed'
+  // (le dedup guard ne matche que upcoming/active), donc le prochain run réessaie.
+  async function markFailed(id: string, reason: string) {
+    await supabase.from("weekly_challenges").update({
+      generation_status: "failed",
+      status: "failed",
+      generation_error: reason.slice(0, 500),
+    }).eq("id", id);
+  }
 
   try {
     let forcedThemeSlug: string | null = null;
@@ -243,15 +240,12 @@ serve(async (req) => {
       theme = data as Theme;
     }
 
-    // 2. Cadence : un nouveau défi tous les 2 jours. La fenêtre fait 2 jours
-    //    (start et start+1). On remplit une file tampon (QUEUE_BUFFER) puis on
-    //    s'arrête, le cron quotidien complète au fur et à mesure des clôtures.
+    // 2. Cadence : un nouveau défi tous les 2 jours (fenêtre start .. start+1).
     const now = new Date();
     let start: Date;
     if (forceStartDate) {
       start = new Date(forceStartDate + "T00:00:00Z");
     } else {
-      // Tampon : ne pas sur-générer. Stop si assez de défis themed à venir.
       const { data: upcoming } = await supabase
         .from("weekly_challenges")
         .select("id")
@@ -264,7 +258,6 @@ serve(async (req) => {
           { status: 200, headers: { ...corsHeaders, "content-type": "application/json" } },
         );
       }
-      // Prochain créneau = lendemain du dernier défi themed programmé, sinon aujourd'hui.
       const { data: latest } = await supabase
         .from("weekly_challenges")
         .select("end_date")
@@ -278,12 +271,11 @@ serve(async (req) => {
       if (latest?.end_date) start.setUTCDate(start.getUTCDate() + 1);
     }
     const end = new Date(start);
-    end.setUTCDate(end.getUTCDate() + 1); // fenêtre de 2 jours : start et start+1
+    end.setUTCDate(end.getUTCDate() + 1); // fenêtre de 2 jours
     const startStr = isoDate(start);
 
-    // 2b. Dedup guard: when triggered by cron (no force* args), skip if a themed
-    // challenge already exists for this start_date — avoids duplicates when the
-    // next week's challenge was pre-generated manually.
+    // 2b. Dedup guard: skip si un défi themed READY/en cours existe déjà pour ce
+    // créneau. On ignore volontairement les 'failed' pour permettre le retry.
     if (!forcedThemeSlug && !forceStartDate) {
       const { data: existing } = await supabase
         .from("weekly_challenges")
@@ -294,7 +286,7 @@ serve(async (req) => {
       if (existing && existing.length > 0) {
         return new Response(JSON.stringify({
           success: true,
-          skipped: "themed challenge already exists for this week",
+          skipped: "themed challenge already exists for this slot",
           existing_id: existing[0].id,
           existing_theme: existing[0].theme_slug,
         }), {
@@ -316,7 +308,7 @@ serve(async (req) => {
         emoji: theme.emoji,
         color: theme.color,
         target_category: theme.target_category,
-        target_difficulty: null, // mix fixe 10/7/3 par quiz — plus de niveau global
+        target_difficulty: null,
         start_date: isoDate(start),
         end_date: isoDate(end),
         status: "upcoming",
@@ -326,30 +318,30 @@ serve(async (req) => {
       .single();
     if (insErr || !challenge) throw new Error(`insert challenge failed: ${insErr?.message}`);
 
-    // 4. Generate via Claude
-    let questions: BilingualQuestion[];
-    try {
-      questions = await callClaude(buildPrompt(theme));
-    } catch (e: any) {
-      await supabase.from("weekly_challenges").update({
-        generation_status: "failed",
-        generation_error: e.message?.slice(0, 500),
-      }).eq("id", challenge.id);
-      throw e;
+    // 4. Génération via Claude — jusqu'à 2 lots, on garde le meilleur nettoyé.
+    let valid: BilingualQuestion[] = [];
+    let genError: string | null = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const questions = await callClaude(buildPrompt(theme));
+        const cleaned = sanitizeQuestions(questions);
+        if (cleaned.length > valid.length) valid = cleaned;
+        if (valid.length >= 20) break; // lot parfait, inutile de retenter
+      } catch (e: any) {
+        genError = e?.message ?? String(e);
+      }
     }
 
-    const validationError = validateQuestions(questions);
-    if (validationError) {
-      await supabase.from("weekly_challenges").update({
-        generation_status: "failed",
-        generation_error: validationError,
-      }).eq("id", challenge.id);
-      throw new Error(`Validation failed: ${validationError}`);
+    if (valid.length < MIN_QUESTIONS) {
+      const reason = genError
+        ? `generation error: ${genError}`
+        : `only ${valid.length} valid questions after sanitize (min ${MIN_QUESTIONS})`;
+      await markFailed(challenge.id, reason);
+      throw new Error(`Validation failed: ${reason}`);
     }
 
-    // 5. Insert questions — triées facile → difficile (positions 1-20 dans l'ordre
-    //    10 faciles, 7 moyennes, 3 difficiles), quel que soit l'ordre de sortie du LLM.
-    const ordered = [...questions].sort((a, b) => a.difficulty - b.difficulty);
+    // 5. Insert questions — triées facile → difficile.
+    const ordered = [...valid].sort((a, b) => a.difficulty - b.difficulty);
     const rows = ordered.map((q, idx) => ({
       challenge_id: challenge.id,
       position: idx + 1,
@@ -366,10 +358,7 @@ serve(async (req) => {
 
     const { error: qErr } = await supabase.from("weekly_challenge_questions").insert(rows);
     if (qErr) {
-      await supabase.from("weekly_challenges").update({
-        generation_status: "failed",
-        generation_error: qErr.message?.slice(0, 500),
-      }).eq("id", challenge.id);
+      await markFailed(challenge.id, `insert questions failed: ${qErr.message}`);
       throw new Error(`insert questions failed: ${qErr.message}`);
     }
 
@@ -377,8 +366,6 @@ serve(async (req) => {
     const todayStr = isoDate(new Date());
     const finalStatus = challenge.start_date <= todayStr ? "active" : "upcoming";
 
-    // total_questions defaults to 30 in the schema; set it to the real count
-    // (now 20 for themed) so the UI progress bar / "x/total" are correct.
     await supabase.from("weekly_challenges").update({
       generation_status: "ready",
       status: finalStatus,
