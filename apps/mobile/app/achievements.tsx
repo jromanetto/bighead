@@ -15,6 +15,7 @@ import {
 } from "../src/services/achievements";
 import { IconButton } from "../src/components/ui";
 import { EmptyState } from "../src/components/EmptyState";
+import { calculateLevel } from "../src/utils/progression";
 
 // Design colors
 const COLORS = {
@@ -35,26 +36,8 @@ const COLORS = {
   textDim: "#71717a",
 };
 
-// XP required for each level (exponential growth)
-const getXPForLevel = (level: number): number => {
-  return Math.floor(100 * Math.pow(1.5, level - 1));
-};
-
-// Calculate level from total XP
-const calculateLevel = (totalXP: number): { level: number; currentXP: number; nextLevelXP: number; progress: number } => {
-  let level = 1;
-  let xpRemaining = totalXP;
-
-  while (xpRemaining >= getXPForLevel(level)) {
-    xpRemaining -= getXPForLevel(level);
-    level++;
-  }
-
-  const nextLevelXP = getXPForLevel(level);
-  const progress = (xpRemaining / nextLevelXP) * 100;
-
-  return { level, currentXP: xpRemaining, nextLevelXP, progress };
-};
+// Niveau : source unique dans progression.ts (importé ci-dessus), partagée
+// avec Home et Stats — plus de courbe dupliquée ici.
 
 // Category icons and colors
 const categoryConfig: Record<string, { icon: string; color: string; bgColor: string }> = {

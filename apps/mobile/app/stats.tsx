@@ -6,6 +6,7 @@ import { useAuth } from "../src/contexts/AuthContext";
 import { supabase } from "../src/services/supabase";
 import { buttonPressFeedback } from "../src/utils/feedback";
 import { IconButton } from "../src/components/ui";
+import { calculateLevel } from "../src/utils/progression";
 
 // QuizNext design colors
 const COLORS = {
@@ -229,6 +230,11 @@ export default function StatsScreen() {
     );
   }
 
+  // Niveau + progression calculés depuis l'XP (source unique : progression.ts),
+  // pour rester cohérent avec Home et Achievements (la colonne `level` stockée
+  // pouvait diverger, et l'ancienne barre supposait à tort 1000 XP/niveau).
+  const levelData = calculateLevel(stats?.totalXP || 0);
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-4">
@@ -257,7 +263,7 @@ export default function StatsScreen() {
             <View>
               <Text style={{ color: COLORS.textMuted }} className="text-sm mb-1">Level</Text>
               <Text className="text-4xl font-black" style={{ color: COLORS.yellow }}>
-                {stats?.level || 1}
+                {levelData.level}
               </Text>
             </View>
             <View className="items-end">
@@ -269,14 +275,14 @@ export default function StatsScreen() {
           </View>
           <View className="mt-4">
             <View className="flex-row justify-between mb-1">
-              <Text style={{ color: COLORS.textMuted }} className="text-xs">Progress to Level {(stats?.level || 1) + 1}</Text>
-              <Text style={{ color: COLORS.textMuted }} className="text-xs">{((stats?.totalXP || 0) % 1000)} / 1000 XP</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-xs">Progress to Level {levelData.level + 1}</Text>
+              <Text style={{ color: COLORS.textMuted }} className="text-xs">{levelData.currentXP} / {levelData.nextLevelXP} XP</Text>
             </View>
             <View className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: COLORS.surfaceLight }}>
               <View
                 className="h-full rounded-full"
                 style={{
-                  width: `${((stats?.totalXP || 0) % 1000) / 10}%`,
+                  width: `${levelData.progress}%`,
                   backgroundColor: COLORS.yellow,
                 }}
               />
