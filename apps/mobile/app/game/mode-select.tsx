@@ -3,6 +3,7 @@ import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { IconButton } from "../../src/components/ui";
+import { ModeArt } from "../../src/components/icons/ModeArt";
 
 // QuizNext design colors
 const COLORS = {
@@ -43,7 +44,7 @@ export default function ModeSelectScreen() {
               style={{ backgroundColor: COLORS.purple }}
             >
               <View className="flex-row items-center mb-2">
-                <Text className="text-3xl mr-3">⚡</Text>
+                <View style={{ marginRight: 12 }}><ModeArt name="solo" size={44} /></View>
                 <Text className="text-white text-2xl font-bold">
                   Chain Reaction
                 </Text>
@@ -70,7 +71,7 @@ export default function ModeSelectScreen() {
               style={{ backgroundColor: COLORS.primary }}
             >
               <View className="flex-row items-center mb-2">
-                <Text className="text-3xl mr-3">⌨️</Text>
+                <View style={{ marginRight: 12 }}><ModeArt name="recall" size={44} /></View>
                 <Text style={{ color: COLORS.bg }} className="text-2xl font-bold">Cite tout</Text>
                 <View className="ml-2 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
                   <Text style={{ color: COLORS.bg }} className="text-xs font-bold">NEW</Text>
@@ -98,7 +99,7 @@ export default function ModeSelectScreen() {
               style={{ backgroundColor: COLORS.coral }}
             >
               <View className="flex-row items-center mb-2">
-                <Text className="text-3xl mr-3">🕵️</Text>
+                <View style={{ marginRight: 12 }}><ModeArt name="traitor" size={44} /></View>
                 <Text className="text-white text-2xl font-bold">
                   Traitor
                 </Text>
@@ -128,7 +129,7 @@ export default function ModeSelectScreen() {
               style={{ backgroundColor: COLORS.yellow }}
             >
               <View className="flex-row items-center mb-2">
-                <Text className="text-3xl mr-3">💰</Text>
+                <View style={{ marginRight: 12 }}><ModeArt name="auction" size={44} /></View>
                 <Text style={{ color: COLORS.bg }} className="text-2xl font-bold">
                   Auction Duel
                 </Text>
@@ -162,7 +163,7 @@ export default function ModeSelectScreen() {
               }}
             >
               <View className="flex-row items-center mb-2">
-                <Text className="text-3xl mr-3">🎉</Text>
+                <View style={{ marginRight: 12 }}><ModeArt name="party" size={44} /></View>
                 <Text className="text-white text-2xl font-bold">
                   Party Mode
                 </Text>

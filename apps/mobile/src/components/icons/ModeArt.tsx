@@ -16,6 +16,12 @@ const MODE_ART = {
   geo: require("../../../assets/mode-art/geo.png"),
   daily: require("../../../assets/mode-art/daily.png"),
   more: require("../../../assets/mode-art/more.png"),
+  traitor: require("../../../assets/mode-art/traitor.png"),
+  auction: require("../../../assets/mode-art/auction.png"),
+  streak: require("../../../assets/mode-art/streak.png"),
+  league: require("../../../assets/mode-art/league.png"),
+  club: require("../../../assets/mode-art/club.png"),
+  prime: require("../../../assets/mode-art/prime.png"),
 } as const;
 
 export type ModeArtName = keyof typeof MODE_ART;

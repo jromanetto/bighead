@@ -6,7 +6,7 @@ import { COLORS } from "../theme/colors";
 import { buttonPressFeedback } from "../utils/feedback";
 import { isPrimeTimeLive, msUntilNextPrimeTime, primeTimeLabel } from "../utils/primeTime";
 import { getMyTeam, type Team } from "../services/teams";
-import { ModeIcon, type ModeIconName } from "./icons/ModeIcon";
+import { ModeArt, type ModeArtName } from "./icons/ModeArt";
 
 /**
  * Tuiles bento de l'accueil (direction Mix) — série, ligue, club, Prime Time.
@@ -25,7 +25,7 @@ function Tile({
 }: {
   onPress: () => void;
   label: string;
-  iconName: ModeIconName;
+  iconName: ModeArtName;
   value: string;
   sub?: string;
   accent: string;
@@ -50,8 +50,8 @@ function Tile({
       accessibilityRole="button"
       accessibilityLabel={`${label} ${value}`}
     >
-      <View className="flex-row items-center" style={{ gap: 5 }}>
-        <ModeIcon name={iconName} color={live ? COLORS.coral : accent} size={14} />
+      <View className="flex-row items-center" style={{ gap: 7 }}>
+        <ModeArt name={iconName} size={26} />
         <Text className="text-[10px] uppercase tracking-wider" style={{ color: COLORS.textMuted }}>
           {label}
         </Text>
