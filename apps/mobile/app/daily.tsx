@@ -301,8 +301,9 @@ export default function DailyBrainScreen() {
       // questions in the new language without a stale-settings race.
       userLanguage.current = language;
 
-      // Check if already played today
-      if (user && !isAnonymous) {
+      // Check if already played today — même source que l'écriture (DB dès qu'on
+      // a un user.id, anonyme inclus).
+      if (user?.id) {
         const { played, score: todayScore } = await hasPlayedDailySurvivalToday(user.id);
         if (played) {
           setAlreadyPlayed(true);
@@ -440,7 +441,11 @@ export default function DailyBrainScreen() {
       return;
     }
 
-    if (user && !isAnonymous) {
+    // Les users anonymes ont un uid auth valide (RLS: auth.uid() = user_id) :
+    // on sauve leur résultat en DB comme tout le monde, sinon leur daily ne
+    // compte jamais (streak, XP hebdo, leaderboard) et la cartouche home reste
+    // sur "Jouer". Le local n'est plus qu'un fallback pour l'invité sans session.
+    if (user?.id) {
       try {
         const result = await submitDailyBrain(user.id, finalScore, totalTimeMs);
         setXpEarned(result.xpEarned);
