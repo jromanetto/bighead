@@ -85,6 +85,7 @@ export interface LeaderboardEntry {
   games_played: number;
   best_chain: number;
   rank: number;
+  country?: string | null;
 }
 
 export interface WeeklyLeaderboardEntry {
@@ -95,6 +96,7 @@ export interface WeeklyLeaderboardEntry {
   weekly_games: number;
   best_chain: number;
   rank: number;
+  country?: string | null;
 }
 
 /**
@@ -133,6 +135,7 @@ export const getWeeklyLeaderboard = async (
     games_played: entry.weekly_games,
     best_chain: entry.best_chain,
     rank: entry.rank,
+    country: entry.country,
   }));
 };
 

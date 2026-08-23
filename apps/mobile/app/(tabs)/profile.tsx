@@ -16,6 +16,7 @@ import { useTranslation } from "../../src/contexts/LanguageContext";
 import { Skeleton } from "../../src/components/Skeleton";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { AuthModal, AuthModalRef } from "../../src/components/AuthModal";
+import { Flag, countryFromLanguage } from "../../src/components/Flag";
 
 // New QuizNext design colors
 const COLORS = {
@@ -413,6 +414,9 @@ export default function ProfileScreen() {
               <Text className="text-white text-2xl font-black">
                 {displayName}
               </Text>
+              <View className="ml-2">
+                <Flag country={(profile as any)?.country || countryFromLanguage(language)} size={20} />
+              </View>
               <Text className="text-gray-500 ml-2">✏️</Text>
             </View>
             <Text className="text-gray-400">

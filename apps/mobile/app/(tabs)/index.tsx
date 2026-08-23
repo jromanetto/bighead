@@ -8,6 +8,7 @@ import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDailyStreak, hasPlayedDailySurvivalToday, DAILY_BRAIN_QUESTION_COUNT } from "../../src/services/dailyChallenge";
+import { ensureCountry } from "../../src/services/country";
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { timeUntilDailyReset } from "../../src/utils/dailyReset";
 import { logEvent } from "../../src/services/analytics";
@@ -162,6 +163,8 @@ export default function HomeScreen() {
     // au lancement). On l'affiche donc pour tout user, sinon la pastille 🔥 reste
     // bloquée à 0 pour la quasi-totalité des joueurs.
     if (user?.id) {
+      // Renseigne le pays du joueur (drapeau au classement) depuis la région appareil.
+      ensureCountry(user.id, (profile as any)?.country);
       try {
         // On lit le MÊME système que l'écran /daily (survival → daily_survival_results),
         // sinon la cartouche reste bloquée sur "Jouer" après avoir joué.

@@ -8,6 +8,7 @@ import { buttonPressFeedback } from "../../src/utils/feedback";
 import { SmallAvatar } from "../../src/components/ProfileAvatar";
 import { IconButton } from "../../src/components/ui";
 import { SkeletonLeaderboardRow } from "../../src/components/Skeleton";
+import { Flag } from "../../src/components/Flag";
 import { EmptyState } from "../../src/components/EmptyState";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 
@@ -92,13 +93,15 @@ function LeaderboardRow({
         size={40}
         isCurrentUser={isCurrentUser}
       />
-      <View className="flex-1 ml-3">
+      <View className="flex-1 ml-3 flex-row items-center" style={{ gap: 6 }}>
         <Text
           className="font-semibold"
-          style={{ color: isCurrentUser ? COLORS.primary : COLORS.text }}
+          numberOfLines={1}
+          style={{ color: isCurrentUser ? COLORS.primary : COLORS.text, flexShrink: 1 }}
         >
           {player.username || "Player"}
         </Text>
+        <Flag country={player.country} size={15} />
       </View>
       <Text className="font-bold" style={{ color: COLORS.text }}>
         {player.total_xp?.toLocaleString() || 0}
@@ -254,13 +257,16 @@ export default function LeaderboardScreen() {
                     />
                     <RankBadge rank={2} />
                   </View>
-                  <Text
-                    className="text-sm font-medium mt-2"
-                    style={{ color: isCurrentUser(leaderboard[1].id) ? COLORS.primary : COLORS.text }}
-                    numberOfLines={1}
-                  >
-                    {leaderboard[1].username || "Joueur"}
-                  </Text>
+                  <View className="flex-row items-center mt-2" style={{ gap: 5, maxWidth: "100%" }}>
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: isCurrentUser(leaderboard[1].id) ? COLORS.primary : COLORS.text, flexShrink: 1 }}
+                      numberOfLines={1}
+                    >
+                      {leaderboard[1].username || "Joueur"}
+                    </Text>
+                    <Flag country={leaderboard[1].country} size={13} />
+                  </View>
                   <Text className="text-xs" style={{ color: COLORS.textMuted }}>
                     {leaderboard[1].total_xp?.toLocaleString() || 0} XP
                   </Text>
@@ -280,13 +286,16 @@ export default function LeaderboardScreen() {
                     />
                     <RankBadge rank={1} />
                   </View>
-                  <Text
-                    className="text-sm font-bold mt-2"
-                    style={{ color: isCurrentUser(leaderboard[0].id) ? COLORS.primary : COLORS.gold }}
-                    numberOfLines={1}
-                  >
-                    {leaderboard[0].username || "Joueur"}
-                  </Text>
+                  <View className="flex-row items-center mt-2" style={{ gap: 5, maxWidth: "100%" }}>
+                    <Text
+                      className="text-sm font-bold"
+                      style={{ color: isCurrentUser(leaderboard[0].id) ? COLORS.primary : COLORS.gold, flexShrink: 1 }}
+                      numberOfLines={1}
+                    >
+                      {leaderboard[0].username || "Joueur"}
+                    </Text>
+                    <Flag country={leaderboard[0].country} size={13} />
+                  </View>
                   <Text style={{ color: COLORS.gold }} className="text-xs">
                     {leaderboard[0].total_xp?.toLocaleString() || 0} XP
                   </Text>
@@ -305,13 +314,16 @@ export default function LeaderboardScreen() {
                     />
                     <RankBadge rank={3} />
                   </View>
-                  <Text
-                    className="text-sm font-medium mt-2"
-                    style={{ color: isCurrentUser(leaderboard[2].id) ? COLORS.primary : COLORS.text }}
-                    numberOfLines={1}
-                  >
-                    {leaderboard[2].username || "Joueur"}
-                  </Text>
+                  <View className="flex-row items-center mt-2" style={{ gap: 5, maxWidth: "100%" }}>
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: isCurrentUser(leaderboard[2].id) ? COLORS.primary : COLORS.text, flexShrink: 1 }}
+                      numberOfLines={1}
+                    >
+                      {leaderboard[2].username || "Joueur"}
+                    </Text>
+                    <Flag country={leaderboard[2].country} size={13} />
+                  </View>
                   <Text className="text-xs" style={{ color: COLORS.textMuted }}>
                     {leaderboard[2].total_xp?.toLocaleString() || 0} XP
                   </Text>
