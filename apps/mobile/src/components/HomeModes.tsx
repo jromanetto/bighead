@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { useTranslation } from "../contexts/LanguageContext";
 import { COLORS } from "../theme/colors";
 import { buttonPressFeedback } from "../utils/feedback";
-import { ModeIcon, type ModeIconName } from "./icons/ModeIcon";
+import { ModeArt, type ModeArtName } from "./icons/ModeArt";
 
 /** Applique une opacité à une couleur hex #RRGGBB (pour teinter les icônes). */
 function alpha(hex: string, a: number): string {
@@ -22,7 +22,7 @@ function alpha(hex: string, a: number): string {
 
 interface ModeDef {
   route: string;
-  icon: ModeIconName;
+  icon: ModeArtName;
   title: { fr: string; en: string };
   sub: { fr: string; en: string };
   accent: string; // couleur d'accent de l'icône
@@ -59,10 +59,8 @@ export function HomeModes() {
           accessibilityRole="button"
           accessibilityLabel={m.title[lang]}
         >
-          <View className="flex-row items-center justify-between mb-2">
-            <View className="rounded-xl items-center justify-center" style={{ width: 40, height: 40, backgroundColor: alpha(m.accent, 0.16) }}>
-              <ModeIcon name={m.icon} color={m.accent} size={22} />
-            </View>
+          <View className="flex-row items-start justify-between mb-1.5" style={{ minHeight: 52 }}>
+            <ModeArt name={m.icon} size={52} />
             {m.badge ? (
               <View className="rounded-md px-1.5 py-0.5" style={{ backgroundColor: alpha(m.accent, 0.2) }}>
                 <Text className="text-[9px] font-black" style={{ color: m.accent }}>{m.badge}</Text>
