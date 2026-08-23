@@ -22,7 +22,7 @@ import {
   DAILY_BRAIN_QUESTION_COUNT,
   type DailyQuestion,
 } from "../src/services/dailyChallenge";
-import { correctAnswerFeedback, wrongAnswerFeedback } from "../src/utils/feedback";
+import { correctAnswerFeedback, wrongAnswerFeedback, buttonPressFeedback } from "../src/utils/feedback";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IconButton } from "../src/components/ui";
 import { useRatingPrompt } from "../src/hooks/useRatingPrompt";
@@ -491,6 +491,18 @@ export default function DailyBrainScreen() {
           />
         </View>
 
+        {/* Croix de fermeture — sortie rapide vers l'accueil */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); router.navigate("/(tabs)"); }}
+          accessibilityRole="button"
+          accessibilityLabel={language === "fr" ? "Fermer" : "Close"}
+          hitSlop={12}
+          className="absolute right-5 z-10 w-10 h-10 rounded-full items-center justify-center active:opacity-70"
+          style={{ top: 12, backgroundColor: COLORS.surface }}
+        >
+          <Text style={{ color: COLORS.textMuted, fontSize: 20, lineHeight: 22, fontWeight: "700" }}>✕</Text>
+        </Pressable>
+
         <View className="flex-1 items-center justify-center px-6">
           <View
             className="w-24 h-24 rounded-full items-center justify-center mb-6"
@@ -565,6 +577,18 @@ export default function DailyBrainScreen() {
             style={{ backgroundColor: COLORS.purple }}
           />
         </View>
+
+        {/* Croix de fermeture — sortie rapide vers l'accueil */}
+        <Pressable
+          onPress={() => { buttonPressFeedback(); router.navigate("/(tabs)"); }}
+          accessibilityRole="button"
+          accessibilityLabel={language === "fr" ? "Fermer" : "Close"}
+          hitSlop={12}
+          className="absolute right-5 z-10 w-10 h-10 rounded-full items-center justify-center active:opacity-70"
+          style={{ top: 12, backgroundColor: COLORS.surface }}
+        >
+          <Text style={{ color: COLORS.textMuted, fontSize: 20, lineHeight: 22, fontWeight: "700" }}>✕</Text>
+        </Pressable>
 
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 24 }}>
           <Animated.View
@@ -722,38 +746,49 @@ export default function DailyBrainScreen() {
 
             {showInvitePrompt && (
               <View
-                className="rounded-xl p-4 mb-4"
+                className="w-full rounded-2xl p-5 mb-5"
                 style={{
-                  backgroundColor: "rgba(161, 110, 255, 0.15)",
+                  backgroundColor: "rgba(161, 110, 255, 0.12)",
                   borderWidth: 1,
                   borderColor: "rgba(161, 110, 255, 0.3)",
                 }}
               >
-                <Text className="text-white font-bold text-center mb-2">
-                  {t("inviteFriends")}
-                </Text>
-                <View className="flex-row gap-3">
-                  <Pressable
-                    onPress={async () => {
-                      await inviteFriends();
-                      setShowInvitePrompt(false);
-                    }}
-                    className="flex-1 rounded-xl py-3 items-center"
-                    style={{ backgroundColor: COLORS.purple }}
-                  >
-                    <Text className="text-white font-bold">{t("invite")}</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={async () => {
-                      await markInviteDismissed();
-                      setShowInvitePrompt(false);
-                    }}
-                    className="flex-1 rounded-xl py-3 items-center"
-                    style={{ backgroundColor: COLORS.surface }}
-                  >
-                    <Text style={{ color: COLORS.textMuted }} className="font-bold">{t("cancel")}</Text>
-                  </Pressable>
+                <View className="flex-row items-center justify-center mb-1">
+                  <View className="mr-2"><ModeIcon name="duel" color={COLORS.purple} size={22} /></View>
+                  <Text className="text-white font-extrabold text-lg text-center">
+                    {t("inviteFriends")}
+                  </Text>
                 </View>
+                <Text style={{ color: COLORS.textMuted }} className="text-center text-sm mb-4">
+                  {language === "fr"
+                    ? "Défie tes amis sur le score du jour 👀"
+                    : "Challenge your friends on today's score 👀"}
+                </Text>
+                <Pressable
+                  onPress={async () => {
+                    buttonPressFeedback();
+                    await inviteFriends();
+                    setShowInvitePrompt(false);
+                  }}
+                  className="w-full rounded-2xl py-3.5 items-center active:opacity-85"
+                  style={{ backgroundColor: COLORS.purple }}
+                >
+                  <Text className="text-white font-black text-base">
+                    {language === "fr" ? "Inviter des amis" : "Invite friends"}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={async () => {
+                    await markInviteDismissed();
+                    setShowInvitePrompt(false);
+                  }}
+                  hitSlop={8}
+                  className="py-2 mt-1 items-center active:opacity-60"
+                >
+                  <Text style={{ color: COLORS.textMuted }} className="text-sm">
+                    {language === "fr" ? "Plus tard" : "Later"}
+                  </Text>
+                </Pressable>
               </View>
             )}
 

@@ -132,8 +132,8 @@ export default function LeaderboardScreen() {
     setLoading(true);
     try {
       const data = activeTab === "weekly"
-        ? await getWeeklyLeaderboard(50)
-        : await getLeaderboard(50);
+        ? await getWeeklyLeaderboard(100)
+        : await getLeaderboard(100);
       setLeaderboard(data);
     } catch (error) {
       console.error("Error loading leaderboard:", error);

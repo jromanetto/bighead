@@ -13,10 +13,14 @@ import { buttonPressFeedback } from "../utils/feedback";
  */
 export function HomeHeroDaily({
   dailyCompleted,
+  dailyScore = null,
+  questionCount = 10,
   timeLeft,
   streak,
 }: {
   dailyCompleted: boolean;
+  dailyScore?: number | null;
+  questionCount?: number;
   timeLeft: string;
   streak: number;
 }) {
@@ -63,14 +67,18 @@ export function HomeHeroDaily({
         </Text>
         <Text className="text-sm mt-1" style={{ color: COLORS.textMuted }}>
           {dailyCompleted
-            ? lang === "fr" ? "Reviens demain pour la prochaine" : "Come back tomorrow for the next one"
-            : `${lang === "fr" ? "1 question · 30 s · +50 XP" : "1 question · 30s · +50 XP"} · ⏱ ${timeLeft}`}
+            ? dailyScore != null
+              ? lang === "fr"
+                ? `Ton score : ${dailyScore}/${questionCount} · à demain !`
+                : `Your score: ${dailyScore}/${questionCount} · see you tomorrow!`
+              : lang === "fr" ? "Reviens demain pour la prochaine" : "Come back tomorrow"
+            : `${questionCount} ${lang === "fr" ? "questions" : "questions"} · ⏱ ${timeLeft}`}
         </Text>
 
         <View className="flex-row items-center gap-2.5 mt-4">
           <View className="flex-1 rounded-2xl py-3.5 items-center" style={{ backgroundColor: dailyCompleted ? COLORS.surfaceActive : COLORS.primary }}>
             <Text className="font-black" style={{ color: dailyCompleted ? COLORS.text : COLORS.bg }}>
-              {dailyCompleted ? (lang === "fr" ? "Revoir" : "Review") : (lang === "fr" ? "Jouer" : "Play")}
+              {dailyCompleted ? (lang === "fr" ? "Voir mon score" : "See my score") : (lang === "fr" ? "Jouer" : "Play")}
             </Text>
           </View>
           <View className="rounded-2xl py-3.5 px-4 flex-row items-center gap-1.5" style={{ backgroundColor: COLORS.surfaceActive, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)" }}>

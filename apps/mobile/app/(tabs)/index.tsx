@@ -7,7 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { useTranslation } from "../../src/contexts/LanguageContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDailyStreak, hasCompletedDailyChallenge } from "../../src/services/dailyChallenge";
+import { getDailyStreak, hasPlayedDailySurvivalToday, DAILY_BRAIN_QUESTION_COUNT } from "../../src/services/dailyChallenge";
 import { loadFeedbackSettings, buttonPressFeedback } from "../../src/utils/feedback";
 import { timeUntilDailyReset } from "../../src/utils/dailyReset";
 import { logEvent } from "../../src/services/analytics";
@@ -37,6 +37,7 @@ export default function HomeScreen() {
   const { permissionStatus, requestPermission } = useNotificationContext();
   const [dailyStreak, setDailyStreak] = useState(0);
   const [dailyCompleted, setDailyCompleted] = useState(false);
+  const [dailyScore, setDailyScore] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState(timeUntilDailyReset());
   const [recentChallenges, setRecentChallenges] = useState<WeeklyChallenge[] | null>(null);
   const [streakRescued, setStreakRescued] = useState(false);
@@ -162,12 +163,15 @@ export default function HomeScreen() {
     // bloquée à 0 pour la quasi-totalité des joueurs.
     if (user?.id) {
       try {
-        const [streak, completed] = await Promise.all([
+        // On lit le MÊME système que l'écran /daily (survival → daily_survival_results),
+        // sinon la cartouche reste bloquée sur "Jouer" après avoir joué.
+        const [streak, survival] = await Promise.all([
           getDailyStreak(user.id),
-          hasCompletedDailyChallenge(user.id),
+          hasPlayedDailySurvivalToday(user.id),
         ]);
         setDailyStreak(streak);
-        setDailyCompleted(completed);
+        setDailyCompleted(survival.played);
+        setDailyScore(survival.played ? (survival.score ?? null) : null);
       } catch (error) {
         console.error("Error loading daily status:", error);
       }
@@ -256,7 +260,13 @@ export default function HomeScreen() {
         <View className="px-4 flex-col gap-6">
           {/* ===== HERO (Mix) : carte douce + tuiles bento (serie/ligue/club/prime time) ===== */}
           <View className="flex-col gap-3">
-            <HomeHeroDaily dailyCompleted={dailyCompleted} timeLeft={timeLeft} streak={dailyStreak} />
+            <HomeHeroDaily
+              dailyCompleted={dailyCompleted}
+              dailyScore={dailyScore}
+              questionCount={DAILY_BRAIN_QUESTION_COUNT}
+              timeLeft={timeLeft}
+              streak={dailyStreak}
+            />
             <HomeBento streak={dailyStreak} />
           </View>
 
