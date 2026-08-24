@@ -16,6 +16,8 @@ import {
 import { shareResultCard } from "../../src/services/shareResult";
 import { WeeklyShareCard } from "../../src/components/WeeklyShareCard";
 import { useTranslation } from "../../src/contexts/LanguageContext";
+import { useAuth } from "../../src/contexts/AuthContext";
+import { hasPlayedDailySurvivalToday } from "../../src/services/dailyChallenge";
 import { buttonPressFeedback } from "../../src/utils/feedback";
 import { mixHex } from "../../src/utils/colors";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
@@ -32,6 +34,8 @@ function getBadge(correctCount: number): { emoji: string; label: string; color: 
 
 export default function WeeklyResult() {
   const { t, language } = useTranslation();
+  const { user } = useAuth();
+  const [dailyDone, setDailyDone] = useState<boolean | null>(null);
   const params = useLocalSearchParams<{ id?: string; type?: string }>();
   const challengeId = params.id ?? null;
   const challengeType: WeeklyChallengeType = params.type === "news" ? "news" : "themed";
@@ -54,6 +58,13 @@ export default function WeeklyResult() {
       setLoading(false);
     })();
   }, [challengeId, challengeType]);
+
+  // Boucle défi-hebdo → daily : le défi est le hook, on convertit ses joueurs
+  // vers un retour quotidien. On vérifie si le daily a déjà été fait aujourd'hui.
+  useEffect(() => {
+    if (!user?.id) return;
+    hasPlayedDailySurvivalToday(user.id).then((r) => setDailyDone(r.played)).catch(() => {});
+  }, [user?.id]);
 
   if (loading) {
     return (
@@ -183,6 +194,28 @@ export default function WeeklyResult() {
             style={{ backgroundColor: challenge.color, paddingVertical: 14 }}
           >
             <Text className="text-white font-bold">→ {t("weeklyContinue")}</Text>
+          </Pressable>
+        )}
+
+        {/* Boucle hebdo → daily : renvoie le joueur engagé vers son rendez-vous
+            quotidien (le levier de rétention #1). */}
+        {progress.completed_at && dailyDone === false && (
+          <Pressable
+            onPress={() => { buttonPressFeedback(); router.replace("/daily"); }}
+            className="mt-4 rounded-2xl flex-row items-center active:opacity-90"
+            style={{ backgroundColor: "rgba(0,194,204,0.12)", borderWidth: 1.5, borderColor: "#00c2cc", padding: 14 }}
+            accessibilityRole="button"
+          >
+            <Text style={{ fontSize: 30, marginRight: 12 }}>🦉</Text>
+            <View style={{ flex: 1 }}>
+              <Text className="font-black text-base" style={{ color: "#00c2cc" }}>
+                {language === "fr" ? "Enchaîne avec la question du jour" : "Keep going — today's question"}
+              </Text>
+              <Text className="text-xs mt-0.5" style={{ color: COLORS.textMuted }}>
+                {language === "fr" ? "10 s · garde ta série 🔥" : "10s · keep your streak 🔥"}
+              </Text>
+            </View>
+            <Text style={{ color: "#00c2cc", fontSize: 20 }}>→</Text>
           </Pressable>
         )}
 

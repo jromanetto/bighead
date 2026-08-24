@@ -1,5 +1,6 @@
 import { Modal, View, Text, Pressable } from "react-native";
 import { useTranslation } from "../contexts/LanguageContext";
+// (Linking géré côté appelant selon permissionStatus)
 import { COLORS } from "../theme/colors";
 import { buttonPressFeedback } from "../utils/feedback";
 
@@ -16,10 +17,13 @@ export function NotificationPrimer({
   visible,
   onEnable,
   onLater,
+  denied = false,
 }: {
   visible: boolean;
   onEnable: () => void;
   onLater: () => void;
+  /** true = déjà refusé au niveau OS → le bouton ouvre les Réglages. */
+  denied?: boolean;
 }) {
   const { language } = useTranslation();
   const lang = language === "fr" ? "fr" : "en";
@@ -34,13 +38,20 @@ export function NotificationPrimer({
         >
           <Text style={{ fontSize: 52 }}>🦉</Text>
           <Text className="text-white text-xl font-black text-center mt-2">
-            {L("Ne rate pas ta série", "Don't lose your streak")}
+            {denied
+              ? L("Réactive tes rappels", "Turn reminders back on")
+              : L("Ne rate pas ta série", "Don't lose your streak")}
           </Text>
           <Text className="text-center mt-2" style={{ color: COLORS.textMuted, lineHeight: 20 }}>
-            {L(
-              "Je te préviens chaque jour pour ta question — 10 secondes, et ta série reste en vie. 🔥",
-              "I'll ping you each day for your question — 10 seconds, and your streak stays alive. 🔥",
-            )}
+            {denied
+              ? L(
+                  "Les notifs sont coupées. Réactive-les en 2 taps dans les Réglages pour garder ta série. 🔥",
+                  "Notifications are off. Turn them back on in Settings (2 taps) to keep your streak alive. 🔥",
+                )
+              : L(
+                  "Je te préviens chaque jour pour ta question — 10 secondes, et ta série reste en vie. 🔥",
+                  "I'll ping you each day for your question — 10 seconds, and your streak stays alive. 🔥",
+                )}
           </Text>
 
           <Pressable
@@ -50,7 +61,7 @@ export function NotificationPrimer({
             accessibilityRole="button"
           >
             <Text className="font-black text-base" style={{ color: "#1a0f04" }}>
-              🔔 {L("Activer les rappels", "Turn on reminders")}
+              🔔 {denied ? L("Ouvrir les Réglages", "Open Settings") : L("Activer les rappels", "Turn on reminders")}
             </Text>
           </Pressable>
           <Pressable onPress={() => { buttonPressFeedback(); onLater(); }} hitSlop={8} className="py-2.5 mt-1 active:opacity-60">

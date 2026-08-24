@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, ImageBackground, Alert } from "react-native";
+import { View, Text, Pressable, ScrollView, ImageBackground, Alert, Linking } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useState } from "react";
@@ -101,7 +101,9 @@ export default function HomeScreen() {
   useEffect(() => {
     (async () => {
       try {
-        if (permissionStatus && permissionStatus !== "undetermined") return;
+        // Montre pour les jamais-demandés (undetermined) ET les refusés (denied,
+        // le bouton ouvrira les Réglages). Rien tant que le statut n'est pas connu.
+        if (permissionStatus !== "undetermined" && permissionStatus !== "denied") return;
 
         const raw = await AsyncStorage.getItem("@bighead_home_sessions");
         const sessions = parseInt(raw ?? "0", 10) || 0;
@@ -131,6 +133,13 @@ export default function HomeScreen() {
   const onEnableNotif = async () => {
     setShowNotifPrimer(false);
     try {
+      if (permissionStatus === "denied") {
+        // Le dialogue OS ne peut plus s'afficher → on envoie vers les Réglages.
+        await AsyncStorage.setItem("@bighead_notif_primer", JSON.stringify({ count: 1, ts: Date.now() }));
+        logEvent("notif_open_settings", { source: "home_primer" });
+        await Linking.openSettings();
+        return;
+      }
       await AsyncStorage.setItem("@bighead_notif_primer", JSON.stringify({ count: 3, ts: Date.now() }));
       const granted = await requestPermission();
       logEvent(granted ? "notif_permission_granted" : "notif_permission_denied", { source: "home_primer" });
@@ -542,7 +551,7 @@ export default function HomeScreen() {
       </ScrollView>
 
       <StreakFreezeModal visible={streakRescued} onClose={() => setStreakRescued(false)} />
-      <NotificationPrimer visible={showNotifPrimer} onEnable={onEnableNotif} onLater={onLaterNotif} />
+      <NotificationPrimer visible={showNotifPrimer} onEnable={onEnableNotif} onLater={onLaterNotif} denied={permissionStatus === "denied"} />
     </SafeAreaView>
   );
 }
