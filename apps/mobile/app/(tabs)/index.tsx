@@ -24,6 +24,7 @@ import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { SkeletonCard } from "../../src/components/Skeleton";
 import { getHomeChallenges, type WeeklyChallenge } from "../../src/services/weeklyChallenge";
 import { StreakFreezeModal } from "../../src/components/StreakFreezeModal";
+import { NotificationPrimer } from "../../src/components/NotificationPrimer";
 import { HomeHeroDaily } from "../../src/components/HomeHeroDaily";
 import { HomeBento } from "../../src/components/HomeBento";
 import { HomeModes } from "../../src/components/HomeModes";
@@ -42,6 +43,7 @@ export default function HomeScreen() {
   const [timeLeft, setTimeLeft] = useState(timeUntilDailyReset());
   const [recentChallenges, setRecentChallenges] = useState<WeeklyChallenge[] | null>(null);
   const [streakRescued, setStreakRescued] = useState(false);
+  const [showNotifPrimer, setShowNotifPrimer] = useState(false);
 
   useEffect(() => {
     loadFeedbackSettings(user?.id);
@@ -92,13 +94,13 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Soft-prompt notifications : dès que le joueur a joué ≥1 partie OU à la 2e
-  // session — plus tôt = on capte le canal de rappel avant que le one-and-done
-  // ne ferme l'app. Jamais au tout 1er lancement à froid.
+  // Soft-prompt notifications : on affiche un PRÉ-PROMPT in-app (modal Mia) — pas
+  // le dialogue OS directement (iOS = one-shot, un refus à froid grille tout). Le
+  // dialogue OS ne part que si l'utilisateur tape « Activer ». Re-proposable :
+  // espacé de 3 jours, max 3 fois. Déclenché après ≥1 partie OU 2e session.
   useEffect(() => {
     (async () => {
       try {
-        if (await AsyncStorage.getItem("@bighead_notif_prompted")) return;
         if (permissionStatus && permissionStatus !== "undetermined") return;
 
         const raw = await AsyncStorage.getItem("@bighead_home_sessions");
@@ -109,18 +111,47 @@ export default function HomeScreen() {
         const settings = await getSettings(user?.id);
         if (!settings.notifications_enabled) return;
 
-        await AsyncStorage.setItem("@bighead_notif_prompted", "1");
-        const granted = await requestPermission();
-        logEvent(
-          granted ? "notif_permission_granted" : "notif_permission_denied",
-          { source: hasPlayed ? "after_first_game" : "soft_prompt" },
-        );
+        // Re-ask : {count, ts}. Montre si jamais montré, ou 3j+ depuis le dernier
+        // « Plus tard » et moins de 3 fois.
+        const st = JSON.parse((await AsyncStorage.getItem("@bighead_notif_primer")) || "{}");
+        const count = st.count ?? 0;
+        const lastTs = st.ts ?? 0;
+        const daysSince = (Date.now() - lastTs) / 86_400_000;
+        if (count >= 3) return;
+        if (count > 0 && daysSince < 3) return;
+
+        setShowNotifPrimer(true);
       } catch {
         // ne jamais casser Home
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.games_played, permissionStatus, user?.id]);
+
+  const onEnableNotif = async () => {
+    setShowNotifPrimer(false);
+    try {
+      await AsyncStorage.setItem("@bighead_notif_primer", JSON.stringify({ count: 3, ts: Date.now() }));
+      const granted = await requestPermission();
+      logEvent(granted ? "notif_permission_granted" : "notif_permission_denied", { source: "home_primer" });
+    } catch {
+      /* ne casse jamais Home */
+    }
+  };
+
+  const onLaterNotif = async () => {
+    setShowNotifPrimer(false);
+    try {
+      const st = JSON.parse((await AsyncStorage.getItem("@bighead_notif_primer")) || "{}");
+      await AsyncStorage.setItem(
+        "@bighead_notif_primer",
+        JSON.stringify({ count: (st.count ?? 0) + 1, ts: Date.now() }),
+      );
+      logEvent("notif_primer_later", { source: "home_primer" });
+    } catch {
+      /* noop */
+    }
+  };
 
   // Surface "ta série a été sauvée" quand un streak-freeze a été consommé
   // récemment (le service existait mais n'était jamais affiché). Dédupe par id
@@ -511,6 +542,7 @@ export default function HomeScreen() {
       </ScrollView>
 
       <StreakFreezeModal visible={streakRescued} onClose={() => setStreakRescued(false)} />
+      <NotificationPrimer visible={showNotifPrimer} onEnable={onEnableNotif} onLater={onLaterNotif} />
     </SafeAreaView>
   );
 }
