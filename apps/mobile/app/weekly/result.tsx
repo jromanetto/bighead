@@ -7,7 +7,9 @@ import {
   resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
+  getChallengeCommunityStats,
   shareWeeklyChallenge,
+  type ChallengeCommunityStats,
   type WeeklyChallenge,
   type WeeklyChallengeType,
   type WeeklyProgress,
@@ -42,6 +44,7 @@ export default function WeeklyResult() {
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<WeeklyLeaderboardEntry[]>([]);
+  const [community, setCommunity] = useState<ChallengeCommunityStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [sharing, setSharing] = useState(false);
   const cardRef = useRef<View>(null);
@@ -51,9 +54,14 @@ export default function WeeklyResult() {
       const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
       setChallenge(c);
       if (c) {
-        const [p, lb] = await Promise.all([getMyWeeklyProgress(c.id), getWeeklyLeaderboard(c.id, 20)]);
+        const [p, lb, cs] = await Promise.all([
+          getMyWeeklyProgress(c.id),
+          getWeeklyLeaderboard(c.id, 20),
+          getChallengeCommunityStats(c.id),
+        ]);
         setProgress(p);
         setLeaderboard(lb);
+        setCommunity(cs);
       }
       setLoading(false);
     })();
@@ -141,6 +149,39 @@ export default function WeeklyResult() {
             </View>
           </LinearGradient>
         </View>
+
+        {/* Où tu te situes : ta réussite vs la moyenne de la communauté sur ce défi. */}
+        {community && community.players >= 3 && community.avg_accuracy_pct != null && (() => {
+          const answered = progress.current_position || total;
+          const yourPct = Math.round((score / Math.max(1, answered)) * 100);
+          const avg = community.avg_accuracy_pct!;
+          const beats = yourPct >= avg;
+          const diff = Math.abs(yourPct - avg);
+          return (
+            <View className="mt-4 rounded-2xl p-4" style={{ backgroundColor: COLORS.surface, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)" }}>
+              <Text className="text-center text-[11px] uppercase tracking-widest" style={{ color: COLORS.textMuted }}>
+                {language === "fr" ? "Où tu te situes" : "Where you stand"}
+              </Text>
+              <View className="flex-row items-end justify-center mt-2" style={{ gap: 40 }}>
+                <View className="items-center">
+                  <Text className="font-black text-3xl" style={{ color: beats ? "#22c55e" : "#ffffff" }}>{yourPct}%</Text>
+                  <Text className="text-[11px] mt-0.5" style={{ color: COLORS.textMuted }}>{language === "fr" ? "Toi" : "You"}</Text>
+                </View>
+                <View className="items-center">
+                  <Text className="font-black text-3xl" style={{ color: COLORS.textMuted }}>{avg}%</Text>
+                  <Text className="text-[11px] mt-0.5" style={{ color: COLORS.textMuted }}>
+                    {language === "fr" ? `Moyenne · ${community.players} j.` : `Average · ${community.players} pl.`}
+                  </Text>
+                </View>
+              </View>
+              <Text className="text-center text-sm mt-3 font-bold" style={{ color: beats ? "#22c55e" : COLORS.textMuted }}>
+                {beats
+                  ? (language === "fr" ? `🔥 ${diff} pts au-dessus de la moyenne` : `🔥 ${diff} pts above average`)
+                  : (language === "fr" ? `${diff} pts sous la moyenne — reviens te venger` : `${diff} pts below average — come back for revenge`)}
+              </Text>
+            </View>
+          );
+        })()}
 
         {/* Partager mon score : capture le visuel et ouvre la feuille native
             (Story Instagram, WhatsApp en image, etc.). Lien de download imprimé

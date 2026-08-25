@@ -228,6 +228,28 @@ export async function getWeeklyLeaderboard(
   return (data as WeeklyLeaderboardEntry[]) ?? [];
 }
 
+export interface ChallengeCommunityStats {
+  players: number;
+  avg_accuracy_pct: number | null;
+  avg_correct: number | null;
+}
+
+/** Moyenne de réussite de la communauté sur un défi (pour se situer). */
+export async function getChallengeCommunityStats(
+  challengeId: string,
+): Promise<ChallengeCommunityStats | null> {
+  // @ts-ignore RPC non typé
+  const { data, error } = await supabase.rpc("get_challenge_community_stats", {
+    p_challenge_id: challengeId,
+  });
+  if (error) {
+    console.warn("[weekly] community stats error:", error.message);
+    return null;
+  }
+  const row = (data as ChallengeCommunityStats[])?.[0];
+  return row ?? null;
+}
+
 export function daysIntoChallenge(c: Pick<WeeklyChallenge, "start_date">): number {
   const start = new Date(c.start_date + "T00:00:00Z");
   const now = new Date();
