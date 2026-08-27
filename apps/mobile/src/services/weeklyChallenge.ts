@@ -302,14 +302,22 @@ export async function shareWeeklyChallenge(
     "id" | "theme_label_fr" | "theme_label_en" | "emoji" | "challenge_type"
   >,
   language: string,
+  brag?: { yourPct: number; avgPct: number },
 ): Promise<boolean> {
   const url = buildQuizShareUrl(challenge.id, challenge.challenge_type);
   const label = language === "fr" ? challenge.theme_label_fr : challenge.theme_label_en;
   const emoji = challenge.emoji || "🧠";
+  // Vantardise = carburant viral : si le joueur a battu la moyenne, on le clame.
+  const bragLine =
+    brag && brag.yourPct >= brag.avgPct
+      ? language === "fr"
+        ? `J'ai fait ${brag.yourPct}% (moyenne ${brag.avgPct}%) 😏 `
+        : `I scored ${brag.yourPct}% (avg ${brag.avgPct}%) 😏 `
+      : "";
   const message =
     language === "fr"
-      ? `${emoji} Je te défie sur le quiz « ${label} » de BIGHEAD ! Tu arrives à me battre ? 🧠\n\n👉 ${url}`
-      : `${emoji} I challenge you on the "${label}" quiz on BIGHEAD! Can you beat me? 🧠\n\n👉 ${url}`;
+      ? `${emoji} ${bragLine}Je te défie sur le quiz « ${label} » de BIGHEAD ! Tu arrives à me battre ? 🧠\n\n👉 ${url}`
+      : `${emoji} ${bragLine}I challenge you on the "${label}" quiz on BIGHEAD! Can you beat me? 🧠\n\n👉 ${url}`;
   try {
     // message porte le lien (Android/WhatsApp), url enrichit la fiche iOS.
     const res = await Share.share({ message, url }, { dialogTitle: label });

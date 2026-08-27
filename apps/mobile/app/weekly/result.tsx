@@ -207,7 +207,15 @@ export default function WeeklyResult() {
 
         {/* Défier un ami : message + lien cliquable (WhatsApp, iMessage…). */}
         <Pressable
-          onPress={() => { buttonPressFeedback(); shareWeeklyChallenge(challenge, language); }}
+          onPress={() => {
+            buttonPressFeedback();
+            const answered = progress.current_position || total;
+            const yourPct = Math.round((score / Math.max(1, answered)) * 100);
+            const brag = community?.avg_accuracy_pct != null
+              ? { yourPct, avgPct: community.avg_accuracy_pct }
+              : undefined;
+            shareWeeklyChallenge(challenge, language, brag);
+          }}
           className="mt-3 rounded-2xl flex-row items-center justify-center active:opacity-90"
           style={{
             backgroundColor: "rgba(255,255,255,0.06)",
