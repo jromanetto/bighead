@@ -9,12 +9,14 @@ import {
   resolveWeeklyChallenge,
   getMyWeeklyProgress,
   getWeeklyLeaderboard,
+  getChallengeCommunityStats,
   shareWeeklyChallenge,
   timeUntilEnd,
   type WeeklyChallenge,
   type WeeklyChallengeType,
   type WeeklyProgress,
   type WeeklyLeaderboardEntry,
+  type ChallengeCommunityStats,
 } from "../../src/services/weeklyChallenge";
 import { startReplay } from "../../src/services/weeklyHistory";
 import { useTranslation } from "../../src/contexts/LanguageContext";
@@ -38,6 +40,7 @@ export default function WeeklyHome() {
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [progress, setProgress] = useState<WeeklyProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<WeeklyLeaderboardEntry[]>([]);
+  const [community, setCommunity] = useState<ChallengeCommunityStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [replaying, setReplaying] = useState(false);
 
@@ -57,9 +60,14 @@ export default function WeeklyHome() {
     const c = await resolveWeeklyChallenge({ id: challengeId, type: challengeType });
     setChallenge(c);
     if (c) {
-      const [p, lb] = await Promise.all([getMyWeeklyProgress(c.id), getWeeklyLeaderboard(c.id, 20)]);
+      const [p, lb, cs] = await Promise.all([
+        getMyWeeklyProgress(c.id),
+        getWeeklyLeaderboard(c.id, 20),
+        getChallengeCommunityStats(c.id),
+      ]);
       setProgress(p);
       setLeaderboard(lb);
+      setCommunity(cs);
     }
     setLoading(false);
   }, [challengeId, challengeType]);
@@ -226,6 +234,21 @@ export default function WeeklyHome() {
                 />
               </View>
             </View>
+
+            {/* Hook pré-partie : la moyenne communautaire comme cible (« bats-la »). */}
+            {community && community.players >= 3 && community.avg_accuracy_pct != null && (
+              <View
+                className="mt-5 rounded-xl flex-row items-center justify-center"
+                style={{ backgroundColor: "rgba(0,0,0,0.28)", paddingVertical: 10, paddingHorizontal: 12, gap: 8 }}
+              >
+                <Text style={{ fontSize: 16 }}>🎯</Text>
+                <Text className="text-white text-sm font-bold">
+                  {language === "fr"
+                    ? `Moyenne des joueurs : ${community.avg_accuracy_pct}% — bats-la !`
+                    : `Players' average: ${community.avg_accuracy_pct}% — beat it!`}
+                </Text>
+              </View>
+            )}
 
             <View className="mt-5 flex-row" style={{ gap: 10 }}>
               {completed ? (
