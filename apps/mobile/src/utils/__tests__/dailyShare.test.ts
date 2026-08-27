@@ -6,7 +6,8 @@ describe("buildDailyShareText", () => {
     expect(txt).toContain("BIGHEAD Daily 🧠 4/5");
     expect(txt).toContain("🟩🟩🟥🟩🟩");
     expect(txt).toContain("🔥 3");
-    expect(txt).toContain("https://bighead.jrmanagement.org");
+    expect(txt).toContain("Tu fais mieux ?");
+    expect(txt).toContain("https://apps.apple.com/app/id6758253365");
   });
 
   it("omits the streak line when streak is 0", () => {
