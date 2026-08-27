@@ -12,5 +12,9 @@
 export const APP_STORE_URL = "https://apps.apple.com/app/id6758253365";
 export const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.jroma51.bighead";
 
-/** Lien d'install à mettre dans les partages sans cible spécifique (daily flex). */
-export const INSTALL_URL = APP_STORE_URL;
+/**
+ * Lien d'install pour les partages sans cible (daily flex). Page smart /get :
+ * redirige vers le bon store selon l'OS (iOS/Android) → cross-platform, contrairement
+ * à un lien App Store brut qui laissait tomber les destinataires Android.
+ */
+export const INSTALL_URL = "https://bighead.jrmanagement.org/get";
