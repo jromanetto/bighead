@@ -108,6 +108,7 @@ export const getLeaderboard = async (
   const { data, error } = await supabase
     .from("leaderboard")
     .select("*")
+    .order("rank", { ascending: true })
     .limit(limit);
 
   if (error) throw error;
