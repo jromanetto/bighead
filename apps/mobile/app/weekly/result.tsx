@@ -24,6 +24,7 @@ import { buttonPressFeedback } from "../../src/utils/feedback";
 import { mixHex } from "../../src/utils/colors";
 import { AnimatedNumber } from "../../src/components/AnimatedNumber";
 import { ConfettiEffect } from "../../src/components/effects/ConfettiEffect";
+import { WeeklyNotifCard } from "../../src/components/WeeklyNotifCard";
 
 const COLORS = { bg: "#161a1d", surface: "#1E2529", text: "#ffffff", textMuted: "#9ca3af" };
 
@@ -245,6 +246,9 @@ export default function WeeklyResult() {
             <Text className="text-white font-bold">→ {t("weeklyContinue")}</Text>
           </Pressable>
         )}
+
+        {/* Demande de notif en contexte : « nouveau défi demain — on te prévient ? » */}
+        <WeeklyNotifCard endDate={challenge.end_date} color={challenge.color} language={language} />
 
         {/* Boucle hebdo → daily : renvoie le joueur engagé vers son rendez-vous
             quotidien (le levier de rétention #1). */}

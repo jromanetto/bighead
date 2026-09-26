@@ -2,14 +2,12 @@
   "expo": {
     "name": "BIGHEAD",
     "slug": "bighead",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "bighead",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.2.4",
     "updates": {
       "url": "https://u.expo.dev/327940cd-9b96-4c8d-962e-f707e5b0a000"
     },
