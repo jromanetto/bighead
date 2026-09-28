@@ -28,6 +28,12 @@ const QUEUE_BUFFER = 3;
 // On demande 20 questions mais on accepte de shipper le lot si au moins
 // MIN_QUESTIONS survivent au nettoyage (fuite/champ manquant écartés).
 const MIN_QUESTIONS = 15;
+// Le runtime tue la requête à ~150 s sans réponse (HTTP 546) : le catch ne tourne
+// pas et le défi reste bloqué en 'generating' (trou de 2 jours sans défi). Un appel
+// Claude prend jusqu'à ~90 s → on n'en démarre plus un nouveau passé ce budget.
+const CALL_START_BUDGET_MS = 55_000;
+// Une génération 'generating' plus vieille que ça a forcément été tuée.
+const STALE_GENERATING_MS = 10 * 60_000;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -111,9 +117,14 @@ Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
 The "questions" array must contain EXACTLY 20 objects.`;
 }
 
-async function callClaude(prompt: string, attempts = 3): Promise<BilingualQuestion[]> {
-  let lastErr: unknown;
+async function callClaude(
+  prompt: string,
+  canStartCall: () => boolean,
+  attempts = 3,
+): Promise<BilingualQuestion[]> {
+  let lastErr: unknown = new Error("time budget exhausted before calling Claude");
   for (let i = 0; i < attempts; i++) {
+    if (!canStartCall()) break;
     try {
       return await callClaudeOnce(prompt);
     } catch (e) {
@@ -199,6 +210,8 @@ serve(async (req) => {
     }
   }
 
+  const startedAt = Date.now();
+  const canStartCall = () => Date.now() - startedAt < CALL_START_BUDGET_MS;
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   // Marque un défi en échec SANS le laisser bloquer son créneau : status='failed'
@@ -223,6 +236,17 @@ serve(async (req) => {
         // empty body OK
       }
     }
+
+    // 0. Libère les créneaux des générations tuées par le runtime (restées en
+    // 'generating' sans jamais passer par markFailed) : sinon le calcul du
+    // prochain créneau saute par-dessus et laisse un trou sans défi.
+    await supabase.from("weekly_challenges").update({
+      generation_status: "failed",
+      status: "failed",
+      generation_error: "stale: killed by runtime before completion",
+    })
+      .eq("generation_status", "generating")
+      .lt("created_at", new Date(Date.now() - STALE_GENERATING_MS).toISOString());
 
     // 1. Pick theme
     let theme: Theme;
@@ -323,7 +347,8 @@ serve(async (req) => {
     let genError: string | null = null;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const questions = await callClaude(buildPrompt(theme));
+        if (!canStartCall()) break;
+        const questions = await callClaude(buildPrompt(theme), canStartCall);
         const cleaned = sanitizeQuestions(questions);
         if (cleaned.length > valid.length) valid = cleaned;
         if (valid.length >= 20) break; // lot parfait, inutile de retenter
