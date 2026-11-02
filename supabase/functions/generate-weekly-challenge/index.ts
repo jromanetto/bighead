@@ -95,26 +95,7 @@ CRITICAL — SELF-CHECK before including each question (real hallucinations have
 6. NO LEAK: the correct answer must never appear in the question text (FR or EN).
 If a question fails any check, generate a different one. Quality > quantity, but still output 20.
 
-Return STRICT JSON ONLY, no markdown, no commentary, in this exact shape:
-
-{
-  "questions": [
-    {
-      "difficulty": 1,
-      "question_fr": "...",
-      "correct_answer_fr": "...",
-      "wrong_answers_fr": ["...", "...", "..."],
-      "learning_fact_fr": "...",
-      "question_en": "...",
-      "correct_answer_en": "...",
-      "wrong_answers_en": ["...", "...", "..."],
-      "learning_fact_en": "..."
-    },
-    ... 19 more
-  ]
-}
-
-The "questions" array must contain EXACTLY 20 objects.`;
+Submit them with the submit_questions tool. Each question has exactly 3 wrong_answers per language. The "questions" array must contain EXACTLY 20 objects.`;
 }
 
 async function callClaude(
@@ -146,6 +127,10 @@ async function callClaudeOnce(prompt: string): Promise<BilingualQuestion[]> {
       model: ANTHROPIC_MODEL,
       max_tokens: 16000,
       temperature: 0.7,
+      // Outil forcé : l'API renvoie un objet déjà parsé. L'ancien parsing du
+      // texte libre cassait dès qu'un guillemet non échappé traînait (2026-11-02).
+      tools: [SUBMIT_QUESTIONS_TOOL],
+      tool_choice: { type: "tool", name: SUBMIT_QUESTIONS_TOOL.name },
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -153,13 +138,49 @@ async function callClaudeOnce(prompt: string): Promise<BilingualQuestion[]> {
     throw new Error(`Claude API ${res.status}: ${await res.text()}`);
   }
   const data = await res.json();
-  const text = data.content?.[0]?.text ?? "";
-  const jsonMatch = text.match(/\{[\s\S]*"questions"[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("No JSON object found in Claude response");
-  const parsed = JSON.parse(jsonMatch[0]);
-  if (!Array.isArray(parsed.questions)) throw new Error("Missing 'questions' array");
-  return parsed.questions;
+  if (data.stop_reason === "max_tokens") throw new Error("Claude response truncated (max_tokens)");
+  const block = data.content?.find((b: { type: string }) => b.type === "tool_use");
+  if (!block) throw new Error(`No tool_use block in Claude response (stop_reason=${data.stop_reason})`);
+  let questions = block.input?.questions;
+  // Sonnet 4.5 renvoie parfois le tableau imbriqué sérialisé en chaîne.
+  if (typeof questions === "string") questions = JSON.parse(questions);
+  if (!Array.isArray(questions)) {
+    throw new Error(`Missing 'questions' array (got ${typeof questions}; keys=${Object.keys(block.input ?? {}).join(",")})`);
+  }
+  return questions;
 }
+
+const SUBMIT_QUESTIONS_TOOL = {
+  name: "submit_questions",
+  description: "Submit the generated bilingual trivia questions.",
+  input_schema: {
+    type: "object",
+    properties: {
+      questions: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            difficulty: { type: "integer", enum: [1, 2, 3] },
+            question_fr: { type: "string" },
+            correct_answer_fr: { type: "string" },
+            wrong_answers_fr: { type: "array", items: { type: "string" } },
+            learning_fact_fr: { type: "string" },
+            question_en: { type: "string" },
+            correct_answer_en: { type: "string" },
+            wrong_answers_en: { type: "array", items: { type: "string" } },
+            learning_fact_en: { type: "string" },
+          },
+          required: [
+            "difficulty", "question_fr", "correct_answer_fr", "wrong_answers_fr", "learning_fact_fr",
+            "question_en", "correct_answer_en", "wrong_answers_en", "learning_fact_en",
+          ],
+        },
+      },
+    },
+    required: ["questions"],
+  },
+};
 
 // Nettoie un lot : ÉCARTE (n'échoue pas sur) les questions fautives — champ
 // manquant, mauvais nombre de distracteurs, difficulté invalide, ou fuite de la
